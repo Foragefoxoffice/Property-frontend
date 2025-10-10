@@ -63,27 +63,34 @@ export const deleteProperty = (id) => API.delete(`/property/${id}`);
 /* =========================================================
    🗺️ ZONE / SUB-AREA APIs
 ========================================================= */
-export const getAllZoneSubAreas = (params) => API.get("/zonesubarea", { params });
+export const getAllZoneSubAreas = (params) =>
+  API.get("/zonesubarea", { params });
 export const createZoneSubArea = (data) => API.post("/zonesubarea", data);
-export const updateZoneSubArea = (id, data) => API.put(`/zonesubarea/${id}`, data);
+export const updateZoneSubArea = (id, data) =>
+  API.put(`/zonesubarea/${id}`, data);
 export const deleteZoneSubArea = (id) => API.delete(`/zonesubarea/${id}`);
-
 
 /* =========================================================
    🏢 PROPERTY TYPE APIs
 ========================================================= */
-export const getAllPropertyTypes = (params) => API.get("/propertytype", { params });
+export const getAllPropertyTypes = (params) =>
+  API.get("/propertytype", { params });
 export const createPropertyType = (data) => API.post("/propertytype", data);
-export const updatePropertyType = (id, data) => API.put(`/propertytype/${id}`, data);
+export const updatePropertyType = (id, data) =>
+  API.put(`/propertytype/${id}`, data);
 export const deletePropertyType = (id) => API.delete(`/propertytype/${id}`);
 
 /* =========================================================
    📊 AVAILABILITY STATUS APIs
 ========================================================= */
-export const getAllAvailabilityStatuses = (params) => API.get("/availabilitystatus", { params });
-export const createAvailabilityStatus = (data) => API.post("/availabilitystatus", data);
-export const updateAvailabilityStatus = (id, data) => API.put(`/availabilitystatus/${id}`, data);
-export const deleteAvailabilityStatus = (id) => API.delete(`/availabilitystatus/${id}`);
+export const getAllAvailabilityStatuses = (params) =>
+  API.get("/availabilitystatus", { params });
+export const createAvailabilityStatus = (data) =>
+  API.post("/availabilitystatus", data);
+export const updateAvailabilityStatus = (id, data) =>
+  API.put(`/availabilitystatus/${id}`, data);
+export const deleteAvailabilityStatus = (id) =>
+  API.delete(`/availabilitystatus/${id}`);
 
 /* =========================================================
    ⚙️ UNIT APIs
@@ -98,7 +105,8 @@ export const deleteUnit = (id) => API.delete(`/unit/${id}`);
 ========================================================= */
 export const getAllFurnishings = (params) => API.get("/furnishing", { params });
 export const createFurnishing = (data) => API.post("/furnishing", data);
-export const updateFurnishing = (id, data) => API.put(`/furnishing/${id}`, data);
+export const updateFurnishing = (id, data) =>
+  API.put(`/furnishing/${id}`, data);
 export const deleteFurnishing = (id) => API.delete(`/furnishing/${id}`);
 
 /* =========================================================
@@ -117,14 +125,16 @@ export const createPetPolicy = (data) => API.post("/petpolicy", data);
 export const updatePetPolicy = (id, data) => API.put(`/petpolicy/${id}`, data);
 export const deletePetPolicy = (id) => API.delete(`/petpolicy/${id}`);
 
-// 
+//
 
-export const getAllPropertyListings = (params) => API.get("/create-property", { params });
-export const createPropertyListing = (data) => API.post("/create-property", data);
-export const updatePropertyListing = (id, data) => API.put(`/create-property/${id}`, data);
-export const deletePropertyListing = (id) => API.delete(`/create-property/${id}`);
-
-
+export const getAllPropertyListings = (params) =>
+  API.get("/create-property", { params });
+export const createPropertyListing = (data) =>
+  API.post("/create-property", data);
+export const updatePropertyListing = (id, data) =>
+  API.put(`/create-property/${id}`, data);
+export const deletePropertyListing = (id) =>
+  API.delete(`/create-property/${id}`);
 
 /* =========================================================
    ✨ EXPORT DEFAULT
