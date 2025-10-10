@@ -6,15 +6,32 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./Login/Login.jsx";
 import ForgotPassword from "./Login/ForgotPassword.jsx";
 import ResetPassword from "./Login/ResetPassword.jsx";
+import DashboardLayout from "./Admin/SideBar/DashboardLayout.jsx";
+import { ToastContainer } from "react-toastify";
+import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <StrictMode>
+      <ToastContainer
+        position="top-right"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/dashboard" element={<DashboardLayout />} />
+        <Route path="/manage-property" element={<ManageProperty />} />
         {/* Add other routes as needed */}
       </Routes>
     </StrictMode>
