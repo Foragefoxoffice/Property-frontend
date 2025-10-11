@@ -127,14 +127,15 @@ export const deletePetPolicy = (id) => API.delete(`/petpolicy/${id}`);
 
 //
 
-export const getAllPropertyListings = (params) =>
-  API.get("/create-property", { params });
 export const createPropertyListing = (data) =>
   API.post("/create-property", data);
+export const getAllPropertyListings = (params) =>
+  API.get("/create-property", { params });
 export const updatePropertyListing = (id, data) =>
   API.put(`/create-property/${id}`, data);
 export const deletePropertyListing = (id) =>
   API.delete(`/create-property/${id}`);
+
 
 /* =========================================================
    ✨ EXPORT DEFAULT

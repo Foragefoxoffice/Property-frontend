@@ -1,19 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Steps from "./Steps";
 import CreatePropertyListStep1 from "./CreatePropertyListStep1";
 import CreatePropertyListStep2 from "./CreatePropertyListStep2";
 import CreatePropertyListStep3 from "./CreatePropertyListStep3";
-import { createPropertyListing } from "../../Api/action";
+import {
+  createPropertyListing,
+  getAllProperties,
+  getAllZoneSubAreas,
+  getAllPropertyTypes,
+  getAllAvailabilityStatuses,
+  getAllUnits,
+  getAllFurnishings,
+  getAllParkings,
+  getAllPetPolicies,
+  updatePropertyListing,
+} from "../../Api/action";
+import CreatePropertyListStep4 from "./CreatePropertyListStep4";
+
 
 /* =========================================================
-   🧰 Safe Object Sanitizer (Handles circular & event leaks)
+   🧰 Safe Object Sanitizer
 ========================================================= */
 function sanitizeObject(input, seen = new WeakSet()) {
   if (input === null || typeof input !== "object") return input;
   if (seen.has(input)) return undefined;
   seen.add(input);
 
-  // Skip events, DOM, Files
   if (
     input instanceof File ||
     input instanceof Blob ||
@@ -35,42 +47,169 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch {}
+    } catch { }
   }
   return result;
 }
 
 /* =========================================================
-   🧠 Normalize multilingual + field mapping
+   🧠 Normalize multilingual
 ========================================================= */
 const normalizeMultilingual = (data) => {
-  const wrap = (val) =>
-    typeof val === "string" ? { en: val, vi: val } : val || { en: "", vi: "" };
+  const ensureLocalized = (val) => {
+    if (!val) return { en: "", vi: "" };
+    if (typeof val === "string") return { en: val, vi: val };
+    if (typeof val === "object") return { en: val.en || "", vi: val.vi || "" };
+    return { en: "", vi: "" };
+  };
 
   return {
     ...data,
-    project: wrap(data.project),
-    title: wrap(data.title),
-    address: wrap(data.address),
-    description: wrap(data.description),
-    view: wrap(data.view),
-    contractTerms: wrap(data.contractTerms),
-    depositPaymentTerms: wrap(data.depositPaymentTerms),
+    title: ensureLocalized(data.title),
+    address: ensureLocalized(data.address),
+    whatsNearby: ensureLocalized(data.whatsNearby),
+    description: ensureLocalized(data.description),
+    view: ensureLocalized(data.view),
+    contractTerms: ensureLocalized(data.contractTerms),
+    depositPaymentTerms: ensureLocalized(data.depositPaymentTerms),
+    maintenanceFeeMonthly: ensureLocalized(data.maintenanceFeeMonthly),
   };
 };
 
 /* =========================================================
+   🧩 Smart Wrap (Prevents double wrap)
+========================================================= */
+const wrap = (val) => {
+  if (!val) return { en: "", vi: "" };
+
+  // ✅ Already multilingual → return as-is
+  if (typeof val === "object" && "en" in val && "vi" in val) {
+    return { en: val.en || "", vi: val.vi || "" };
+  }
+
+  // ✅ Simple string → duplicate to both
+  if (typeof val === "string") {
+    return { en: val, vi: val };
+  }
+
+  return { en: "", vi: "" };
+};
+
+
+/* =========================================================
    🧱 Main Component
 ========================================================= */
-export default function CreatePropertyPage({ goBack }) {
+export default function CreatePropertyPage({ goBack, editData = null, isEditMode = false }) {
   const [step, setStep] = useState(1);
   const [propertyData, setPropertyData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [dropdowns, setDropdowns] = useState({ properties: [], zones: [] });
 
-  // ✅ Live update from each step
-  const handleStepChange = (updatedStepData) => {
+  useEffect(() => {
+    if (isEditMode && editData) {
+      // Deep flatten: combine nested DB structure into step-friendly format
+      const mapped = {
+        ...editData,
+        propertyId: editData.listingInformation?.listingInformationPropertyId || "",
+        transactionType: editData.listingInformation?.listingInformationTransactionType?.en || "Sale",
+        projectId: editData.listingInformation?.listingInformationProjectCommunity?._id ||
+          editData.listingInformation?.listingInformationProjectCommunity?.en || "",
+        zoneId: editData.listingInformation?.listingInformationZoneSubArea?._id ||
+          editData.listingInformation?.listingInformationZoneSubArea?.en || "",
+        title: editData.listingInformation?.listingInformationPropertyTitle || { en: "", vi: "" },
+        blockName: editData.listingInformation?.listingInformationBlockName || { en: "", vi: "" },
+        propertyType: editData.listingInformation?.listingInformationPropertyType?._id ||
+          editData.listingInformation?.listingInformationPropertyType?.en || "",
+        dateListed: editData.listingInformation?.listingInformationDateListed || "",
+        availabilityStatus: editData.listingInformation?.listingInformationAvailabilityStatus?._id ||
+          editData.listingInformation?.listingInformationAvailabilityStatus?.en || "",
+        availableFrom: editData.listingInformation?.listingInformationAvailableFrom || "",
+        unit: editData.propertyInformation?.informationUnit?._id ||
+          editData.propertyInformation?.informationUnit?.en || "",
+        unitSize: editData.propertyInformation?.informationUnitSize || "",
+        bedrooms: editData.propertyInformation?.informationBedrooms || "",
+        bathrooms: editData.propertyInformation?.informationBathrooms || "",
+        floors: editData.propertyInformation?.informationFloors || "",
+        furnishing: editData.propertyInformation?.informationFurnishing?._id ||
+          editData.propertyInformation?.informationFurnishing?.en || "",
+        view: editData.propertyInformation?.informationView || { en: "", vi: "" },
+        description: editData.whatNearby?.whatNearbyDescription || { en: "", vi: "" },
+        utilities: (editData.propertyUtility || []).map(u => ({
+          name: u.propertyUtilityUnitName || { en: "", vi: "" },
+          icon: u.propertyUtilityIcon || "",
+        })),
+        propertyImages: editData.imagesVideos?.propertyImages?.map(u => ({ url: u })) || [],
+        propertyVideos: editData.imagesVideos?.propertyVideo?.map(u => ({ url: u })) || [],
+        floorPlans: editData.imagesVideos?.floorPlan?.map(u => ({ url: u })) || [],
+        currency: editData.financialDetails?.financialDetailsCurrency || "USD",
+        price: editData.financialDetails?.financialDetailsPrice || "",
+        contractTerms: editData.financialDetails?.financialDetailsTerms || { en: "", vi: "" },
+        depositPaymentTerms: editData.financialDetails?.financialDetailsDeposit || { en: "", vi: "" },
+        maintenanceFeeMonthly: editData.financialDetails?.financialDetailsMainFee || { en: "", vi: "" },
+        leasePrice: editData.financialDetails?.financialDetailsLeasePrice || "",
+        contractLength: editData.financialDetails?.financialDetailsContractLength || "",
+        pricePerNight: editData.financialDetails?.financialDetailsPricePerNight || "",
+        checkIn: editData.financialDetails?.financialDetailsCheckIn || "",
+        checkOut: editData.financialDetails?.financialDetailsCheckOut || "",
+        owner: editData.contactManagement?.contactManagementOwner || "",
+        ownerNotes: editData.contactManagement?.contactManagementOwnerNotes || { en: "", vi: "" },
+        consultant: editData.contactManagement?.contactManagementConsultant || { en: "", vi: "" },
+        connectingPoint: editData.contactManagement?.contactManagementConnectingPoint || { en: "", vi: "" },
+        connectingPointNotes: editData.contactManagement?.contactManagementConnectingPointNotes || { en: "", vi: "" },
+        internalNotes: editData.contactManagement?.contactManagementInternalNotes || { en: "", vi: "" },
+        status: editData.status || "Draft",
+      };
+
+      setPropertyData(mapped);
+    }
+  }, [isEditMode, editData]);
+
+
+
+  // 🔽 Fetch dropdown data for mapping IDs → localized names
+  useEffect(() => {
+    async function loadDropdowns() {
+      try {
+        const [
+          propsRes,
+          zonesRes,
+          typesRes,
+          statusesRes,
+          unitsRes,
+          furnRes,
+          parkRes,
+          petRes,
+        ] = await Promise.all([
+          getAllProperties(),
+          getAllZoneSubAreas(),
+          getAllPropertyTypes(),
+          getAllAvailabilityStatuses(),
+          getAllUnits(),
+          getAllFurnishings(),
+          getAllParkings(),
+          getAllPetPolicies(),
+        ]);
+
+        setDropdowns({
+          properties: propsRes.data?.data || [],
+          zones: zonesRes.data?.data || [],
+          types: typesRes.data?.data || [],
+          statuses: statusesRes.data?.data || [],
+          units: unitsRes.data?.data || [],
+          furnishings: furnRes.data?.data || [],
+          parkings: parkRes.data?.data || [],
+          pets: petRes.data?.data || [],
+        });
+      } catch (err) {
+        console.error("Dropdown fetch error:", err);
+      }
+    }
+    loadDropdowns();
+  }, []);
+
+
+  const handleStepChange = (updatedStepData) =>
     setPropertyData((prev) => ({ ...prev, ...updatedStepData }));
-  };
 
   const steps = [
     { title: "Create Property", label: "Listing & Property Information" },
@@ -80,7 +219,6 @@ export default function CreatePropertyPage({ goBack }) {
   ];
 
   const handleNext = (dataFromStep) => {
-    // ✅ Merge deeply without overwriting arrays like propertyImages
     const merged = {
       ...propertyData,
       ...dataFromStep,
@@ -106,151 +244,205 @@ export default function CreatePropertyPage({ goBack }) {
   /* =========================================================
      🚀 Submit
   ========================================================== */
-  /* =========================================================
-   🚀 Submit (Fixed Full Schema Mapping)
-========================================================= */
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const clean = sanitizeObject(propertyData);
-      const normalized = normalizeMultilingual(clean);
-
-      // === Helper to wrap localized strings ===
-      const wrap = (val) =>
-        typeof val === "string"
-          ? { en: val, vi: val }
-          : val || { en: "", vi: "" };
-
-      // === Numeric normalization ===
       const num = (v) => (isNaN(parseFloat(v)) ? 0 : parseFloat(v));
-
-      // === Array normalization (media, amenities, utilities) ===
       const safeArray = (arr) => (Array.isArray(arr) ? arr : []);
 
+      // ✅ Wrap ensures { en, vi } always exist
+      const wrap = (val) => {
+        if (!val) return { en: "", vi: "" };
+        if (typeof val === "object" && "en" in val && "vi" in val)
+          return { en: val.en || "", vi: val.vi || "" };
+        if (typeof val === "string") return { en: val, vi: val };
+        return { en: "", vi: "" };
+      };
+
+      // ✅ Smart dropdown finder (supports id or name)
+      const findLocalized = (arr, id) => {
+        if (!arr || !id) return { en: "", vi: "" };
+        const item = arr.find(
+          (i) =>
+            i._id === id ||
+            i._id === String(id) ||
+            i.name?.en === id ||
+            i.name?.vi === id
+        );
+        if (!item) return { en: id, vi: id }; // fallback if user typed text
+        return {
+          en: item.name?.en || item.name || "",
+          vi: item.name?.vi || item.name || "",
+        };
+      };
+
+      // ✅ Ensure `whatsNearby` & `description` always exist before wrap()
+      if (!clean.whatsNearby || typeof clean.whatsNearby !== "object") {
+        clean.whatsNearby = { en: "", vi: "" };
+      }
+      if (!clean.description || typeof clean.description !== "object") {
+        clean.description = { en: "", vi: "" };
+      }
+
+      const normalized = clean;
+
+      // ✅ Build payload with full multilingual wrapping
       const payload = {
-        propertyId: normalized.propertyId || undefined,
-        transactionType: normalized.transactionType || "",
+        listingInformation: {
+          listingInformationPropertyId: normalized.propertyId || "",
+          listingInformationTransactionType: wrap(normalized.transactionType),
 
-        // 🔹 Localized fields
-        project: wrap(normalized.project),
-        title: wrap(normalized.title),
-        address: wrap(normalized.address),
-        description: wrap(normalized.description),
-        view: wrap(normalized.view),
-        contractTerms: wrap(
-          normalized.contractTerms || normalized.contract || ""
-        ),
-        depositPaymentTerms: wrap(
-          normalized.depositPaymentTerms || normalized.depositTerms || ""
-        ),
+          listingInformationProjectCommunity: findLocalized(
+            dropdowns.properties,
+            normalized.projectId
+          ),
+          listingInformationZoneSubArea: findLocalized(
+            dropdowns.zones,
+            normalized.zoneId
+          ),
+          listingInformationPropertyTitle: wrap(normalized.title),
+          listingInformationBlockName: wrap(normalized.blockName),
 
-        // 🔹 Basic fields
-        propertyType:
-          normalized.propertyType || normalized.propertyTypeId || undefined,
-        country: normalized.country || "",
-        state: normalized.state || "",
-        city: normalized.city || "",
-        postalCode: normalized.postalCode || "",
-        dateListed:
-          normalized.dateListed || new Date().toISOString().split("T")[0],
-        availabilityStatus:
-          normalized.availabilityStatus || normalized.availabilityStatusId,
-        availableFrom: normalized.availableFrom || null,
+          // ✅ Property Type lookup
+          listingInformationPropertyType: findLocalized(
+            dropdowns.types,
+            normalized.propertyType
+          ),
 
-        // 🔹 Property info
-        unit: normalized.unit || "",
-        unitSize: num(normalized.unitSize),
-        bedrooms: num(normalized.bedrooms),
-        bathrooms: num(normalized.bathrooms),
-        floors: num(normalized.floors),
-        floorNumber: num(normalized.floorNumber),
-        furnishing: normalized.furnishing || normalized.furnishingId || null,
-        yearBuilt: num(normalized.yearBuilt) || null,
-        parkingAvailability:
-          normalized.parkingAvailability || normalized.parkingId || null,
-        petPolicy: normalized.petPolicy || normalized.petPolicyId || null,
+          // listingInformationCountry: normalized.country || "",
+          // listingInformationState: normalized.state || "",
+          // listingInformationCity: wrap(normalized.city),
 
-        // 🔹 Nearby & Utilities
-        whatsNearby: safeArray(normalized.amenities).map((a) => ({
-          name: { en: a.name || "", vi: a.name || "" },
-          distanceKM: num(a.km || 0),
+          // listingInformationPostalCode: normalized.postalCode || "",
+          // listingInformationAddress: wrap(normalized.address),
+
+          listingInformationDateListed:
+            normalized.dateListed || new Date().toISOString(),
+
+          // ✅ Availability Status lookup
+          listingInformationAvailabilityStatus: findLocalized(
+            dropdowns.statuses,
+            normalized.availabilityStatus
+          ),
+
+          listingInformationAvailableFrom:
+            normalized.availableFrom || new Date().toISOString(),
+        },
+
+        propertyInformation: {
+          informationUnit: findLocalized(dropdowns.units, normalized.unit),
+          informationUnitSize: num(normalized.unitSize),
+          informationBedrooms: num(normalized.bedrooms),
+          informationBathrooms: num(normalized.bathrooms),
+          informationFloors: num(normalized.floors),
+          // informationFloorNumber: num(normalized.floorNumber),
+          informationFurnishing: findLocalized(
+            dropdowns.furnishings,
+            normalized.furnishing
+          ),
+          // informationYearBuilt: num(normalized.yearBuilt),
+          informationView: wrap(normalized.view),
+          // informationParkingAvailability: findLocalized(
+          //   dropdowns.parkings,
+          //   normalized.parkingAvailability
+          // ),
+          // informationPetPolicy: findLocalized(
+          //   dropdowns.pets,
+          //   normalized.petPolicy
+          // ),
+        },
+
+        // ✅ What’s Nearby Section — now fully localized
+        whatNearby: {
+          // whatNearbyContent: wrap(normalized.whatsNearby),
+          whatNearbyDescription: wrap(normalized.description),
+          // whatNearbyList: safeArray(normalized.amenities).map((a) => ({
+          //   whatNearbyAmenityName: wrap(a.name),
+          //   whatNearbyKm: num(a.km),
+          // })),
+        },
+
+        propertyUtility: safeArray(normalized.utilities).map((u) => ({
+          propertyUtilityUnitName: wrap(u.name),
+          propertyUtilityIcon: u.icon || "",
         })),
 
-        utilities: safeArray(normalized.utilities).map((u) => ({
-          name: { en: u.name || "", vi: u.name || "" },
-          icon: u.icon || "",
-        })),
+        imagesVideos: {
+          propertyImages: safeArray(normalized.propertyImages).map((f) =>
+            typeof f === "string" ? f : f.url || ""
+          ),
+          propertyVideo: safeArray(normalized.propertyVideos).map((f) =>
+            typeof f === "string" ? f : f.url || ""
+          ),
+          floorPlan: safeArray(normalized.floorPlans).map((f) =>
+            typeof f === "string" ? f : f.url || ""
+          ),
+        },
 
-        // 🔹 Media files
-        propertyImages: safeArray(normalized.propertyImages).map((f) =>
-          typeof f === "string" ? f : f.url || ""
-        ),
-        propertyVideos: safeArray(normalized.propertyVideos).map((f) =>
-          typeof f === "string" ? f : f.url || ""
-        ),
-        floorPlans: safeArray(normalized.floorPlans).map((f) =>
-          typeof f === "string" ? f : f.url || ""
-        ),
+        financialDetails: {
+          financialDetailsCurrency: normalized.currency || "USD",
+          financialDetailsPrice: num(normalized.price),
+          financialDetailsTerms: wrap(normalized.contractTerms),
+          financialDetailsDeposit: wrap(normalized.depositPaymentTerms),
+          financialDetailsMainFee: wrap(normalized.maintenanceFeeMonthly),
+          // 🆕 Added 5 new fields
+          financialDetailsLeasePrice: num(normalized.leasePrice),
+          financialDetailsContractLength: normalized.contractLength || "",
+          financialDetailsPricePerNight: num(normalized.pricePerNight),
+          financialDetailsCheckIn: normalized.checkIn || "",
+          financialDetailsCheckOut: normalized.checkOut || "",
+        },
 
-        // 🔹 Financial details
-        currency: normalized.currency || "USD",
-        price: num(normalized.price),
-        pricePerUnit: num(normalized.pricePerUnit),
-        maintenanceFeeMonthly: num(
-          normalized.maintenanceFeeMonthly?.en ||
-            normalized.maintenanceFeeMonthly ||
-            0
-        ),
-
-        // 🔹 Contacts
-        owners: safeArray(normalized.owners).map((o) => ({
-          role: o.role || "Owner",
-          name:
-            typeof o.name === "object"
-              ? o.name.en || o.name.vi
-              : o.name || "Unnamed",
-          email: o.email || "",
-          phone: o.phone || "",
-          notes: o.notes || "",
-        })),
-
-        propertyConsultant: normalized.propertyConsultant
-          ? {
-              role: "Consultant",
-              name:
-                typeof normalized.propertyConsultant.name === "object"
-                  ? normalized.propertyConsultant.name.en ||
-                    normalized.propertyConsultant.name.vi
-                  : normalized.propertyConsultant.name || "",
-            }
-          : undefined,
-
-        internalNotes:
-          typeof normalized.internalNotes === "object"
-            ? normalized.internalNotes.en || ""
-            : normalized.internalNotes || "",
+        contactManagement: {
+          contactManagementOwner: wrap(normalized.owner),
+          contactManagementOwnerNotes: wrap(normalized.ownerNotes),
+          contactManagementConsultant: wrap(normalized.consultant),
+          contactManagementConnectingPoint: wrap(normalized.connectingPoint),
+          contactManagementConnectingPointNotes: wrap(normalized.connectingPointNotes),
+          contactManagementInternalNotes: wrap(normalized.internalNotes),
+        },
 
         status: normalized.status || "Draft",
       };
 
-      // Clean undefined/null
-      Object.keys(payload).forEach((k) => {
-        if (payload[k] === undefined || payload[k] === null) delete payload[k];
-      });
+      // ✅ Final pass — fill missing language values (duplication safeguard)
+      const fillMissingLang = (obj) => {
+        Object.keys(obj).forEach((k) => {
+          const val = obj[k];
+          if (val && typeof val === "object" && "en" in val && "vi" in val) {
+            if (!val.en || !val.en.trim()) val.en = val.vi;
+            if (!val.vi || !val.vi.trim()) val.vi = val.en;
+          } else if (typeof val === "object" && !Array.isArray(val)) {
+            fillMissingLang(val);
+          }
+        });
+      };
 
-      console.log("🧾 Final Payload Sent to Backend:", payload);
-      const res = await createPropertyListing(payload);
+      fillMissingLang(payload);
 
-      alert("🎉 Property created successfully!");
-      console.log("✅ Property:", res.data.data);
+      console.log("✅ Final Payload:", payload);
+
+      let res;
+      if (isEditMode && editData?._id) {
+        res = await updatePropertyListing(editData._id, payload);
+        alert("✅ Property updated successfully!");
+      } else {
+        res = await createPropertyListing(payload);
+        alert("🎉 Property created successfully!");
+      }
+
+      console.log("🧾 Created:", res.data.data);
       setStep((prev) => prev + 1);
+      if (goBack) goBack();
     } catch (err) {
-      console.error("❌ Error creating property:", err.response?.data || err);
-      alert(err.response?.data?.error || "Error creating property.");
+      console.error("❌ Error creating/updating property:", err.response?.data || err);
+      alert(err.response?.data?.error || "Error saving property.");
     } finally {
       setLoading(false);
     }
   };
+
 
   const renderStepContent = () => {
     switch (step) {
@@ -280,22 +472,22 @@ export default function CreatePropertyPage({ goBack }) {
             initialData={propertyData}
           />
         );
+      case 4:
+        return <CreatePropertyListStep4 onSubmit={handleSubmit} />; // ✅ FIXED
       default:
-        return (
-          <ReviewAndPublish
-            data={propertyData}
-            onSubmit={handleSubmit}
-            loading={loading}
-          />
-        );
+        return null;
     }
   };
+
 
   return (
     <Steps
       steps={steps}
       currentStep={step}
-      onNext={handleNext}
+      onNext={() => {
+        // Move forward if next step exists
+        if (step < steps.length) setStep((prev) => prev + 1);
+      }}
       onPrev={handlePrev}
       onCancel={goBack}
       onSubmit={handleSubmit}

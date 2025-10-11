@@ -104,6 +104,7 @@ export default function CreatePropertyListStep1({
   const [lang, setLang] = useState("en");
   const [form, setForm] = useState({
     ...initialData,
+    blockName: initialData.blockName || { en: "", vi: "" },
     title: initialData.title || { en: "", vi: "" },
     address: initialData.address || { en: "", vi: "" },
     description: initialData.description || { en: "", vi: "" },
@@ -123,6 +124,13 @@ export default function CreatePropertyListStep1({
     parkings: [],
     pets: [],
   });
+
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      setForm((prev) => ({ ...prev, ...initialData }));
+    }
+  }, [initialData]);
+
 
   /* Fetch dropdowns once */
   useEffect(() => {
@@ -242,11 +250,10 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-black text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-black text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -273,10 +280,9 @@ export default function CreatePropertyListStep1({
             value={form.transactionType}
             onChange={handleInputChange}
             options={[
-              { _id: "Sell", name: { en: "Sell", vi: "Bán" } },
-              { _id: "Rent", name: { en: "Rent", vi: "Cho Thuê" } },
-              { _id: "Lease", name: { en: "Lease", vi: "Thuê Dài Hạn" } },
-              { _id: "Buy", name: { en: "Buy", vi: "Mua" } },
+              { _id: "Sale", name: { en: "Sale", vi: "Doanh thu" } },
+              { _id: "Lease", name: { en: "Lease", vi: "Cho thuê" } },
+              { _id: "Home stay", name: { en: "Home stay", vi: "Ở nhà" } },
             ]}
           />
 
@@ -291,12 +297,20 @@ export default function CreatePropertyListStep1({
           />
 
           <Select
-            label="Zone / Sub-area"
+            label="Area / Zone"
             name="zoneId"
             lang={lang}
             options={dropdowns.zones}
             value={form.zoneId}
             onChange={handleInputChange}
+          />
+
+          <LocalizedInput
+            label="Block Name"
+            name="blockName"
+            lang={lang}
+            value={form.blockName?.[lang]}
+            onChange={handleLocalizedChange}
           />
 
           <LocalizedInput
@@ -315,7 +329,7 @@ export default function CreatePropertyListStep1({
             onChange={handleInputChange}
           />
 
-          <Select
+          {/* <Select
             label="Country"
             name="country"
             lang={lang}
@@ -325,8 +339,8 @@ export default function CreatePropertyListStep1({
             ]}
             value={form.country}
             onChange={handleInputChange}
-          />
-          <Input
+          /> */}
+          {/* <Input
             label="State"
             name="state"
             value={form.state}
@@ -350,12 +364,19 @@ export default function CreatePropertyListStep1({
             lang={lang}
             value={form.address?.[lang]}
             onChange={handleLocalizedChange}
-          />
+          /> */}
           <Input
             label="Date Listed"
             name="dateListed"
             type="date"
             value={form.dateListed}
+            onChange={handleInputChange}
+          />
+          <Input
+            label="Available From"
+            name="availableFrom"
+            type="date"
+            value={form.availableFrom}
             onChange={handleInputChange}
           />
           <Select
@@ -364,13 +385,6 @@ export default function CreatePropertyListStep1({
             lang={lang}
             options={dropdowns.statuses}
             value={form.availabilityStatus}
-            onChange={handleInputChange}
-          />
-          <Input
-            label="Available From"
-            name="availableFrom"
-            type="date"
-            value={form.availableFrom}
             onChange={handleInputChange}
           />
         </div>
@@ -410,12 +424,12 @@ export default function CreatePropertyListStep1({
             value={form.floors}
             onChange={handleInputChange}
           />
-          <Input
+          {/* <Input
             label="Floor Number"
             name="floorNumber"
             value={form.floorNumber}
             onChange={handleInputChange}
-          />
+          /> */}
           <Select
             label="Furnishing"
             name="furnishing"
@@ -424,13 +438,13 @@ export default function CreatePropertyListStep1({
             value={form.furnishing}
             onChange={handleInputChange}
           />
-          <Input
+          {/* <Input
             label="Year Built"
             name="yearBuilt"
             type="number"
             value={form.yearBuilt}
             onChange={handleInputChange}
-          />
+          /> */}
           <LocalizedInput
             label="View"
             name="view"
@@ -438,63 +452,99 @@ export default function CreatePropertyListStep1({
             value={form.view?.[lang]}
             onChange={handleLocalizedChange}
           />
-          <Select
+          {/* <Select
             label="Parking Availability"
             name="parkingAvailability"
             lang={lang}
             options={dropdowns.parkings}
             value={form.parkingAvailability}
             onChange={handleInputChange}
-          />
-          <Select
+          /> */}
+          {/* <Select
             label="Pet Policy"
             name="petPolicy"
             lang={lang}
             options={dropdowns.pets}
             value={form.petPolicy}
             onChange={handleInputChange}
-          />
+          /> */}
         </div>
 
         {/* === What's Nearby === */}
-        <h2 className="text-lg font-semibold mt-8 mb-4">{t.whatsNearby}</h2>
+        {/* <h2 className="text-lg font-semibold mt-8 mb-4">{t.whatsNearby}</h2>
         <LocalizedTextarea
           label="What's Nearby"
           name="whatsNearby"
           lang={lang}
           value={form.whatsNearby?.[lang]}
           onChange={handleLocalizedChange}
-        />
+        /> */}
+
 
         {/* === Amenities === */}
+        {/* <h2 className="text-lg font-semibold mt-8 mb-4">
+          {lang === "en" ? "Amenities" : "Tiện Ích"}
+        </h2>
+
         {form.amenities.map((a, i) => (
-          <div key={i} className="flex items-center gap-3 mb-3">
-            <Input
-              label="Amenity Name"
-              value={a.name}
-              onChange={(e) => handleAmenityChange(i, "name", e.target.value)}
-            />
-            <Input
-              label="KM"
-              value={a.km}
-              onChange={(e) => handleAmenityChange(i, "km", e.target.value)}
-            />
-            {i > 0 && (
-              <button
-                onClick={() => removeAmenity(i)}
-                className="p-2 mt-5 text-red-500 hover:bg-red-50 rounded-full"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            )}
+          <div
+            key={i}
+            className="grid grid-cols-3 gap-3 mb-4 items-end border-b border-gray-100 pb-3"
+          >
+            <div className="col-span-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {lang === "en" ? "Amenity Name (EN)" : "Tên tiện ích (VI)"}
+              </label>
+              <input
+                type="text"
+                value={a.name?.[lang] || ""}
+                onChange={(e) =>
+                  setForm((prev) => {
+                    const updated = [...prev.amenities];
+                    updated[i].name = {
+                      ...(updated[i].name || { en: "", vi: "" }),
+                      [lang]: e.target.value,
+                    };
+                    return { ...prev, amenities: updated };
+                  })
+                }
+                placeholder={
+                  lang === "en" ? "Enter English name" : "Nhập tên tiếng Việt"
+                }
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
+              />
+            </div>
+
+            <div className="col-span-1">
+              <Input
+                label="KM"
+                name={`amenityKm-${i}`}
+                value={a.km}
+                onChange={(e) => handleAmenityChange(i, "km", e.target.value)}
+              />
+            </div>
+
+            <div className="col-span-1 flex justify-end items-center">
+              {i > 0 && (
+                <button
+                  onClick={() => removeAmenity(i)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         ))}
+
         <button
           onClick={addAmenity}
-          className="flex items-center gap-2 text-sm text-gray-700 hover:text-black"
+          className="flex items-center gap-2 text-sm text-gray-700 hover:text-black mt-2"
         >
-          <Plus className="w-4 h-4" /> Add Amenity
-        </button>
+          <Plus className="w-4 h-4" />{" "}
+          {lang === "en" ? "Add Amenity" : "Thêm Tiện Ích"}
+        </button> */}
+
 
         {/* === Description === */}
         <h2 className="text-lg font-semibold mt-8 mb-4">{t.description}</h2>
@@ -507,50 +557,114 @@ export default function CreatePropertyListStep1({
         />
 
         {/* === Property Utility === */}
+        {/* === Property Utility === */}
         <h2 className="text-lg font-semibold mt-8 mb-4">{t.propertyUtility}</h2>
+
         {form.utilities.map((u, i) => (
-          <div key={i} className="grid grid-cols-2 gap-5 mb-3 items-end">
-            <Input
-              label="Utility Name"
-              value={u.name}
-              onChange={(e) => handleUtilityChange(i, "name", e.target.value)}
-            />
-            <Select
-              label="Select Icon"
-              lang={lang}
-              value={u.icon}
-              onChange={(e) => handleUtilityChange(i, "icon", e.target.value)}
-              options={[
-                { _id: "wifi", name: { en: "WiFi", vi: "WiFi" } },
-                { _id: "pool", name: { en: "Swimming Pool", vi: "Hồ Bơi" } },
-                { _id: "gym", name: { en: "Gym", vi: "Phòng Gym" } },
-              ]}
-            />
-            {i > 0 && (
-              <button
-                onClick={() => removeUtility(i)}
-                className="p-2 mt-1 text-red-500 hover:bg-red-50 rounded-full"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            )}
+          <div
+            key={i}
+            className="grid grid-cols-3 gap-3 mb-4 items-end border-b border-gray-100 pb-3"
+          >
+            {/* Utility Name (Language Controlled) */}
+            <div className="col-span-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {lang === "en" ? "Utility Name (EN)" : "Tên tiện ích (VI)"}
+              </label>
+              <input
+                type="text"
+                value={u.name?.[lang] || ""}
+                onChange={(e) =>
+                  setForm((prev) => {
+                    const updated = [...prev.utilities];
+                    updated[i].name = {
+                      ...(updated[i].name || { en: "", vi: "" }),
+                      [lang]: e.target.value,
+                    };
+                    return { ...prev, utilities: updated };
+                  })
+                }
+                placeholder={
+                  lang === "en"
+                    ? "Enter English name"
+                    : "Nhập tên tiện ích tiếng Việt"
+                }
+                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
+              />
+            </div>
+
+            {/* Select Icon */}
+            <div className="col-span-1">
+              <Select
+                label={lang === "en" ? "Select Icon" : "Chọn Biểu Tượng"}
+                lang={lang}
+                value={u.icon}
+                onChange={(e) => handleUtilityChange(i, "icon", e.target.value)}
+                options={[
+                  { _id: "wifi", name: { en: "WiFi", vi: "WiFi" } },
+                  { _id: "pool", name: { en: "Swimming Pool", vi: "Hồ Bơi" } },
+                  { _id: "gym", name: { en: "Gym", vi: "Phòng Gym" } },
+                ]}
+              />
+            </div>
+
+            {/* Delete Button */}
+            <div className="col-span-1 flex justify-end items-center">
+              {i > 0 && (
+                <button
+                  onClick={() => removeUtility(i)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         ))}
+
+        {/* Add Button */}
         <button
           onClick={addUtility}
-          className="flex items-center gap-2 text-sm text-gray-700 hover:text-black"
+          className="flex items-center gap-2 text-sm text-gray-700 hover:text-black mt-2"
         >
-          <Plus className="w-4 h-4" /> Add Utility
+          <Plus className="w-4 h-4" />{" "}
+          {lang === "en" ? "Add Utility" : "Thêm Tiện Ích"}
         </button>
+
       </div>
 
       {/* Next */}
+      {/* Next */}
       <button
-        onClick={() => onNext(form)}
+        onClick={() => {
+          // Ensure both en + vi copies exist for localized fields before next step
+          const syncLangFields = [
+            "title",
+            "address",
+            "description",
+            "view",
+            "whatsNearby",
+          ];
+          const updatedForm = { ...form };
+
+          syncLangFields.forEach((field) => {
+            const val = updatedForm[field];
+            if (val && typeof val === "object") {
+              if (!val.vi || val.vi.trim() === "") val.vi = val.en || "";
+              if (!val.en || val.en.trim() === "") val.en = val.vi || "";
+            }
+          });
+
+          // 🔹 Immediately inform parent (so propertyData has latest values)
+          onChange && onChange(updatedForm);
+
+          // 🔹 Proceed to next step
+          onNext(updatedForm);
+        }}
         className="mt-8 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800"
       >
         Next →
       </button>
+
     </div>
   );
 }

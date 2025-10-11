@@ -20,10 +20,14 @@ export default function CreatePropertyListStep2({
       financialDetails: "Financial Details",
       currency: "Currency",
       price: "Price",
-      pricePerUnit: "Price per unit",
       contractTerms: "Contract Terms",
-      depositPaymentTerms: "Deposit / Payment Terms",
-      maintenanceFeeMonthly: "Maintenance Fee / Service Charge (Monthly)",
+      depositPaymentTerms: "Deposit",
+      maintenanceFeeMonthly: "Payment Terms",
+      leasePrice: "Lease Price",
+      contractLength: "Contract Length",
+      pricePerNight: "Price Per Night",
+      checkIn: "Check-In Time",
+      checkOut: "Check-Out Time",
     },
     vi: {
       propertyImages: "Hình Ảnh Bất Động Sản",
@@ -35,32 +39,46 @@ export default function CreatePropertyListStep2({
       financialDetails: "Chi Tiết Tài Chính",
       currency: "Tiền Tệ",
       price: "Giá",
-      pricePerUnit: "Giá mỗi đơn vị",
       contractTerms: "Điều Khoản Hợp Đồng",
-      depositPaymentTerms: "Điều Khoản / Thanh Toán",
-      maintenanceFeeMonthly: "Phí Bảo Trì / Dịch Vụ (Hàng Tháng)",
+      depositPaymentTerms: "Tiền gửi",
+      maintenanceFeeMonthly: "Điều khoản thanh toán",
+      leasePrice: "Giá Thuê",
+      contractLength: "Thời Hạn Hợp Đồng",
+      pricePerNight: "Giá Mỗi Đêm",
+      checkIn: "Giờ Nhận Phòng",
+      checkOut: "Giờ Trả Phòng",
     },
   };
 
   const t = labels[lang];
+  const transactionType = initialData.transactionType || "Sale";
 
   const [form, setForm] = useState({
     currency: initialData.currency || "USD",
     price: initialData.price || "",
-    pricePerUnit: initialData.pricePerUnit || "",
+    leasePrice: initialData.leasePrice || "",
+    contractLength: initialData.contractLength || "",
+    pricePerNight: initialData.pricePerNight || "",
+    checkIn: initialData.checkIn || "",
+    checkOut: initialData.checkOut || "",
     contractTerms: initialData.contractTerms || { en: "", vi: "" },
     depositPaymentTerms: initialData.depositPaymentTerms || { en: "", vi: "" },
-    maintenanceFeeMonthly: initialData.maintenanceFeeMonthly || {
-      en: "",
-      vi: "",
-    },
+    maintenanceFeeMonthly:
+      initialData.maintenanceFeeMonthly || { en: "", vi: "" },
   });
 
   const [images, setImages] = useState(initialData.propertyImages || []);
   const [videos, setVideos] = useState(initialData.propertyVideos || []);
   const [floorPlans, setFloorPlans] = useState(initialData.floorPlans || []);
 
-  // 🔄 Sync with parent on every update
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      setForm((prev) => ({ ...prev, ...initialData }));
+    }
+  }, [initialData]);
+
+
+
   useEffect(() => {
     onChange &&
       onChange({
@@ -128,7 +146,6 @@ export default function CreatePropertyListStep2({
           </div>
         ))}
 
-        {/* Upload Box */}
         <label className="w-56 h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:border-gray-500 transition">
           <Plus className="w-6 h-6 mb-1" />
           <span className="text-sm">{t.clickUpload}</span>
@@ -150,11 +167,10 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-black text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-black text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -185,106 +201,178 @@ export default function CreatePropertyListStep2({
         accept="image/*"
       />
 
-      {/* Financial Details */}
-      <h2 className="text-lg font-semibold mt-8 mb-4">{t.financialDetails}</h2>
-      <div className="grid grid-cols-3 gap-5">
-        {/* Currency */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            {t.currency}
-          </label>
-          <select
-            value={form.currency}
-            onChange={(e) => handleChange("currency", e.target.value)}
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-          >
-            <option value="USD">USD</option>
-            <option value="VND">VND</option>
-            <option value="INR">INR</option>
-          </select>
-        </div>
+      {/* FINANCIAL DETAILS - dynamic by transactionType */}
+      {(transactionType === "Sale" ||
+        transactionType === "Lease" ||
+        transactionType === "Home stay") && (
+          <>
+            <h2 className="text-lg font-semibold mt-8 mb-4">
+              {t.financialDetails}
+            </h2>
 
-        {/* Price */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            {t.price}
-          </label>
-          <input
-            type="number"
-            value={form.price}
-            onChange={(e) => handleChange("price", e.target.value)}
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-          />
-        </div>
+            <div className="grid grid-cols-3 gap-5">
+              {/* Currency (always visible) */}
+              <div className="flex flex-col">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  {t.currency}
+                </label>
+                <select
+                  value={form.currency}
+                  onChange={(e) => handleChange("currency", e.target.value)}
+                  className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                >
+                  <option value="USD">USD</option>
+                  <option value="VND">VND</option>
+                  <option value="INR">INR</option>
+                </select>
+              </div>
 
-        {/* Price per Unit */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            {t.pricePerUnit}
-          </label>
-          <input
-            type="number"
-            value={form.pricePerUnit}
-            onChange={(e) => handleChange("pricePerUnit", e.target.value)}
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-          />
-        </div>
+              {/* ===== SALE ===== */}
+              {transactionType === "Sale" && (
+                <>
+                  {/* Price */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      {t.price}
+                    </label>
+                    <input
+                      type="number"
+                      value={form.price}
+                      onChange={(e) => handleChange("price", e.target.value)}
+                      placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+                      className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                    />
+                  </div>
+                </>
+              )}
 
-        {/* Contract Terms */}
-        <div className="flex flex-col col-span-3">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            {t.contractTerms} ({lang === "en" ? "English" : "Tiếng Việt"})
-          </label>
-          <textarea
-            value={form.contractTerms?.[lang]}
-            onChange={(e) =>
-              handleLocalizedChange(lang, "contractTerms", e.target.value)
-            }
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-            rows={3}
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-          />
-        </div>
+              {/* ===== LEASE ===== */}
+              {transactionType === "Lease" && (
+                <>
+                  {/* Lease Price */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      {t.leasePrice}
+                    </label>
+                    <input
+                      type="number"
+                      value={form.leasePrice}
+                      onChange={(e) =>
+                        handleChange("leasePrice", e.target.value)
+                      }
+                      placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+                      className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                    />
+                  </div>
 
-        {/* Deposit / Payment Terms */}
-        <div className="flex flex-col col-span-3">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            {t.depositPaymentTerms} ({lang === "en" ? "English" : "Tiếng Việt"})
-          </label>
-          <textarea
-            value={form.depositPaymentTerms?.[lang]}
-            onChange={(e) =>
-              handleLocalizedChange(lang, "depositPaymentTerms", e.target.value)
-            }
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-            rows={3}
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-          />
-        </div>
+                  {/* Contract Length */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      {t.contractLength}
+                    </label>
+                    <input
+                      type="text"
+                      value={form.contractLength}
+                      onChange={(e) =>
+                        handleChange("contractLength", e.target.value)
+                      }
+                      placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+                      className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                    />
+                  </div>
+                </>
+              )}
 
-        {/* Maintenance Fee */}
-        <div className="flex flex-col col-span-3">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            {t.maintenanceFeeMonthly} (
-            {lang === "en" ? "English" : "Tiếng Việt"})
-          </label>
-          <textarea
-            value={form.maintenanceFeeMonthly?.[lang]}
-            onChange={(e) =>
-              handleLocalizedChange(
-                lang,
-                "maintenanceFeeMonthly",
-                e.target.value
-              )
-            }
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-            rows={3}
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-          />
-        </div>
-      </div>
+              {/* ===== HOME STAY ===== */}
+              {transactionType === "Home stay" && (
+                <>
+                  {/* Price Per Night */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      {t.pricePerNight}
+                    </label>
+                    <input
+                      type="number"
+                      value={form.pricePerNight}
+                      onChange={(e) =>
+                        handleChange("pricePerNight", e.target.value)
+                      }
+                      placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+                      className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                    />
+                  </div>
+
+                  {/* Check-In */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      {t.checkIn}
+                    </label>
+                    <input
+                      type="text"
+                      value={form.checkIn}
+                      onChange={(e) => handleChange("checkIn", e.target.value)}
+                      placeholder={lang === "en" ? "e.g. 2:00 PM" : "vd. 14:00"}
+                      className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                    />
+                  </div>
+
+                  {/* Check-Out */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">
+                      {t.checkOut}
+                    </label>
+                    <input
+                      type="text"
+                      value={form.checkOut}
+                      onChange={(e) => handleChange("checkOut", e.target.value)}
+                      placeholder={lang === "en" ? "e.g. 11:00 AM" : "vd. 11:00"}
+                      className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Common Fields: Deposit + Payment Terms */}
+              <div className="flex flex-col col-span-3">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  {t.depositPaymentTerms} (
+                  {lang === "en" ? "English" : "Tiếng Việt"})
+                </label>
+                <input
+                  value={form.depositPaymentTerms?.[lang]}
+                  onChange={(e) =>
+                    handleLocalizedChange(
+                      lang,
+                      "depositPaymentTerms",
+                      e.target.value
+                    )
+                  }
+                  placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+                  className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                />
+              </div>
+
+              <div className="flex flex-col col-span-3">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  {t.maintenanceFeeMonthly} (
+                  {lang === "en" ? "English" : "Tiếng Việt"})
+                </label>
+                <input
+                  value={form.maintenanceFeeMonthly?.[lang]}
+                  onChange={(e) =>
+                    handleLocalizedChange(
+                      lang,
+                      "maintenanceFeeMonthly",
+                      e.target.value
+                    )
+                  }
+                  placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+                  className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                />
+              </div>
+            </div>
+          </>
+        )}
 
       <div className="flex justify-between mt-10">
         <button

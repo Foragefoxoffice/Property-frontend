@@ -17,6 +17,7 @@ const DashboardLayout = () => {
     const [activePage, setActivePage] = useState("Properties");
     const [subPage, setSubPage] = useState(null);
     const [subSubPage, setSubSubPage] = useState(null);
+    const [selectedProperty, setSelectedProperty] = useState(null);
 
     const menuItems = [
         { name: "Properties", icon: <Home className="w-4 h-4" /> },
@@ -64,16 +65,26 @@ const DashboardLayout = () => {
 
         switch (activePage) {
             case "Properties":
-                if (subPage === "CreateProperty") {
+                if (subPage === "CreateProperty" || subPage === "EditProperty") {
                     return (
                         <div className="p-0">
-                            <CreatePropertyPage goBack={() => setSubPage(null)} />
+                            <CreatePropertyPage
+                                goBack={() => setSubPage(null)}
+                                editData={selectedProperty} // ✅ Pass data here
+                                isEditMode={subPage === "EditProperty"} // ✅ Flag for edit mode
+                            />
                         </div>
                     );
                 }
                 return (
                     <div className="p-8">
-                        <ManageProperty openCreateProperty={() => setSubPage("CreateProperty")} />
+                        <ManageProperty
+                            openCreateProperty={() => setSubPage("CreateProperty")}
+                            openEditProperty={(property) => {
+                                setSelectedProperty(property); // ✅ store clicked property
+                                setSubPage("EditProperty");
+                            }}
+                        />
                     </div>
                 );
 
@@ -101,14 +112,14 @@ const DashboardLayout = () => {
                                 setSubSubPage(null);
                             }}
                             className={`group flex items-center gap-3 px-4 py-2 rounded-full transition-all duration-200 ${activePage === item.name
-                                    ? "bg-black text-white"
-                                    : "text-gray-700 hover:bg-black hover:text-white"
+                                ? "bg-black text-white"
+                                : "text-gray-700 hover:bg-black hover:text-white"
                                 }`}
                         >
                             <span
                                 className={`p-2 rounded-full transition-all duration-200 ${activePage === item.name
-                                        ? "bg-black text-white"
-                                        : "bg-gray-100 text-gray-700 group-hover:bg-white group-hover:text-black"
+                                    ? "bg-black text-white"
+                                    : "bg-gray-100 text-gray-700 group-hover:bg-white group-hover:text-black"
                                     }`}
                             >
                                 {item.icon}
