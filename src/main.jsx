@@ -9,6 +9,7 @@ import ResetPassword from "./Login/ResetPassword.jsx";
 import DashboardLayout from "./Admin/SideBar/DashboardLayout.jsx";
 import { ToastContainer } from "react-toastify";
 import ManageProperty from "./Admin/Property/ManageProperty.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -29,7 +30,14 @@ createRoot(document.getElementById("root")).render(
         <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<DashboardLayout />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />{" "}
+            </ProtectedRoute>
+          }
+        />
         <Route path="/manage-property" element={<ManageProperty />} />
         {/* Add other routes as needed */}
       </Routes>

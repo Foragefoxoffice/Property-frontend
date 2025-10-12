@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { loginUser } from "../Api/action";
+import { CommonToaster } from "../Common/CommonToaster";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function Login() {
       const res = await loginUser(formData);
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
+        CommonToaster("Login Successfully!", "success");
         navigate("/dashboard");
       }
     } catch (err) {
@@ -39,32 +41,31 @@ export default function Login() {
       <div
         className="absolute bottom-0 left-0 w-full bg-cover bg-bottom bg-no-repeat h-120"
         style={{
-          backgroundImage: "url('/images/login/bg.jpg')",
+          backgroundImage: "url('/images/login/bg.png')",
         }}
       />
 
       {/* Logo */}
-      <div className="mb-6 text-center z-10">
-        <h1 className="text-4xl font-extrabold text-[#4A3AFF] tracking-tight">
-          <span className="text-[#4A3AFF]">183</span>
-          <span className="text-[#3a2fbf] ml-1">Housing</span>
-          <span className="text-[#4A3AFF]">Solutions</span>
-        </h1>
+      <div className="mb-16 text-center z-10">
+        <img className="h-16" src="/images/login/logo.png" alt="" />
       </div>
 
       {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md bg-white shadow-xl rounded-2xl px-8 py-10 border border-gray-100">
-        <h2 className="text-center text-2xl font-bold text-gray-800 mb-1">
+      <div className="relative z-10 w-full max-w-lg bg-white shadow-xl rounded-2xl px-8 py-10 border border-gray-100">
+        <h2
+          style={{ fontWeight: 800, fontSize: 36 }}
+          className="text-center text-gray-800 mb-3"
+        >
           Login
         </h2>
-        <p className="text-center text-gray-500 text-sm mb-8">
+        <p className="text-center text-[#000] text-md mb-8">
           Enter your Email Address below to login to your account
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
               Email Address
             </label>
             <div className="relative">
@@ -83,7 +84,7 @@ export default function Login() {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
               Password
             </label>
             <div className="relative">
@@ -118,7 +119,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#4A3AFF] hover:bg-[#3a2fbf] text-white font-semibold rounded-md shadow-md transition-all flex justify-center items-center"
+            className="w-full cursor-pointer py-3 bg-[#41398B] hover:bg-[#41398be1] text-white font-semibold rounded-4xl shadow-md transition-all flex justify-center items-center"
           >
             {loading ? (
               <>
