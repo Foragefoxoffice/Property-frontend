@@ -8,6 +8,11 @@ import {
   X,
   Upload,
   AlertTriangle,
+  CirclePlus,
+  ChevronsLeft,
+  ChevronRight,
+  ChevronLeft,
+  ChevronsRight,
 } from "lucide-react";
 import {
   getAllOwners,
@@ -173,7 +178,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
           Owners / Landlords
         </h1>
         <button
-          className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full shadow hover:bg-gray-800 transition-all"
+          className="flex items-center gap-2 bg-black text-sm text-white px-4 py-4 rounded-full shadow hover:bg-gray-800 transition-all cursor-pointer"
           onClick={openAddModal}
         >
           <Plus size={18} />
@@ -182,50 +187,67 @@ const OwnersLandlords = ({ openOwnerView }) => {
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center bg-white rounded-full px-4 py-2 w-full max-w-md shadow-sm mb-6">
-        <Search className="text-gray-500 mr-2" size={18} />
+      <div className="flex items-center bg-white rounded-full px-4 py-4 w-full max-w-md shadow-sm mb-6">
+        <Search className="text-gray-500 mr-4" size={18} />
         <input
           type="text"
           placeholder="Search"
-          className="outline-none flex-1 text-gray-700 placeholder-gray-400"
+          className="outline-none flex-1 text-gray-700 placeholder-gray-400 text-sm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl overflow-hidden shadow">
+      <div className="bg-white rounded-tr-2xl rounded-tl-2xl overflow-hidden shadow">
         <table className="w-full border-collapse">
-          <thead className="bg-gray-100 text-gray-600 text-sm uppercase">
-            <tr>
-              <th className="text-left px-6 py-3">Name</th>
-              <th className="text-left px-6 py-3">Type</th>
-              <th className="text-left px-6 py-3">Contact Number</th>
-              <th className="text-left px-6 py-3">Facebook</th>
-              <th className="text-center px-6 py-3">Actions</th>
+          <thead className="bg-gray-100 text-gray-600 !text-sm uppercase">
+            <tr className="text-sm">
+              <th className="!text-xs text-left px-6 py-3">Name</th>
+              <th className="!text-xs text-left px-6 py-3">Type</th>
+              <th className="!text-xs text-left px-6 py-3">Contact Number</th>
+              <th className="!text-xs text-left px-6 py-3">Facebook</th>
+              <th className="!text-xs text-center px-6 py-3">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-sm">
             {loading ? (
-              <tr>
-                <td colSpan="5" className="text-center py-6">
-                  Loading...
-                </td>
-              </tr>
+              // ✅ Skeleton Loader
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={index} className="animate-pulse">
+                  <td className="px-6 py-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-200"></div>
+                    <div className="flex-1">
+                      <div className="h-3 w-32 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-3 w-28 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex justify-center gap-2">
+                      <div className="w-9 h-9 rounded-full bg-gray-200"></div>
+                      <div className="w-9 h-9 rounded-full bg-gray-200"></div>
+                      <div className="w-9 h-9 rounded-full bg-gray-200"></div>
+                    </div>
+                  </td>
+                </tr>
+              ))
             ) : filteredOwners.length > 0 ? (
               filteredOwners.map((item) => (
-                <tr
-                  key={item._id}
-                  className="border-t hover:bg-gray-100 transition"
-                >
+                <tr key={item._id} className="hover:bg-gray-100 transition">
                   <td className="px-6 py-4 flex items-center gap-3">
                     <img
-                      src={
-                        item.photo ||
-                        "https://via.placeholder.com/50x50.png?text=🏠"
-                      }
+                      src={item.photo || "/images/dummy-img.jpg"}
                       alt={item.ownerName?.en}
-                      className="w-10 h-10 rounded-full object-cover"
+                      className="w-10 h-10 rounded-full object-cover border border-gray-200 bg-gray-50"
                     />
                     <span className="font-medium text-gray-900">
                       {item.ownerName?.en}
@@ -241,16 +263,16 @@ const OwnersLandlords = ({ openOwnerView }) => {
                     {item.ownerFacebook?.en || "-"}
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <div className="flex justify-center gap-3">
+                    <div className="flex justify-center gap-2">
                       <button
                         onClick={() => openOwnerView(item)}
-                        className="p-2 rounded-full hover:bg-gray-200 transition"
+                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 grid place-content-center cursor-pointer"
                       >
                         <Eye className="text-gray-600" size={18} />
                       </button>
                       <button
                         onClick={() => openEditModal(item)}
-                        className="p-2 rounded-full hover:bg-gray-200 transition"
+                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 grid place-content-center cursor-pointer"
                       >
                         <Edit2 className="text-blue-500" size={18} />
                       </button>
@@ -258,7 +280,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
                         onClick={() =>
                           setDeleteConfirm({ show: true, id: item._id })
                         }
-                        className="p-2 rounded-full hover:bg-red-50 transition"
+                        className="p-2 rounded-full hover:bg-red-50 transition border border-gray-300 h-10 w-10 grid place-content-center cursor-pointer"
                       >
                         <Trash2 className="text-red-500" size={18} />
                       </button>
@@ -279,33 +301,68 @@ const OwnersLandlords = ({ openOwnerView }) => {
           </tbody>
         </table>
       </div>
+      {/* Pagination Bar */}
+      <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span>Rows per page:</span>
+            <select
+              className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none cursor-pointer"
+              value={10}
+              onChange={() => {}}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
+
+          <span>1–10 of 10</span>
+
+          <div className="flex items-center gap-2 text-gray-700">
+            <button className="p-1 hover:bg-gray-100 rounded cursor-pointer">
+              <ChevronsLeft size={18} />
+            </button>
+            <button className="p-1 hover:bg-gray-100 rounded cursor-pointer">
+              <ChevronLeft size={18} />
+            </button>
+            <button className="p-1 hover:bg-gray-100 rounded cursor-pointer">
+              <ChevronRight size={18} />
+            </button>
+            <button className="p-1 hover:bg-gray-100 rounded cursor-pointer">
+              <ChevronsRight size={18} />
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Add / Edit Owner Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-2xl p-6 shadow-lg relative overflow-y-auto max-h-[90vh]">
-            <div className="flex justify-between items-center mb-4 border-b pb-3">
-              <h2 className="text-lg font-semibold">
+          <div className="bg-white rounded-xl w-full max-w-2xl shadow-xl relative overflow-hidden">
+            {/* Header */}
+            <div className="flex justify-between items-center px-6 py-4">
+              <h2 className="text-base font-semibold">
                 {editMode ? "Edit Owner / Landlord" : "New Owner / Landlord"}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-black"
+                className="text-gray-100 bg-black p-1 rounded-full cursor-pointer"
               >
-                <X size={22} />
+                <X size={20} />
               </button>
             </div>
 
-            {/* Language Tabs */}
-            <div className="flex border-b mb-6">
+            {/* Tabs */}
+            <div className="flex bg-gray-50 px-6 ">
               {["EN", "VI"].map((lang) => (
                 <button
                   key={lang}
                   onClick={() => setActiveLang(lang)}
-                  className={`px-4 py-2 text-sm font-medium ${
+                  className={`px-5 py-3 text-sm font-medium transition-all cursor-pointer ${
                     activeLang === lang
-                      ? "border-b-2 border-black text-black"
-                      : "text-gray-500"
+                      ? "border-b-2 border-black text-black bg-white"
+                      : "text-gray-500 hover:text-black"
                   }`}
                 >
                   {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -313,95 +370,99 @@ const OwnersLandlords = ({ openOwnerView }) => {
               ))}
             </div>
 
-            {/* Upload Section */}
-            <div className="flex gap-6 mb-6">
-              <label className="flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-lg w-40 h-40 cursor-pointer hover:border-gray-400 relative">
-                {photoPreview ? (
-                  <img
-                    src={photoPreview}
-                    alt="preview"
-                    className="w-full h-full object-cover rounded-lg"
+            {/* Body */}
+            <div className="p-6 overflow-y-auto max-h-[80vh] scrollbar-hide">
+              {/* Upload Section */}
+              <div className="flex gap-6 mb-6">
+                <label className="flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-lg w-32 h-32 cursor-pointer hover:border-gray-400 relative bg-gray-50">
+                  {photoPreview ? (
+                    <img
+                      src={photoPreview}
+                      alt="preview"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    <>
+                      <CirclePlus size={18} className="text-gray-500 mb-1" />
+                      <span className="text-xs text-gray-600">
+                        Upload Photo
+                      </span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoUpload}
                   />
-                ) : (
-                  <>
-                    <Upload size={20} className="text-gray-500 mb-2" />
-                    <span className="text-sm text-gray-600">Upload Photo</span>
-                  </>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handlePhotoUpload}
-                />
-                {photoPreview && (
-                  <span className="absolute bottom-1 text-xs text-gray-600 bg-white/70 px-2 rounded">
-                    Click to Change
-                  </span>
-                )}
-              </label>
-              <p className="text-xs text-gray-500">
-                Preferred Image Size: 240px × 240px @ 72 DPI <br />
-                Maximum size of 1MB.
-              </p>
-            </div>
+                </label>
+                <p className="text-sm text-gray-500 self-center leading-relaxed">
+                  Preferred Image Size: 240px x 240px @ 72 DPI Maximum size of
+                  1MB.
+                </p>
+              </div>
 
-            {/* Form */}
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              {["ownerName", "ownerType", "ownerNumber", "ownerFacebook"].map(
-                (field) => (
-                  <div key={field}>
+              {/* Form */}
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                {[
+                  { key: "ownerName", label: "Name" },
+                  { key: "ownerType", label: "Staff ID" },
+                  { key: "ownerNumber", label: "Role" },
+                  { key: "ownerFacebook", label: "Contact Number" },
+                ].map(({ key, label }) => (
+                  <div key={key}>
                     <label className="block text-sm font-medium mb-1 text-gray-700">
-                      {field.replace("owner", "")}{" "}
-                      <span className="text-red-500">*</span>
+                      {label} <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
-                      placeholder={`Type here (${activeLang})`}
+                      placeholder="Type here"
                       value={
-                        formData[`${field}_${activeLang.toLowerCase()}`] || ""
+                        formData[`${key}_${activeLang.toLowerCase()}`] || ""
                       }
                       onChange={(e) =>
-                        handleChange(activeLang, field, e.target.value)
+                        handleChange(activeLang, key, e.target.value)
                       }
-                      className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 outline-none"
                     />
                   </div>
-                )
-              )}
-              <div>
-                <label className="block text-sm font-medium mb-1 text-gray-700">
-                  Notes <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  placeholder={`Type here (${activeLang})`}
-                  rows={3}
-                  value={
-                    formData[`ownerNotes_${activeLang.toLowerCase()}`] || ""
-                  }
-                  onChange={(e) =>
-                    handleChange(activeLang, "ownerNotes", e.target.value)
-                  }
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none resize-none"
-                />
-              </div>
+                ))}
 
-              <div className="flex justify-end gap-3 pt-4 border-t mt-6">
-                <button
-                  type="button"
-                  className="px-5 py-2 border rounded-full text-gray-700 hover:bg-gray-100"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-black text-white rounded-full hover:bg-gray-800"
-                >
-                  {editMode ? "Edit" : "Add"}
-                </button>
-              </div>
-            </form>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700">
+                    Notes <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    placeholder="Type here"
+                    rows={3}
+                    value={
+                      formData[`ownerNotes_${activeLang.toLowerCase()}`] || ""
+                    }
+                    onChange={(e) =>
+                      handleChange(activeLang, "ownerNotes", e.target.value)
+                    }
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-black focus:border-black outline-none resize-none"
+                  />
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-end gap-3 pt-6 mt-8">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="px-5 py-2 border border-gray-300 rounded-full text-gray-700 text-sm hover:bg-gray-100"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800"
+                  >
+                    {editMode ? "Edit" : "Add"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

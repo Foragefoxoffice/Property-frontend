@@ -14,6 +14,7 @@ import {
   deletePropertyListing,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
+import commonimg from "../../assets/image/commonimg.jpg";
 
 export default function ManageProperty({
   openCreateProperty,
@@ -161,10 +162,10 @@ export default function ManageProperty({
                   >
                     <td className="px-6 py-4 flex items-center gap-3">
                       <img
-                        src={img || "/default-image.jpg"}
+                        src={img || commonimg}
                         alt="Property"
                         className="w-14 h-14 rounded-lg object-cover"
-                        onError={(e) => (e.target.src = "/default-image.jpg")}
+                        onError={(e) => (e.target.src = commonimg)}
                       />
                       <div>
                         <p className="text-sm text-gray-600 font-medium">

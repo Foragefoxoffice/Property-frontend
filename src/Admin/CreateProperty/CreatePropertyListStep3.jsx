@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { ChevronDown, Eye, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  ChevronDown,
+  Eye,
+  MoveLeft,
+  MoveLeftIcon,
+  X,
+} from "lucide-react";
 import { getAllOwners, getAllStaffs, getMe } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 
@@ -22,6 +30,7 @@ export default function CreatePropertyListStep3({
   onNext,
   onPrev,
   onChange,
+  onSave,
   initialData = {},
 }) {
   const [lang, setLang] = useState("en");
@@ -47,6 +56,36 @@ export default function CreatePropertyListStep3({
     },
     internalNotes: initialData.internalNotes || { en: "", vi: "" },
   });
+
+  /* ✅ Sync form when editing existing property */
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      // If editData contains nested contactManagement
+      const cm = initialData.contactManagement || {};
+
+      setForm((prev) => ({
+        ...prev,
+        owner: initialData.owner ||
+          cm.contactManagementOwner ||
+          prev.owner || { en: "", vi: "" },
+        ownerNotes: initialData.ownerNotes ||
+          cm.contactManagementOwnerNotes ||
+          prev.ownerNotes || { en: "", vi: "" },
+        consultant: initialData.consultant ||
+          cm.contactManagementConsultant ||
+          prev.consultant || { en: "", vi: "" },
+        connectingPoint: initialData.connectingPoint ||
+          cm.contactManagementConnectingPoint ||
+          prev.connectingPoint || { en: "", vi: "" },
+        connectingPointNotes: initialData.connectingPointNotes ||
+          cm.contactManagementConnectingPointNotes ||
+          prev.connectingPointNotes || { en: "", vi: "" },
+        internalNotes: initialData.internalNotes ||
+          cm.contactManagementInternalNotes ||
+          prev.internalNotes || { en: "", vi: "" },
+      }));
+    }
+  }, [initialData]);
 
   /* =========================================================
      🔹 Fetch Owners, Staffs & Logged-in User
@@ -122,7 +161,7 @@ export default function CreatePropertyListStep3({
       selectOwner: "Select Owner",
       selectConnect: "Select Connecting Point",
       next: "Next →",
-      prev: "← Previous",
+      prev: "Previous",
     },
     vi: {
       title: "Chi Tiết Liên Hệ / Quản Lý",
@@ -135,7 +174,7 @@ export default function CreatePropertyListStep3({
       selectOwner: "Chọn Chủ Sở Hữu",
       selectConnect: "Chọn Điểm Liên Hệ",
       next: "Tiếp →",
-      prev: "← Trước",
+      prev: "Trước",
     },
   }[lang];
 
@@ -320,18 +359,43 @@ export default function CreatePropertyListStep3({
       <div className="flex justify-between mt-10">
         <button
           onClick={onPrev}
-          className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-full hover:bg-gray-100"
+          className="px-6 py-2 bg-white border border-gray-300 text-gray-700 gap-1.5 rounded-full hover:bg-gray-100 flex items-center cursor-pointer"
         >
-          {t.prev}
+          <ArrowLeft size={18} /> {t.prev}
         </button>
         <button
           onClick={() => {
-            onChange && onChange(form);
-            onNext(form);
+            const payload = {
+              contactManagement: {
+                contactManagementOwner: form.owner || { en: "", vi: "" },
+                contactManagementOwnerNotes: form.ownerNotes || {
+                  en: "",
+                  vi: "",
+                },
+                contactManagementConsultant: form.consultant || {
+                  en: "",
+                  vi: "",
+                },
+                contactManagementConnectingPoint: form.connectingPoint || {
+                  en: "",
+                  vi: "",
+                },
+                contactManagementConnectingPointNotes:
+                  form.connectingPointNotes || { en: "", vi: "" },
+                contactManagementInternalNotes: form.internalNotes || {
+                  en: "",
+                  vi: "",
+                },
+              },
+            };
+
+            // 🔹 Pass data directly (not just trigger save)
+            onChange && onChange(payload);
+            onSave && onSave(payload);
           }}
-          className="px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800"
+          className="px-6 py-2 bg-green-600 text-white rounded-full items-center hover:bg-green-700 flex gap-1 cursor-pointer"
         >
-          {t.next}
+          <Check size={20} /> Save Property
         </button>
       </div>
 

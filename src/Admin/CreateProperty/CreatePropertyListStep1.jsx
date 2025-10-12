@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from "react";
-import { ChevronDown, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronDown, Plus, Trash2 } from "lucide-react";
 import {
   getAllProperties,
   getAllZoneSubAreas,
@@ -124,6 +124,30 @@ export default function CreatePropertyListStep1({
     utilities: initialData.utilities || [{ name: "", icon: "" }],
   });
 
+  /* ✅ Sync when editing an existing property */
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      setForm((prev) => ({
+        ...prev,
+        ...initialData,
+        // ensure all localized objects are safe
+        blockName: initialData.blockName ||
+          prev.blockName || { en: "", vi: "" },
+        title: initialData.title || prev.title || { en: "", vi: "" },
+        address: initialData.address || prev.address || { en: "", vi: "" },
+        description: initialData.description ||
+          prev.description || { en: "", vi: "" },
+        view: initialData.view || prev.view || { en: "", vi: "" },
+        whatsNearby: initialData.whatsNearby ||
+          prev.whatsNearby || { en: "", vi: "" },
+        utilities:
+          initialData.utilities && initialData.utilities.length
+            ? initialData.utilities
+            : prev.utilities,
+      }));
+    }
+  }, [initialData]);
+
   const [dropdowns, setDropdowns] = useState({
     properties: [],
     zones: [],
@@ -134,12 +158,6 @@ export default function CreatePropertyListStep1({
     parkings: [],
     pets: [],
   });
-
-  useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
-      setForm((prev) => ({ ...prev, ...initialData }));
-    }
-  }, [initialData]);
 
   /* Fetch dropdowns once */
   useEffect(() => {
@@ -648,10 +666,8 @@ export default function CreatePropertyListStep1({
       </div>
 
       {/* Next */}
-      {/* Next */}
       <button
         onClick={() => {
-          // Ensure both en + vi copies exist for localized fields before next step
           const syncLangFields = [
             "title",
             "address",
@@ -675,9 +691,9 @@ export default function CreatePropertyListStep1({
           // 🔹 Proceed to next step
           onNext(updatedForm);
         }}
-        className="mt-8 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800"
+        className="mt-8 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 flex items-center cursor-pointer gap-1.5"
       >
-        Next →
+        Next <ArrowRight size={18} />
       </button>
     </div>
   );

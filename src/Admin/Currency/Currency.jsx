@@ -9,6 +9,11 @@ import {
   Trash2,
   AlertTriangle,
   Languages,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
+  Star,
 } from "lucide-react";
 import {
   getAllCurrencies,
@@ -29,7 +34,12 @@ export default function Currency({ goBack }) {
   const [loading, setLoading] = useState(false);
   const [editingCurrency, setEditingCurrency] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
-  const [currencyOptions, setCurrencyOptions] = useState([]); // 💰 new state for API currencies
+  const [currencyOptions, setCurrencyOptions] = useState([]);
+
+  // ✅ Pagination state
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [form, setForm] = useState({
     code_en: "",
     code_vi: "",
@@ -40,7 +50,7 @@ export default function Currency({ goBack }) {
     status: "Active",
   });
 
-  // ✅ Fetch stored currencies from backend
+  // ✅ Fetch stored currencies
   const fetchCurrencies = async () => {
     try {
       setLoading(true);
@@ -48,6 +58,7 @@ export default function Currency({ goBack }) {
       setCurrencies(res.data.data || []);
     } catch (error) {
       console.error("Failed to load currencies", error);
+      CommonToaster("Failed to load currencies", "error");
     } finally {
       setLoading(false);
     }
@@ -71,8 +82,20 @@ export default function Currency({ goBack }) {
 
   useEffect(() => {
     fetchCurrencies();
-    fetchCurrencyList(); // load currency options once
+    fetchCurrencyList();
   }, []);
+
+  // Derived pagination values
+  const totalRows = currencies.length;
+  const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
+  const visibleData = currencies.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+    if (totalRows === 0) setCurrentPage(1);
+  }, [totalRows, totalPages, currentPage]);
 
   // ✅ Handle input
   const handleChange = (e) => {
@@ -115,7 +138,8 @@ export default function Currency({ goBack }) {
         symbol_vi: "",
         status: "Active",
       });
-      fetchCurrencies();
+      await fetchCurrencies();
+      setCurrentPage(1);
     } catch (err) {
       const message =
         err.response?.data?.error ||
@@ -147,7 +171,13 @@ export default function Currency({ goBack }) {
       await deleteCurrency(deleteConfirm.id);
       CommonToaster("Currency deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
-      fetchCurrencies();
+      await fetchCurrencies();
+      if (
+        (currentPage - 1) * rowsPerPage >= currencies.length - 1 &&
+        currentPage > 1
+      ) {
+        setCurrentPage((p) => Math.max(1, p - 1));
+      }
     } catch {
       CommonToaster("Failed to delete currency", "error");
     }
@@ -175,6 +205,12 @@ export default function Currency({ goBack }) {
       CommonToaster("Failed to mark as default", "error");
     }
   };
+
+  // Pagination handlers
+  const goToFirst = () => setCurrentPage(1);
+  const goToLast = () => setCurrentPage(totalPages);
+  const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
+  const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
   return (
     <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
@@ -262,9 +298,9 @@ export default function Currency({ goBack }) {
                 </td>
               </tr>
             ) : (
-              currencies.map((row, i) => (
+              visibleData.map((row, i) => (
                 <tr
-                  key={i}
+                  key={row._id}
                   className={`${
                     i % 2 === 0 ? "bg-white" : "bg-gray-50"
                   } hover:bg-gray-100 transition`}
@@ -295,8 +331,8 @@ export default function Currency({ goBack }) {
                       {row.status}
                     </span>
                     {row.isDefault && (
-                      <span className="text-yellow-500 text-xs font-medium">
-                        ⭐
+                      <span className="text-white bg-yellow-400 w-8 h-8 grid place-content-center text-2xl rounded-full font-medium">
+                        <Star className=" " />
                       </span>
                     )}
                   </td>
@@ -321,7 +357,6 @@ export default function Currency({ goBack }) {
                         >
                           <Pencil className="w-4 h-4 mr-2" /> Edit
                         </button>
-
                         <button
                           className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           onClick={() => {
@@ -334,7 +369,6 @@ export default function Currency({ goBack }) {
                             ? "Mark as Inactive"
                             : "Mark as Active"}
                         </button>
-
                         <button
                           className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           onClick={() => {
@@ -342,9 +376,8 @@ export default function Currency({ goBack }) {
                             setOpenMenuIndex(null);
                           }}
                         >
-                          ⭐ Mark as Default
+                          <Star className="w-4 h-4 mr-2" /> Mark as Default
                         </button>
-
                         <button
                           className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                           onClick={() => {
@@ -364,137 +397,79 @@ export default function Currency({ goBack }) {
         </table>
       )}
 
-      {/* ✅ Add / Edit Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-lg relative">
-            {/* Header */}
-            <div className="flex justify-between items-center border-b px-6 py-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {editingCurrency ? "Edit Currency" : "New Currency"}
-              </h3>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-black"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      {/* ✅ Pagination Bar */}
+      <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span>Rows per page:</span>
+            <select
+              className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none cursor-pointer"
+              value={rowsPerPage}
+              onChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
 
-            {/* Language Tabs */}
-            <div className="flex border-b px-6">
-              <button
-                onClick={() => setActiveLang("EN")}
-                className={`py-3 px-4 font-medium text-sm ${
-                  activeLang === "EN"
-                    ? "border-b-2 border-black text-black"
-                    : "text-gray-500"
-                }`}
-              >
-                English (EN)
-              </button>
-              <button
-                onClick={() => setActiveLang("VI")}
-                className={`py-3 px-4 font-medium text-sm ${
-                  activeLang === "VI"
-                    ? "border-b-2 border-black text-black"
-                    : "text-gray-500"
-                }`}
-              >
-                Tiếng Việt (VI)
-              </button>
-            </div>
+          <span>
+            {totalRows === 0
+              ? "0–0 of 0"
+              : `${startIndex + 1}–${endIndex} of ${totalRows}`}
+          </span>
 
-            {/* Form Fields */}
-            <div className="px-6 py-5 space-y-5">
-              {/* Code */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Code <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name={`code_${activeLang.toLowerCase()}`}
-                  value={form[`code_${activeLang.toLowerCase()}`]}
-                  onChange={handleChange}
-                  placeholder="Type here"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-
-              {/* ✅ Currency Name and Code (Stores full text like “Indian Rupee (INR)”) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Currency Name and Code <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name={`name_${activeLang.toLowerCase()}`}
-                  value={form[`name_${activeLang.toLowerCase()}`]}
-                  onChange={(e) => {
-                    const selectedText = e.target.value;
-                    const match = currencyOptions.find(
-                      ([code, name]) => `${name} (${code})` === selectedText
-                    );
-
-                    if (match) {
-                      const [code, name] = match;
-                      setForm((prev) => ({
-                        ...prev,
-                        [`name_${activeLang.toLowerCase()}`]: `${name} (${code})`,
-                        [`code_${activeLang.toLowerCase()}`]: code,
-                      }));
-                    } else {
-                      handleChange(e);
-                    }
-                  }}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-black"
-                >
-                  <option value="">Select</option>
-                  {currencyOptions.map(([code, name]) => {
-                    const displayValue = `${name} (${code})`;
-                    return (
-                      <option key={code} value={displayValue}>
-                        {displayValue}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-
-              {/* Symbol */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Currency Symbol <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name={`symbol_${activeLang.toLowerCase()}`}
-                  value={form[`symbol_${activeLang.toLowerCase()}`]}
-                  onChange={handleChange}
-                  placeholder="Type here"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t px-6 py-4 flex justify-end gap-3">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-5 py-2 border border-gray-400 rounded-full text-gray-800 hover:bg-gray-100 font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800 font-medium"
-              >
-                {editingCurrency ? "Update" : "Add"}
-              </button>
-            </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <button
+              onClick={goToFirst}
+              disabled={currentPage === 1}
+              className={`p-1 rounded cursor-pointer ${
+                currentPage === 1
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronsLeft size={18} />
+            </button>
+            <button
+              onClick={goToPrev}
+              disabled={currentPage === 1}
+              className={`p-1 rounded cursor-pointer ${
+                currentPage === 1
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={goToNext}
+              disabled={currentPage === totalPages || totalRows === 0}
+              className={`p-1 rounded cursor-pointer ${
+                currentPage === totalPages || totalRows === 0
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronRight size={18} />
+            </button>
+            <button
+              onClick={goToLast}
+              disabled={currentPage === totalPages || totalRows === 0}
+              className={`p-1 rounded cursor-pointer ${
+                currentPage === totalPages || totalRows === 0
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronsRight size={18} />
+            </button>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Delete Confirmation */}
       {deleteConfirm.show && (
@@ -521,6 +496,137 @@ export default function Currency({ goBack }) {
                 className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ✅ Add/Edit Modal (Styled like others) */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4">
+              <h2 className="text-lg font-medium text-gray-800">
+                {editingCurrency ? "Edit Currency" : "New Currency"}
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Language Tabs */}
+            <div className="flex justify-start gap-8 px-6">
+              <button
+                onClick={() => setActiveLang("EN")}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "EN"
+                    ? "text-black border-b-2 border-black"
+                    : "text-gray-500 hover:text-black"
+                }`}
+              >
+                English (EN)
+              </button>
+              <button
+                onClick={() => setActiveLang("VI")}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "VI"
+                    ? "text-black border-b-2 border-black"
+                    : "text-gray-500 hover:text-black"
+                }`}
+              >
+                Tiếng Việt (VI)
+              </button>
+            </div>
+
+            {/* Form Fields */}
+            <div className="p-6 space-y-5">
+              {/* Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Code<span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name={`code_${activeLang.toLowerCase()}`}
+                  value={form[`code_${activeLang.toLowerCase()}`]}
+                  onChange={handleChange}
+                  placeholder="Type here"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                />
+              </div>
+
+              {/* Currency Name and Code */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Currency Name and Code<span className="text-red-500">*</span>
+                </label>
+                <select
+                  name={`name_${activeLang.toLowerCase()}`}
+                  value={form[`name_${activeLang.toLowerCase()}`]}
+                  onChange={(e) => {
+                    const selectedText = e.target.value;
+                    const match = currencyOptions.find(
+                      ([code, name]) => `${name} (${code})` === selectedText
+                    );
+
+                    if (match) {
+                      const [code, name] = match;
+                      setForm((prev) => ({
+                        ...prev,
+                        [`name_${activeLang.toLowerCase()}`]: `${name} (${code})`,
+                        [`code_${activeLang.toLowerCase()}`]: code,
+                      }));
+                    } else {
+                      handleChange(e);
+                    }
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:outline-none"
+                >
+                  <option value="">Select</option>
+                  {currencyOptions.map(([code, name]) => {
+                    const displayValue = `${name} (${code})`;
+                    return (
+                      <option key={code} value={displayValue}>
+                        {displayValue}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Currency Symbol */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Currency Symbol<span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name={`symbol_${activeLang.toLowerCase()}`}
+                  value={form[`symbol_${activeLang.toLowerCase()}`]}
+                  onChange={handleChange}
+                  placeholder="Type here"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="flex justify-end items-center gap-3 px-6 py-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800 transition cursor-pointer"
+              >
+                {editingCurrency ? "Update" : "Add"}
               </button>
             </div>
           </div>

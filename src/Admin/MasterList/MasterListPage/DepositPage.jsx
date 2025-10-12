@@ -9,6 +9,10 @@ import {
   Trash2,
   AlertTriangle,
   Languages,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
 } from "lucide-react";
 import {
   createDeposit,
@@ -29,6 +33,10 @@ export default function DepositPage({ goBack }) {
   const [editingDeposit, setEditingDeposit] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
+  // ✅ Pagination state
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [form, setForm] = useState({
     code_en: "",
     code_vi: "",
@@ -37,7 +45,7 @@ export default function DepositPage({ goBack }) {
     status: "Active",
   });
 
-  // ✅ Fetch all Deposits
+  // ✅ Fetch Deposits
   const fetchDeposits = async () => {
     try {
       setLoading(true);
@@ -53,6 +61,18 @@ export default function DepositPage({ goBack }) {
   useEffect(() => {
     fetchDeposits();
   }, []);
+
+  // ✅ Pagination Calculations
+  const totalRows = deposits.length;
+  const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
+  const visibleData = deposits.slice(startIndex, endIndex);
+
+  const goToFirst = () => setCurrentPage(1);
+  const goToLast = () => setCurrentPage(totalPages);
+  const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
+  const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
   // ✅ Handle input change
   const handleChange = (e) =>
@@ -84,6 +104,7 @@ export default function DepositPage({ goBack }) {
         status: "Active",
       });
       fetchDeposits();
+      setCurrentPage(1);
     } catch (err) {
       const message =
         err.response?.data?.error ||
@@ -106,15 +127,20 @@ export default function DepositPage({ goBack }) {
     setShowModal(true);
   };
 
-  // ✅ Delete confirmation
+  // ✅ Delete
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
-
   const handleDelete = async () => {
     try {
       await deleteDeposit(deleteConfirm.id);
       CommonToaster("Deposit deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchDeposits();
+      if (
+        (currentPage - 1) * rowsPerPage >= deposits.length - 1 &&
+        currentPage > 1
+      ) {
+        setCurrentPage((p) => Math.max(1, p - 1));
+      }
     } catch {
       CommonToaster("Failed to delete Deposit", "error");
     }
@@ -215,7 +241,7 @@ export default function DepositPage({ goBack }) {
                   </td>
                 </tr>
               ) : (
-                deposits.map((row, i) => (
+                visibleData.map((row, i) => (
                   <tr
                     key={i}
                     className={`${
@@ -292,6 +318,80 @@ export default function DepositPage({ goBack }) {
         )}
       </div>
 
+      {/* ✅ Pagination */}
+      <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span>Rows per page:</span>
+            <select
+              className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none cursor-pointer"
+              value={rowsPerPage}
+              onChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
+
+          <span>
+            {totalRows === 0
+              ? "0–0 of 0"
+              : `${startIndex + 1}–${endIndex} of ${totalRows}`}
+          </span>
+
+          <div className="flex items-center gap-2 text-gray-700">
+            <button
+              onClick={goToFirst}
+              disabled={currentPage === 1}
+              className={`p-1 rounded ${
+                currentPage === 1
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronsLeft size={18} />
+            </button>
+            <button
+              onClick={goToPrev}
+              disabled={currentPage === 1}
+              className={`p-1 rounded ${
+                currentPage === 1
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={goToNext}
+              disabled={currentPage === totalPages || totalRows === 0}
+              className={`p-1 rounded ${
+                currentPage === totalPages || totalRows === 0
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronRight size={18} />
+            </button>
+            <button
+              onClick={goToLast}
+              disabled={currentPage === totalPages || totalRows === 0}
+              className={`p-1 rounded ${
+                currentPage === totalPages || totalRows === 0
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronsRight size={18} />
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* ✅ Delete Confirmation Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -325,12 +425,13 @@ export default function DepositPage({ goBack }) {
         </div>
       )}
 
-      {/* ✅ Add/Edit Modal */}
+      {/* ✅ Add/Edit Modal (Styled like others) */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-6 relative">
-            <div className="flex items-center justify-between mb-4 border-b pb-2">
-              <h2 className="text-lg font-semibold text-gray-800">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4">
+              <h2 className="text-lg font-medium text-gray-800">
                 {editingDeposit ? "Edit Deposit" : "New Deposit"}
               </h2>
               <button
@@ -338,17 +439,17 @@ export default function DepositPage({ goBack }) {
                   setShowModal(false);
                   setEditingDeposit(null);
                 }}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Language Tabs */}
-            <div className="flex border-b mb-4">
+            <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`px-4 py-2 font-medium transition-all ${
+                className={`py-3 font-medium transition-all ${
                   activeLang === "EN"
                     ? "text-black border-b-2 border-black"
                     : "text-gray-500 hover:text-black"
@@ -358,7 +459,7 @@ export default function DepositPage({ goBack }) {
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`px-4 py-2 font-medium transition-all ${
+                className={`py-3 font-medium transition-all ${
                   activeLang === "VI"
                     ? "text-black border-b-2 border-black"
                     : "text-gray-500 hover:text-black"
@@ -369,61 +470,84 @@ export default function DepositPage({ goBack }) {
             </div>
 
             {/* Form Fields */}
-            <div className="space-y-4">
+            <div className="p-6 space-y-5">
               {activeLang === "EN" ? (
                 <>
-                  <input
-                    type="text"
-                    name="code_en"
-                    placeholder="Code (English)"
-                    value={form.code_en}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
-                  />
-                  <input
-                    type="text"
-                    name="name_en"
-                    placeholder="Deposit Name (English)"
-                    value={form.name_en}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Code<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="code_en"
+                      placeholder="Type here"
+                      value={form.code_en}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Deposit Name<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name_en"
+                      placeholder="Type here"
+                      value={form.name_en}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
                 </>
               ) : (
                 <>
-                  <input
-                    type="text"
-                    name="code_vi"
-                    placeholder="Mã (Vietnamese)"
-                    value={form.code_vi}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
-                  />
-                  <input
-                    type="text"
-                    name="name_vi"
-                    placeholder="Tên đặt cọc (Vietnamese)"
-                    value={form.name_vi}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mã<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="code_vi"
+                      placeholder="Type here"
+                      value={form.code_vi}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Tên đặt cọc<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name_vi"
+                      placeholder="Type here"
+                      value={form.name_vi}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
                 </>
               )}
             </div>
 
-            <div className="flex justify-end mt-6 gap-3 border-t pt-4">
+            {/* Footer Buttons */}
+            <div className="flex justify-end items-center gap-3 px-6 py-4">
               <button
                 onClick={() => {
                   setShowModal(false);
                   setEditingDeposit(null);
                 }}
-                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800"
+                className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800 transition cursor-pointer"
               >
                 {editingDeposit ? "Update" : "Add"}
               </button>

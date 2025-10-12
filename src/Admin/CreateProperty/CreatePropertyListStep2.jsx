@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Plus, X, ChevronDown } from "lucide-react";
+import {
+  Plus,
+  X,
+  ChevronDown,
+  MoveLeftIcon,
+  MoveRight,
+  ArrowRight,
+  ArrowLeft,
+} from "lucide-react";
 import {
   getAllDeposits,
   getAllPayments,
@@ -138,6 +146,33 @@ export default function CreatePropertyListStep2({
   const [images, setImages] = useState(initialData.propertyImages || []);
   const [videos, setVideos] = useState(initialData.propertyVideos || []);
   const [floorPlans, setFloorPlans] = useState(initialData.floorPlans || []);
+
+  /* ✅ Sync when editing an existing property */
+  useEffect(() => {
+    if (initialData && Object.keys(initialData).length > 0) {
+      setForm((prev) => ({
+        ...prev,
+        ...initialData,
+        currency: initialData.currency || prev.currency,
+        price: initialData.price || prev.price,
+        leasePrice: initialData.leasePrice || prev.leasePrice,
+        contractLength: initialData.contractLength || prev.contractLength,
+        pricePerNight: initialData.pricePerNight || prev.pricePerNight,
+        checkIn: initialData.checkIn || prev.checkIn,
+        checkOut: initialData.checkOut || prev.checkOut,
+        contractTerms: initialData.contractTerms || prev.contractTerms,
+        depositPaymentTerms:
+          initialData.depositPaymentTerms || prev.depositPaymentTerms,
+        maintenanceFeeMonthly:
+          initialData.maintenanceFeeMonthly || prev.maintenanceFeeMonthly,
+      }));
+
+      // ✅ Also update media fields
+      setImages(initialData.propertyImages || []);
+      setVideos(initialData.propertyVideos || []);
+      setFloorPlans(initialData.floorPlans || []);
+    }
+  }, [initialData]);
 
   /* =========================================================
      📁 Upload Helpers
@@ -454,9 +489,10 @@ export default function CreatePropertyListStep2({
       <div className="flex justify-between mt-10">
         <button
           onClick={onPrev}
-          className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-full hover:bg-gray-100"
+          className="px-6 py-2 bg-white border border-gray-300 items-center text-gray-700 rounded-full hover:bg-gray-100 flex gap-1.5 cursor-pointer"
         >
-          ← Previous
+          <ArrowLeft size={18} />
+          Previous
         </button>
         <button
           onClick={() => {
@@ -469,9 +505,9 @@ export default function CreatePropertyListStep2({
               });
             onNext(form);
           }}
-          className="px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800"
+          className="px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 cursor-pointer flex gap-1.5 items-center"
         >
-          Next →
+          Next <ArrowRight size={18} />
         </button>
       </div>
     </div>

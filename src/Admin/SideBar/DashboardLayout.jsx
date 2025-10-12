@@ -18,6 +18,7 @@ import OwnersLandlords from "../Property/OwnersLandlords";
 import Staffs from "../Property/Staffs";
 import OwnerView from "../AddMembers/OwnerView";
 import Currency from "../Currency/Currency";
+import logo from "../../assets/image/logo.png";
 
 const DashboardLayout = () => {
   const [activePage, setActivePage] = useState("Properties");
@@ -149,7 +150,7 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <div className="w-[280px] bg-gradient-to-b from-white to-[#f3f2ff] flex flex-col items-center py-6 shadow-sm">
         <div className="text-3xl font-extrabold tracking-wide text-black mb-8">
-          ZEPRA
+          <img src={logo} alt="Company Logo" className="w-40 object-contain" />
         </div>
         <div className="flex flex-col w-full gap-2 px-4">
           {menuItems.map((item) => (

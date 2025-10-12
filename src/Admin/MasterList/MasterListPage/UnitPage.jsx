@@ -9,6 +9,11 @@ import {
   Trash2,
   AlertTriangle,
   Languages,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
+  Star,
 } from "lucide-react";
 import {
   createUnit,
@@ -30,6 +35,10 @@ export default function UnitPage({ goBack }) {
   const [editingUnit, setEditingUnit] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
+  // ✅ Pagination State
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [form, setForm] = useState({
     code_en: "",
     code_vi: "",
@@ -48,6 +57,7 @@ export default function UnitPage({ goBack }) {
       setUnits(res.data.data || []);
     } catch (error) {
       console.error("Failed to load units", error);
+      CommonToaster("Failed to load units", "error");
     } finally {
       setLoading(false);
     }
@@ -56,6 +66,18 @@ export default function UnitPage({ goBack }) {
   useEffect(() => {
     fetchUnits();
   }, []);
+
+  // Derived pagination values
+  const totalRows = units.length;
+  const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
+  const visibleData = units.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+    if (totalRows === 0) setCurrentPage(1);
+  }, [totalRows, totalPages, currentPage]);
 
   // ✅ Handle form change
   const handleChange = (e) =>
@@ -96,7 +118,8 @@ export default function UnitPage({ goBack }) {
         symbol_vi: "",
         status: "Active",
       });
-      fetchUnits();
+      await fetchUnits();
+      setCurrentPage(1);
     } catch (err) {
       const message =
         err.response?.data?.error ||
@@ -128,7 +151,13 @@ export default function UnitPage({ goBack }) {
       await deleteUnit(deleteConfirm.id);
       CommonToaster("Unit deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
-      fetchUnits();
+      await fetchUnits();
+      if (
+        (currentPage - 1) * rowsPerPage >= units.length - 1 &&
+        currentPage > 1
+      ) {
+        setCurrentPage((p) => Math.max(1, p - 1));
+      }
     } catch {
       CommonToaster("Failed to delete unit", "error");
     }
@@ -155,6 +184,12 @@ export default function UnitPage({ goBack }) {
       CommonToaster("Failed to mark as default", "error");
     }
   };
+
+  // Pagination handlers
+  const goToFirst = () => setCurrentPage(1);
+  const goToLast = () => setCurrentPage(totalPages);
+  const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
+  const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
   return (
     <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
@@ -233,9 +268,9 @@ export default function UnitPage({ goBack }) {
                   </td>
                 </tr>
               ) : (
-                units.map((row, i) => (
+                visibleData.map((row, i) => (
                   <tr
-                    key={i}
+                    key={row._id}
                     className={`${
                       i % 2 === 0 ? "bg-white" : "bg-gray-50"
                     } hover:bg-gray-100 transition`}
@@ -260,14 +295,9 @@ export default function UnitPage({ goBack }) {
                         {row.status}
                       </span>
                       {row.isDefault && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-5 h-5 text-yellow-500"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.948a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.449a1 1 0 00-.364 1.118l1.286 3.948c.3.921-.755 1.688-1.54 1.118l-3.37-2.449a1 1 0 00-1.176 0l-3.37 2.449c-.784.57-1.838-.197-1.539-1.118l1.285-3.948a1 1 0 00-.363-1.118L2.96 9.375c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.948z" />
-                        </svg>
+                        <span className="text-white bg-yellow-400 w-8 h-8 grid place-content-center text-2xl rounded-full font-medium">
+                          <Star className=" " />
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-3 text-right relative">
@@ -312,20 +342,7 @@ export default function UnitPage({ goBack }) {
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="w-4 h-4 mr-2 text-yellow-500"
-                              fill={row.isDefault ? "currentColor" : "none"}
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.948a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.37 2.449a1 1 0 00-.364 1.118l1.286 3.948c.3.921-.755 1.688-1.54 1.118l-3.37-2.449a1 1 0 00-1.176 0l-3.37 2.449c-.784.57-1.838-.197-1.539-1.118l1.285-3.948a1 1 0 00-.363-1.118L2.96 9.375c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.948z"
-                              />
-                            </svg>
+                            <Star className="w-4 h-4 mr-2" />
                             Mark as Default
                           </button>
 
@@ -349,12 +366,86 @@ export default function UnitPage({ goBack }) {
         )}
       </div>
 
-      {/* Modal */}
+      {/* ✅ Pagination Bar */}
+      <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span>Rows per page:</span>
+            <select
+              className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none cursor-pointer"
+              value={rowsPerPage}
+              onChange={(e) => {
+                setRowsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
+
+          <span>
+            {totalRows === 0
+              ? "0–0 of 0"
+              : `${startIndex + 1}–${endIndex} of ${totalRows}`}
+          </span>
+
+          <div className="flex items-center gap-2 text-gray-700">
+            <button
+              onClick={goToFirst}
+              disabled={currentPage === 1}
+              className={`p-1 rounded cursor-pointer ${
+                currentPage === 1
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronsLeft size={18} />
+            </button>
+            <button
+              onClick={goToPrev}
+              disabled={currentPage === 1}
+              className={`p-1 rounded cursor-pointer ${
+                currentPage === 1
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={goToNext}
+              disabled={currentPage === totalPages || totalRows === 0}
+              className={`p-1 rounded cursor-pointer ${
+                currentPage === totalPages || totalRows === 0
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronRight size={18} />
+            </button>
+            <button
+              onClick={goToLast}
+              disabled={currentPage === totalPages || totalRows === 0}
+              className={`p-1 rounded cursor-pointer ${
+                currentPage === totalPages || totalRows === 0
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronsRight size={18} />
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* ✅ Add/Edit Modal (Styled like others) */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-6 relative">
-            <div className="flex justify-between mb-4 border-b pb-2">
-              <h2 className="text-lg font-semibold text-gray-800">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4">
+              <h2 className="text-lg font-medium text-gray-800">
                 {editingUnit ? "Edit Unit" : "New Unit"}
               </h2>
               <button
@@ -362,108 +453,143 @@ export default function UnitPage({ goBack }) {
                   setShowModal(false);
                   setEditingUnit(null);
                 }}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b mb-4">
+            <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`px-4 py-2 font-medium ${
+                className={`py-3 font-medium transition-all ${
                   activeLang === "EN"
                     ? "text-black border-b-2 border-black"
-                    : "text-gray-500"
+                    : "text-gray-500 hover:text-black"
                 }`}
               >
-                English
+                English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`px-4 py-2 font-medium ${
+                className={`py-3 font-medium transition-all ${
                   activeLang === "VI"
                     ? "text-black border-b-2 border-black"
-                    : "text-gray-500"
+                    : "text-gray-500 hover:text-black"
                 }`}
               >
-                Vietnamese
+                Tiếng Việt (VI)
               </button>
             </div>
 
-            {/* Inputs */}
-            <div className="space-y-4">
+            {/* Form Inputs */}
+            <div className="p-6 space-y-5">
               {activeLang === "EN" ? (
                 <>
-                  <input
-                    type="text"
-                    name="code_en"
-                    placeholder="Code (EN)"
-                    value={form.code_en}
-                    onChange={handleChange}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-black"
-                  />
-                  <input
-                    type="text"
-                    name="name_en"
-                    placeholder="Unit Name (EN)"
-                    value={form.name_en}
-                    onChange={handleChange}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-black"
-                  />
-                  <input
-                    type="text"
-                    name="symbol_en"
-                    placeholder="Symbol (EN)"
-                    value={form.symbol_en}
-                    onChange={handleChange}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-black"
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Code<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="code_en"
+                      placeholder="Type here"
+                      value={form.code_en}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Unit Name<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name_en"
+                      placeholder="Type here"
+                      value={form.name_en}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Symbol<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="symbol_en"
+                      placeholder="Type here"
+                      value={form.symbol_en}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
                 </>
               ) : (
                 <>
-                  <input
-                    type="text"
-                    name="code_vi"
-                    placeholder="Mã (VI)"
-                    value={form.code_vi}
-                    onChange={handleChange}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-black"
-                  />
-                  <input
-                    type="text"
-                    name="name_vi"
-                    placeholder="Tên đơn vị (VI)"
-                    value={form.name_vi}
-                    onChange={handleChange}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-black"
-                  />
-                  <input
-                    type="text"
-                    name="symbol_vi"
-                    placeholder="Ký hiệu (VI)"
-                    value={form.symbol_vi}
-                    onChange={handleChange}
-                    className="w-full border px-4 py-2 rounded-lg focus:ring-2 focus:ring-black"
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Mã<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="code_vi"
+                      placeholder="Type here"
+                      value={form.code_vi}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Tên đơn vị<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name_vi"
+                      placeholder="Type here"
+                      value={form.name_vi}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Ký hiệu<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="symbol_vi"
+                      placeholder="Type here"
+                      value={form.symbol_vi}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
                 </>
               )}
             </div>
 
-            <div className="flex justify-end mt-6 gap-3 border-t pt-4">
+            {/* Footer Buttons */}
+            <div className="flex justify-end items-center gap-3 px-6 py-4">
               <button
                 onClick={() => {
                   setShowModal(false);
                   setEditingUnit(null);
                 }}
-                className="px-5 py-2 rounded-full border text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800"
+                className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800 transition cursor-pointer"
               >
                 {editingUnit ? "Update" : "Add"}
               </button>

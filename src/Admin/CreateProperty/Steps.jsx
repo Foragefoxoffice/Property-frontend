@@ -27,7 +27,7 @@ export default function Steps({
         </div>
 
         {/* Step Indicator */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between px-6 py-3">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between px-2 py-3">
           {steps.map((step, index) => {
             const stepNumber = index + 1;
             const isActive = currentStep === stepNumber;
@@ -39,20 +39,24 @@ export default function Steps({
                 className="flex items-center gap-2 w-1/4 justify-center"
               >
                 <div
-                  className={`w-7 h-7 flex items-center justify-center rounded-full text-sm font-semibold ${isActive
-                    ? "bg-black text-white"
-                    : isCompleted
-                      ? "bg-[#b8a8f9] text-white"
-                      : "bg-[#e4dffb] text-[#5d4bb5]"
-                    }`}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full text-lg font-semibold ${
+                    isActive
+                      ? "bg-black text-white"
+                      : isCompleted
+                      ? "bg-[#009980] text-white"
+                      : "bg-[#9994CE] text-[#fff]"
+                  }`}
                 >
                   {stepNumber}
                 </div>
                 <span
-                  className={`text-sm ${isActive
-                    ? "text-black font-medium"
-                    : "text-gray-500 font-normal"
-                    }`}
+                  className={`text-md ${
+                    isActive
+                      ? "text-black font-medium"
+                      : isCompleted
+                      ? "text-[#009980] font-normal"
+                      : "text-[#9994CE]"
+                  }`}
                 >
                   {step.label}
                 </span>

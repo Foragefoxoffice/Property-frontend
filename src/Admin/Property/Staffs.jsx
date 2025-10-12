@@ -7,6 +7,8 @@ import {
   Upload,
   X,
   AlertTriangle,
+  MoveHorizontal,
+  Phone,
 } from "lucide-react";
 import {
   getAllStaffs,
@@ -27,6 +29,7 @@ export default function Staffs() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [activeLang, setActiveLang] = useState("EN");
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+  const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState({
     staffsImage: "",
@@ -36,6 +39,7 @@ export default function Staffs() {
     staffsRole_en: "",
     staffsRole_vi: "",
     staffsNumber: "",
+    staffsEmail: "", // ✅ added
     staffsNotes_en: "",
     staffsNotes_vi: "",
   });
@@ -46,10 +50,13 @@ export default function Staffs() {
 
   const fetchStaffs = async () => {
     try {
+      setLoading(true);
       const res = await getAllStaffs();
       setStaffs(res.data.data || []);
     } catch {
       CommonToaster("Failed to fetch staffs", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,27 +82,24 @@ export default function Staffs() {
     reader.readAsDataURL(file);
   };
 
-  // ✅ Open Add/Edit modal
   const openModal = (staff = null) => {
     if (staff) {
       setEditMode(true);
       setEditingStaff(staff);
-
       const filledForm = {
         staffsImage: staff.staffsImage || "",
         staffsName_en: staff.staffsName?.en || "",
         staffsName_vi: staff.staffsName?.vi || "",
         staffsId: staff.staffsId || "",
+        staffsEmail: staff.staffsEmail || "", // ✅ include
         staffsRole_en: staff.staffsRole?.en || "",
         staffsRole_vi: staff.staffsRole?.vi || "",
         staffsNumber: staff.staffsNumber || "",
         staffsNotes_en: staff.staffsNotes?.en || "",
         staffsNotes_vi: staff.staffsNotes?.vi || "",
       };
-
       setForm(filledForm);
       setPhotoPreview(staff.staffsImage || null);
-
       setTimeout(() => setShowModal(true), 50);
     } else {
       setEditMode(false);
@@ -108,6 +112,7 @@ export default function Staffs() {
         staffsRole_en: "",
         staffsRole_vi: "",
         staffsNumber: "",
+        staffsEmail: "",
         staffsNotes_en: "",
         staffsNotes_vi: "",
       });
@@ -120,6 +125,7 @@ export default function Staffs() {
     e.preventDefault();
     const payload = {
       ...form,
+      staffsEmail: form.staffsEmail?.trim() || "",
       staffsName_en: form.staffsName_en?.trim() || "",
       staffsName_vi: form.staffsName_vi?.trim() || "",
       staffsRole_en: form.staffsRole_en?.trim() || "",
@@ -152,16 +158,35 @@ export default function Staffs() {
     }
   };
 
-  // ✅ Safe and language-aware search
   const filtered = staffs.filter((s) => {
     const name =
       activeLang === "VI" ? s?.staffsName?.vi || "" : s?.staffsName?.en || "";
     return name.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+  /* Skeleton Loader */
+  const SkeletonCard = () => (
+    <div className="animate-pulse rounded-2xl p-5 shadow-sm bg-gray-100">
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+        <div className="flex-1 space-y-2">
+          <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+          <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+        </div>
+      </div>
+      <div className="mt-4 space-y-2">
+        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+      </div>
+      <div className="flex justify-end gap-2 mt-4">
+        <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+        <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#f1f3f6] px-10 py-8">
-      {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-semibold text-gray-900">Staffs</h1>
         <button
@@ -172,7 +197,6 @@ export default function Staffs() {
         </button>
       </div>
 
-      {/* Search */}
       <div className="relative mb-6 max-w-md">
         <Search className="absolute top-3 left-3 text-gray-400 w-5 h-5" />
         <input
@@ -185,99 +209,123 @@ export default function Staffs() {
       </div>
 
       {/* Staff Cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map((staff, i) => (
-          <div
-            key={staff._id}
-            className="rounded-2xl p-5 shadow-sm"
-            style={{ background: colors[i % colors.length] }}
-          >
-            <div className="flex items-center gap-3">
-              <img
-                src={
-                  staff.staffsImage ||
-                  "https://via.placeholder.com/60x60.png?text=👤"
-                }
-                alt={staff.staffsName?.en}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <h3 className="font-semibold text-gray-800">
-                  {staff.staffsName?.en}
-                </h3>
-                <p className="text-sm text-gray-600">ID: {staff.staffsId}</p>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all">
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+          : filtered.map((staff, i) => (
+              <div
+                key={staff._id}
+                className="relative rounded-2xl p-5 shadow-sm"
+                style={{ background: colors[i % colors.length] }}
+              >
+                {/* Top Right Double Arrow */}
+                <button
+                  className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/40 transition border border-gray-400 cursor-pointer"
+                  onClick={() =>
+                    console.log("Double arrow clicked:", staff._id)
+                  }
+                >
+                  <MoveHorizontal size={18} className="text-gray-700" />
+                </button>
+
+                <div className="flex items-center gap-3">
+                  <img
+                    src={staff.staffsImage || "image/dummy-img.png"}
+                    alt={staff.staffsName?.en}
+                    className="w-16 h-16 rounded-full object-cover"
+                  />
+                  <div>
+                    <h3 className="font-semibold text-gray-800">
+                      {staff.staffsName?.en}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      ID: {staff.staffsId}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center gap-2 mt-8">
+                  <div className="mt-4 text-sm text-gray-700">
+                    <p>
+                      <span className="font-medium">Role:</span>{" "}
+                      {staff.staffsRole?.en}
+                    </p>
+                    <p className="mt-1 flex items-center gap-1">
+                      <Phone size={16} /> {staff.staffsNumber}
+                    </p>
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => openModal(staff)}
+                      className="p-2 rounded-full hover:bg-gray-200 cursor-pointer"
+                    >
+                      <Edit2 size={16} className="text-blue-500" />
+                    </button>
+                    <button
+                      onClick={() =>
+                        setDeleteConfirm({ show: true, id: staff._id })
+                      }
+                      className="p-2 rounded-full hover:bg-red-50 cursor-pointer"
+                    >
+                      <Trash2 size={16} className="text-red-500" />
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="mt-4 text-sm text-gray-700">
-              <p>
-                <span className="font-medium">Role:</span>{" "}
-                {staff.staffsRole?.en}
-              </p>
-              <p className="mt-1">📞 {staff.staffsNumber}</p>
-            </div>
-
-            <div className="flex justify-end gap-2 mt-4">
-              <button
-                onClick={() => openModal(staff)}
-                className="p-2 rounded-full hover:bg-gray-200"
-              >
-                <Edit2 size={16} className="text-blue-500" />
-              </button>
-              <button
-                onClick={() => setDeleteConfirm({ show: true, id: staff._id })}
-                className="p-2 rounded-full hover:bg-red-50"
-              >
-                <Trash2 size={16} className="text-red-500" />
-              </button>
-            </div>
-          </div>
-        ))}
+            ))}
       </div>
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg relative">
-            <div className="flex justify-between items-center mb-4 border-b pb-2">
-              <h2 className="text-lg font-semibold">
-                {editMode ? "Edit Staff" : "Add Staff"}
+        <div className="fixed inset-0 bg-black/40 flex py-12 items-start justify-center z-50 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-2xl p-8 shadow-xl relative">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {editMode ? "Edit Staff" : "New Staff"}
               </h2>
-              <button onClick={() => setShowModal(false)}>
+              <button
+                onClick={() => setShowModal(false)}
+                className="hover:bg-gray-100 rounded-full p-2"
+              >
                 <X size={20} className="text-gray-500 hover:text-black" />
               </button>
             </div>
 
             {/* Language Tabs */}
-            <div className="flex border-b mb-4">
+            <div className="flex border-b mb-6">
               {["EN", "VI"].map((lang) => (
                 <button
                   key={lang}
                   onClick={() => setActiveLang(lang)}
-                  className={`px-4 py-2 text-sm font-medium ${
+                  className={`px-5 py-2 text-sm font-semibold transition ${
                     activeLang === lang
                       ? "border-b-2 border-black text-black"
                       : "text-gray-500"
                   }`}
                 >
-                  {lang === "EN" ? "English" : "Tiếng Việt"}
+                  {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
                 </button>
               ))}
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {/* Upload Image */}
-              <div className="flex flex-col items-center mb-4">
-                <label className="relative cursor-pointer group">
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="">
+              {/* Upload Section */}
+              <div className="flex  items-center gap-4">
+                <label className="relative cursor-pointer group w-full sm:w-40 h-40 border border-dashed rounded-xl flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition">
                   {photoPreview ? (
                     <img
                       src={photoPreview}
                       alt="preview"
-                      className="w-24 h-24 rounded-full object-cover border"
+                      className="w-full h-full object-cover rounded-xl"
                     />
                   ) : (
-                    <div className="w-24 h-24 rounded-full border border-dashed flex items-center justify-center text-gray-400">
+                    <div className="flex flex-col items-center text-gray-400">
                       <Upload size={22} />
+                      <span className="mt-1 text-sm font-medium">
+                        Upload Photo
+                      </span>
                     </div>
                   )}
                   <input
@@ -287,62 +335,127 @@ export default function Staffs() {
                     onChange={handlePhotoUpload}
                   />
                 </label>
-                <p className="text-xs text-gray-500 mt-2">
-                  Click to {photoPreview ? "change" : "upload"} image
+                <p className="text-[12px] text-gray-500 mt-2 leading-snug text-center sm:text-left">
+                  Preferred Image Size: 240px × 240px @ 72 DPI Maximum size of
+                  1MB.
                 </p>
               </div>
 
-              {["staffsName", "staffsRole", "staffsNotes"].map((field) => (
-                <input
-                  key={field}
-                  type="text"
-                  placeholder={`${field.replace("staffs", "")} (${activeLang})`}
-                  value={form[`${field}_${activeLang.toLowerCase()}`] || ""}
-                  onChange={(e) =>
-                    handleChange(activeLang, field, e.target.value)
-                  }
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
-                />
-              ))}
+              {/* Input Fields */}
+              <div className="flex flex-col gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Name<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    value={form[`staffsName_${activeLang.toLowerCase()}`] || ""}
+                    onChange={(e) =>
+                      handleChange(activeLang, "staffsName", e.target.value)
+                    }
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
+                  />
+                </div>
 
-              <input
-                type="text"
-                name="staffsId"
-                placeholder="Staff ID"
-                value={form.staffsId}
-                onChange={handleBaseChange}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
-              />
-              <input
-                type="text"
-                name="staffsNumber"
-                placeholder="Phone Number"
-                value={form.staffsNumber}
-                onChange={handleBaseChange}
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
-              />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Staff ID<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="staffsId"
+                    placeholder="Type here"
+                    value={form.staffsId}
+                    onChange={handleBaseChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
+                  />
+                </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t mt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border rounded-full hover:bg-gray-100"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800"
-                >
-                  {editMode ? "Update" : "Add"}
-                </button>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Role<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                    value={form[`staffsRole_${activeLang.toLowerCase()}`] || ""}
+                    onChange={(e) =>
+                      handleChange(activeLang, "staffsRole", e.target.value)
+                    }
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Contact Number<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="staffsNumber"
+                    placeholder="Type here"
+                    value={form.staffsNumber}
+                    onChange={handleBaseChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="staffsEmail"
+                    placeholder="Type here"
+                    value={form.staffsEmail}
+                    onChange={handleBaseChange}
+                    required
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Notes
+                  </label>
+                  <textarea
+                    rows="2"
+                    placeholder="Type here"
+                    value={
+                      form[`staffsNotes_${activeLang.toLowerCase()}`] || ""
+                    }
+                    onChange={(e) =>
+                      handleChange(activeLang, "staffsNotes", e.target.value)
+                    }
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-black outline-none resize-none"
+                  ></textarea>
+                </div>
               </div>
             </form>
+
+            <div className="flex justify-end gap-3 pt-6 border-t mt-6">
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-100 text-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                onClick={handleSubmit}
+                className="px-6 py-2.5 bg-black text-white rounded-full hover:bg-gray-800 text-sm font-medium"
+              >
+                {editMode ? "Update" : "Add"}
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Delete Confirmation Modal (same as Owners) */}
+      {/* Delete Confirmation */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
@@ -356,7 +469,6 @@ export default function Staffs() {
               Are you sure you want to delete this staff? This action cannot be
               undone.
             </p>
-
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
