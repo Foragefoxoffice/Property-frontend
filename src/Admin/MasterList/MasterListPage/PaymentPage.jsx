@@ -11,22 +11,22 @@ import {
   Languages,
 } from "lucide-react";
 import {
-  createAvailabilityStatus,
-  deleteAvailabilityStatus,
-  updateAvailabilityStatus,
-  getAllAvailabilityStatuses,
+  createPayment,
+  deletePayment,
+  updatePayment,
+  getAllPayments,
 } from "../../../Api/action";
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 
-export default function AvailabilityStatusPage({ goBack }) {
+export default function PaymentPage({ goBack }) {
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
   const [tableLang, setTableLang] = useState("EN");
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
-  const [statuses, setStatuses] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [editingStatus, setEditingStatus] = useState(null);
+  const [editingPayment, setEditingPayment] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
   const [form, setForm] = useState({
@@ -37,21 +37,21 @@ export default function AvailabilityStatusPage({ goBack }) {
     status: "Active",
   });
 
-  // ✅ Fetch all Availability Status
-  const fetchStatuses = async () => {
+  // ✅ Fetch all Payments
+  const fetchPayments = async () => {
     try {
       setLoading(true);
-      const res = await getAllAvailabilityStatuses();
-      setStatuses(res.data.data || []);
+      const res = await getAllPayments();
+      setPayments(res.data.data || []);
     } catch (error) {
-      console.error("Failed to load Availability Statuses", error);
+      console.error("Failed to load Payments", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStatuses();
+    fetchPayments();
   }, []);
 
   // ✅ Handle input change
@@ -66,16 +66,16 @@ export default function AvailabilityStatusPage({ goBack }) {
         return;
       }
 
-      if (editingStatus) {
-        await updateAvailabilityStatus(editingStatus._id, form);
-        CommonToaster("Availability Status updated successfully", "success");
+      if (editingPayment) {
+        await updatePayment(editingPayment._id, form);
+        CommonToaster("Payment updated successfully", "success");
       } else {
-        await createAvailabilityStatus(form);
-        CommonToaster("Availability Status added successfully", "success");
+        await createPayment(form);
+        CommonToaster("Payment added successfully", "success");
       }
 
       setShowModal(false);
-      setEditingStatus(null);
+      setEditingPayment(null);
       setForm({
         code_en: "",
         code_vi: "",
@@ -83,7 +83,7 @@ export default function AvailabilityStatusPage({ goBack }) {
         name_vi: "",
         status: "Active",
       });
-      fetchStatuses();
+      fetchPayments();
     } catch (err) {
       const message =
         err.response?.data?.error ||
@@ -94,14 +94,14 @@ export default function AvailabilityStatusPage({ goBack }) {
   };
 
   // ✅ Edit
-  const handleEdit = (status) => {
-    setEditingStatus(status);
+  const handleEdit = (payment) => {
+    setEditingPayment(payment);
     setForm({
-      code_en: status.code.en,
-      code_vi: status.code.vi,
-      name_en: status.name.en,
-      name_vi: status.name.vi,
-      status: status.status,
+      code_en: payment.code.en,
+      code_vi: payment.code.vi,
+      name_en: payment.name.en,
+      name_vi: payment.name.vi,
+      status: payment.status,
     });
     setShowModal(true);
   };
@@ -111,22 +111,22 @@ export default function AvailabilityStatusPage({ goBack }) {
 
   const handleDelete = async () => {
     try {
-      await deleteAvailabilityStatus(deleteConfirm.id);
-      CommonToaster("Availability Status deleted successfully!", "success");
+      await deletePayment(deleteConfirm.id);
+      CommonToaster("Payment deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
-      fetchStatuses();
+      fetchPayments();
     } catch {
-      CommonToaster("Failed to delete Availability Status", "error");
+      CommonToaster("Failed to delete Payment", "error");
     }
   };
 
   // ✅ Toggle Status
-  const handleToggleStatus = async (status) => {
-    const newStatus = status.status === "Active" ? "Inactive" : "Active";
+  const handleToggleStatus = async (payment) => {
+    const newStatus = payment.status === "Active" ? "Inactive" : "Active";
     try {
-      await updateAvailabilityStatus(status._id, { status: newStatus });
+      await updatePayment(payment._id, { status: newStatus });
       CommonToaster(`Marked as ${newStatus}`, "success");
-      fetchStatuses();
+      fetchPayments();
     } catch {
       CommonToaster("Failed to update status", "error");
     }
@@ -143,9 +143,7 @@ export default function AvailabilityStatusPage({ goBack }) {
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Availability Status
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Payment</h2>
         </div>
 
         <div className="flex items-center gap-4">
@@ -180,7 +178,7 @@ export default function AvailabilityStatusPage({ goBack }) {
             className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-all text-sm"
           >
             <Plus className="w-4 h-4" />
-            Add Availability Status
+            Add Payment
           </button>
         </div>
       </div>
@@ -202,22 +200,22 @@ export default function AvailabilityStatusPage({ goBack }) {
                 </th>
                 <th className="px-6 py-3 font-medium">
                   {tableLang === "EN"
-                    ? "Availability Status (EN)"
-                    : "Trạng thái (VI)"}
+                    ? "Payment Name (EN)"
+                    : "Tên phương thức thanh toán (VI)"}
                 </th>
                 <th className="px-6 py-3 font-medium">Status</th>
                 <th className="px-6 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {statuses.length === 0 ? (
+              {payments.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="text-center py-6 text-gray-500">
-                    No Availability Status found.
+                    No Payment records found.
                   </td>
                 </tr>
               ) : (
-                statuses.map((row, i) => (
+                payments.map((row, i) => (
                   <tr
                     key={i}
                     className={`${
@@ -305,8 +303,8 @@ export default function AvailabilityStatusPage({ goBack }) {
               </h3>
             </div>
             <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to delete this Availability Status? This
-              action cannot be undone.
+              Are you sure you want to delete this Payment? This action cannot
+              be undone.
             </p>
 
             <div className="flex justify-end gap-3">
@@ -333,14 +331,12 @@ export default function AvailabilityStatusPage({ goBack }) {
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-6 relative">
             <div className="flex items-center justify-between mb-4 border-b pb-2">
               <h2 className="text-lg font-semibold text-gray-800">
-                {editingStatus
-                  ? "Edit Availability Status"
-                  : "New Availability Status"}
+                {editingPayment ? "Edit Payment" : "New Payment"}
               </h2>
               <button
                 onClick={() => {
                   setShowModal(false);
-                  setEditingStatus(null);
+                  setEditingPayment(null);
                 }}
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
               >
@@ -387,7 +383,7 @@ export default function AvailabilityStatusPage({ goBack }) {
                   <input
                     type="text"
                     name="name_en"
-                    placeholder="Availability Status (English)"
+                    placeholder="Payment Name (English)"
                     value={form.name_en}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
@@ -406,7 +402,7 @@ export default function AvailabilityStatusPage({ goBack }) {
                   <input
                     type="text"
                     name="name_vi"
-                    placeholder="Trạng thái (Vietnamese)"
+                    placeholder="Tên phương thức thanh toán (Vietnamese)"
                     value={form.name_vi}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
@@ -419,7 +415,7 @@ export default function AvailabilityStatusPage({ goBack }) {
               <button
                 onClick={() => {
                   setShowModal(false);
-                  setEditingStatus(null);
+                  setEditingPayment(null);
                 }}
                 className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
               >
@@ -429,7 +425,7 @@ export default function AvailabilityStatusPage({ goBack }) {
                 onClick={handleSubmit}
                 className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800"
               >
-                {editingStatus ? "Update" : "Add"}
+                {editingPayment ? "Update" : "Add"}
               </button>
             </div>
           </div>

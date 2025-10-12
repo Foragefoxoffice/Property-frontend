@@ -99,6 +99,7 @@ export const getAllUnits = (params) => API.get("/unit", { params });
 export const createUnit = (data) => API.post("/unit", data);
 export const updateUnit = (id, data) => API.put(`/unit/${id}`, data);
 export const deleteUnit = (id) => API.delete(`/unit/${id}`);
+export const markUnitAsDefault = (id) => API.put(`/unit/${id}/default`);
 
 /* =========================================================
    🪑 FURNISHING APIs
@@ -127,6 +128,47 @@ export const deletePetPolicy = (id) => API.delete(`/petpolicy/${id}`);
 
 //
 
+/* =========================================================
+   💰 DEPOSIT APIs
+========================================================= */
+export const getAllDeposits = (params) => API.get("/deposit", { params });
+export const createDeposit = (data) => API.post("/deposit", data);
+export const updateDeposit = (id, data) => API.put(`/deposit/${id}`, data);
+export const deleteDeposit = (id) => API.delete(`/deposit/${id}`);
+
+/* =========================================================
+   💳 PAYMENT APIs
+========================================================= */
+export const getAllPayments = (params) => API.get("/payment", { params });
+export const createPayment = (data) => API.post("/payment", data);
+export const updatePayment = (id, data) => API.put(`/payment/${id}`, data);
+export const deletePayment = (id) => API.delete(`/payment/${id}`);
+
+/* =========================================================
+   👥 OWNERS / LANDLORDS APIs
+========================================================= */
+export const getAllOwners = (params) => API.get("/owners", { params });
+export const createOwner = (data) => API.post("/owners", data);
+export const updateOwner = (id, data) => API.put(`/owners/${id}`, data);
+export const deleteOwner = (id) => API.delete(`/owners/${id}`);
+
+/* =========================================================
+   👥 STAFFS APIs
+========================================================= */
+export const getAllStaffs = () => API.get("/staffs");
+export const createStaff = (data) => API.post("/staffs", data);
+export const updateStaff = (id, data) => API.put(`/staffs/${id}`, data);
+export const deleteStaff = (id) => API.delete(`/staffs/${id}`);
+
+/* =========================================================
+   💵 CURRENCY APIs
+========================================================= */
+export const getAllCurrencies = (params) => API.get("/currency", { params });
+export const createCurrency = (data) => API.post("/currency", data);
+export const updateCurrency = (id, data) => API.put(`/currency/${id}`, data);
+export const deleteCurrency = (id) => API.delete(`/currency/${id}`);
+export const markCurrencyAsDefault = (id) => API.put(`/currency/${id}/default`);
+
 export const createPropertyListing = (data) =>
   API.post("/create-property", data);
 export const getAllPropertyListings = (params) =>
@@ -135,7 +177,6 @@ export const updatePropertyListing = (id, data) =>
   API.put(`/create-property/${id}`, data);
 export const deletePropertyListing = (id) =>
   API.delete(`/create-property/${id}`);
-
 
 /* =========================================================
    ✨ EXPORT DEFAULT

@@ -38,13 +38,23 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
         className="appearance-none border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
       >
         <option value="">{lang === "en" ? "Select" : "Chọn"}</option>
-        {options.map((opt) => (
-          <option key={opt._id} value={opt._id}>
-            {lang === "vi"
+        {options.map((opt) => {
+          // 👇 If this dropdown is for "unit", show symbol instead of name
+          const displayValue =
+            name === "unit"
+              ? lang === "vi"
+                ? opt.symbol?.vi || "—"
+                : opt.symbol?.en || "—"
+              : lang === "vi"
               ? opt.name?.vi || "Chưa đặt tên"
-              : opt.name?.en || "Unnamed"}
-          </option>
-        ))}
+              : opt.name?.en || "Unnamed";
+
+          return (
+            <option key={opt._id} value={opt._id}>
+              {displayValue}
+            </option>
+          );
+        })}
       </select>
       <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400 pointer-events-none" />
     </div>
@@ -131,7 +141,6 @@ export default function CreatePropertyListStep1({
     }
   }, [initialData]);
 
-
   /* Fetch dropdowns once */
   useEffect(() => {
     let mounted = true;
@@ -156,17 +165,43 @@ export default function CreatePropertyListStep1({
           getAllParkings(),
           getAllPetPolicies(),
         ]);
+
         if (mounted) {
+          const allUnits = (unitRes.data?.data || []).filter(
+            (i) => i.status === "Active"
+          );
+          const defaultUnit = allUnits.find((u) => u.isDefault);
+
           setDropdowns({
-            properties: propRes.data?.data || [],
-            zones: zoneRes.data?.data || [],
-            types: typeRes.data?.data || [],
-            statuses: statusRes.data?.data || [],
-            units: unitRes.data?.data || [],
-            furnishings: furnRes.data?.data || [],
-            parkings: parkRes.data?.data || [],
-            pets: petRes.data?.data || [],
+            properties: (propRes.data?.data || []).filter(
+              (i) => i.status === "Active"
+            ),
+            zones: (zoneRes.data?.data || []).filter(
+              (i) => i.status === "Active"
+            ),
+            types: (typeRes.data?.data || []).filter(
+              (i) => i.status === "Active"
+            ),
+            statuses: (statusRes.data?.data || []).filter(
+              (i) => i.status === "Active"
+            ),
+            units: allUnits,
+            furnishings: (furnRes.data?.data || []).filter(
+              (i) => i.status === "Active"
+            ),
+            parkings: (parkRes.data?.data || []).filter(
+              (i) => i.status === "Active"
+            ),
+            pets: (petRes.data?.data || []).filter(
+              (i) => i.status === "Active"
+            ),
           });
+
+          // ✅ Auto-select default unit if not already selected
+          setForm((prev) => ({
+            ...prev,
+            unit: prev.unit || defaultUnit?._id || "",
+          }));
         }
       } catch (err) {
         console.error("Error loading dropdowns", err);
@@ -194,25 +229,6 @@ export default function CreatePropertyListStep1({
       [field]: { ...(prev[field] || { en: "", vi: "" }), [lang]: value },
     }));
   };
-
-  const handleAmenityChange = (i, f, v) =>
-    setForm((p) => {
-      const u = [...p.amenities];
-      u[i][f] = v;
-      return { ...p, amenities: u };
-    });
-
-  const addAmenity = () =>
-    setForm((p) => ({
-      ...p,
-      amenities: [...p.amenities, { name: "", km: "" }],
-    }));
-
-  const removeAmenity = (i) =>
-    setForm((p) => ({
-      ...p,
-      amenities: p.amenities.filter((_, x) => x !== i),
-    }));
 
   const handleUtilityChange = (i, f, v) =>
     setForm((p) => {
@@ -250,10 +266,11 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-black text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-black text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -269,6 +286,7 @@ export default function CreatePropertyListStep1({
           <Input
             label="Property ID"
             name="propertyId"
+            placeholder="e.g. P12345"
             value={form.propertyId}
             onChange={handleInputChange}
           />
@@ -277,12 +295,12 @@ export default function CreatePropertyListStep1({
             label="Transaction Type"
             name="transactionType"
             lang={lang}
-            value={form.transactionType}
+            value={form.transactionType || "Sale"} // ✅ Default to Sale if undefined
             onChange={handleInputChange}
             options={[
-              { _id: "Sale", name: { en: "Sale", vi: "Doanh thu" } },
+              { _id: "Sale", name: { en: "Sale", vi: "Bán" } },
               { _id: "Lease", name: { en: "Lease", vi: "Cho thuê" } },
-              { _id: "Home stay", name: { en: "Home stay", vi: "Ở nhà" } },
+              { _id: "Home stay", name: { en: "Home stay", vi: "Nhà nghỉ" } },
             ]}
           />
 
@@ -480,7 +498,6 @@ export default function CreatePropertyListStep1({
           onChange={handleLocalizedChange}
         /> */}
 
-
         {/* === Amenities === */}
         {/* <h2 className="text-lg font-semibold mt-8 mb-4">
           {lang === "en" ? "Amenities" : "Tiện Ích"}
@@ -544,7 +561,6 @@ export default function CreatePropertyListStep1({
           <Plus className="w-4 h-4" />{" "}
           {lang === "en" ? "Add Amenity" : "Thêm Tiện Ích"}
         </button> */}
-
 
         {/* === Description === */}
         <h2 className="text-lg font-semibold mt-8 mb-4">{t.description}</h2>
@@ -629,7 +645,6 @@ export default function CreatePropertyListStep1({
           <Plus className="w-4 h-4" />{" "}
           {lang === "en" ? "Add Utility" : "Thêm Tiện Ích"}
         </button>
-
       </div>
 
       {/* Next */}
@@ -664,7 +679,6 @@ export default function CreatePropertyListStep1({
       >
         Next →
       </button>
-
     </div>
   );
 }

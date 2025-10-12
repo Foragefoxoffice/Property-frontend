@@ -16,7 +16,7 @@ import {
   updatePropertyListing,
 } from "../../Api/action";
 import CreatePropertyListStep4 from "./CreatePropertyListStep4";
-
+import { CommonToaster } from "../../Common/CommonToaster";
 
 /* =========================================================
    🧰 Safe Object Sanitizer
@@ -47,124 +47,143 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch { }
+    } catch {}
   }
   return result;
 }
 
 /* =========================================================
-   🧠 Normalize multilingual
-========================================================= */
-const normalizeMultilingual = (data) => {
-  const ensureLocalized = (val) => {
-    if (!val) return { en: "", vi: "" };
-    if (typeof val === "string") return { en: val, vi: val };
-    if (typeof val === "object") return { en: val.en || "", vi: val.vi || "" };
-    return { en: "", vi: "" };
-  };
-
-  return {
-    ...data,
-    title: ensureLocalized(data.title),
-    address: ensureLocalized(data.address),
-    whatsNearby: ensureLocalized(data.whatsNearby),
-    description: ensureLocalized(data.description),
-    view: ensureLocalized(data.view),
-    contractTerms: ensureLocalized(data.contractTerms),
-    depositPaymentTerms: ensureLocalized(data.depositPaymentTerms),
-    maintenanceFeeMonthly: ensureLocalized(data.maintenanceFeeMonthly),
-  };
-};
-
-/* =========================================================
-   🧩 Smart Wrap (Prevents double wrap)
-========================================================= */
-const wrap = (val) => {
-  if (!val) return { en: "", vi: "" };
-
-  // ✅ Already multilingual → return as-is
-  if (typeof val === "object" && "en" in val && "vi" in val) {
-    return { en: val.en || "", vi: val.vi || "" };
-  }
-
-  // ✅ Simple string → duplicate to both
-  if (typeof val === "string") {
-    return { en: val, vi: val };
-  }
-
-  return { en: "", vi: "" };
-};
-
-
-/* =========================================================
    🧱 Main Component
 ========================================================= */
-export default function CreatePropertyPage({ goBack, editData = null, isEditMode = false }) {
+export default function CreatePropertyPage({
+  goBack,
+  editData = null,
+  isEditMode = false,
+}) {
   const [step, setStep] = useState(1);
   const [propertyData, setPropertyData] = useState({});
   const [loading, setLoading] = useState(false);
   const [dropdowns, setDropdowns] = useState({ properties: [], zones: [] });
 
+  // inside CreatePropertyPage.jsx
+
   useEffect(() => {
-    if (isEditMode && editData) {
-      // Deep flatten: combine nested DB structure into step-friendly format
-      const mapped = {
-        ...editData,
-        propertyId: editData.listingInformation?.listingInformationPropertyId || "",
-        transactionType: editData.listingInformation?.listingInformationTransactionType?.en || "Sale",
-        projectId: editData.listingInformation?.listingInformationProjectCommunity?._id ||
-          editData.listingInformation?.listingInformationProjectCommunity?.en || "",
-        zoneId: editData.listingInformation?.listingInformationZoneSubArea?._id ||
-          editData.listingInformation?.listingInformationZoneSubArea?.en || "",
-        title: editData.listingInformation?.listingInformationPropertyTitle || { en: "", vi: "" },
-        blockName: editData.listingInformation?.listingInformationBlockName || { en: "", vi: "" },
-        propertyType: editData.listingInformation?.listingInformationPropertyType?._id ||
-          editData.listingInformation?.listingInformationPropertyType?.en || "",
-        dateListed: editData.listingInformation?.listingInformationDateListed || "",
-        availabilityStatus: editData.listingInformation?.listingInformationAvailabilityStatus?._id ||
-          editData.listingInformation?.listingInformationAvailabilityStatus?.en || "",
-        availableFrom: editData.listingInformation?.listingInformationAvailableFrom || "",
-        unit: editData.propertyInformation?.informationUnit?._id ||
-          editData.propertyInformation?.informationUnit?.en || "",
-        unitSize: editData.propertyInformation?.informationUnitSize || "",
-        bedrooms: editData.propertyInformation?.informationBedrooms || "",
-        bathrooms: editData.propertyInformation?.informationBathrooms || "",
-        floors: editData.propertyInformation?.informationFloors || "",
-        furnishing: editData.propertyInformation?.informationFurnishing?._id ||
-          editData.propertyInformation?.informationFurnishing?.en || "",
-        view: editData.propertyInformation?.informationView || { en: "", vi: "" },
-        description: editData.whatNearby?.whatNearbyDescription || { en: "", vi: "" },
-        utilities: (editData.propertyUtility || []).map(u => ({
-          name: u.propertyUtilityUnitName || { en: "", vi: "" },
-          icon: u.propertyUtilityIcon || "",
-        })),
-        propertyImages: editData.imagesVideos?.propertyImages?.map(u => ({ url: u })) || [],
-        propertyVideos: editData.imagesVideos?.propertyVideo?.map(u => ({ url: u })) || [],
-        floorPlans: editData.imagesVideos?.floorPlan?.map(u => ({ url: u })) || [],
-        currency: editData.financialDetails?.financialDetailsCurrency || "USD",
-        price: editData.financialDetails?.financialDetailsPrice || "",
-        contractTerms: editData.financialDetails?.financialDetailsTerms || { en: "", vi: "" },
-        depositPaymentTerms: editData.financialDetails?.financialDetailsDeposit || { en: "", vi: "" },
-        maintenanceFeeMonthly: editData.financialDetails?.financialDetailsMainFee || { en: "", vi: "" },
-        leasePrice: editData.financialDetails?.financialDetailsLeasePrice || "",
-        contractLength: editData.financialDetails?.financialDetailsContractLength || "",
-        pricePerNight: editData.financialDetails?.financialDetailsPricePerNight || "",
-        checkIn: editData.financialDetails?.financialDetailsCheckIn || "",
-        checkOut: editData.financialDetails?.financialDetailsCheckOut || "",
-        owner: editData.contactManagement?.contactManagementOwner || "",
-        ownerNotes: editData.contactManagement?.contactManagementOwnerNotes || { en: "", vi: "" },
-        consultant: editData.contactManagement?.contactManagementConsultant || { en: "", vi: "" },
-        connectingPoint: editData.contactManagement?.contactManagementConnectingPoint || { en: "", vi: "" },
-        connectingPointNotes: editData.contactManagement?.contactManagementConnectingPointNotes || { en: "", vi: "" },
-        internalNotes: editData.contactManagement?.contactManagementInternalNotes || { en: "", vi: "" },
-        status: editData.status || "Draft",
-      };
+    if (!isEditMode || !editData || Object.keys(dropdowns).length === 0) return;
 
-      setPropertyData(mapped);
-    }
-  }, [isEditMode, editData]);
+    const mapped = {
+      ...editData,
+      propertyId:
+        editData.listingInformation?.listingInformationPropertyId || "",
+      transactionType:
+        editData.listingInformation?.listingInformationTransactionType?.en ||
+        "Sale",
+      projectId:
+        editData.listingInformation?.listingInformationProjectCommunity?._id ||
+        editData.listingInformation?.listingInformationProjectCommunity?.en ||
+        "",
+      zoneId:
+        editData.listingInformation?.listingInformationZoneSubArea?._id ||
+        editData.listingInformation?.listingInformationZoneSubArea?.en ||
+        "",
+      title: editData.listingInformation?.listingInformationPropertyTitle || {
+        en: "",
+        vi: "",
+      },
+      blockName: editData.listingInformation?.listingInformationBlockName || {
+        en: "",
+        vi: "",
+      },
+      propertyType:
+        editData.listingInformation?.listingInformationPropertyType?._id ||
+        editData.listingInformation?.listingInformationPropertyType?.en ||
+        "",
+      dateListed: editData.listingInformation?.listingInformationDateListed
+        ? editData.listingInformation?.listingInformationDateListed.split(
+            "T"
+          )[0]
+        : "",
+      availableFrom:
+        editData.listingInformation?.listingInformationAvailableFrom?.split(
+          "T"
+        )[0] || "",
+      availabilityStatus:
+        editData.listingInformation?.listingInformationAvailabilityStatus
+          ?._id ||
+        editData.listingInformation?.listingInformationAvailabilityStatus?.en ||
+        "",
+      unit:
+        editData.propertyInformation?.informationUnit?._id ||
+        editData.propertyInformation?.informationUnit?.symbol?.en ||
+        "",
+      unitSize: editData.propertyInformation?.informationUnitSize || "",
+      bedrooms: editData.propertyInformation?.informationBedrooms || "",
+      bathrooms: editData.propertyInformation?.informationBathrooms || "",
+      floors: editData.propertyInformation?.informationFloors || "",
+      furnishing:
+        editData.propertyInformation?.informationFurnishing?._id ||
+        editData.propertyInformation?.informationFurnishing?.en ||
+        "",
+      view: editData.propertyInformation?.informationView || { en: "", vi: "" },
+      description: editData.whatNearby?.whatNearbyDescription || {
+        en: "",
+        vi: "",
+      },
+      utilities: (editData.propertyUtility || []).map((u) => ({
+        name: u.propertyUtilityUnitName || { en: "", vi: "" },
+        icon: u.propertyUtilityIcon || "",
+      })),
+      propertyImages:
+        editData.imagesVideos?.propertyImages?.map((u) => ({ url: u })) || [],
+      propertyVideos:
+        editData.imagesVideos?.propertyVideo?.map((u) => ({ url: u })) || [],
+      floorPlans:
+        editData.imagesVideos?.floorPlan?.map((u) => ({ url: u })) || [],
+      currency: editData.financialDetails?.financialDetailsCurrency || "USD",
+      price: editData.financialDetails?.financialDetailsPrice || "",
+      depositPaymentTerms: editData.financialDetails
+        ?.financialDetailsDeposit || { en: "", vi: "" },
+      maintenanceFeeMonthly: editData.financialDetails
+        ?.financialDetailsMainFee || { en: "", vi: "" },
+      leasePrice: editData.financialDetails?.financialDetailsLeasePrice || "",
+      contractLength:
+        editData.financialDetails?.financialDetailsContractLength || "",
+      pricePerNight:
+        editData.financialDetails?.financialDetailsPricePerNight || "",
+      checkIn: editData.financialDetails?.financialDetailsCheckIn || "",
+      checkOut: editData.financialDetails?.financialDetailsCheckOut || "",
 
+      // ✅ Properly restore contact section
+      owner:
+        typeof editData.contactManagement?.contactManagementOwner === "object"
+          ? editData.contactManagement?.contactManagementOwner?.en
+          : editData.contactManagement?.contactManagementOwner || "",
+      ownerNotes: editData.contactManagement?.contactManagementOwnerNotes || {
+        en: "",
+        vi: "",
+      },
+      consultant: editData.contactManagement?.contactManagementConsultant || {
+        en: "",
+        vi: "",
+      },
+      connectingPoint:
+        typeof editData.contactManagement?.contactManagementConnectingPoint ===
+        "object"
+          ? editData.contactManagement?.contactManagementConnectingPoint
+          : {
+              en:
+                editData.contactManagement?.contactManagementConnectingPoint ||
+                "",
+              vi: "",
+            },
+      connectingPointNotes: editData.contactManagement
+        ?.contactManagementConnectingPointNotes || { en: "", vi: "" },
+      internalNotes: editData.contactManagement
+        ?.contactManagementInternalNotes || { en: "", vi: "" },
+      status: editData.status || "Draft",
+    };
 
+    setPropertyData(mapped);
+  }, [isEditMode, editData, dropdowns]);
 
   // 🔽 Fetch dropdown data for mapping IDs → localized names
   useEffect(() => {
@@ -207,7 +226,6 @@ export default function CreatePropertyPage({ goBack, editData = null, isEditMode
     loadDropdowns();
   }, []);
 
-
   const handleStepChange = (updatedStepData) =>
     setPropertyData((prev) => ({ ...prev, ...updatedStepData }));
 
@@ -217,27 +235,6 @@ export default function CreatePropertyPage({ goBack, editData = null, isEditMode
     { title: "Create Property", label: "Contact / Management Details" },
     { title: "Create Property", label: "Review & Publish" },
   ];
-
-  const handleNext = (dataFromStep) => {
-    const merged = {
-      ...propertyData,
-      ...dataFromStep,
-      propertyImages: [
-        ...(propertyData.propertyImages || []),
-        ...(dataFromStep.propertyImages || []),
-      ],
-      propertyVideos: [
-        ...(propertyData.propertyVideos || []),
-        ...(dataFromStep.propertyVideos || []),
-      ],
-      floorPlans: [
-        ...(propertyData.floorPlans || []),
-        ...(dataFromStep.floorPlans || []),
-      ],
-    };
-    setPropertyData(merged);
-    setStep((prev) => prev + 1);
-  };
 
   const handlePrev = () => setStep((s) => Math.max(1, s - 1));
 
@@ -261,20 +258,32 @@ export default function CreatePropertyPage({ goBack, editData = null, isEditMode
       };
 
       // ✅ Smart dropdown finder (supports id or name)
-      const findLocalized = (arr, id) => {
+      // ✅ Enhanced helper that supports both names and symbols
+      const findLocalized = (arr, id, isUnit = false) => {
         if (!arr || !id) return { en: "", vi: "" };
         const item = arr.find(
           (i) =>
             i._id === id ||
             i._id === String(id) ||
             i.name?.en === id ||
-            i.name?.vi === id
+            i.name?.vi === id ||
+            i.symbol?.en === id ||
+            i.symbol?.vi === id
         );
-        if (!item) return { en: id, vi: id }; // fallback if user typed text
-        return {
-          en: item.name?.en || item.name || "",
-          vi: item.name?.vi || item.name || "",
-        };
+        if (!item) return { en: id, vi: id };
+
+        // 👇 Return symbol if unit, else name
+        if (isUnit) {
+          return {
+            en: item.symbol?.en || "",
+            vi: item.symbol?.vi || "",
+          };
+        } else {
+          return {
+            en: item.name?.en || "",
+            vi: item.name?.vi || "",
+          };
+        }
       };
 
       // ✅ Ensure `whatsNearby` & `description` always exist before wrap()
@@ -331,7 +340,11 @@ export default function CreatePropertyPage({ goBack, editData = null, isEditMode
         },
 
         propertyInformation: {
-          informationUnit: findLocalized(dropdowns.units, normalized.unit),
+          informationUnit: findLocalized(
+            dropdowns.units,
+            normalized.unit,
+            true
+          ),
           informationUnitSize: num(normalized.unitSize),
           informationBedrooms: num(normalized.bedrooms),
           informationBathrooms: num(normalized.bathrooms),
@@ -381,7 +394,10 @@ export default function CreatePropertyPage({ goBack, editData = null, isEditMode
         },
 
         financialDetails: {
-          financialDetailsCurrency: normalized.currency || "USD",
+          financialDetailsCurrency:
+            typeof normalized.currency === "object"
+              ? normalized.currency.symbol || "$"
+              : normalized.currency || "$",
           financialDetailsPrice: num(normalized.price),
           financialDetailsTerms: wrap(normalized.contractTerms),
           financialDetailsDeposit: wrap(normalized.depositPaymentTerms),
@@ -399,7 +415,9 @@ export default function CreatePropertyPage({ goBack, editData = null, isEditMode
           contactManagementOwnerNotes: wrap(normalized.ownerNotes),
           contactManagementConsultant: wrap(normalized.consultant),
           contactManagementConnectingPoint: wrap(normalized.connectingPoint),
-          contactManagementConnectingPointNotes: wrap(normalized.connectingPointNotes),
+          contactManagementConnectingPointNotes: wrap(
+            normalized.connectingPointNotes
+          ),
           contactManagementInternalNotes: wrap(normalized.internalNotes),
         },
 
@@ -426,23 +444,28 @@ export default function CreatePropertyPage({ goBack, editData = null, isEditMode
       let res;
       if (isEditMode && editData?._id) {
         res = await updatePropertyListing(editData._id, payload);
-        alert("✅ Property updated successfully!");
+        CommonToaster("✅ Property updated successfully!", "success");
       } else {
         res = await createPropertyListing(payload);
-        alert("🎉 Property created successfully!");
+        CommonToaster("✅ Property created successfully!", "success");
       }
 
       console.log("🧾 Created:", res.data.data);
       setStep((prev) => prev + 1);
       if (goBack) goBack();
     } catch (err) {
-      console.error("❌ Error creating/updating property:", err.response?.data || err);
-      alert(err.response?.data?.error || "Error saving property.");
+      console.error(
+        "❌ Error creating/updating property:",
+        err.response?.data || err
+      );
+      CommonToaster(
+        "Error saving property. " + (err.response?.data?.error || ""),
+        "error"
+      );
     } finally {
       setLoading(false);
     }
   };
-
 
   const renderStepContent = () => {
     switch (step) {
@@ -478,7 +501,6 @@ export default function CreatePropertyPage({ goBack, editData = null, isEditMode
         return null;
     }
   };
-
 
   return (
     <Steps

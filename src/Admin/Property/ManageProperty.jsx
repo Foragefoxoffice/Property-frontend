@@ -7,28 +7,32 @@ import {
   Eye,
   Trash2,
   Pencil,
+  AlertTriangle,
 } from "lucide-react";
-import { getAllPropertyListings, deletePropertyListing } from "../../Api/action";
+import {
+  getAllPropertyListings,
+  deletePropertyListing,
+} from "../../Api/action";
+import { CommonToaster } from "../../Common/CommonToaster";
 
-export default function ManageProperty({ openCreateProperty, openEditProperty }) {
+export default function ManageProperty({
+  openCreateProperty,
+  openEditProperty,
+}) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
-  /* =========================================================
-     🧠 Fetch All Properties
-  ========================================================== */
+  // ✅ Fetch properties
   useEffect(() => {
     async function fetchProperties() {
       try {
         const res = await getAllPropertyListings();
-        if (res?.data?.success) {
-          setProperties(res.data.data || []);
-        } else {
-          console.warn("No data in property response");
-        }
+        console.log("Fetched properties:", res);
+        if (res?.data?.success) setProperties(res.data.data || []);
       } catch (err) {
         console.error("Error fetching properties:", err);
       } finally {
@@ -38,9 +42,7 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
     fetchProperties();
   }, []);
 
-  /* =========================================================
-     🔍 Filter + Pagination
-  ========================================================== */
+  // ✅ Filter properties
   const filteredProperties = useMemo(() => {
     return properties.filter((p) => {
       const info = p.listingInformation || {};
@@ -58,6 +60,7 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
     });
   }, [searchTerm, properties]);
 
+  // ✅ Pagination logic
   const totalRows = filteredProperties.length;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -73,25 +76,29 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
   const handleNextPage = () =>
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this property?")) return;
+  // ✅ Delete property
+  const handleDelete = async () => {
     try {
-      await deletePropertyListing(id);
-      setProperties((prev) => prev.filter((p) => p._id !== id));
+      await deletePropertyListing(deleteConfirm.id);
+      setProperties((prev) => prev.filter((p) => p._id !== deleteConfirm.id));
+      CommonToaster("Property deleted successfully", "success");
     } catch (err) {
       console.error("Error deleting property:", err);
-      alert("Failed to delete property");
+      CommonToaster("Failed to delete property", "error");
+    } finally {
+      setDeleteConfirm({ show: false, id: null });
     }
   };
 
-  /* =========================================================
-     🖼️ UI
-  ========================================================== */
+  const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#f1f3f6] px-10 py-8">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Manage Property</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          Manage Property
+        </h1>
 
         <div className="flex items-center gap-4">
           <button className="flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-gray-700 hover:bg-gray-50 shadow-sm">
@@ -108,7 +115,7 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* Search */}
       <div className="relative mb-6 max-w-sm">
         <Search className="absolute top-3 left-3 text-gray-400 w-5 h-5" />
         <input
@@ -126,7 +133,9 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
       {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
-          <div className="py-10 text-center text-gray-500">Loading properties...</div>
+          <div className="py-10 text-center text-gray-500">
+            Loading properties...
+          </div>
         ) : (
           <table className="w-full text-sm text-gray-700">
             <thead className="bg-gray-50 text-gray-600 text-left">
@@ -146,25 +155,27 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100 transition`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-4 flex items-center gap-3">
                       <img
-                        src={img || "https://via.placeholder.com/80x80?text=No+Image"}
-                        alt={info.listingInformationPropertyTitle?.en || "Property"}
+                        src={img || "/default-image.jpg"}
+                        alt="Property"
                         className="w-14 h-14 rounded-lg object-cover"
+                        onError={(e) => (e.target.src = "/default-image.jpg")}
                       />
                       <div>
                         <p className="text-sm text-gray-600 font-medium">
                           ID: {info.listingInformationPropertyId || "—"}
                         </p>
                         <p className="text-gray-900 font-semibold">
-                          {info.listingInformationPropertyTitle?.en || "Untitled"}
+                          {info.listingInformationPropertyTitle?.en ||
+                            "Untitled"}
                         </p>
                       </div>
                     </td>
-
                     <td className="px-6 py-4 capitalize">
                       {info.listingInformationTransactionType?.en || "—"}
                     </td>
@@ -176,17 +187,17 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${p.status === "Published"
-                          ? "bg-green-100 text-green-700"
-                          : p.status === "Archived"
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          p.status === "Published"
+                            ? "bg-green-100 text-green-700"
+                            : p.status === "Archived"
                             ? "bg-gray-200 text-gray-700"
                             : "bg-yellow-100 text-yellow-700"
-                          }`}
+                        }`}
                       >
                         {p.status}
                       </span>
                     </td>
-
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
                       <button className="p-2 hover:bg-gray-100 rounded-full">
                         <Share2 className="w-4 h-4 text-gray-600" />
@@ -195,13 +206,13 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
                         <Eye className="w-4 h-4 text-gray-600" />
                       </button>
                       <button
-                        onClick={() => openEditProperty(p)} // ✅ send property data
+                        onClick={() => openEditProperty(p)}
                         className="p-2 hover:bg-gray-100 rounded-full"
                       >
                         <Pencil className="w-4 h-4 text-gray-600" />
                       </button>
                       <button
-                        onClick={() => handleDelete(p._id)}
+                        onClick={() => confirmDelete(p._id)}
                         className="p-2 hover:bg-red-50 rounded-full"
                       >
                         <Trash2 className="w-4 h-4 text-red-500" />
@@ -221,53 +232,88 @@ export default function ManageProperty({ openCreateProperty, openEditProperty })
             </tbody>
           </table>
         )}
+      </div>
 
-        {/* Pagination */}
-        {!loading && totalRows > 0 && (
-          <div className="flex justify-between items-center px-6 py-4 text-sm text-gray-600 border-t bg-gray-50">
-            <div className="flex items-center gap-2">
-              <span>Rows per page:</span>
-              <select
-                value={rowsPerPage}
-                onChange={handleRowsPerPageChange}
-                className="border rounded-md text-gray-700 focus:outline-none px-2 py-1"
-              >
-                {[5, 10, 20, 25, 50].map((num) => (
-                  <option key={num} value={num}>
-                    {num}
-                  </option>
-                ))}
-              </select>
-            </div>
+      {/* ✅ Pagination */}
+      {!loading && totalRows > 0 && (
+        <div className="flex justify-between items-center px-6 py-4 text-sm text-gray-600 border-t bg-gray-50 mt-4 rounded-b-2xl">
+          <div className="flex items-center gap-2">
+            <span>Rows per page:</span>
+            <select
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+              className="border rounded-md text-gray-700 focus:outline-none px-2 py-1"
+            >
+              {[5, 10, 20, 25, 50].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div className="flex items-center gap-3">
-              <p>
-                {startIndex + 1}-{Math.min(endIndex, totalRows)} of {totalRows}
-              </p>
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-                className={`p-1 px-2 rounded ${currentPage === 1
-                  ? "text-gray-400"
+          <div className="flex items-center gap-3">
+            <p>
+              {startIndex + 1}-{Math.min(endIndex, totalRows)} of {totalRows}
+            </p>
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className={`p-1 px-2 rounded ${
+                currentPage === 1
+                  ? "text-gray-400 cursor-not-allowed"
                   : "hover:bg-gray-100 text-gray-600"
-                  }`}
+              }`}
+            >
+              &lt;
+            </button>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className={`p-1 px-2 rounded ${
+                currentPage === totalPages
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "hover:bg-gray-100 text-gray-600"
+              }`}
+            >
+              &gt;
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Delete Confirmation Modal (same as AvailabilityStatusPage) */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
+            <div className="flex items-center mb-4">
+              <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-800">
+                Confirm Deletion
+              </h3>
+            </div>
+            <p className="text-gray-600 text-sm mb-6">
+              Are you sure you want to delete this property? This action cannot
+              be undone.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirm({ show: false, id: null })}
+                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
               >
-                &lt;
+                Cancel
               </button>
               <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                className={`p-1 px-2 rounded ${currentPage === totalPages
-                  ? "text-gray-400"
-                  : "hover:bg-gray-100 text-gray-600"
-                  }`}
+                onClick={handleDelete}
+                className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
               >
-                &gt;
+                Delete
               </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
