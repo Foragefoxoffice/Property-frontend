@@ -11,7 +11,7 @@ export default function Steps({
   children,
 }) {
   return (
-    <div className="min-h-screen bg-[#f9f9fb] flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <div className="px-10 pt-8">
         <div className="flex items-center gap-3 mb-6">

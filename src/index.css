@@ -14,3 +14,42 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+/* === Custom Select Styling === */
+.custom-select .ant-select-selector {
+  border: 1px solid #000 !important; /* gray-300 */
+  border-radius: 8px !important;
+  height: 42px !important;
+  display: flex;
+  align-items: center;
+  box-shadow: none !important;
+  transition: border 0.2s ease;
+}
+
+.custom-select .ant-select-selector:hover,
+.custom-select .ant-select-focused .ant-select-selector {
+  border-color: #000 !important; /* black focus border */
+}
+
+.custom-select .ant-select-selection-placeholder {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+.custom-select .ant-select-selection-item {
+  color: #111827 !important; /* gray-900 */
+  font-weight: 500;
+}
+
+.custom-dropdown .ant-select-item {
+  font-size: 14px;
+  padding: 6px 10px;
+}
+
+.custom-dropdown .ant-select-item-option-active {
+  background-color: #f3f4f6 !important; /* gray-100 */
+}
+
+.custom-dropdown .ant-select-item-option-selected {
+  background-color: #e5e7eb !important; /* gray-200 */
+  font-weight: 500;
+}

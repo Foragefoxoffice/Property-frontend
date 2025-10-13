@@ -94,7 +94,7 @@ export default function ManageProperty({
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#f1f3f6] px-10 py-8">
+    <div className="min-h-screen px-10 py-8">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-semibold text-gray-900">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from "react";
-import { ArrowRight, ChevronDown, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronDown, CirclePlus, Trash2 } from "lucide-react";
 import {
   getAllProperties,
   getAllZoneSubAreas,
@@ -10,22 +10,28 @@ import {
   getAllParkings,
   getAllPetPolicies,
 } from "../../Api/action";
+import { Select as AntdSelect } from "antd";
+import iconOptions from "../../data/iconOptions";
+
 
 /* ======================================================
    REUSABLE INPUT COMPONENTS
 ====================================================== */
-const Input = memo(({ label, name, type = "text", value, onChange }) => (
-  <div className="flex flex-col">
-    <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-    <input
-      type={type}
-      name={name}
-      value={value || ""}
-      onChange={onChange}
-      className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-    />
-  </div>
-));
+const Input = memo(
+  ({ label, name, type = "text", value, onChange, placeholder }) => (
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <input
+        type={type}
+        name={name}
+        value={value || ""}
+        onChange={onChange}
+        placeholder={placeholder || ""}
+        className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+      />
+    </div>
+  )
+);
 
 const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
   <div className="flex flex-col">
@@ -232,21 +238,36 @@ export default function CreatePropertyListStep1({
   }, []);
 
   /* Handlers */
+  /* Handlers */
   const handleInputChange = useCallback(
     (e) => {
-      const newForm = { ...form, [e.target.name]: e.target.value };
+      let name, value;
+
+      if (e?.target) {
+        name = e.target.name;
+        value = e.target.value;
+      } else if (typeof e === "object" && e.name) {
+        name = e.name;
+        value = e.value;
+      } else {
+        console.warn("handleInputChange: invalid event structure", e);
+        return;
+      }
+
+      const newForm = { ...form, [name]: value };
       setForm(newForm);
       onChange && onChange(newForm);
     },
     [form, onChange]
   );
 
-  const handleLocalizedChange = (lang, field, value) => {
+  // 🧠 Add this here ↓↓↓
+  const handleLocalizedChange = useCallback((lang, field, value) => {
     setForm((prev) => ({
       ...prev,
       [field]: { ...(prev[field] || { en: "", vi: "" }), [lang]: value },
     }));
-  };
+  }, []);
 
   const handleUtilityChange = (i, f, v) =>
     setForm((p) => {
@@ -277,8 +298,30 @@ export default function CreatePropertyListStep1({
       lang === "en" ? "Property Utility" : "Tiện Ích Bất Động Sản",
   };
 
+  const { Option } = AntdSelect;
+
+
+const [searchValue, setSearchValue] = useState("");
+
+// Filter + prioritize dynamically
+const filteredIcons = iconOptions
+  .filter((opt) =>
+    opt.labelText.toLowerCase().includes(searchValue.toLowerCase())
+  )
+  .sort((a, b) => {
+    const q = searchValue.toLowerCase();
+    const aText = a.labelText.toLowerCase();
+    const bText = b.labelText.toLowerCase();
+    const aStarts = aText.startsWith(q);
+    const bStarts = bText.startsWith(q);
+    if (aStarts && !bStarts) return -1;
+    if (!aStarts && bStarts) return 1;
+    return aText.localeCompare(bText);
+  });
+
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-[#f1f3f6] p-10">
+    <div className="min-h-screen bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
       {/* Language Toggle */}
       <div className="flex mb-6 border-b border-gray-200">
         {["en", "vi"].map((lng) => (
@@ -297,7 +340,7 @@ export default function CreatePropertyListStep1({
       </div>
 
       {/* Form Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div className=" p-8">
         {/* === Listing Info === */}
         <h2 className="text-lg font-semibold mb-4">{t.listingInfo}</h2>
         <div className="grid grid-cols-3 gap-5">
@@ -308,7 +351,6 @@ export default function CreatePropertyListStep1({
             value={form.propertyId}
             onChange={handleInputChange}
           />
-
           <Select
             label="Transaction Type"
             name="transactionType"
@@ -321,25 +363,74 @@ export default function CreatePropertyListStep1({
               { _id: "Home stay", name: { en: "Home stay", vi: "Nhà nghỉ" } },
             ]}
           />
-
           {/* ✅ Correct Project / Zone Selects */}
-          <Select
-            label="Project / Community"
-            name="projectId"
-            lang={lang}
-            options={dropdowns.properties}
-            value={form.projectId}
-            onChange={handleInputChange}
-          />
 
-          <Select
-            label="Area / Zone"
-            name="zoneId"
-            lang={lang}
-            options={dropdowns.zones}
-            value={form.zoneId}
-            onChange={handleInputChange}
-          />
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Project / Community<span className="text-red-500">*</span>
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder="Search and Select"
+              optionFilterProp="children"
+              value={form.projectId || undefined}
+              onChange={(value) =>
+                handleInputChange({ target: { name: "projectId", value } })
+              }
+              filterOption={(input, option) =>
+                (option?.children ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+            >
+              {dropdowns.properties?.map((project) => (
+                <Option key={project._id} value={project._id}>
+                  {lang === "vi" ? project.name?.vi : project.name?.en}
+                </Option>
+              ))}
+            </AntdSelect>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700 mb-1">
+              Zone / Sub-area<span className="text-red-500">*</span>
+            </label>
+
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder="Type or Select Zone / Sub-area"
+              // ✅ keep the value stable (typed string or existing ID)
+              value={form.zoneId || undefined}
+              // ✅ when selecting existing zone
+              onChange={(value) => {
+                handleInputChange({ name: "zoneId", value });
+              }}
+              // ✅ when typing new name
+              onSearch={(val) => {
+                if (val && val.trim() !== "") {
+                  handleInputChange({ name: "zoneId", value: val });
+                }
+              }}
+              // ✅ allows typing values that aren't in options
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              // ✅ make sure typed text doesn’t disappear
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={dropdowns.zones?.map((zone) => ({
+                label: lang === "vi" ? zone.name?.vi : zone.name?.en,
+                value: zone._id,
+              }))}
+            />
+          </div>
 
           <LocalizedInput
             label="Block Name"
@@ -348,7 +439,6 @@ export default function CreatePropertyListStep1({
             value={form.blockName?.[lang]}
             onChange={handleLocalizedChange}
           />
-
           <LocalizedInput
             label="Property Title"
             name="title"
@@ -364,7 +454,6 @@ export default function CreatePropertyListStep1({
             value={form.propertyType}
             onChange={handleInputChange}
           />
-
           {/* <Select
             label="Country"
             name="country"
@@ -441,24 +530,28 @@ export default function CreatePropertyListStep1({
             name="unitSize"
             value={form.unitSize}
             onChange={handleInputChange}
+            placeholder="Type here"
           />
           <Input
             label="Bedrooms"
             name="bedrooms"
             value={form.bedrooms}
             onChange={handleInputChange}
+            placeholder="Type here"
           />
           <Input
             label="Bathrooms"
             name="bathrooms"
             value={form.bathrooms}
             onChange={handleInputChange}
+            placeholder="Type here"
           />
           <Input
             label="Floors"
             name="floors"
             value={form.floors}
             onChange={handleInputChange}
+            placeholder="Type here"
           />
           {/* <Input
             label="Floor Number"
@@ -473,6 +566,7 @@ export default function CreatePropertyListStep1({
             options={dropdowns.furnishings}
             value={form.furnishing}
             onChange={handleInputChange}
+            placeholder="Type here"
           />
           {/* <Input
             label="Year Built"
@@ -487,6 +581,7 @@ export default function CreatePropertyListStep1({
             lang={lang}
             value={form.view?.[lang]}
             onChange={handleLocalizedChange}
+            placeholder="Type here"
           />
           {/* <Select
             label="Parking Availability"
@@ -591,13 +686,19 @@ export default function CreatePropertyListStep1({
         />
 
         {/* === Property Utility === */}
-        {/* === Property Utility === */}
-        <h2 className="text-lg font-semibold mt-8 mb-4">{t.propertyUtility}</h2>
-
+        <div className="flex justify-between mt-8 mb-4">
+          <h2 className="text-lg font-semibold">{t.propertyUtility}</h2>
+          <button
+            onClick={addUtility}
+            className="flex items-center gap-2 text-sm text-gray-700 hover:text-black mt-2 cursor-pointer"
+          >
+            <CirclePlus size={22} />
+          </button>
+        </div>
         {form.utilities.map((u, i) => (
           <div
             key={i}
-            className="grid grid-cols-3 gap-3 mb-4 items-end border-b border-gray-100 pb-3"
+            className="grid grid-cols-2 gap-3 mb-4 items-end border-b border-gray-100 pb-3"
           >
             {/* Utility Name (Language Controlled) */}
             <div className="col-span-1">
@@ -626,19 +727,52 @@ export default function CreatePropertyListStep1({
               />
             </div>
 
-            {/* Select Icon */}
             <div className="col-span-1">
-              <Select
-                label={lang === "en" ? "Select Icon" : "Chọn Biểu Tượng"}
-                lang={lang}
-                value={u.icon}
-                onChange={(e) => handleUtilityChange(i, "icon", e.target.value)}
-                options={[
-                  { _id: "wifi", name: { en: "WiFi", vi: "WiFi" } },
-                  { _id: "pool", name: { en: "Swimming Pool", vi: "Hồ Bơi" } },
-                  { _id: "gym", name: { en: "Gym", vi: "Phòng Gym" } },
-                ]}
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1 -mt-16.5">
+                {lang === "en" ? "Select Icon" : "Chọn Biểu Tượng"}
+              </label>
+
+              <AntdSelect
+  showSearch
+  allowClear
+  placeholder={
+    lang === "en" ? "Search and Select Icon" : "Tìm và chọn biểu tượng"
+  }
+  value={u.icon || undefined}
+  onChange={(value) => handleUtilityChange(i, "icon", value)}
+  className="w-full custom-select"
+  classNames={{ popup: "custom-dropdown" }}
+  onSearch={(val) => setSearchValue(val)}
+  filterOption={false}
+  optionLabelProp="label"
+>
+  {filteredIcons.map((item) => (
+    <Option
+      key={item.value}
+      value={item.value}
+      label={
+        <div className="flex items-center gap-2">
+          <img
+            src={item.icon}
+            alt={item.name[lang]}
+            className="w-5 h-5 object-contain"
+          />
+          <span>{item.name[lang]}</span>
+        </div>
+      }
+    >
+      <div className="flex items-center gap-2">
+        <img
+          src={item.icon}
+          alt={item.name[lang]}
+          className="w-5 h-5 object-contain"
+        />
+        <span>{item.name[lang]}</span>
+      </div>
+    </Option>
+  ))}
+</AntdSelect>
+
             </div>
 
             {/* Delete Button */}
@@ -656,13 +790,6 @@ export default function CreatePropertyListStep1({
         ))}
 
         {/* Add Button */}
-        <button
-          onClick={addUtility}
-          className="flex items-center gap-2 text-sm text-gray-700 hover:text-black mt-2"
-        >
-          <Plus className="w-4 h-4" />{" "}
-          {lang === "en" ? "Add Utility" : "Thêm Tiện Ích"}
-        </button>
       </div>
 
       {/* Next */}

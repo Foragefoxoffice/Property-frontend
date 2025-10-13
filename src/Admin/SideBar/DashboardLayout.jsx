@@ -146,9 +146,9 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-b from-white to-[#f3f2ff]">
+    <div className="flex h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
       {/* Sidebar */}
-      <div className="w-[280px] bg-gradient-to-b from-white to-[#f3f2ff] flex flex-col items-center py-6 shadow-sm">
+      <div className="w-[280px]  flex flex-col items-center py-6">
         <div className="text-3xl font-extrabold tracking-wide text-black mb-8">
           <img src={logo} alt="Company Logo" className="w-40 object-contain" />
         </div>
@@ -191,7 +191,7 @@ const DashboardLayout = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-white rounded-tl-3xl shadow-inner overflow-auto">
+      <div className="flex-1 overflow-auto">
         {renderPage()}
       </div>
     </div>
