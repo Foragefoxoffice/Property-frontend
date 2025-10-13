@@ -79,7 +79,7 @@ export default function PropertyMaster({
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff]">
+    <div className="p-8 min-h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
