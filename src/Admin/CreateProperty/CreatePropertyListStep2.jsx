@@ -8,6 +8,7 @@ import {
   ArrowRight,
   ArrowLeft,
 } from "lucide-react";
+import { Select as AntdSelect } from "antd";
 import {
   getAllDeposits,
   getAllPayments,
@@ -422,66 +423,82 @@ export default function CreatePropertyListStep2({
           </>
         )}
 
-        {/* Deposit Select */}
+        {/* 🏦 Deposit Type / Select */}
         <div className="flex flex-col col-span-3">
           <label className="text-sm font-medium text-gray-700 mb-1">
             {t.depositPaymentTerms}
           </label>
-          <div className="relative">
-            <select
-              value={form.depositPaymentTerms?.[lang] || ""}
-              onChange={(e) =>
-                handleLocalizedChange(
-                  lang,
-                  "depositPaymentTerms",
-                  e.target.value
-                )
+          <AntdSelect
+            showSearch
+            allowClear
+            placeholder={
+              lang === "en"
+                ? "Type or Select Deposit"
+                : "Nhập hoặc chọn khoản đặt cọc"
+            }
+            value={form.depositPaymentTerms?.[lang] || undefined}
+            onChange={(value) => {
+              // User selected an existing option
+              handleLocalizedChange(lang, "depositPaymentTerms", value);
+            }}
+            onSearch={(val) => {
+              // User typed a new value (same logic as Zone in Step 1)
+              if (val && val.trim() !== "") {
+                handleLocalizedChange(lang, "depositPaymentTerms", val.trim());
               }
-              className="appearance-none border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
-            >
-              <option value="">
-                {lang === "en" ? "Select Deposit" : "Chọn khoản đặt cọc"}
-              </option>
-              {deposits.map((opt) => (
-                <option key={opt._id} value={opt.name?.[lang] || ""}>
-                  {opt.name?.[lang] || ""}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400 pointer-events-none" />
-          </div>
+            }}
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            notFoundContent={null}
+            className="w-full custom-select"
+            popupClassName="custom-dropdown"
+            options={deposits.map((opt) => ({
+              label: opt.name?.[lang] || "",
+              value: opt.name?.[lang] || "",
+            }))}
+          />
         </div>
 
-        {/* Payment Terms Select */}
+        {/* 💳 Payment Terms Type / Select */}
         <div className="flex flex-col col-span-3">
           <label className="text-sm font-medium text-gray-700 mb-1">
             {t.maintenanceFeeMonthly}
           </label>
-          <div className="relative">
-            <select
-              value={form.maintenanceFeeMonthly?.[lang] || ""}
-              onChange={(e) =>
+          <AntdSelect
+            showSearch
+            allowClear
+            placeholder={
+              lang === "en"
+                ? "Type or Select Payment Term"
+                : "Nhập hoặc chọn điều khoản thanh toán"
+            }
+            value={form.maintenanceFeeMonthly?.[lang] || undefined}
+            onChange={(value) => {
+              // User selected existing term
+              handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+            }}
+            onSearch={(val) => {
+              // User typed a new payment term (same behavior as Zone)
+              if (val && val.trim() !== "") {
                 handleLocalizedChange(
                   lang,
                   "maintenanceFeeMonthly",
-                  e.target.value
-                )
+                  val.trim()
+                );
               }
-              className="appearance-none border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
-            >
-              <option value="">
-                {lang === "en"
-                  ? "Select Payment Term"
-                  : "Chọn điều khoản thanh toán"}
-              </option>
-              {payments.map((opt) => (
-                <option key={opt._id} value={opt.name?.[lang] || ""}>
-                  {opt.name?.[lang] || ""}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400 pointer-events-none" />
-          </div>
+            }}
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            notFoundContent={null}
+            className="w-full custom-select"
+            popupClassName="custom-dropdown"
+            options={payments.map((opt) => ({
+              label: opt.name?.[lang] || "",
+              value: opt.name?.[lang] || "", // ✅
+            }))}
+          />
         </div>
       </div>
 

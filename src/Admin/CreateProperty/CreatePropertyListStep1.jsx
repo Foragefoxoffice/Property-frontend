@@ -13,7 +13,6 @@ import {
 import { Select as AntdSelect } from "antd";
 import iconOptions from "../../data/iconOptions";
 
-
 /* ======================================================
    REUSABLE INPUT COMPONENTS
 ====================================================== */
@@ -52,8 +51,8 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
                 ? opt.symbol?.vi || "—"
                 : opt.symbol?.en || "—"
               : lang === "vi"
-                ? opt.name?.vi || "Chưa đặt tên"
-                : opt.name?.en || "Unnamed";
+              ? opt.name?.vi || "Chưa đặt tên"
+              : opt.name?.en || "Unnamed";
 
           return (
             <option key={opt._id} value={opt._id}>
@@ -300,7 +299,6 @@ export default function CreatePropertyListStep1({
 
   const { Option } = AntdSelect;
 
-
   const [searchValue, setSearchValue] = useState("");
 
   // Filter + prioritize dynamically
@@ -319,7 +317,6 @@ export default function CreatePropertyListStep1({
       return aText.localeCompare(bText);
     });
 
-
   return (
     <div className="min-h-screen bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
       {/* Language Toggle */}
@@ -327,10 +324,11 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
                 ? "border-b-2 border-black text-black"
                 : "text-gray-500 hover:text-black"
-              }`}
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -395,32 +393,26 @@ export default function CreatePropertyListStep1({
 
           <div className="flex flex-col">
             <label className="text-sm font-medium text-gray-700 mb-1">
-              Zone / Sub-area<span className="text-red-500">*</span>
+              Zone / Sub-area
             </label>
-
             <AntdSelect
               showSearch
               allowClear
               placeholder="Type or Select Zone / Sub-area"
-              // ✅ keep the value stable (typed string or existing ID)
               value={form.zoneId || undefined}
-              // ✅ when selecting existing zone
               onChange={(value) => {
                 handleInputChange({ name: "zoneId", value });
               }}
-              // ✅ when typing new name
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
                   handleInputChange({ name: "zoneId", value: val });
                 }
               }}
-              // ✅ allows typing values that aren't in options
               filterOption={(input, option) =>
                 (option?.label ?? "")
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
-              // ✅ make sure typed text doesn’t disappear
               notFoundContent={null}
               className="w-full custom-select"
               popupClassName="custom-dropdown"
@@ -735,7 +727,9 @@ export default function CreatePropertyListStep1({
                 showSearch
                 allowClear
                 placeholder={
-                  lang === "en" ? "Search and Select Icon" : "Tìm và chọn biểu tượng"
+                  lang === "en"
+                    ? "Search and Select Icon"
+                    : "Tìm và chọn biểu tượng"
                 }
                 value={u.icon || undefined}
                 onChange={(value) => handleUtilityChange(i, "icon", value)}
@@ -771,7 +765,6 @@ export default function CreatePropertyListStep1({
                   </Option>
                 ))}
               </AntdSelect>
-
             </div>
 
             {/* Delete Button */}

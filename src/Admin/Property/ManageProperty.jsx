@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
-  Filter,
   Plus,
   Share2,
   Eye,
@@ -15,6 +14,8 @@ import {
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import commonimg from "../../assets/image/commonimg.jpg";
+import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations";
 
 export default function ManageProperty({
   openCreateProperty,
@@ -27,12 +28,14 @@ export default function ManageProperty({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
+  const { language } = useLanguage();
+  const t = translations[language];
+
   // ✅ Fetch properties
   useEffect(() => {
     async function fetchProperties() {
       try {
         const res = await getAllPropertyListings();
-        console.log("Fetched properties:", res);
         if (res?.data?.success) setProperties(res.data.data || []);
       } catch (err) {
         console.error("Error fetching properties:", err);
@@ -47,19 +50,23 @@ export default function ManageProperty({
   const filteredProperties = useMemo(() => {
     return properties.filter((p) => {
       const info = p.listingInformation || {};
+      const title =
+        info.listingInformationPropertyTitle?.[language] ||
+        info.listingInformationPropertyTitle?.en ||
+        "";
+      const type =
+        info.listingInformationTransactionType?.[language] ||
+        info.listingInformationTransactionType?.en ||
+        "";
       return (
-        (info.listingInformationPropertyTitle?.en || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        (info.listingInformationTransactionType?.en || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
+        title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        type.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (info.listingInformationPropertyId || "")
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       );
     });
-  }, [searchTerm, properties]);
+  }, [searchTerm, properties, language]);
 
   // ✅ Pagination logic
   const totalRows = filteredProperties.length;
@@ -82,10 +89,20 @@ export default function ManageProperty({
     try {
       await deletePropertyListing(deleteConfirm.id);
       setProperties((prev) => prev.filter((p) => p._id !== deleteConfirm.id));
-      CommonToaster("Property deleted successfully", "success");
+      CommonToaster(
+        language === "vi"
+          ? "Xóa bất động sản thành công"
+          : "Property deleted successfully",
+        "success"
+      );
     } catch (err) {
       console.error("Error deleting property:", err);
-      CommonToaster("Failed to delete property", "error");
+      CommonToaster(
+        language === "vi"
+          ? "Xóa bất động sản thất bại"
+          : "Failed to delete property",
+        "error"
+      );
     } finally {
       setDeleteConfirm({ show: false, id: null });
     }
@@ -97,21 +114,15 @@ export default function ManageProperty({
     <div className="min-h-screen px-10 py-8">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">
-          Manage Property
-        </h1>
+        <h1 className="text-2xl font-semibold text-gray-900">{t.properties}</h1>
 
         <div className="flex items-center gap-4">
-          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-gray-700 hover:bg-gray-50 shadow-sm">
-            <Filter className="w-4 h-4" />
-            Property
-          </button> */}
           <button
             onClick={openCreateProperty}
             className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
           >
             <Plus className="w-4 h-4" />
-            Add property
+            {t.addProperty}
           </button>
         </div>
       </div>
@@ -121,7 +132,7 @@ export default function ManageProperty({
         <Search className="absolute top-3 left-3 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder="Search property..."
+          placeholder={`${t.search}...`}
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
@@ -135,17 +146,19 @@ export default function ManageProperty({
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
           <div className="py-10 text-center text-gray-500">
-            Loading properties...
+            {language === "vi"
+              ? "Đang tải bất động sản..."
+              : "Loading properties..."}
           </div>
         ) : (
           <table className="w-full text-sm text-gray-700">
             <thead className="bg-gray-50 text-gray-600 text-left">
               <tr>
-                <th className="px-6 py-3 font-medium">Property</th>
-                <th className="px-6 py-3 font-medium">Transaction Type</th>
-                <th className="px-6 py-3 font-medium">Block Name</th>
-                <th className="px-6 py-3 font-medium">Availability</th>
-                <th className="px-6 py-3 font-medium">Status</th>
+                <th className="px-6 py-3 font-medium">{t.property}</th>
+                <th className="px-6 py-3 font-medium">{t.transactionType}</th>
+                <th className="px-6 py-3 font-medium">{t.location}</th>
+                <th className="px-6 py-3 font-medium">{t.propertyType}</th>
+                <th className="px-6 py-3 font-medium">{t.status}</th>
                 <th className="px-6 py-3 font-medium text-right">Actions</th>
               </tr>
             </thead>
@@ -153,11 +166,25 @@ export default function ManageProperty({
               {currentRows.map((p, i) => {
                 const info = p.listingInformation || {};
                 const img = p.imagesVideos?.propertyImages?.[0];
+                const title =
+                  info.listingInformationPropertyTitle?.[language] ||
+                  info.listingInformationPropertyTitle?.en ||
+                  "—";
+                const type =
+                  info.listingInformationTransactionType?.[language] ||
+                  info.listingInformationTransactionType?.en ||
+                  "—";
+                const propertyType =
+                  info.listingInformationAvailabilityStatus?.[language] ||
+                  info.listingInformationAvailabilityStatus?.en ||
+                  "—";
+
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100 transition`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-4 flex items-center gap-3">
                       <img
@@ -168,33 +195,34 @@ export default function ManageProperty({
                       />
                       <div>
                         <p className="text-sm text-gray-600 font-medium">
-                          ID: {info.listingInformationPropertyId || "—"}
+                          {t.propertyCode}:{" "}
+                          {info.listingInformationPropertyId || "—"}
                         </p>
-                        <p className="text-gray-900 font-semibold">
-                          {info.listingInformationPropertyTitle?.en ||
-                            "Untitled"}
-                        </p>
+                        <p className="text-gray-900 font-semibold">{title}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 capitalize">
-                      {info.listingInformationTransactionType?.en || "—"}
-                    </td>
+                    <td className="px-6 py-4 capitalize">{type}</td>
                     <td className="px-6 py-4">
-                      {info.listingInformationBlockName?.en || "—"}
+                      {info.listingInformationBlockName?.[language] ||
+                        info.listingInformationBlockName?.en ||
+                        "—"}
                     </td>
-                    <td className="px-6 py-4">
-                      {info.listingInformationAvailabilityStatus?.en || "—"}
-                    </td>
+                    <td className="px-6 py-4">{propertyType}</td>
                     <td className="px-6 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${p.status === "Published"
-                          ? "bg-green-100 text-green-700"
-                          : p.status === "Archived"
-                            ? "bg-gray-200 text-gray-700"
-                            : "bg-yellow-100 text-yellow-700"
-                          }`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          p.status === "Published"
+                            ? "bg-green-100 text-green-700"
+                            : p.status === "Draft"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-gray-200 text-gray-700"
+                        }`}
                       >
-                        {p.status}
+                        {p.status === "Published"
+                          ? t.posted
+                          : p.status === "Draft"
+                          ? t.draft
+                          : p.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
@@ -224,7 +252,9 @@ export default function ManageProperty({
               {currentRows.length === 0 && (
                 <tr>
                   <td colSpan="6" className="text-center py-6 text-gray-500">
-                    No properties found
+                    {language === "vi"
+                      ? "Không tìm thấy bất động sản"
+                      : "No properties found"}
                   </td>
                 </tr>
               )}
@@ -237,7 +267,7 @@ export default function ManageProperty({
       {!loading && totalRows > 0 && (
         <div className="flex justify-between items-center px-6 py-4 text-sm text-gray-600 border-t bg-gray-50 mt-4 rounded-b-2xl">
           <div className="flex items-center gap-2">
-            <span>Rows per page:</span>
+            <span>{t.rowsPerPage}:</span>
             <select
               value={rowsPerPage}
               onChange={handleRowsPerPageChange}
@@ -253,25 +283,28 @@ export default function ManageProperty({
 
           <div className="flex items-center gap-3">
             <p>
-              {startIndex + 1}-{Math.min(endIndex, totalRows)} of {totalRows}
+              {startIndex + 1}-{Math.min(endIndex, totalRows)} {t.of}{" "}
+              {totalRows}
             </p>
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`p-1 px-2 rounded ${currentPage === 1
-                ? "text-gray-400 cursor-not-allowed"
-                : "hover:bg-gray-100 text-gray-600"
-                }`}
+              className={`p-1 px-2 rounded ${
+                currentPage === 1
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "hover:bg-gray-100 text-gray-600"
+              }`}
             >
               &lt;
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`p-1 px-2 rounded ${currentPage === totalPages
-                ? "text-gray-400 cursor-not-allowed"
-                : "hover:bg-gray-100 text-gray-600"
-                }`}
+              className={`p-1 px-2 rounded ${
+                currentPage === totalPages
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "hover:bg-gray-100 text-gray-600"
+              }`}
             >
               &gt;
             </button>
@@ -279,19 +312,20 @@ export default function ManageProperty({
         </div>
       )}
 
-      {/* ✅ Delete Confirmation Modal (same as AvailabilityStatusPage) */}
+      {/* ✅ Delete Confirmation Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
             <div className="flex items-center mb-4">
               <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />
               <h3 className="text-lg font-semibold text-gray-800">
-                Confirm Deletion
+                {language === "vi" ? "Xác nhận xóa" : "Confirm Deletion"}
               </h3>
             </div>
             <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to delete this property? This action cannot
-              be undone.
+              {language === "vi"
+                ? "Bạn có chắc chắn muốn xóa bất động sản này? Hành động này không thể hoàn tác."
+                : "Are you sure you want to delete this property? This action cannot be undone."}
             </p>
 
             <div className="flex justify-end gap-3">
@@ -299,13 +333,13 @@ export default function ManageProperty({
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
                 className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
               >
-                Cancel
+                {language === "vi" ? "Hủy" : "Cancel"}
               </button>
               <button
                 onClick={handleDelete}
                 className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
               >
-                Delete
+                {language === "vi" ? "Xóa" : "Delete"}
               </button>
             </div>
           </div>

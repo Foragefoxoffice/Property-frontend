@@ -15,6 +15,11 @@ import {
   getAllParkings,
   getAllPetPolicies,
   updatePropertyListing,
+  createZoneSubArea,
+  createPayment,
+  getAllPayments,
+  createDeposit,
+  getAllDeposits,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 
@@ -422,8 +427,8 @@ export default function CreatePropertyPage({
   };
 
   /* =========================================================
-     💾 Save Draft
-  ========================================================== */
+   💾 Save Draft (Final Fixed Version)
+========================================================= */
   const handleSaveDraft = async (dataFromStep = null) => {
     setLoading(true);
     try {
@@ -434,6 +439,120 @@ export default function CreatePropertyPage({
 
       const payload = buildPayload(mergedData, dropdowns);
 
+      /* 🟢 AUTO-CREATE NEW ZONE / DEPOSIT / PAYMENT TERMS BEFORE SAVING */
+
+      // ✅ Helper: Normalize any localized field (string or object)
+      const normalizeLocalized = (val) => {
+        if (!val) return { en: "", vi: "" };
+        if (typeof val === "string") return { en: val.trim(), vi: val.trim() };
+        if (typeof val === "object") {
+          const en = val.en?.trim() || val.vi?.trim() || "";
+          const vi = val.vi?.trim() || val.en?.trim() || "";
+          return { en, vi };
+        }
+        return { en: "", vi: "" };
+      };
+
+      const zoneName =
+        typeof mergedData.zoneId === "string"
+          ? mergedData.zoneId.trim()
+          : mergedData.zoneId?.name?.en || mergedData.zoneId?.name?.vi || "";
+
+      const deposit = normalizeLocalized(mergedData.depositPaymentTerms);
+      const paymentTerm = normalizeLocalized(mergedData.maintenanceFeeMonthly);
+
+      const depositNameEn = deposit.en;
+      const depositNameVi = deposit.vi;
+      const paymentTermNameEn = paymentTerm.en;
+      const paymentTermNameVi = paymentTerm.vi;
+
+      /* === 🏙️ ZONE === */
+      const isExistingZone =
+        dropdowns.zones?.some((z) => z._id === zoneName) ||
+        dropdowns.zones?.some(
+          (z) => z.name?.en === zoneName || z.name?.vi === zoneName
+        );
+
+      if (zoneName && !isExistingZone && typeof zoneName === "string") {
+        try {
+          await createZoneSubArea({
+            code_en: zoneName.slice(0, 3).toUpperCase(),
+            code_vi: zoneName.slice(0, 3).toUpperCase(),
+            name_en: zoneName,
+            name_vi: zoneName,
+            status: "Active",
+          });
+
+          const zonesRes = await getAllZoneSubAreas();
+          setDropdowns((prev) => ({
+            ...prev,
+            zones: zonesRes.data?.data || [],
+          }));
+        } catch (zoneErr) {
+          console.warn("Zone creation skipped:", zoneErr.message);
+        }
+      }
+
+      /* === 🏦 DEPOSIT === */
+      const isExistingDeposit =
+        dropdowns.deposits?.some(
+          (d) => d.name?.en === depositNameEn || d.name?.vi === depositNameVi
+        ) || false;
+
+      if ((depositNameEn || depositNameVi) && !isExistingDeposit) {
+        try {
+          await createDeposit({
+            code_en: (depositNameEn || depositNameVi).slice(0, 3).toUpperCase(),
+            code_vi: (depositNameEn || depositNameVi).slice(0, 3).toUpperCase(),
+            name_en: depositNameEn || depositNameVi,
+            name_vi: depositNameVi || depositNameEn,
+            status: "Active",
+          });
+
+          const depRes = await getAllDeposits();
+          setDropdowns((prev) => ({
+            ...prev,
+            deposits: depRes.data?.data || [],
+          }));
+        } catch (depErr) {
+          console.warn("Deposit creation skipped:", depErr.message);
+        }
+      }
+
+      /* === 💳 PAYMENT TERM === */
+      const isExistingPayment =
+        dropdowns.payments?.some(
+          (p) =>
+            p.name?.en === paymentTermNameEn || p.name?.vi === paymentTermNameVi
+        ) || false;
+
+      if ((paymentTermNameEn || paymentTermNameVi) && !isExistingPayment) {
+        try {
+          await createPayment({
+            code_en: (paymentTermNameEn || paymentTermNameVi)
+              .slice(0, 3)
+              .toUpperCase(),
+            code_vi: (paymentTermNameEn || paymentTermNameVi)
+              .slice(0, 3)
+              .toUpperCase(),
+            name_en: paymentTermNameEn || paymentTermNameVi,
+            name_vi: paymentTermNameVi || paymentTermNameEn,
+            status: "Active",
+          });
+
+          const payRes = await getAllPayments();
+          setDropdowns((prev) => ({
+            ...prev,
+            payments: payRes.data?.data || [],
+          }));
+        } catch (payErr) {
+          console.warn("Payment term creation skipped:", payErr.message);
+        }
+      }
+
+      /* 🟢 END AUTO-CREATION BLOCK */
+
+      // Continue with property create/update logic
       let res;
       if (isEditMode && editData?._id) {
         res = await updatePropertyListing(editData._id, payload);
@@ -445,10 +564,10 @@ export default function CreatePropertyPage({
 
       const id = res?.data?.data?._id;
       setSavedId(id);
-      CommonToaster("Property saved as draft!", "success");
+      CommonToaster("✅ Property saved as draft!", "success");
       setStep(4);
     } catch (err) {
-      console.error("Draft save error:", err);
+      console.error("❌ Draft save error:", err);
       CommonToaster("Error saving property draft", "error");
     } finally {
       setLoading(false);

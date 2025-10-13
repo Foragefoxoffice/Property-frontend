@@ -8,7 +8,6 @@ import {
   Eye,
   Trash2,
   AlertTriangle,
-  Languages,
   ChevronsLeft,
   ChevronLeft,
   ChevronRight,
@@ -24,11 +23,14 @@ import {
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import CommonSkeleton from "../../Common/CommonSkeleton";
+import { useLanguage } from "../../Language/LanguageContext";
 
 export default function Currency({ goBack }) {
+  const { language } = useLanguage();
+  const isVI = language === "vi";
+
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
-  const [tableLang, setTableLang] = useState("EN");
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [currencies, setCurrencies] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,7 +38,7 @@ export default function Currency({ goBack }) {
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
   const [currencyOptions, setCurrencyOptions] = useState([]);
 
-  // ✅ Pagination state
+  // Pagination state
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -50,33 +52,39 @@ export default function Currency({ goBack }) {
     status: "Active",
   });
 
-  // ✅ Fetch stored currencies
+  // Fetch currencies
   const fetchCurrencies = async () => {
     try {
       setLoading(true);
       const res = await getAllCurrencies();
       setCurrencies(res.data.data || []);
-    } catch (error) {
-      console.error("Failed to load currencies", error);
-      CommonToaster("Failed to load currencies", "error");
+    } catch {
+      CommonToaster(
+        isVI
+          ? "Không thể tải danh sách tiền tệ."
+          : "Failed to load currencies.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Fetch currency list from ExchangeRate API
+  // Fetch currency list from API
   const fetchCurrencyList = async () => {
     try {
       const res = await fetch(
         "https://v6.exchangerate-api.com/v6/49143fe10e6464ddc9170966/codes"
       );
       const data = await res.json();
-      if (data.supported_codes) {
-        setCurrencyOptions(data.supported_codes);
-      }
-    } catch (err) {
-      console.error("Failed to fetch currency codes", err);
-      CommonToaster("Failed to fetch currency codes", "error");
+      if (data.supported_codes) setCurrencyOptions(data.supported_codes);
+    } catch {
+      CommonToaster(
+        isVI
+          ? "Không thể tải danh sách mã tiền tệ."
+          : "Failed to fetch currency codes.",
+        "error"
+      );
     }
   };
 
@@ -85,48 +93,57 @@ export default function Currency({ goBack }) {
     fetchCurrencyList();
   }, []);
 
-  // Derived pagination values
+  // Pagination
   const totalRows = currencies.length;
   const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
   const visibleData = currencies.slice(startIndex, endIndex);
 
-  useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(totalPages);
-    if (totalRows === 0) setCurrentPage(1);
-  }, [totalRows, totalPages, currentPage]);
+  const goToFirst = () => setCurrentPage(1);
+  const goToLast = () => setCurrentPage(totalPages);
+  const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
+  const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
-  // ✅ Handle input
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
-  // ✅ Submit
+  // Save
   const handleSubmit = async () => {
-    try {
-      const { code_en, code_vi, name_en, name_vi, symbol_en, symbol_vi } = form;
-      if (
-        !code_en ||
-        !code_vi ||
-        !name_en ||
-        !name_vi ||
-        !symbol_en ||
-        !symbol_vi
-      ) {
-        CommonToaster("Please fill all English and Vietnamese fields", "error");
-        return;
-      }
+    const { code_en, code_vi, name_en, name_vi, symbol_en, symbol_vi } = form;
+    if (
+      !code_en ||
+      !code_vi ||
+      !name_en ||
+      !name_vi ||
+      !symbol_en ||
+      !symbol_vi
+    ) {
+      CommonToaster(
+        isVI
+          ? "Vui lòng điền đầy đủ tất cả các trường tiếng Anh và tiếng Việt."
+          : "Please fill all English and Vietnamese fields.",
+        "error"
+      );
+      return;
+    }
 
+    try {
       if (editingCurrency) {
         await updateCurrency(editingCurrency._id, form);
-        CommonToaster("Currency updated successfully", "success");
+        CommonToaster(
+          isVI
+            ? "Cập nhật tiền tệ thành công!"
+            : "Currency updated successfully!",
+          "success"
+        );
       } else {
         await createCurrency(form);
-        CommonToaster("Currency added successfully", "success");
+        CommonToaster(
+          isVI ? "Thêm tiền tệ thành công!" : "Currency added successfully!",
+          "success"
+        );
       }
-
       setShowModal(false);
       setEditingCurrency(null);
       setForm({
@@ -138,18 +155,17 @@ export default function Currency({ goBack }) {
         symbol_vi: "",
         status: "Active",
       });
-      await fetchCurrencies();
+      fetchCurrencies();
       setCurrentPage(1);
-    } catch (err) {
-      const message =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        "Something went wrong";
-      CommonToaster(message, "error");
+    } catch {
+      CommonToaster(
+        isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
+        "error"
+      );
     }
   };
 
-  // ✅ Edit
+  // Edit
   const handleEdit = (currency) => {
     setEditingCurrency(currency);
     setForm({
@@ -161,231 +177,230 @@ export default function Currency({ goBack }) {
       symbol_vi: currency.currencySymbol.vi,
       status: currency.status,
     });
+    setActiveLang(language === "vi" ? "VI" : "EN");
     setShowModal(true);
   };
 
-  // ✅ Delete
+  // Delete
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
   const handleDelete = async () => {
     try {
       await deleteCurrency(deleteConfirm.id);
-      CommonToaster("Currency deleted successfully!", "success");
+      CommonToaster(
+        isVI ? "Xóa thành công!" : "Deleted successfully!",
+        "success"
+      );
       setDeleteConfirm({ show: false, id: null });
-      await fetchCurrencies();
-      if (
-        (currentPage - 1) * rowsPerPage >= currencies.length - 1 &&
-        currentPage > 1
-      ) {
-        setCurrentPage((p) => Math.max(1, p - 1));
-      }
+      fetchCurrencies();
     } catch {
-      CommonToaster("Failed to delete currency", "error");
+      CommonToaster(
+        isVI ? "Không thể xóa tiền tệ." : "Failed to delete currency.",
+        "error"
+      );
     }
   };
 
-  // ✅ Toggle status
+  // Toggle status
   const handleToggleStatus = async (currency) => {
     const newStatus = currency.status === "Active" ? "Inactive" : "Active";
     try {
       await updateCurrency(currency._id, { status: newStatus });
-      CommonToaster(`Marked as ${newStatus}`, "success");
+      CommonToaster(
+        isVI
+          ? `Đã chuyển sang ${
+              newStatus === "Active" ? "hoạt động" : "không hoạt động"
+            }`
+          : `Marked as ${newStatus}`,
+        "success"
+      );
       fetchCurrencies();
     } catch {
-      CommonToaster("Failed to update status", "error");
+      CommonToaster(
+        isVI ? "Không thể cập nhật trạng thái." : "Failed to update status.",
+        "error"
+      );
     }
   };
 
-  // ✅ Mark as default
+  // Mark default
   const handleMarkDefault = async (id) => {
     try {
       await markCurrencyAsDefault(id);
-      CommonToaster("Marked as default successfully", "success");
+      CommonToaster(
+        isVI
+          ? "Đã đặt làm mặc định thành công!"
+          : "Marked as default successfully!",
+        "success"
+      );
       fetchCurrencies();
     } catch {
-      CommonToaster("Failed to mark as default", "error");
+      CommonToaster(
+        isVI ? "Không thể đặt làm mặc định." : "Failed to mark as default.",
+        "error"
+      );
     }
   };
-
-  // Pagination handlers
-  const goToFirst = () => setCurrentPage(1);
-  const goToLast = () => setCurrentPage(totalPages);
-  const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
-  const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
   return (
     <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white hover:bg-gray-800 transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] cursor-pointer hover:bg-[#41398be3] text-white"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft size={16} />
           </button>
           <h2 className="text-2xl font-semibold text-gray-900">
-            Currency Master
+            {isVI ? "Tiền tệ" : "Currency Master"}
           </h2>
         </div>
-
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Languages className="w-4 h-4 text-gray-600" />
-            <div
-              onClick={() =>
-                setTableLang((prev) => (prev === "EN" ? "VI" : "EN"))
-              }
-              className="cursor-pointer flex items-center bg-gray-200 rounded-full px-2 py-1 text-xs font-medium"
-            >
-              <span
-                className={`transition-all duration-300 px-2 py-1 rounded-full ${
-                  tableLang === "EN" ? "bg-black text-white" : "text-gray-600"
-                }`}
-              >
-                EN
-              </span>
-              <span
-                className={`transition-all duration-300 px-2 py-1 rounded-full ${
-                  tableLang === "VI" ? "bg-black text-white" : "text-gray-600"
-                }`}
-              >
-                VI
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              setShowModal(true);
-              setEditingCurrency(null);
-              setForm({
-                code_en: "",
-                code_vi: "",
-                name_en: "",
-                name_vi: "",
-                symbol_en: "",
-                symbol_vi: "",
-                status: "Active",
-              });
-            }}
-            className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-all text-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Add Currency
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            setShowModal(true);
+            setEditingCurrency(null);
+            setForm({
+              code_en: "",
+              code_vi: "",
+              name_en: "",
+              name_vi: "",
+              symbol_en: "",
+              symbol_vi: "",
+              status: "Active",
+            });
+            setActiveLang(language === "vi" ? "VI" : "EN");
+          }}
+          className="flex items-center gap-2 bg-[#41398B] cursor-pointer hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm"
+        >
+          <Plus size={16} />
+          {isVI ? "Thêm tiền tệ" : "Add Currency"}
+        </button>
       </div>
 
       {/* Table */}
       {loading ? (
         <CommonSkeleton rows={6} />
       ) : (
-        <table className="w-full text-sm text-left border-collapse">
+        <table className="w-full text-sm border-collapse">
           <thead className="bg-gray-50 text-gray-700">
             <tr>
-              <th className="px-6 py-3 font-medium">Code</th>
-              <th className="px-6 py-3 font-medium">Currency Name</th>
-              <th className="px-6 py-3 font-medium">Symbol</th>
-              <th className="px-6 py-3 font-medium">Status</th>
-              <th className="px-6 py-3 font-medium text-right">Actions</th>
+              <th className="px-6 py-3 text-left font-medium">
+                {isVI ? "Mã" : "Code"}
+              </th>
+              <th className="px-6 py-3 text-left font-medium">
+                {isVI ? "Tên tiền tệ" : "Currency Name"}
+              </th>
+              <th className="px-6 py-3 text-left font-medium">
+                {isVI ? "Ký hiệu" : "Symbol"}
+              </th>
+              <th className="px-6 py-3 text-left font-medium">
+                {isVI ? "Trạng thái" : "Status"}
+              </th>
+              <th className="px-6 py-3 text-right font-medium">
+                {isVI ? "Hành động" : "Actions"}
+              </th>
             </tr>
           </thead>
           <tbody>
-            {currencies.length === 0 ? (
+            {visibleData.length === 0 ? (
               <tr>
                 <td colSpan="5" className="text-center py-6 text-gray-500">
-                  No currencies found.
+                  {isVI ? "Không có dữ liệu." : "No records found."}
                 </td>
               </tr>
             ) : (
               visibleData.map((row, i) => (
                 <tr
-                  key={row._id}
+                  key={i}
                   className={`${
                     i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-gray-100 transition`}
+                  } hover:bg-gray-100`}
                 >
                   <td className="px-6 py-3">
-                    {tableLang === "EN"
-                      ? row.currencyCode.en
-                      : row.currencyCode.vi}
+                    {isVI ? row.currencyCode.vi : row.currencyCode.en}
                   </td>
                   <td className="px-6 py-3">
-                    {tableLang === "EN"
-                      ? row.currencyName.en
-                      : row.currencyName.vi}
+                    {isVI ? row.currencyName.vi : row.currencyName.en}
                   </td>
                   <td className="px-6 py-3">
-                    {tableLang === "EN"
-                      ? row.currencySymbol.en
-                      : row.currencySymbol.vi}
+                    {isVI ? row.currencySymbol.vi : row.currencySymbol.en}
                   </td>
                   <td className="px-6 py-3 flex items-center gap-2">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      className={`px-4 py-1.5 rounded-full text-xs font-medium ${
                         row.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-600"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
                       }`}
                     >
-                      {row.status}
+                      {isVI
+                        ? row.status === "Active"
+                          ? "Đang hoạt động"
+                          : "Không hoạt động"
+                        : row.status}
                     </span>
                     {row.isDefault && (
-                      <span className="text-white bg-yellow-400 w-8 h-8 grid place-content-center text-2xl rounded-full font-medium">
-                        <Star className=" " />
-                      </span>
+                      <Star size={16} className="text-yellow-400" />
                     )}
                   </td>
                   <td className="px-6 py-3 text-right relative">
                     <button
-                      className="p-2 rounded-full hover:bg-gray-100 transition"
+                      className="p-2 rounded-full hover:bg-gray-100"
                       onClick={() =>
                         setOpenMenuIndex(openMenuIndex === i ? null : i)
                       }
                     >
-                      <MoreVertical className="w-4 h-4 text-gray-600" />
+                      <MoreVertical size={16} className="text-gray-600" />
                     </button>
 
                     {openMenuIndex === i && (
-                      <div className="absolute right-8 top-10 bg-white border rounded-lg shadow-lg z-50 w-44 py-2">
+                      <div className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2">
                         <button
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                           onClick={() => {
                             handleEdit(row);
                             setOpenMenuIndex(null);
                           }}
                         >
-                          <Pencil className="w-4 h-4 mr-2" /> Edit
+                          <Pencil size={14} className="mr-2" />
+                          {isVI ? "Chỉnh sửa" : "Edit"}
                         </button>
                         <button
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                           onClick={() => {
                             handleToggleStatus(row);
                             setOpenMenuIndex(null);
                           }}
                         >
-                          <Eye className="w-4 h-4 mr-2" />
+                          <Eye size={14} className="mr-2" />
                           {row.status === "Active"
-                            ? "Mark as Inactive"
+                            ? isVI
+                              ? "Đánh dấu là không hoạt động"
+                              : "Mark as Inactive"
+                            : isVI
+                            ? "Đánh dấu là hoạt động"
                             : "Mark as Active"}
                         </button>
                         <button
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                           onClick={() => {
                             handleMarkDefault(row._id);
                             setOpenMenuIndex(null);
                           }}
                         >
-                          <Star className="w-4 h-4 mr-2" /> Mark as Default
+                          <Star size={14} className="mr-2" />{" "}
+                          {isVI ? "Đặt làm mặc định" : "Mark as Default"}
                         </button>
                         <button
-                          className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                          className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
                           onClick={() => {
                             confirmDelete(row._id);
                             setOpenMenuIndex(null);
                           }}
                         >
-                          <Trash2 className="w-4 h-4 mr-2" /> Delete
+                          <Trash2 size={14} className="mr-2 text-[#F04438]" />{" "}
+                          {isVI ? "Xóa" : "Delete"}
                         </button>
                       </div>
                     )}
@@ -397,135 +412,122 @@ export default function Currency({ goBack }) {
         </table>
       )}
 
-      {/* ✅ Pagination Bar */}
+      {/* ✅ Pagination */}
       <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <span>Rows per page:</span>
+            <span>{isVI ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
             <select
-              className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none cursor-pointer"
+              className="border border-gray-300 rounded-md px-2 py-1 text-gray-700"
               value={rowsPerPage}
               onChange={(e) => {
                 setRowsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
             >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
+              {[5, 10, 20].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
             </select>
           </div>
-
           <span>
             {totalRows === 0
-              ? "0–0 of 0"
-              : `${startIndex + 1}–${endIndex} of ${totalRows}`}
+              ? "0–0"
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
-
-          <div className="flex items-center gap-2 text-gray-700">
-            <button
-              onClick={goToFirst}
-              disabled={currentPage === 1}
-              className={`p-1 rounded cursor-pointer ${
-                currentPage === 1
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <ChevronsLeft size={18} />
+          <div className="flex items-center gap-1">
+            <button onClick={goToFirst} disabled={currentPage === 1}>
+              <ChevronsLeft size={16} />
             </button>
-            <button
-              onClick={goToPrev}
-              disabled={currentPage === 1}
-              className={`p-1 rounded cursor-pointer ${
-                currentPage === 1
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <ChevronLeft size={18} />
+            <button onClick={goToPrev} disabled={currentPage === 1}>
+              <ChevronLeft size={16} />
             </button>
             <button
               onClick={goToNext}
               disabled={currentPage === totalPages || totalRows === 0}
-              className={`p-1 rounded cursor-pointer ${
-                currentPage === totalPages || totalRows === 0
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={16} />
             </button>
             <button
               onClick={goToLast}
               disabled={currentPage === totalPages || totalRows === 0}
-              className={`p-1 rounded cursor-pointer ${
-                currentPage === totalPages || totalRows === 0
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
             >
-              <ChevronsRight size={18} />
+              <ChevronsRight size={16} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Delete Confirmation */}
+      {/* Delete Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
-            <div className="flex items-center mb-4">
-              <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-800">
-                Confirm Delete
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-lg">
+            <div className="flex items-center mb-3">
+              <AlertTriangle className="text-red-600 mr-2" />
+              <h3 className="font-semibold text-gray-800">
+                {isVI ? "Xác nhận xóa" : "Confirm Deletion"}
               </h3>
             </div>
-            <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to delete this currency?
+            <p className="text-sm text-gray-600 mb-5">
+              {isVI
+                ? "Bạn có chắc chắn muốn xóa tiền tệ này? Hành động này không thể hoàn tác."
+                : "Are you sure you want to delete this currency? This action cannot be undone."}
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
-                className="px-5 py-2 rounded-full border text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 border rounded-full hover:bg-gray-100"
               >
-                Cancel
+                {isVI ? "Hủy" : "Cancel"}
               </button>
               <button
                 onClick={handleDelete}
-                className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
+                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
               >
-                Delete
+                {isVI ? "Xóa" : "Delete"}
               </button>
             </div>
           </div>
         </div>
       )}
-      {/* ✅ Add/Edit Modal (Styled like others) */}
+
+      {/* ✅ Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex justify-between items-center px-6 py-4">
               <h2 className="text-lg font-medium text-gray-800">
-                {editingCurrency ? "Edit Currency" : "New Currency"}
+                {editingCurrency
+                  ? activeLang === "EN"
+                    ? "Edit Currency"
+                    : "Chỉnh sửa tiền tệ"
+                  : activeLang === "EN"
+                  ? "New Currency"
+                  : "Thêm tiền tệ mới"}
               </h2>
               <button
-                onClick={() => setShowModal(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white cursor-pointer"
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingCurrency(null);
+                }}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] cursor-pointer hover:bg-[#41398be3] text-white"
               >
-                <X className="w-5 h-5" />
+                <X size={18} />
               </button>
             </div>
 
-            {/* Language Tabs */}
+            {/* Tabs */}
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${
                   activeLang === "EN"
-                    ? "text-black border-b-2 border-black"
-                    : "text-gray-500 hover:text-black"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-[#41398B]"
                 }`}
               >
                 English (EN)
@@ -534,35 +536,37 @@ export default function Currency({ goBack }) {
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${
                   activeLang === "VI"
-                    ? "text-black border-b-2 border-black"
-                    : "text-gray-500 hover:text-black"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-[#41398B]"
                 }`}
               >
                 Tiếng Việt (VI)
               </button>
             </div>
 
-            {/* Form Fields */}
+            {/* Form */}
             <div className="p-6 space-y-5">
-              {/* Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Code<span className="text-red-500">*</span>
+                  {activeLang === "EN" ? "Code" : "Mã"}
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name={`code_${activeLang.toLowerCase()}`}
                   value={form[`code_${activeLang.toLowerCase()}`]}
                   onChange={handleChange}
-                  placeholder="Type here"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                  placeholder={
+                    activeLang === "EN" ? "Type here" : "Nhập tại đây"
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
 
-              {/* Currency Name and Code */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Currency Name and Code<span className="text-red-500">*</span>
+                  {activeLang === "EN" ? "Currency Name" : "Tên tiền tệ"}
+                  <span className="text-red-500">*</span>
                 </label>
                 <select
                   name={`name_${activeLang.toLowerCase()}`}
@@ -572,7 +576,6 @@ export default function Currency({ goBack }) {
                     const match = currencyOptions.find(
                       ([code, name]) => `${name} (${code})` === selectedText
                     );
-
                     if (match) {
                       const [code, name] = match;
                       setForm((prev) => ({
@@ -584,9 +587,11 @@ export default function Currency({ goBack }) {
                       handleChange(e);
                     }
                   }}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:outline-none"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white"
                 >
-                  <option value="">Select</option>
+                  <option value="">
+                    {activeLang === "EN" ? "Select" : "Chọn"}
+                  </option>
                   {currencyOptions.map(([code, name]) => {
                     const displayValue = `${name} (${code})`;
                     return (
@@ -598,35 +603,45 @@ export default function Currency({ goBack }) {
                 </select>
               </div>
 
-              {/* Currency Symbol */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Currency Symbol<span className="text-red-500">*</span>
+                  {activeLang === "EN" ? "Currency Symbol" : "Ký hiệu tiền tệ"}
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name={`symbol_${activeLang.toLowerCase()}`}
                   value={form[`symbol_${activeLang.toLowerCase()}`]}
                   onChange={handleChange}
-                  placeholder="Type here"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                  placeholder={
+                    activeLang === "EN" ? "Type here" : "Nhập tại đây"
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
             </div>
 
-            {/* Footer Buttons */}
             <div className="flex justify-end items-center gap-3 px-6 py-4">
               <button
-                onClick={() => setShowModal(false)}
-                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingCurrency(null);
+                }}
+                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
               >
-                Cancel
+                {activeLang === "EN" ? "Cancel" : "Hủy"}
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800 transition cursor-pointer"
+                className="px-6 py-2 rounded-full bg-[#41398B] cursor-pointer hover:bg-[#41398be3] text-white"
               >
-                {editingCurrency ? "Update" : "Add"}
+                {editingCurrency
+                  ? activeLang === "EN"
+                    ? "Update"
+                    : "Cập nhật"
+                  : activeLang === "EN"
+                  ? "Add"
+                  : "Thêm"}
               </button>
             </div>
           </div>

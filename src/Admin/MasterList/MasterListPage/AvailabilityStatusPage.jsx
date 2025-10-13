@@ -8,7 +8,6 @@ import {
   Eye,
   Trash2,
   AlertTriangle,
-  Languages,
   ChevronsLeft,
   ChevronLeft,
   ChevronRight,
@@ -22,18 +21,20 @@ import {
 } from "../../../Api/action";
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
+import { useLanguage } from "../../../Language/LanguageContext";
 
 export default function AvailabilityStatusPage({ goBack }) {
+  const { language } = useLanguage();
+  const isVI = language === "vi";
+
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
-  const [tableLang, setTableLang] = useState("EN");
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [statuses, setStatuses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingStatus, setEditingStatus] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
-  // ✅ Pagination state
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -45,14 +46,19 @@ export default function AvailabilityStatusPage({ goBack }) {
     status: "Active",
   });
 
-  // ✅ Fetch all Availability Status
+  // ✅ Fetch all statuses
   const fetchStatuses = async () => {
     try {
       setLoading(true);
       const res = await getAllAvailabilityStatuses();
       setStatuses(res.data.data || []);
-    } catch (error) {
-      console.error("Failed to load Availability Statuses", error);
+    } catch {
+      CommonToaster(
+        isVI
+          ? "Không thể tải danh sách trạng thái."
+          : "Failed to load statuses.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -62,59 +68,31 @@ export default function AvailabilityStatusPage({ goBack }) {
     fetchStatuses();
   }, []);
 
-  // Derived pagination values
   const totalRows = statuses.length;
   const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
   const visibleData = statuses.slice(startIndex, endIndex);
 
-  useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(totalPages);
-  }, [totalRows, totalPages, currentPage]);
-
-  // ✅ Handle input change
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // ✅ Add / Edit
-  const handleSubmit = async () => {
-    try {
-      if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
-        CommonToaster("Please fill all English and Vietnamese fields", "error");
-        return;
-      }
-
-      if (editingStatus) {
-        await updateAvailabilityStatus(editingStatus._id, form);
-        CommonToaster("Availability Status updated successfully", "success");
-      } else {
-        await createAvailabilityStatus(form);
-        CommonToaster("Availability Status added successfully", "success");
-      }
-
-      setShowModal(false);
-      setEditingStatus(null);
-      setForm({
-        code_en: "",
-        code_vi: "",
-        name_en: "",
-        name_vi: "",
-        status: "Active",
-      });
-      await fetchStatuses();
-      setCurrentPage(1);
-    } catch (err) {
-      const message =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        "Something went wrong";
-      CommonToaster(message, "error");
-    }
+  // ✅ Open modal for new
+  const openAddModal = () => {
+    setEditingStatus(null);
+    setForm({
+      code_en: "",
+      code_vi: "",
+      name_en: "",
+      name_vi: "",
+      status: "Active",
+    });
+    setActiveLang(language === "vi" ? "VI" : "EN");
+    setShowModal(true);
   };
 
-  // ✅ Edit
-  const handleEdit = (status) => {
+  // ✅ Open modal for edit
+  const openEditModal = (status) => {
     setEditingStatus(status);
     setForm({
       code_en: status.code.en,
@@ -123,30 +101,47 @@ export default function AvailabilityStatusPage({ goBack }) {
       name_vi: status.name.vi,
       status: status.status,
     });
+    setActiveLang(language === "vi" ? "VI" : "EN");
     setShowModal(true);
+  };
+
+  // ✅ Submit Add/Edit
+  const handleSubmit = async () => {
+    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+      CommonToaster("Please fill all English and Vietnamese fields", "error");
+      return;
+    }
+
+    try {
+      if (editingStatus) {
+        await updateAvailabilityStatus(editingStatus._id, form);
+        CommonToaster("Availability Status updated successfully!", "success");
+      } else {
+        await createAvailabilityStatus(form);
+        CommonToaster("Availability Status added successfully!", "success");
+      }
+      setShowModal(false);
+      fetchStatuses();
+      setEditingStatus(null);
+    } catch {
+      CommonToaster("Failed to save data.", "error");
+    }
   };
 
   // ✅ Delete confirmation
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
-
   const handleDelete = async () => {
     try {
       await deleteAvailabilityStatus(deleteConfirm.id);
-      CommonToaster("Availability Status deleted successfully!", "success");
+      CommonToaster("Deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
-      await fetchStatuses();
-      if (
-        (currentPage - 1) * rowsPerPage >= statuses.length - 1 &&
-        currentPage > 1
-      ) {
-        setCurrentPage((p) => Math.max(1, p - 1));
-      }
+      fetchStatuses();
     } catch {
-      CommonToaster("Failed to delete Availability Status", "error");
+      CommonToaster("Failed to delete status.", "error");
     }
   };
 
-  // ✅ Toggle Status
+  // ✅ Toggle active/inactive
   const handleToggleStatus = async (status) => {
     const newStatus = status.status === "Active" ? "Inactive" : "Active";
     try {
@@ -154,161 +149,155 @@ export default function AvailabilityStatusPage({ goBack }) {
       CommonToaster(`Marked as ${newStatus}`, "success");
       fetchStatuses();
     } catch {
-      CommonToaster("Failed to update status", "error");
+      CommonToaster("Failed to update status.", "error");
     }
   };
 
-  // Pagination handlers
   const goToFirst = () => setCurrentPage(1);
   const goToLast = () => setCurrentPage(totalPages);
   const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
   const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
+    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <h2 className="text-2xl font-semibold text-gray-900">
-            Availability Status
+            {isVI ? "Trạng thái khả dụng" : "Availability Status"}
           </h2>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Language Toggle */}
-          <div className="flex items-center gap-2">
-            <Languages className="w-4 h-4 text-gray-600" />
-            <div
-              onClick={() =>
-                setTableLang((prev) => (prev === "EN" ? "VI" : "EN"))
-              }
-              className="cursor-pointer flex items-center bg-gray-200 rounded-full px-2 py-1 text-xs font-medium"
-            >
-              <span
-                className={`transition-all duration-300 px-2 py-1 rounded-full ${tableLang === "EN" ? "bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white" : "text-gray-600"
-                  }`}
-              >
-                EN
-              </span>
-              <span
-                className={`transition-all duration-300 px-2 py-1 rounded-full ${tableLang === "VI" ? "bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white" : "text-gray-600"
-                  }`}
-              >
-                VI
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white px-4 py-2 rounded-full transition-all text-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Add Availability Status
-          </button>
-        </div>
+        <button
+          onClick={openAddModal}
+          className="flex items-center gap-2 bg-[#41398B] hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm cursor-pointer"
+        >
+          <Plus size={16} />
+          {isVI ? "Thêm trạng thái mới" : "Add Availability Status"}
+        </button>
       </div>
 
       {/* Table */}
       <div
-        className={`transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"
-          }`}
+        className={`transition-opacity ${
+          loading ? "opacity-50" : "opacity-100"
+        }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
         ) : (
-          <table className="w-full text-sm text-left border-collapse">
+          <table className="w-full text-sm border-collapse">
             <thead className="bg-gray-50 text-gray-700">
               <tr>
-                <th className="px-6 py-3 font-medium">
-                  {tableLang === "EN" ? "Code (EN)" : "Mã (VI)"}
+                <th className="px-6 py-3 font-medium text-left">
+                  {isVI ? "Mã" : "Code"}
                 </th>
-                <th className="px-6 py-3 font-medium">
-                  {tableLang === "EN"
-                    ? "Availability Status (EN)"
-                    : "Trạng thái (VI)"}
+                <th className="px-6 py-3 font-medium text-left">
+                  {isVI ? "Trạng thái" : "Availability Status"}
                 </th>
-                <th className="px-6 py-3 font-medium">Status</th>
-                <th className="px-6 py-3 font-medium text-right">Actions</th>
+                <th className="px-6 py-3 font-medium text-left">
+                  {isVI ? "Tình trạng" : "Status"}
+                </th>
+                <th className="px-6 py-3 font-medium text-right">
+                  {isVI ? "Hành động" : "Actions"}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {statuses.length === 0 ? (
+              {visibleData.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="text-center py-6 text-gray-500">
-                    No Availability Status found.
+                    {isVI ? "Không có dữ liệu." : "No records found."}
                   </td>
                 </tr>
               ) : (
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100 transition relative`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-3">
-                      {tableLang === "EN" ? row.code.en : row.code.vi}
+                      {isVI ? row.code.vi : row.code.en}
                     </td>
                     <td className="px-6 py-3">
-                      {tableLang === "EN" ? row.name.en : row.name.vi}
+                      {isVI ? row.name.vi : row.name.en}
                     </td>
+
+                    {/* ✅ Status Badge */}
                     <td className="px-6 py-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${row.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-600"
-                          }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
+                          row.status === "Active"
+                            ? "bg-[#E8FFF0] text-[#12B76A]"
+                            : "bg-[#FFE8E8] text-[#F04438]"
+                        }`}
                       >
-                        {row.status}
+                        {isVI
+                          ? row.status === "Active"
+                            ? "Đang hoạt động"
+                            : "Không hoạt động"
+                          : row.status}
                       </span>
                     </td>
+
+                    {/* ✅ Actions Dropdown */}
                     <td className="px-6 py-3 text-right relative">
                       <button
-                        className="p-2 rounded-full hover:bg-gray-100 transition"
+                        className="p-2 rounded-full hover:bg-gray-100"
                         onClick={() =>
                           setOpenMenuIndex(openMenuIndex === i ? null : i)
                         }
                       >
-                        <MoreVertical className="w-4 h-4 text-gray-600" />
+                        <MoreVertical size={16} className="text-gray-600" />
                       </button>
 
                       {openMenuIndex === i && (
-                        <div className="absolute right-8 top-10 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-44 py-2">
+                        <div className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2">
                           <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                             onClick={() => {
-                              handleEdit(row);
+                              openEditModal(row);
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Pencil className="w-4 h-4 mr-2" /> Edit
+                            <Pencil size={14} className="mr-2 text-gray-800" />
+                            {isVI ? "Chỉnh sửa" : "Edit"}
                           </button>
+
                           <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                             onClick={() => {
                               handleToggleStatus(row);
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye size={14} className="mr-2 text-gray-800" />
                             {row.status === "Active"
-                              ? "Mark as Inactive"
+                              ? isVI
+                                ? "Đánh dấu là không hoạt động"
+                                : "Mark as Inactive"
+                              : isVI
+                              ? "Đánh dấu là hoạt động"
                               : "Mark as Active"}
                           </button>
+
                           <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                            className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
                             onClick={() => {
                               confirmDelete(row._id);
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                            <Trash2 size={14} className="mr-2 text-[#F04438]" />
+                            {isVI ? "Xóa" : "Delete"}
                           </button>
                         </div>
                       )}
@@ -321,154 +310,140 @@ export default function AvailabilityStatusPage({ goBack }) {
         )}
       </div>
 
-      {/* ✅ Pagination Bar */}
-      <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700">
+      {/* Pagination */}
+      <div className="flex justify-end items-center px-6 py-3 bg-white mt-4 rounded-b-2xl text-sm text-gray-700">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <span>Rows per page:</span>
+            <span>{isVI ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
             <select
-              className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none cursor-pointer"
               value={rowsPerPage}
               onChange={(e) => {
                 setRowsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
+              className="border rounded-md px-2 py-1 text-gray-700"
             >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
+              {[5, 10, 20].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
             </select>
           </div>
-
           <span>
             {totalRows === 0
-              ? "0–0 of 0"
-              : `${startIndex + 1}–${endIndex} of ${totalRows}`}
+              ? "0–0"
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
-
-          <div className="flex items-center gap-2 text-gray-700">
-            <button
-              onClick={goToFirst}
-              disabled={currentPage === 1}
-              className={`p-1 rounded cursor-pointer ${currentPage === 1
-                ? "text-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-100"
-                }`}
-            >
-              <ChevronsLeft size={18} />
+          <div className="flex items-center gap-1">
+            <button onClick={goToFirst} disabled={currentPage === 1}>
+              <ChevronsLeft size={16} />
             </button>
-            <button
-              onClick={goToPrev}
-              disabled={currentPage === 1}
-              className={`p-1 rounded cursor-pointer ${currentPage === 1
-                ? "text-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-100"
-                }`}
-            >
-              <ChevronLeft size={18} />
+            <button onClick={goToPrev} disabled={currentPage === 1}>
+              <ChevronLeft size={16} />
             </button>
             <button
               onClick={goToNext}
               disabled={currentPage === totalPages || totalRows === 0}
-              className={`p-1 rounded cursor-pointer ${currentPage === totalPages || totalRows === 0
-                ? "text-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-100"
-                }`}
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={16} />
             </button>
             <button
               onClick={goToLast}
               disabled={currentPage === totalPages || totalRows === 0}
-              className={`p-1 rounded cursor-pointer ${currentPage === totalPages || totalRows === 0
-                ? "text-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-100"
-                }`}
             >
-              <ChevronsRight size={18} />
+              <ChevronsRight size={16} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* ✅ Delete Confirmation Modal */}
+      {/* Delete Confirm Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
-            <div className="flex items-center mb-4">
-              <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-800">
-                Confirm Deletion
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-lg">
+            <div className="flex items-center mb-3">
+              <AlertTriangle className="text-red-600 mr-2" />
+              <h3 className="font-semibold text-gray-800">
+                {isVI ? "Xác nhận xóa" : "Confirm Deletion"}
               </h3>
             </div>
-            <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to delete this Availability Status? This
-              action cannot be undone.
+            <p className="text-sm text-gray-600 mb-5">
+              {isVI
+                ? "Bạn có chắc chắn muốn xóa trạng thái này? Hành động này không thể hoàn tác."
+                : "Are you sure you want to delete this Availability Status? This action cannot be undone."}
             </p>
-
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
-                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 border rounded-full hover:bg-gray-100"
               >
-                Cancel
+                {isVI ? "Hủy" : "Cancel"}
               </button>
               <button
                 onClick={handleDelete}
-                className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
+                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
               >
-                Delete
+                {isVI ? "Xóa" : "Delete"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ✅ Add/Edit Modal (Styled like others) */}
+      {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex justify-between items-center px-6 py-4">
               <h2 className="text-lg font-medium text-gray-800">
                 {editingStatus
-                  ? "Edit Availability Status"
-                  : "New Availability Status"}
+                  ? activeLang === "EN"
+                    ? "Edit Availability Status"
+                    : "Chỉnh sửa trạng thái khả dụng"
+                  : activeLang === "EN"
+                  ? "New Availability Status"
+                  : "Thêm trạng thái khả dụng mới"}
               </h2>
               <button
                 onClick={() => {
                   setShowModal(false);
                   setEditingStatus(null);
                 }}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white cursor-pointer"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
               >
-                <X className="w-5 h-5" />
+                <X size={18} />
               </button>
             </div>
 
-            {/* Language Tabs */}
+            {/* Tabs */}
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${activeLang === "EN"
-                  ? "text-black border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "EN"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${activeLang === "VI"
-                  ? "text-black border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "VI"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 Tiếng Việt (VI)
               </button>
             </div>
 
-            {/* Form Fields */}
+            {/* Form */}
             <div className="p-6 space-y-5">
               {activeLang === "EN" ? (
                 <>
@@ -509,7 +484,7 @@ export default function AvailabilityStatusPage({ goBack }) {
                     <input
                       type="text"
                       name="code_vi"
-                      placeholder="Type here"
+                      placeholder="Nhập tại đây"
                       value={form.code_vi}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
@@ -518,12 +493,12 @@ export default function AvailabilityStatusPage({ goBack }) {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Trạng thái<span className="text-red-500">*</span>
+                      Trạng thái khả dụng<span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="name_vi"
-                      placeholder="Type here"
+                      placeholder="Nhập tại đây"
                       value={form.name_vi}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
@@ -533,7 +508,7 @@ export default function AvailabilityStatusPage({ goBack }) {
               )}
             </div>
 
-            {/* Footer Buttons */}
+            {/* Footer */}
             <div className="flex justify-end items-center gap-3 px-6 py-4">
               <button
                 onClick={() => {
@@ -542,13 +517,19 @@ export default function AvailabilityStatusPage({ goBack }) {
                 }}
                 className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
               >
-                Cancel
+                {activeLang === "EN" ? "Cancel" : "Hủy"}
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white transition cursor-pointer"
+                className="px-6 py-2 rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white transition cursor-pointer"
               >
-                {editingStatus ? "Update" : "Add"}
+                {editingStatus
+                  ? activeLang === "EN"
+                    ? "Update"
+                    : "Cập nhật"
+                  : activeLang === "EN"
+                  ? "Add"
+                  : "Thêm"}
               </button>
             </div>
           </div>

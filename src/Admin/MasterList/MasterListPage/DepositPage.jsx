@@ -8,7 +8,6 @@ import {
   Eye,
   Trash2,
   AlertTriangle,
-  Languages,
   ChevronsLeft,
   ChevronLeft,
   ChevronRight,
@@ -22,11 +21,14 @@ import {
 } from "../../../Api/action";
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
+import { useLanguage } from "../../../Language/LanguageContext";
 
 export default function DepositPage({ goBack }) {
+  const { language } = useLanguage();
+  const isVI = language === "vi";
+
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
-  const [tableLang, setTableLang] = useState("EN");
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -51,8 +53,11 @@ export default function DepositPage({ goBack }) {
       setLoading(true);
       const res = await getAllDeposits();
       setDeposits(res.data.data || []);
-    } catch (error) {
-      console.error("Failed to load Deposits", error);
+    } catch {
+      CommonToaster(
+        isVI ? "Không thể tải danh sách đặt cọc." : "Failed to load deposits.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -62,7 +67,7 @@ export default function DepositPage({ goBack }) {
     fetchDeposits();
   }, []);
 
-  // ✅ Pagination Calculations
+  // ✅ Pagination
   const totalRows = deposits.length;
   const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -74,24 +79,37 @@ export default function DepositPage({ goBack }) {
   const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
   const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
-  // ✅ Handle input change
+  // ✅ Input change
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   // ✅ Add / Edit
   const handleSubmit = async () => {
-    try {
-      if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
-        CommonToaster("Please fill all English and Vietnamese fields", "error");
-        return;
-      }
+    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+      CommonToaster(
+        isVI
+          ? "Vui lòng điền đầy đủ tất cả các trường tiếng Anh và tiếng Việt."
+          : "Please fill all English and Vietnamese fields.",
+        "error"
+      );
+      return;
+    }
 
+    try {
       if (editingDeposit) {
         await updateDeposit(editingDeposit._id, form);
-        CommonToaster("Deposit updated successfully", "success");
+        CommonToaster(
+          isVI
+            ? "Cập nhật đặt cọc thành công!"
+            : "Deposit updated successfully!",
+          "success"
+        );
       } else {
         await createDeposit(form);
-        CommonToaster("Deposit added successfully", "success");
+        CommonToaster(
+          isVI ? "Thêm đặt cọc thành công!" : "Deposit added successfully!",
+          "success"
+        );
       }
 
       setShowModal(false);
@@ -105,12 +123,11 @@ export default function DepositPage({ goBack }) {
       });
       fetchDeposits();
       setCurrentPage(1);
-    } catch (err) {
-      const message =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        "Something went wrong";
-      CommonToaster(message, "error");
+    } catch {
+      CommonToaster(
+        isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
+        "error"
+      );
     }
   };
 
@@ -124,6 +141,7 @@ export default function DepositPage({ goBack }) {
       name_vi: deposit.name.vi,
       status: deposit.status,
     });
+    setActiveLang(language === "vi" ? "VI" : "EN");
     setShowModal(true);
   };
 
@@ -132,17 +150,17 @@ export default function DepositPage({ goBack }) {
   const handleDelete = async () => {
     try {
       await deleteDeposit(deleteConfirm.id);
-      CommonToaster("Deposit deleted successfully!", "success");
+      CommonToaster(
+        isVI ? "Xóa thành công!" : "Deleted successfully!",
+        "success"
+      );
       setDeleteConfirm({ show: false, id: null });
       fetchDeposits();
-      if (
-        (currentPage - 1) * rowsPerPage >= deposits.length - 1 &&
-        currentPage > 1
-      ) {
-        setCurrentPage((p) => Math.max(1, p - 1));
-      }
     } catch {
-      CommonToaster("Failed to delete Deposit", "error");
+      CommonToaster(
+        isVI ? "Không thể xóa đặt cọc." : "Failed to delete deposit.",
+        "error"
+      );
     }
   };
 
@@ -151,10 +169,20 @@ export default function DepositPage({ goBack }) {
     const newStatus = deposit.status === "Active" ? "Inactive" : "Active";
     try {
       await updateDeposit(deposit._id, { status: newStatus });
-      CommonToaster(`Marked as ${newStatus}`, "success");
+      CommonToaster(
+        isVI
+          ? `Đã chuyển sang ${
+              newStatus === "Active" ? "hoạt động" : "không hoạt động"
+            }`
+          : `Marked as ${newStatus}`,
+        "success"
+      );
       fetchDeposits();
     } catch {
-      CommonToaster("Failed to update status", "error");
+      CommonToaster(
+        isVI ? "Không thể cập nhật trạng thái." : "Failed to update status.",
+        "error"
+      );
     }
   };
 
@@ -165,142 +193,137 @@ export default function DepositPage({ goBack }) {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white transition-all"
+            className="w-8 cursor-pointer h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <h2 className="text-2xl font-semibold text-gray-900">Deposit</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">
+            {isVI ? "Đặt cọc" : "Deposit"}
+          </h2>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Language Toggle */}
-          <div className="flex items-center gap-2">
-            <Languages className="w-4 h-4 text-gray-600" />
-            <div
-              onClick={() =>
-                setTableLang((prev) => (prev === "EN" ? "VI" : "EN"))
-              }
-              className="cursor-pointer flex items-center bg-gray-200 rounded-full px-2 py-1 text-xs font-medium"
-            >
-              <span
-                className={`transition-all duration-300 px-2 py-1 rounded-full ${tableLang === "EN" ? "bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white" : "text-gray-600"
-                  }`}
-              >
-                EN
-              </span>
-              <span
-                className={`transition-all duration-300 px-2 py-1 rounded-full ${tableLang === "VI" ? "bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white" : "text-gray-600"
-                  }`}
-              >
-                VI
-              </span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white px-4 py-2 rounded-full transition-all text-sm"
-          >
-            <Plus className="w-4 h-4" />
-            Add Deposit
-          </button>
-        </div>
+        <button
+          onClick={() => {
+            setShowModal(true);
+            setEditingDeposit(null);
+            setActiveLang(language === "vi" ? "VI" : "EN");
+          }}
+          className="flex cursor-pointer items-center gap-2 bg-[#41398B] hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm"
+        >
+          <Plus className="w-4 h-4" />
+          {isVI ? "Thêm đặt cọc" : "Add Deposit"}
+        </button>
       </div>
 
       {/* Table */}
       <div
-        className={`transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"
-          }`}
+        className={`transition-opacity duration-300 ${
+          loading ? "opacity-50" : "opacity-100"
+        }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
         ) : (
-          <table className="w-full text-sm text-left border-collapse">
+          <table className="w-full text-sm border-collapse">
             <thead className="bg-gray-50 text-gray-700">
               <tr>
-                <th className="px-6 py-3 font-medium">
-                  {tableLang === "EN" ? "Code (EN)" : "Mã (VI)"}
+                <th className="px-6 py-3 font-medium text-left">
+                  {isVI ? "Mã" : "Code"}
                 </th>
-                <th className="px-6 py-3 font-medium">
-                  {tableLang === "EN"
-                    ? "Deposit Name (EN)"
-                    : "Tên đặt cọc (VI)"}
+                <th className="px-6 py-3 font-medium text-left">
+                  {isVI ? "Tên đặt cọc" : "Deposit Name"}
                 </th>
-                <th className="px-6 py-3 font-medium">Status</th>
-                <th className="px-6 py-3 font-medium text-right">Actions</th>
+                <th className="px-6 py-3 font-medium text-left">
+                  {isVI ? "Trạng thái" : "Status"}
+                </th>
+                <th className="px-6 py-3 font-medium text-right">
+                  {isVI ? "Hành động" : "Actions"}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {deposits.length === 0 ? (
+              {visibleData.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="text-center py-6 text-gray-500">
-                    No Deposit records found.
+                    {isVI ? "Không có dữ liệu." : "No records found."}
                   </td>
                 </tr>
               ) : (
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100 transition relative`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
-                      {tableLang === "EN" ? row.code.en : row.code.vi}
+                      {isVI ? row.code.vi : row.code.en}
                     </td>
                     <td className="px-6 py-3">
-                      {tableLang === "EN" ? row.name.en : row.name.vi}
+                      {isVI ? row.name.vi : row.name.en}
                     </td>
                     <td className="px-6 py-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${row.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-600"
-                          }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
+                          row.status === "Active"
+                            ? "bg-[#E8FFF0] text-[#12B76A]"
+                            : "bg-[#FFE8E8] text-[#F04438]"
+                        }`}
                       >
-                        {row.status}
+                        {isVI
+                          ? row.status === "Active"
+                            ? "Đang hoạt động"
+                            : "Không hoạt động"
+                          : row.status}
                       </span>
                     </td>
                     <td className="px-6 py-3 text-right relative">
                       <button
-                        className="p-2 rounded-full hover:bg-gray-100 transition"
+                        className="p-2 rounded-full hover:bg-gray-100"
                         onClick={() =>
                           setOpenMenuIndex(openMenuIndex === i ? null : i)
                         }
                       >
-                        <MoreVertical className="w-4 h-4 text-gray-600" />
+                        <MoreVertical size={16} className="text-gray-600" />
                       </button>
 
                       {openMenuIndex === i && (
-                        <div className="absolute right-8 top-10 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-44 py-2">
+                        <div className="absolute right-8 top-10 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-44 py-2">
                           <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                             onClick={() => {
                               handleEdit(row);
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Pencil className="w-4 h-4 mr-2" /> Edit
+                            <Pencil size={14} className="mr-2" />{" "}
+                            {isVI ? "Chỉnh sửa" : "Edit"}
                           </button>
                           <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                             onClick={() => {
                               handleToggleStatus(row);
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye size={14} className="mr-2" />{" "}
                             {row.status === "Active"
-                              ? "Mark as Inactive"
+                              ? isVI
+                                ? "Đánh dấu là không hoạt động"
+                                : "Mark as Inactive"
+                              : isVI
+                              ? "Đánh dấu là hoạt động"
                               : "Mark as Active"}
                           </button>
                           <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                            className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
                             onClick={() => {
                               confirmDelete(row._id);
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                            <Trash2 size={14} className="mr-2 text-[#F04438]" />{" "}
+                            {isVI ? "Xóa" : "Delete"}
                           </button>
                         </div>
                       )}
@@ -313,152 +336,140 @@ export default function DepositPage({ goBack }) {
         )}
       </div>
 
-      {/* ✅ Pagination */}
-      <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700">
+      {/* Pagination */}
+      <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <span>Rows per page:</span>
+            <span>{isVI ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
             <select
-              className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none cursor-pointer"
               value={rowsPerPage}
               onChange={(e) => {
                 setRowsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
+              className="border rounded-md px-2 py-1 text-gray-700"
             >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
+              {[5, 10, 20].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
             </select>
           </div>
-
           <span>
             {totalRows === 0
-              ? "0–0 of 0"
-              : `${startIndex + 1}–${endIndex} of ${totalRows}`}
+              ? "0–0"
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
-
-          <div className="flex items-center gap-2 text-gray-700">
-            <button
-              onClick={goToFirst}
-              disabled={currentPage === 1}
-              className={`p-1 rounded ${currentPage === 1
-                ? "text-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-100"
-                }`}
-            >
-              <ChevronsLeft size={18} />
+          <div className="flex items-center gap-1">
+            <button onClick={goToFirst} disabled={currentPage === 1}>
+              <ChevronsLeft size={16} />
             </button>
-            <button
-              onClick={goToPrev}
-              disabled={currentPage === 1}
-              className={`p-1 rounded ${currentPage === 1
-                ? "text-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-100"
-                }`}
-            >
-              <ChevronLeft size={18} />
+            <button onClick={goToPrev} disabled={currentPage === 1}>
+              <ChevronLeft size={16} />
             </button>
             <button
               onClick={goToNext}
               disabled={currentPage === totalPages || totalRows === 0}
-              className={`p-1 rounded ${currentPage === totalPages || totalRows === 0
-                ? "text-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-100"
-                }`}
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={16} />
             </button>
             <button
               onClick={goToLast}
               disabled={currentPage === totalPages || totalRows === 0}
-              className={`p-1 rounded ${currentPage === totalPages || totalRows === 0
-                ? "text-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-100"
-                }`}
             >
-              <ChevronsRight size={18} />
+              <ChevronsRight size={16} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* ✅ Delete Confirmation Modal */}
+      {/* Delete Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
-            <div className="flex items-center mb-4">
-              <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-800">
-                Confirm Deletion
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-lg">
+            <div className="flex items-center mb-3">
+              <AlertTriangle className="text-red-600 mr-2" />
+              <h3 className="font-semibold text-gray-800">
+                {isVI ? "Xác nhận xóa" : "Confirm Deletion"}
               </h3>
             </div>
-            <p className="text-gray-600 text-sm mb-6">
-              Are you sure you want to delete this Deposit? This action cannot
-              be undone.
+            <p className="text-sm text-gray-600 mb-5">
+              {isVI
+                ? "Bạn có chắc chắn muốn xóa đặt cọc này? Hành động này không thể hoàn tác."
+                : "Are you sure you want to delete this deposit? This action cannot be undone."}
             </p>
-
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
-                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 border rounded-full hover:bg-gray-100"
               >
-                Cancel
+                {isVI ? "Hủy" : "Cancel"}
               </button>
               <button
                 onClick={handleDelete}
-                className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
+                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
               >
-                Delete
+                {isVI ? "Xóa" : "Delete"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ✅ Add/Edit Modal (Styled like others) */}
+      {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex justify-between items-center px-6 py-4">
               <h2 className="text-lg font-medium text-gray-800">
-                {editingDeposit ? "Edit Deposit" : "New Deposit"}
+                {editingDeposit
+                  ? activeLang === "EN"
+                    ? "Edit Deposit"
+                    : "Chỉnh sửa đặt cọc"
+                  : activeLang === "EN"
+                  ? "New Deposit"
+                  : "Thêm đặt cọc mới"}
               </h2>
               <button
                 onClick={() => {
                   setShowModal(false);
                   setEditingDeposit(null);
                 }}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white cursor-pointer"
+                className="w-8 cursor-pointer h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
               >
-                <X className="w-5 h-5" />
+                <X size={18} />
               </button>
             </div>
 
-            {/* Language Tabs */}
+            {/* Tabs */}
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${activeLang === "EN"
-                  ? "text-black border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "EN"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${activeLang === "VI"
-                  ? "text-black border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "VI"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 Tiếng Việt (VI)
               </button>
             </div>
 
-            {/* Form Fields */}
+            {/* Form */}
             <div className="p-6 space-y-5">
               {activeLang === "EN" ? (
                 <>
@@ -475,7 +486,6 @@ export default function DepositPage({ goBack }) {
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
                     />
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Deposit Name<span className="text-red-500">*</span>
@@ -499,13 +509,12 @@ export default function DepositPage({ goBack }) {
                     <input
                       type="text"
                       name="code_vi"
-                      placeholder="Type here"
+                      placeholder="Nhập tại đây"
                       value={form.code_vi}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
                     />
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Tên đặt cọc<span className="text-red-500">*</span>
@@ -513,7 +522,7 @@ export default function DepositPage({ goBack }) {
                     <input
                       type="text"
                       name="name_vi"
-                      placeholder="Type here"
+                      placeholder="Nhập tại đây"
                       value={form.name_vi}
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
@@ -523,22 +532,28 @@ export default function DepositPage({ goBack }) {
               )}
             </div>
 
-            {/* Footer Buttons */}
+            {/* Footer */}
             <div className="flex justify-end items-center gap-3 px-6 py-4">
               <button
                 onClick={() => {
                   setShowModal(false);
                   setEditingDeposit(null);
                 }}
-                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+                className="px-5 py-2 cursor-pointer rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
               >
-                Cancel
+                {activeLang === "EN" ? "Cancel" : "Hủy"}
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white transition cursor-pointer"
+                className="px-6 cursor-pointer py-2 rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
               >
-                {editingDeposit ? "Update" : "Add"}
+                {editingDeposit
+                  ? activeLang === "EN"
+                    ? "Update"
+                    : "Cập nhật"
+                  : activeLang === "EN"
+                  ? "Add"
+                  : "Thêm"}
               </button>
             </div>
           </div>

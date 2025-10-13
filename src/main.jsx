@@ -10,6 +10,7 @@ import DashboardLayout from "./Admin/SideBar/DashboardLayout.jsx";
 import { ToastContainer } from "react-toastify";
 import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import { LanguageProvider } from "./Language/LanguageContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -34,7 +35,9 @@ createRoot(document.getElementById("root")).render(
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardLayout />{" "}
+              <LanguageProvider>
+                <DashboardLayout />{" "}
+              </LanguageProvider>
             </ProtectedRoute>
           }
         />

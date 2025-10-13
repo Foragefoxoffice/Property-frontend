@@ -18,6 +18,9 @@ import OwnersLandlords from "../Property/OwnersLandlords";
 import Staffs from "../Property/Staffs";
 import OwnerView from "../AddMembers/OwnerView";
 import Currency from "../Currency/Currency";
+import Header from "../Header/Header";
+import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations";
 
 const DashboardLayout = () => {
   const [activePage, setActivePage] = useState("Properties");
@@ -25,11 +28,26 @@ const DashboardLayout = () => {
   const [subSubPage, setSubSubPage] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState(null);
 
+  const { language } = useLanguage();
+  const t = translations[language]; // shorthand for translations
+
   const menuItems = [
-    { name: "Properties", icon: <Home className="w-4 h-4" /> },
-    { name: "Owners / Landlords", icon: <Users className="w-4 h-4" /> },
-    { name: "Staffs", icon: <UserCog className="w-4 h-4" /> },
-    { name: "Masters", icon: <LayoutGrid className="w-4 h-4" /> },
+    {
+      key: "Properties",
+      label: t.properties,
+      icon: <Home className="w-4 h-4" />,
+    },
+    {
+      key: "Owners / Landlords",
+      label: t.owners,
+      icon: <Users className="w-4 h-4" />,
+    },
+    { key: "Staffs", label: t.staffs, icon: <UserCog className="w-4 h-4" /> },
+    {
+      key: "Masters",
+      label: t.masters,
+      icon: <LayoutGrid className="w-4 h-4" />,
+    },
   ];
 
   const renderPage = () => {
@@ -92,8 +110,8 @@ const DashboardLayout = () => {
             <div className="p-0">
               <CreatePropertyPage
                 goBack={() => setSubPage(null)}
-                editData={selectedProperty} // ✅ Pass data here
-                isEditMode={subPage === "EditProperty"} // ✅ Flag for edit mode
+                editData={selectedProperty}
+                isEditMode={subPage === "EditProperty"}
               />
             </div>
           );
@@ -103,7 +121,7 @@ const DashboardLayout = () => {
             <ManageProperty
               openCreateProperty={() => setSubPage("CreateProperty")}
               openEditProperty={(property) => {
-                setSelectedProperty(property); // ✅ store clicked property
+                setSelectedProperty(property);
                 setSubPage("EditProperty");
               }}
             />
@@ -115,7 +133,7 @@ const DashboardLayout = () => {
           return (
             <div className="p-0">
               <OwnerView
-                ownerId={selectedProperty} // using the same variable for convenience
+                ownerId={selectedProperty}
                 goBack={() => setSubPage(null)}
               />
             </div>
@@ -126,8 +144,8 @@ const DashboardLayout = () => {
           <div className="p-8 text-lg font-semibold">
             <OwnersLandlords
               openOwnerView={(owner) => {
-                setSelectedProperty(owner._id); // store selected owner id
-                setSubPage("ViewOwner"); // navigate to view mode
+                setSelectedProperty(owner._id);
+                setSubPage("ViewOwner");
               }}
             />
           </div>
@@ -145,52 +163,53 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
-      {/* Sidebar */}
-      <div className="w-[280px]  flex flex-col items-center py-6">
-        <div className="text-3xl font-extrabold tracking-wide text-black mb-8">
-          <img className="h-10" src="/images/login/logo.png" alt="" />
-        </div>
-        <div className="flex flex-col w-full gap-4 px-4">
-          {menuItems.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => {
-                setActivePage(item.name);
-                setSubPage(null);
-                setSubSubPage(null);
-              }}
-              className={`group flex cursor-pointer items-center gap-3 px-4 py-2 border-[1px] border-[#41398b47] rounded-full transition-all duration-200 ${activePage === item.name
-                ? "bg-[#41398B] text-white"
-                : "text-gray-700 hover:bg-[#41398B] hover:text-white"
+    <>
+      <Header />
+      <div className="flex h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
+        {/* Sidebar */}
+        <div className="w-[280px] flex flex-col items-center py-6">
+          <div className="flex flex-col w-full gap-4 px-4">
+            {menuItems.map((item) => (
+              <button
+                key={item.key}
+                onClick={() => {
+                  setActivePage(item.key);
+                  setSubPage(null);
+                  setSubSubPage(null);
+                }}
+                className={`group flex cursor-pointer items-center gap-3 px-4 py-2 border-[1px] border-[#41398b47] rounded-full transition-all duration-200 ${
+                  activePage === item.key
+                    ? "bg-[#41398B] text-white"
+                    : "text-gray-700 hover:bg-[#41398B] hover:text-white"
                 }`}
-            >
-              <span
-                className={`p-2 rounded-full transition-all duration-200 ${activePage === item.name
-                  ? "bg-[#fff] text-[#41398B]"
-                  : "bg-[#41398B] text-[#fff] group-hover:bg-white group-hover:text-[#41398B]"
-                  }`}
               >
-                {item.icon}
-              </span>
-              <span
-                className={`text-sm font-medium ${activePage === item.name
-                  ? "text-white"
-                  : "text-gray-800 group-hover:text-white"
+                <span
+                  className={`p-2 rounded-full transition-all duration-200 ${
+                    activePage === item.key
+                      ? "bg-[#fff] text-[#41398B]"
+                      : "bg-[#41398B] text-[#fff] group-hover:bg-white group-hover:text-[#41398B]"
                   }`}
-              >
-                {item.name}
-              </span>
-            </button>
-          ))}
+                >
+                  {item.icon}
+                </span>
+                <span
+                  className={`text-sm font-medium ${
+                    activePage === item.key
+                      ? "text-white"
+                      : "text-gray-800 group-hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        {renderPage()}
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">{renderPage()}</div>
       </div>
-    </div>
+    </>
   );
 };
 
