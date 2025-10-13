@@ -52,8 +52,8 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
                 ? opt.symbol?.vi || "—"
                 : opt.symbol?.en || "—"
               : lang === "vi"
-              ? opt.name?.vi || "Chưa đặt tên"
-              : opt.name?.en || "Unnamed";
+                ? opt.name?.vi || "Chưa đặt tên"
+                : opt.name?.en || "Unnamed";
 
           return (
             <option key={opt._id} value={opt._id}>
@@ -301,23 +301,23 @@ export default function CreatePropertyListStep1({
   const { Option } = AntdSelect;
 
 
-const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
 
-// Filter + prioritize dynamically
-const filteredIcons = iconOptions
-  .filter((opt) =>
-    opt.labelText.toLowerCase().includes(searchValue.toLowerCase())
-  )
-  .sort((a, b) => {
-    const q = searchValue.toLowerCase();
-    const aText = a.labelText.toLowerCase();
-    const bText = b.labelText.toLowerCase();
-    const aStarts = aText.startsWith(q);
-    const bStarts = bText.startsWith(q);
-    if (aStarts && !bStarts) return -1;
-    if (!aStarts && bStarts) return 1;
-    return aText.localeCompare(bText);
-  });
+  // Filter + prioritize dynamically
+  const filteredIcons = iconOptions
+    .filter((opt) =>
+      opt.labelText.toLowerCase().includes(searchValue.toLowerCase())
+    )
+    .sort((a, b) => {
+      const q = searchValue.toLowerCase();
+      const aText = a.labelText.toLowerCase();
+      const bText = b.labelText.toLowerCase();
+      const aStarts = aText.startsWith(q);
+      const bStarts = bText.startsWith(q);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      return aText.localeCompare(bText);
+    });
 
 
   return (
@@ -327,11 +327,10 @@ const filteredIcons = iconOptions
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
                 ? "border-b-2 border-black text-black"
                 : "text-gray-500 hover:text-black"
-            }`}
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -733,45 +732,45 @@ const filteredIcons = iconOptions
               </label>
 
               <AntdSelect
-  showSearch
-  allowClear
-  placeholder={
-    lang === "en" ? "Search and Select Icon" : "Tìm và chọn biểu tượng"
-  }
-  value={u.icon || undefined}
-  onChange={(value) => handleUtilityChange(i, "icon", value)}
-  className="w-full custom-select"
-  classNames={{ popup: "custom-dropdown" }}
-  onSearch={(val) => setSearchValue(val)}
-  filterOption={false}
-  optionLabelProp="label"
->
-  {filteredIcons.map((item) => (
-    <Option
-      key={item.value}
-      value={item.value}
-      label={
-        <div className="flex items-center gap-2">
-          <img
-            src={item.icon}
-            alt={item.name[lang]}
-            className="w-5 h-5 object-contain"
-          />
-          <span>{item.name[lang]}</span>
-        </div>
-      }
-    >
-      <div className="flex items-center gap-2">
-        <img
-          src={item.icon}
-          alt={item.name[lang]}
-          className="w-5 h-5 object-contain"
-        />
-        <span>{item.name[lang]}</span>
-      </div>
-    </Option>
-  ))}
-</AntdSelect>
+                showSearch
+                allowClear
+                placeholder={
+                  lang === "en" ? "Search and Select Icon" : "Tìm và chọn biểu tượng"
+                }
+                value={u.icon || undefined}
+                onChange={(value) => handleUtilityChange(i, "icon", value)}
+                className="w-full custom-select"
+                classNames={{ popup: "custom-dropdown" }}
+                onSearch={(val) => setSearchValue(val)}
+                filterOption={false}
+                optionLabelProp="label"
+              >
+                {filteredIcons.map((item) => (
+                  <Option
+                    key={item.value}
+                    value={item.value}
+                    label={
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={item.icon}
+                          alt={item.name[lang]}
+                          className="w-5 h-5 object-contain"
+                        />
+                        <span>{item.name[lang]}</span>
+                      </div>
+                    }
+                  >
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={item.icon}
+                        alt={item.name[lang]}
+                        className="w-5 h-5 object-contain"
+                      />
+                      <span>{item.name[lang]}</span>
+                    </div>
+                  </Option>
+                ))}
+              </AntdSelect>
 
             </div>
 

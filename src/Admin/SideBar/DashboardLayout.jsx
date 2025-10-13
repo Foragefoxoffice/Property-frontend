@@ -18,7 +18,6 @@ import OwnersLandlords from "../Property/OwnersLandlords";
 import Staffs from "../Property/Staffs";
 import OwnerView from "../AddMembers/OwnerView";
 import Currency from "../Currency/Currency";
-import logo from "../../assets/image/logo.png";
 
 const DashboardLayout = () => {
   const [activePage, setActivePage] = useState("Properties");
@@ -150,9 +149,9 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <div className="w-[280px]  flex flex-col items-center py-6">
         <div className="text-3xl font-extrabold tracking-wide text-black mb-8">
-          <img src={logo} alt="Company Logo" className="w-40 object-contain" />
+          <img className="h-10" src="/images/login/logo.png" alt="" />
         </div>
-        <div className="flex flex-col w-full gap-2 px-4">
+        <div className="flex flex-col w-full gap-4 px-4">
           {menuItems.map((item) => (
             <button
               key={item.name}
@@ -161,27 +160,24 @@ const DashboardLayout = () => {
                 setSubPage(null);
                 setSubSubPage(null);
               }}
-              className={`group flex items-center gap-3 px-4 py-2 rounded-full transition-all duration-200 ${
-                activePage === item.name
-                  ? "bg-black text-white"
-                  : "text-gray-700 hover:bg-black hover:text-white"
-              }`}
+              className={`group flex cursor-pointer items-center gap-3 px-4 py-2 border-[1px] border-[#41398b47] rounded-full transition-all duration-200 ${activePage === item.name
+                ? "bg-[#41398B] text-white"
+                : "text-gray-700 hover:bg-[#41398B] hover:text-white"
+                }`}
             >
               <span
-                className={`p-2 rounded-full transition-all duration-200 ${
-                  activePage === item.name
-                    ? "bg-black text-white"
-                    : "bg-gray-100 text-gray-700 group-hover:bg-white group-hover:text-black"
-                }`}
+                className={`p-2 rounded-full transition-all duration-200 ${activePage === item.name
+                  ? "bg-[#fff] text-[#41398B]"
+                  : "bg-[#41398B] text-[#fff] group-hover:bg-white group-hover:text-[#41398B]"
+                  }`}
               >
                 {item.icon}
               </span>
               <span
-                className={`text-sm font-medium ${
-                  activePage === item.name
-                    ? "text-white"
-                    : "text-gray-800 group-hover:text-white"
-                }`}
+                className={`text-sm font-medium ${activePage === item.name
+                  ? "text-white"
+                  : "text-gray-800 group-hover:text-white"
+                  }`}
               >
                 {item.name}
               </span>

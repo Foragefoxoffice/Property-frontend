@@ -165,7 +165,7 @@ export default function DepositPage({ goBack }) {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white hover:bg-gray-800 transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -183,16 +183,14 @@ export default function DepositPage({ goBack }) {
               className="cursor-pointer flex items-center bg-gray-200 rounded-full px-2 py-1 text-xs font-medium"
             >
               <span
-                className={`transition-all duration-300 px-2 py-1 rounded-full ${
-                  tableLang === "EN" ? "bg-black text-white" : "text-gray-600"
-                }`}
+                className={`transition-all duration-300 px-2 py-1 rounded-full ${tableLang === "EN" ? "bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white" : "text-gray-600"
+                  }`}
               >
                 EN
               </span>
               <span
-                className={`transition-all duration-300 px-2 py-1 rounded-full ${
-                  tableLang === "VI" ? "bg-black text-white" : "text-gray-600"
-                }`}
+                className={`transition-all duration-300 px-2 py-1 rounded-full ${tableLang === "VI" ? "bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white" : "text-gray-600"
+                  }`}
               >
                 VI
               </span>
@@ -201,7 +199,7 @@ export default function DepositPage({ goBack }) {
 
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-all text-sm"
+            className="flex items-center gap-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white px-4 py-2 rounded-full transition-all text-sm"
           >
             <Plus className="w-4 h-4" />
             Add Deposit
@@ -211,9 +209,8 @@ export default function DepositPage({ goBack }) {
 
       {/* Table */}
       <div
-        className={`transition-opacity duration-300 ${
-          loading ? "opacity-50" : "opacity-100"
-        }`}
+        className={`transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"
+          }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
@@ -244,9 +241,8 @@ export default function DepositPage({ goBack }) {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 transition relative`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100 transition relative`}
                   >
                     <td className="px-6 py-3">
                       {tableLang === "EN" ? row.code.en : row.code.vi}
@@ -256,11 +252,10 @@ export default function DepositPage({ goBack }) {
                     </td>
                     <td className="px-6 py-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          row.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-600"
-                        }`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${row.status === "Active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-600"
+                          }`}
                       >
                         {row.status}
                       </span>
@@ -347,44 +342,40 @@ export default function DepositPage({ goBack }) {
             <button
               onClick={goToFirst}
               disabled={currentPage === 1}
-              className={`p-1 rounded ${
-                currentPage === 1
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
+              className={`p-1 rounded ${currentPage === 1
+                ? "text-gray-300 cursor-not-allowed"
+                : "hover:bg-gray-100"
+                }`}
             >
               <ChevronsLeft size={18} />
             </button>
             <button
               onClick={goToPrev}
               disabled={currentPage === 1}
-              className={`p-1 rounded ${
-                currentPage === 1
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
+              className={`p-1 rounded ${currentPage === 1
+                ? "text-gray-300 cursor-not-allowed"
+                : "hover:bg-gray-100"
+                }`}
             >
               <ChevronLeft size={18} />
             </button>
             <button
               onClick={goToNext}
               disabled={currentPage === totalPages || totalRows === 0}
-              className={`p-1 rounded ${
-                currentPage === totalPages || totalRows === 0
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
+              className={`p-1 rounded ${currentPage === totalPages || totalRows === 0
+                ? "text-gray-300 cursor-not-allowed"
+                : "hover:bg-gray-100"
+                }`}
             >
               <ChevronRight size={18} />
             </button>
             <button
               onClick={goToLast}
               disabled={currentPage === totalPages || totalRows === 0}
-              className={`p-1 rounded ${
-                currentPage === totalPages || totalRows === 0
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
+              className={`p-1 rounded ${currentPage === totalPages || totalRows === 0
+                ? "text-gray-300 cursor-not-allowed"
+                : "hover:bg-gray-100"
+                }`}
             >
               <ChevronsRight size={18} />
             </button>
@@ -439,7 +430,7 @@ export default function DepositPage({ goBack }) {
                   setShowModal(false);
                   setEditingDeposit(null);
                 }}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white cursor-pointer"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -449,21 +440,19 @@ export default function DepositPage({ goBack }) {
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "EN"
-                    ? "text-black border-b-2 border-black"
-                    : "text-gray-500 hover:text-black"
-                }`}
+                className={`py-3 font-medium transition-all ${activeLang === "EN"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
+                  }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "VI"
-                    ? "text-black border-b-2 border-black"
-                    : "text-gray-500 hover:text-black"
-                }`}
+                className={`py-3 font-medium transition-all ${activeLang === "VI"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
+                  }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -547,7 +536,7 @@ export default function DepositPage({ goBack }) {
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 rounded-full bg-black text-white hover:bg-gray-800 transition cursor-pointer"
+                className="px-6 py-2 rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white transition cursor-pointer"
               >
                 {editingDeposit ? "Update" : "Add"}
               </button>

@@ -102,13 +102,13 @@ export default function ManageProperty({
         </h1>
 
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-gray-700 hover:bg-gray-50 shadow-sm">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-gray-700 hover:bg-gray-50 shadow-sm">
             <Filter className="w-4 h-4" />
             Property
-          </button>
+          </button> */}
           <button
             onClick={openCreateProperty}
-            className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 shadow-md"
+            className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
           >
             <Plus className="w-4 h-4" />
             Add property
@@ -156,9 +156,8 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 transition`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-4 flex items-center gap-3">
                       <img
@@ -188,13 +187,12 @@ export default function ManageProperty({
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          p.status === "Published"
-                            ? "bg-green-100 text-green-700"
-                            : p.status === "Archived"
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${p.status === "Published"
+                          ? "bg-green-100 text-green-700"
+                          : p.status === "Archived"
                             ? "bg-gray-200 text-gray-700"
                             : "bg-yellow-100 text-yellow-700"
-                        }`}
+                          }`}
                       >
                         {p.status}
                       </span>
@@ -260,22 +258,20 @@ export default function ManageProperty({
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`p-1 px-2 rounded ${
-                currentPage === 1
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100 text-gray-600"
-              }`}
+              className={`p-1 px-2 rounded ${currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "hover:bg-gray-100 text-gray-600"
+                }`}
             >
               &lt;
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`p-1 px-2 rounded ${
-                currentPage === totalPages
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100 text-gray-600"
-              }`}
+              className={`p-1 px-2 rounded ${currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "hover:bg-gray-100 text-gray-600"
+                }`}
             >
               &gt;
             </button>

@@ -186,12 +186,12 @@ export default function Staffs() {
   );
 
   return (
-    <div className="min-h-screen px-10 py-8">
+    <div className="min-h-screen px-10 py-8 bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-semibold text-gray-900">Staffs</h1>
         <button
           onClick={() => openModal()}
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 shadow-md"
+          className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full cursor-pointer shadow-md"
         >
           <Plus size={18} /> New Staff
         </button>
@@ -209,89 +209,89 @@ export default function Staffs() {
       </div>
 
       {/* Staff Cards or Empty State */}
-<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all">
-  {loading ? (
-    Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-  ) : filtered.length > 0 ? (
-    filtered.map((staff, i) => (
-      <div
-        key={staff._id}
-        className="relative rounded-2xl p-5 shadow-sm"
-        style={{ background: colors[i % colors.length] }}
-      >
-        {/* Top Right Double Arrow */}
-        <button
-          className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/40 transition border border-gray-400 cursor-pointer"
-          onClick={() => console.log('Double arrow clicked:', staff._id)}
-        >
-          <MoveHorizontal size={18} className="text-gray-700" />
-        </button>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all">
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+        ) : filtered.length > 0 ? (
+          filtered.map((staff, i) => (
+            <div
+              key={staff._id}
+              className="relative rounded-2xl p-5 shadow-sm"
+              style={{ background: colors[i % colors.length] }}
+            >
+              {/* Top Right Double Arrow */}
+              <button
+                className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/40 transition border border-gray-400 cursor-pointer"
+                onClick={() => console.log('Double arrow clicked:', staff._id)}
+              >
+                <MoveHorizontal size={18} className="text-gray-700" />
+              </button>
 
-        <div className="flex items-center gap-3">
-          <img
-            src={staff.staffsImage || 'image/dummy-img.png'}
-            alt={staff.staffsName?.en}
-            className="w-16 h-16 rounded-full object-cover"
-          />
-          <div>
-            <h3 className="font-semibold text-gray-800">
-              {staff.staffsName?.en}
+              <div className="flex items-center gap-3">
+                <img
+                  src={staff.staffsImage || 'image/dummy-img.png'}
+                  alt={staff.staffsName?.en}
+                  className="w-16 h-16 rounded-full object-cover"
+                />
+                <div>
+                  <h3 className="font-semibold text-gray-800">
+                    {staff.staffsName?.en}
+                  </h3>
+                  <p className="text-sm text-gray-600">ID: {staff.staffsId}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center gap-2 mt-8">
+                <div className="mt-4 text-sm text-gray-700">
+                  <p>
+                    <span className="font-medium">Role:</span>{' '}
+                    {staff.staffsRole?.en}
+                  </p>
+                  <p className="mt-1 flex items-center gap-1">
+                    <Phone size={16} /> {staff.staffsNumber}
+                  </p>
+                </div>
+                <div>
+                  <button
+                    onClick={() => openModal(staff)}
+                    className="p-2 rounded-full hover:bg-gray-200 cursor-pointer"
+                  >
+                    <Edit2 size={16} className="text-blue-500" />
+                  </button>
+                  <button
+                    onClick={() =>
+                      setDeleteConfirm({ show: true, id: staff._id })
+                    }
+                    className="p-2 rounded-full hover:bg-red-50 cursor-pointer"
+                  >
+                    <Trash2 size={16} className="text-red-500" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl shadow-sm border border-gray-100">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7486/7486742.png"
+              alt="No staff"
+              className="w-20 h-20 opacity-70 mb-4"
+            />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              No Staffs Found
             </h3>
-            <p className="text-sm text-gray-600">ID: {staff.staffsId}</p>
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center gap-2 mt-8">
-          <div className="mt-4 text-sm text-gray-700">
-            <p>
-              <span className="font-medium">Role:</span>{' '}
-              {staff.staffsRole?.en}
+            <p className="text-gray-500 text-sm mb-6">
+              You haven’t added any staff yet. Click below to get started.
             </p>
-            <p className="mt-1 flex items-center gap-1">
-              <Phone size={16} /> {staff.staffsNumber}
-            </p>
-          </div>
-          <div>
             <button
-              onClick={() => openModal(staff)}
-              className="p-2 rounded-full hover:bg-gray-200 cursor-pointer"
+              onClick={() => openModal()}
+              className="flex items-center gap-2 px-5 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full transition"
             >
-              <Edit2 size={16} className="text-blue-500" />
-            </button>
-            <button
-              onClick={() =>
-                setDeleteConfirm({ show: true, id: staff._id })
-              }
-              className="p-2 rounded-full hover:bg-red-50 cursor-pointer"
-            >
-              <Trash2 size={16} className="text-red-500" />
+              <Plus size={16} /> Add New Staff
             </button>
           </div>
-        </div>
+        )}
       </div>
-    ))
-  ) : (
-    <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl shadow-sm border border-gray-100">
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/7486/7486742.png"
-        alt="No staff"
-        className="w-20 h-20 opacity-70 mb-4"
-      />
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">
-        No Staffs Found
-      </h3>
-      <p className="text-gray-500 text-sm mb-6">
-        You haven’t added any staff yet. Click below to get started.
-      </p>
-      <button
-        onClick={() => openModal()}
-        className="flex items-center gap-2 px-5 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition"
-      >
-        <Plus size={16} /> Add New Staff
-      </button>
-    </div>
-  )}
-</div>
 
 
       {/* Add/Edit Modal */}
@@ -305,9 +305,9 @@ export default function Staffs() {
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="hover:bg-gray-100 rounded-full p-2"
+                className="text-gray-100 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer p-1 rounded-full cursor-pointer"
               >
-                <X size={20} className="text-gray-500 hover:text-black" />
+                <X size={20} />
               </button>
             </div>
 
@@ -317,11 +317,10 @@ export default function Staffs() {
                 <button
                   key={lang}
                   onClick={() => setActiveLang(lang)}
-                  className={`px-5 py-2 text-sm font-semibold transition ${
-                    activeLang === lang
-                      ? "border-b-2 border-black text-black"
-                      : "text-gray-500"
-                  }`}
+                  className={`px-5 py-2 text-sm font-semibold transition ${activeLang === lang
+                    ? "border-b-1 border-[#41398B] text-black"
+                    : "text-gray-500"
+                    }`}
                 >
                   {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
                 </button>
@@ -465,7 +464,7 @@ export default function Staffs() {
               <button
                 type="submit"
                 onClick={handleSubmit}
-                className="px-6 py-2.5 bg-black text-white rounded-full hover:bg-gray-800 text-sm font-medium"
+                className="px-6 py-2.5 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full text-sm font-medium"
               >
                 {editMode ? "Update" : "Add"}
               </button>

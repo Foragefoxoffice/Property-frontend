@@ -84,7 +84,7 @@ export default function PropertyMaster({
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={goBack}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white hover:bg-gray-800 transition-all"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -105,9 +105,8 @@ export default function PropertyMaster({
           <div
             key={index}
             onClick={() => handleClick(item.name)}
-            className={`grid grid-cols-[2fr_4fr_auto] items-center px-6 py-4 text-sm text-gray-700 cursor-pointer ${
-              index % 2 === 1 ? "bg-gray-50" : "bg-white"
-            } hover:bg-gray-100 transition-colors`}
+            className={`grid grid-cols-[2fr_4fr_auto] items-center px-6 py-4 text-sm text-gray-700 cursor-pointer ${index % 2 === 1 ? "bg-gray-50" : "bg-white"
+              } hover:bg-gray-100 transition-colors`}
           >
             <div className="font-medium">{item.name}</div>
             <div className="text-gray-600 leading-snug">{item.description}</div>

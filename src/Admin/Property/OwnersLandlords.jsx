@@ -171,14 +171,14 @@ const OwnersLandlords = ({ openOwnerView }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD] p-8">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-semibold text-gray-900">
           Owners / Landlords
         </h1>
         <button
-          className="flex items-center gap-2 bg-black text-sm text-white px-4 py-4 rounded-full shadow hover:bg-gray-800 transition-all cursor-pointer"
+          className="flex items-center gap-2 text-sm text-white px-4 py-4 rounded-full shadow bg-[#41398B] hover:bg-[#41398be3] transition-all cursor-pointer"
           onClick={openAddModal}
         >
           <Plus size={18} />
@@ -309,7 +309,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
             <select
               className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none cursor-pointer"
               value={10}
-              onChange={() => {}}
+              onChange={() => { }}
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -347,7 +347,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
               </h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-100 bg-black p-1 rounded-full cursor-pointer"
+                className="text-gray-100 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer p-1 rounded-full cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -359,11 +359,10 @@ const OwnersLandlords = ({ openOwnerView }) => {
                 <button
                   key={lang}
                   onClick={() => setActiveLang(lang)}
-                  className={`px-5 py-3 text-sm font-medium transition-all cursor-pointer ${
-                    activeLang === lang
-                      ? "border-b-2 border-black text-black bg-white"
-                      : "text-gray-500 hover:text-black"
-                  }`}
+                  className={`px-5 py-3 text-sm font-medium transition-all cursor-pointer ${activeLang === lang
+                    ? "border-b-2 border-[#41398B] text-black bg-white"
+                    : "text-gray-500 hover:text-black"
+                    }`}
                 >
                   {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
                 </button>
@@ -456,7 +455,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800"
+                    className="px-5 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full text-sm"
                   >
                     {editMode ? "Edit" : "Add"}
                   </button>
