@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   ArrowLeft,
-  Check,
+  ArrowRight,
   ChevronDown,
   Eye,
-  MoveLeft,
-  MoveLeftIcon,
   X,
 } from "lucide-react";
 import { getAllOwners, getAllStaffs, getMe } from "../../Api/action";
@@ -26,6 +24,24 @@ function findIdByName(arr, valueObj) {
   return match ? match._id : "";
 }
 
+/* 💜 Skeleton Loader (uses bg-[#41398b29]) */
+const SkeletonLoader = () => (
+  <div className="min-h-screen bg-white border border-gray-100 rounded-2xl p-10 animate-pulse">
+    <div className="h-6 bg-[#41398b29] rounded w-64 mb-8"></div>
+    {[...Array(4)].map((_, idx) => (
+      <div key={idx} className="mb-8">
+        <div className="h-4 bg-[#41398b29] rounded w-48 mb-3"></div>
+        <div className="h-12 bg-[#41398b29] rounded w-full"></div>
+      </div>
+    ))}
+    <div className="flex justify-between mt-10">
+      <div className="h-10 w-32 bg-[#41398b29] rounded-full"></div>
+      <div className="h-10 w-32 bg-[#41398b29] rounded-full"></div>
+    </div>
+  </div>
+);
+
+
 export default function CreatePropertyListStep3({
   onNext,
   onPrev,
@@ -36,6 +52,7 @@ export default function CreatePropertyListStep3({
   const [lang, setLang] = useState("en");
   const [owners, setOwners] = useState([]);
   const [staffs, setStaffs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [selectedConsultant, setSelectedConsultant] = useState(null);
@@ -60,7 +77,6 @@ export default function CreatePropertyListStep3({
   /* ✅ Sync form when editing existing property */
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
-      // If editData contains nested contactManagement
       const cm = initialData.contactManagement || {};
 
       setForm((prev) => ({
@@ -130,6 +146,9 @@ export default function CreatePropertyListStep3({
       console.error(err);
       CommonToaster("Failed to load data", "error");
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -160,7 +179,8 @@ export default function CreatePropertyListStep3({
       internalNotes: "Internal Notes",
       selectOwner: "Select Owner",
       selectConnect: "Select Connecting Point",
-      next: "Next →",
+      next: "Next",
+      typehere: "Type here",
       prev: "Previous",
     },
     vi: {
@@ -173,10 +193,14 @@ export default function CreatePropertyListStep3({
       internalNotes: "Ghi chú nội bộ",
       selectOwner: "Chọn Chủ Sở Hữu",
       selectConnect: "Chọn Điểm Liên Hệ",
-      next: "Tiếp →",
+      typehere: "Nhập tại đây",
+      next: "Tiếp",
       prev: "Trước",
     },
   }[lang];
+
+  /* 🩶 Show Loader while fetching */
+  if (loading) return <SkeletonLoader />;
 
   /* =========================================================
      🧱 UI
@@ -188,11 +212,10 @@ export default function CreatePropertyListStep3({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-black text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -205,10 +228,10 @@ export default function CreatePropertyListStep3({
       <div className="grid grid-cols-1 gap-6">
         {/* 🏠 Owner / Landlord */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.owner}
           </label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-2">
             <div className="relative flex-1">
               <select
                 value={findIdByName(owners, form.owner)}
@@ -223,7 +246,7 @@ export default function CreatePropertyListStep3({
                       : { en: "", vi: "" },
                   }));
                 }}
-                className="appearance-none border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
+                className="appearance-none border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
               >
                 <option value="">{t.selectOwner}</option>
                 {owners.map((opt) => (
@@ -247,22 +270,23 @@ export default function CreatePropertyListStep3({
 
         {/* 📝 Owner Notes */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.ownerNotes} ({lang === "en" ? "English" : "Tiếng Việt"})
           </label>
           <textarea
             value={form.ownerNotes?.[lang] || ""}
+            placeholder={t.typehere}
             onChange={(e) =>
               handleLocalizedChange(lang, "ownerNotes", e.target.value)
             }
             rows={3}
-            className="border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            className="border mt-2 border-[#B2B2B3] rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
           />
         </div>
 
         {/* 🔗 Connecting Point */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.connectingPoint}
           </label>
           <div className="flex items-center gap-2">
@@ -277,13 +301,13 @@ export default function CreatePropertyListStep3({
                     ...prev,
                     connectingPoint: selected
                       ? {
-                          en: selected.staffsName.en,
-                          vi: selected.staffsName.vi,
-                        }
+                        en: selected.staffsName.en,
+                        vi: selected.staffsName.vi,
+                      }
                       : { en: "", vi: "" },
                   }));
                 }}
-                className="appearance-none border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
+                className="appearance-none mt-2 border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
               >
                 <option value="">{t.selectConnect}</option>
                 {staffs.map((s) => (
@@ -307,11 +331,12 @@ export default function CreatePropertyListStep3({
 
         {/* 📝 Connecting Point Notes */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.connectingPointNotes}
           </label>
           <textarea
             value={form.connectingPointNotes?.[lang] || ""}
+            placeholder={t.typehere}
             onChange={(e) =>
               handleLocalizedChange(
                 lang,
@@ -320,13 +345,13 @@ export default function CreatePropertyListStep3({
               )
             }
             rows={3}
-            className="border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            className="border mt-2 border-[#B2B2B3] rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
           />
         </div>
 
         {/* 👩‍💼 Property Consultant (auto-filled from getMe) */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.consultant}
           </label>
           <div className="flex items-center gap-2">
@@ -334,23 +359,24 @@ export default function CreatePropertyListStep3({
               type="text"
               value={form.consultant?.[lang] || ""}
               disabled
-              className="border rounded-lg w-full px-3 py-2 bg-gray-50 text-gray-700"
+              className="border mt-2 border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
         </div>
 
         {/* 📝 Internal Notes */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-1 block">
+          <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.internalNotes}
           </label>
           <textarea
             value={form.internalNotes?.[lang] || ""}
+            placeholder={t.typehere}
             onChange={(e) =>
               handleLocalizedChange(lang, "internalNotes", e.target.value)
             }
             rows={3}
-            className="border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            className="border mt-2 border-[#B2B2B3] rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
           />
         </div>
       </div>
@@ -393,9 +419,9 @@ export default function CreatePropertyListStep3({
             onChange && onChange(payload);
             onSave && onSave(payload);
           }}
-          className="px-6 py-2 bg-green-600 text-white rounded-full items-center hover:bg-green-700 flex gap-1 cursor-pointer"
+          className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full items-center flex gap-1 cursor-pointer"
         >
-          <Check size={20} /> Save Property
+          {t.next} <ArrowRight size={18} />
         </button>
       </div>
 

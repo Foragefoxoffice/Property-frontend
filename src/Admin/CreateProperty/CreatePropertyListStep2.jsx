@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import {
   Plus,
   X,
-  ChevronDown,
-  MoveLeftIcon,
-  MoveRight,
   ArrowRight,
   ArrowLeft,
+  Eye
 } from "lucide-react";
 import { Select as AntdSelect } from "antd";
 import {
@@ -14,6 +12,32 @@ import {
   getAllPayments,
   getAllCurrencies, // ✅ import currency API
 } from "../../Api/action";
+
+/* =========================================================
+   💜 SKELETON LOADER (with bg-[#41398b29])
+========================================================= */
+const SkeletonLoader = () => (
+  <div className="min-h-screen bg-white border border-gray-100 rounded-2xl p-10 animate-pulse">
+    <div className="h-6 bg-[#41398b29] rounded w-40 mb-6"></div>
+    {[...Array(3)].map((_, sectionIndex) => (
+      <div key={sectionIndex} className="mb-8">
+        <div className="h-5 bg-[#41398b29] rounded w-48 mb-4"></div>
+        <div className="grid grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex flex-col gap-2">
+              <div className="h-4 bg-[#41398b29] rounded w-24"></div>
+              <div className="h-12 bg-[#41398b29] rounded"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+    <div className="flex justify-between mt-10">
+      <div className="h-10 w-32 bg-[#41398b29] rounded-full"></div>
+      <div className="h-10 w-32 bg-[#41398b29] rounded-full"></div>
+    </div>
+  </div>
+);
 
 export default function CreatePropertyListStep2({
   onNext,
@@ -26,6 +50,7 @@ export default function CreatePropertyListStep2({
   const [payments, setPayments] = useState([]);
   const [currencies, setCurrencies] = useState([]);
   const [loadingCurrencies, setLoadingCurrencies] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   /* =========================================================
      🗂️ Load Deposits + Payments + Currencies
@@ -77,6 +102,7 @@ export default function CreatePropertyListStep2({
         console.error("Error fetching dropdowns:", err);
       } finally {
         setLoadingCurrencies(false);
+        setLoading(false);
       }
     }
     loadDropdowns();
@@ -103,6 +129,7 @@ export default function CreatePropertyListStep2({
       contractLength: "Contract Length",
       pricePerNight: "Price Per Night",
       checkIn: "Check-In Time",
+      typehere: "Type here",
       checkOut: "Check-Out Time",
     },
     vi: {
@@ -121,6 +148,7 @@ export default function CreatePropertyListStep2({
       leasePrice: "Giá Thuê",
       contractLength: "Thời Hạn Hợp Đồng",
       pricePerNight: "Giá Mỗi Đêm",
+      typehere: "Nhập tại đây",
       checkIn: "Giờ Nhận Phòng",
       checkOut: "Giờ Trả Phòng",
     },
@@ -215,47 +243,92 @@ export default function CreatePropertyListStep2({
   /* =========================================================
      📦 Upload Box Component
   ========================================================== */
-  const UploadBox = ({ label, recommended, files, type, accept }) => (
-    <div className="mb-8">
-      <p className="font-semibold text-gray-800 mb-1">{label}</p>
-      <p className="text-xs text-gray-500 mb-3">{recommended}</p>
-      <div className="flex flex-wrap gap-4">
-        {files.map((f, i) => (
-          <div
-            key={i}
-            className="relative w-56 h-40 rounded-xl overflow-hidden border"
-          >
-            {type === "video" ? (
-              <video
-                src={f.url}
-                className="w-full h-full object-cover"
-                controls
-              />
-            ) : (
-              <img src={f.url} className="w-full h-full object-cover" alt="" />
-            )}
-            <button
-              onClick={() => handleRemove(type, i)}
-              className="absolute top-2 right-2 bg-white/80 rounded-full p-1 shadow"
-            >
-              <X className="w-4 h-4 text-gray-600" />
-            </button>
-          </div>
-        ))}
+  const UploadBox = ({ label, recommended, files, type, accept, handleFileUpload, handleRemove }) => {
+    const [preview, setPreview] = useState(null);
 
-        <label className="w-56 h-40 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-gray-400 cursor-pointer hover:border-gray-500 transition">
-          <Plus className="w-6 h-6 mb-1" />
-          <span className="text-sm">{t.clickUpload}</span>
-          <input
-            type="file"
-            accept={accept}
-            onChange={(e) => handleFileUpload(e, type)}
-            className="hidden"
-          />
-        </label>
+    return (
+      <div className="mb-8">
+        <p className="font-semibold text-gray-800 mb-1">{label}</p>
+        <p className="text-xs text-gray-500 mb-3">{recommended}</p>
+
+        <div className="flex flex-wrap gap-4">
+          {files.map((f, i) => (
+            <div
+              key={i}
+              className="relative w-56 h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group"
+            >
+              {type === "video" ? (
+                <video src={f.url} className="w-full h-full object-cover" muted loop playsInline />
+              ) : (
+                <img src={f.url} className="w-full h-full object-contain" alt="" />
+              )}
+
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
+                <button
+                  onClick={() => setPreview(f.url)}
+                  className="bg-white rounded-full p-2 shadow hover:scale-105 transition"
+                >
+                  <Eye className="w-4 h-4 cursor-pointer text-gray-700" />
+                </button>
+                <button
+                  onClick={() => handleRemove(type, i)}
+                  className="bg-white rounded-full p-2 shadow hover:scale-105 transition"
+                >
+                  <X className="w-4 h-4 text-gray-700 cursor-pointer" />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {/* Upload Button */}
+          <label className="w-60 h-50 border border-dashed border-[#646466] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-all">
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-20 h-20 border border-dashed border-[#646466] rounded-full flex items-center justify-center">
+                <Plus className="w-5 h-5 text-gray-500" />
+              </div>
+              <span className="text-sm text-[#646466] mt-2">{t.clickUpload}</span>
+            </div>
+            <input
+              type="file"
+              accept={accept}
+              onChange={(e) => handleFileUpload(e, type)}
+              className="hidden"
+            />
+          </label>
+        </div>
+
+        {/* Popup Preview */}
+        {preview && (
+          <div
+            onClick={() => setPreview(null)}
+            className="fixed inset-0 bg-black/70 z-50 flex justify-center items-center p-4"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-md w-full max-h-[100vh] rounded-xl overflow-hidden flex justify-center p-10"
+            >
+              <button
+                onClick={() => setPreview(null)}
+                className="absolute top-3 z-9 right-3 cursor-pointer text-white bg-[#41398B] hover:bg-[#41398be6] rounded-full p-1 shadow"
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
+              {type === "video" ? (
+                <video src={preview} className="w-full h-full object-contain rounded-lg" controls autoPlay />
+              ) : (
+                <img src={preview} className="w-full h-full object-contain rounded-lg" alt="Preview" />
+              )}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
+
+
+  /* SHOW SKELETON IF LOADING */
+  if (loading) return <SkeletonLoader />;
 
   /* =========================================================
      🧱 RENDER
@@ -267,11 +340,10 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-black text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -286,20 +358,28 @@ export default function CreatePropertyListStep2({
         files={images}
         type="image"
         accept="image/*"
+        handleFileUpload={handleFileUpload}
+        handleRemove={handleRemove}
       />
+
       <UploadBox
         label={t.propertyVideo}
         recommended={t.recommendedVid}
         files={videos}
         type="video"
         accept="video/*"
+        handleFileUpload={handleFileUpload}
+        handleRemove={handleRemove}
       />
+
       <UploadBox
         label={t.floorPlan}
         recommended={t.recommendedImg}
         files={floorPlans}
         type="floor"
         accept="image/*"
+        handleFileUpload={handleFileUpload}
+        handleRemove={handleRemove}
       />
 
       {/* 💰 FINANCIAL DETAILS */}
@@ -307,7 +387,7 @@ export default function CreatePropertyListStep2({
       <div className="grid grid-cols-3 gap-5">
         {/* Currency */}
         <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 mb-1">
+          <label className="text-sm text-[#131517] font-semibold mb-2">
             {t.currency}
           </label>
           <select
@@ -327,7 +407,7 @@ export default function CreatePropertyListStep2({
                 }));
               }
             }}
-            className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
+            className="appearance-none border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
           >
             <option value="">Select Currency</option>
             {loadingCurrencies ? (
@@ -346,14 +426,15 @@ export default function CreatePropertyListStep2({
         {/* Sale / Lease / Homestay pricing */}
         {transactionType === "Sale" && (
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 mb-1">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
               {t.price}
             </label>
             <input
               type="number"
+              placeholder={t.typehere}
               value={form.price}
               onChange={(e) => handleChange("price", e.target.value)}
-              className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
         )}
@@ -361,25 +442,27 @@ export default function CreatePropertyListStep2({
         {transactionType === "Lease" && (
           <>
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
+              <label className="text-sm text-[#131517] font-semibold mb-2">
                 {t.leasePrice}
               </label>
               <input
                 type="number"
                 value={form.leasePrice}
+                placeholder="Type here"
                 onChange={(e) => handleChange("leasePrice", e.target.value)}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
               />
             </div>
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
+              <label className="text-sm text-[#131517] font-semibold mb-2">
                 {t.contractLength}
               </label>
               <input
                 type="text"
                 value={form.contractLength}
+                placeholder="Type here"
                 onChange={(e) => handleChange("contractLength", e.target.value)}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
               />
             </div>
           </>
@@ -388,36 +471,37 @@ export default function CreatePropertyListStep2({
         {transactionType === "Home stay" && (
           <>
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
+              <label className="text-sm text-[#131517] font-semibold mb-2">
                 {t.pricePerNight}
               </label>
               <input
                 type="number"
+                placeholder="Type here"
                 value={form.pricePerNight}
                 onChange={(e) => handleChange("pricePerNight", e.target.value)}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
               />
             </div>
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
+              <label className="text-sm text-[#131517] font-semibold mb-2">
                 {t.checkIn}
               </label>
               <input
                 type="text"
                 value={form.checkIn}
                 onChange={(e) => handleChange("checkIn", e.target.value)}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
               />
             </div>
             <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
+              <label className="text-sm text-[#131517] font-semibold mb-2">
                 {t.checkOut}
               </label>
               <input
                 type="text"
                 value={form.checkOut}
                 onChange={(e) => handleChange("checkOut", e.target.value)}
-                className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
               />
             </div>
           </>
@@ -425,7 +509,7 @@ export default function CreatePropertyListStep2({
 
         {/* 🏦 Deposit Type / Select */}
         <div className="flex flex-col col-span-3">
-          <label className="text-sm font-medium text-gray-700 mb-1">
+          <label className="text-sm text-[#131517] font-semibold mb-2">
             {t.depositPaymentTerms}
           </label>
           <AntdSelect
@@ -461,8 +545,8 @@ export default function CreatePropertyListStep2({
         </div>
 
         {/* 💳 Payment Terms Type / Select */}
-        <div className="flex flex-col col-span-3">
-          <label className="text-sm font-medium text-gray-700 mb-1">
+        <div className="flex flex-col col-span-3 mt-3">
+          <label className="text-sm text-[#131517] font-semibold mb-2">
             {t.maintenanceFeeMonthly}
           </label>
           <AntdSelect
@@ -509,8 +593,9 @@ export default function CreatePropertyListStep2({
           className="px-6 py-2 bg-white border border-gray-300 items-center text-gray-700 rounded-full hover:bg-gray-100 flex gap-1.5 cursor-pointer"
         >
           <ArrowLeft size={18} />
-          Previous
+          {lang === "en" ? "Previous" : "Trước"}
         </button>
+
         <button
           onClick={() => {
             onChange &&
@@ -522,11 +607,12 @@ export default function CreatePropertyListStep2({
               });
             onNext(form);
           }}
-          className="px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 cursor-pointer flex gap-1.5 items-center"
+          className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full cursor-pointer flex gap-1.5 items-center"
         >
-          Next <ArrowRight size={18} />
+          {lang === "en" ? "Next" : "Tiếp theo"} <ArrowRight size={18} />
         </button>
       </div>
+
     </div>
   );
 }

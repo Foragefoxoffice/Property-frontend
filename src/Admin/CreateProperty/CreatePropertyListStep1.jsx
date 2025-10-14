@@ -12,6 +12,12 @@ import {
 } from "../../Api/action";
 import { Select as AntdSelect } from "antd";
 import iconOptions from "../../data/iconOptions";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+
 
 /* ======================================================
    REUSABLE INPUT COMPONENTS
@@ -19,14 +25,14 @@ import iconOptions from "../../data/iconOptions";
 const Input = memo(
   ({ label, name, type = "text", value, onChange, placeholder }) => (
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
       <input
         type={type}
         name={name}
         value={value || ""}
         onChange={onChange}
         placeholder={placeholder || ""}
-        className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+        className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
       />
     </div>
   )
@@ -34,13 +40,13 @@ const Input = memo(
 
 const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
   <div className="flex flex-col">
-    <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+    <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
     <div className="relative">
       <select
         name={name}
         value={value || ""}
         onChange={onChange}
-        className="appearance-none border rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
+        className="appearance-none border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
       >
         <option value="">{lang === "en" ? "Select" : "Chọn"}</option>
         {options.map((opt) => {
@@ -51,8 +57,8 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
                 ? opt.symbol?.vi || "—"
                 : opt.symbol?.en || "—"
               : lang === "vi"
-              ? opt.name?.vi || "Chưa đặt tên"
-              : opt.name?.en || "Unnamed";
+                ? opt.name?.vi || "Chưa đặt tên"
+                : opt.name?.en || "Unnamed";
 
           return (
             <option key={opt._id} value={opt._id}>
@@ -72,7 +78,7 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
 const LocalizedInput = memo(
   ({ label, name, lang, value, onChange, placeholder }) => (
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">
+      <label className="text-sm text-[#131517] font-semibold mb-2">
         {label} ({lang === "en" ? "English" : "Tiếng Việt"})
       </label>
       <input
@@ -82,7 +88,7 @@ const LocalizedInput = memo(
         placeholder={
           placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")
         }
-        className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+        className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
       />
     </div>
   )
@@ -91,7 +97,7 @@ const LocalizedInput = memo(
 const LocalizedTextarea = memo(
   ({ label, name, lang, value, onChange, placeholder }) => (
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">
+      <label className="text-sm text-[#131517] font-semibold mb-2">
         {label} ({lang === "en" ? "English" : "Tiếng Việt"})
       </label>
       <textarea
@@ -102,11 +108,86 @@ const LocalizedTextarea = memo(
           placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")
         }
         rows={3}
-        className="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+        className="border border-[#B2B2B3] rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
       />
     </div>
   )
 );
+
+const DatePicker = memo(({ label, name, value, onChange }) => {
+  const [date, setDate] = useState(value ? new Date(value) : null);
+
+  useEffect(() => {
+    // Only update when value changes externally (e.g., editing an existing record)
+    if (value && (!date || new Date(value).getTime() !== date.getTime())) {
+      setDate(new Date(value));
+    }
+  }, [value]);
+
+  const handleSelect = (selectedDate) => {
+    if (!selectedDate) return;
+    setDate(selectedDate);
+    onChange({
+      target: {
+        name,
+        value: selectedDate.toISOString().split("T")[0],
+      },
+    });
+  };
+
+  return (
+    <div className="flex flex-col">
+      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={`w-full justify-between
+ text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${!date && "text-muted-foreground"
+              }`}
+          >
+
+            {date ? format(date, "PPP") : <span>Select date</span>}
+            <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={handleSelect}
+            modifiers={{ disabled: { after: new Date(2100, 0, 1) } }}
+            initialFocus={false} // 👈 disables auto-focus reset
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+});
+
+/* ✅ Skeleton Loader Component */
+const SkeletonLoader = () => (
+  <div className="min-h-screen bg-white border border-gray-100 rounded-2xl p-10 animate-pulse">
+    <div className="h-6 bg-[#41398b29] rounded w-40 mb-6"></div>
+    {[...Array(3)].map((_, sectionIndex) => (
+      <div key={sectionIndex} className="mb-8">
+        <div className="h-5 bg-[#41398b29] rounded w-48 mb-4"></div>
+        <div className="grid grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex flex-col gap-2">
+              <div className="h-4 bg-[#41398b29] rounded w-24"></div>
+              <div className="h-12 bg-[#41398b29] rounded"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ))}
+    <div className="flex justify-end mt-10">
+      <div className="h-10 w-32 bg-[#41398b29] rounded-full"></div>
+    </div>
+  </div>
+);
+
 
 /* ======================================================
    MAIN COMPONENT
@@ -128,6 +209,7 @@ export default function CreatePropertyListStep1({
     amenities: initialData.amenities || [{ name: "", km: "" }],
     utilities: initialData.utilities || [{ name: "", icon: "" }],
   });
+  const [loading, setLoading] = useState(true);
 
   /* ✅ Sync when editing an existing property */
   useEffect(() => {
@@ -229,6 +311,9 @@ export default function CreatePropertyListStep1({
       } catch (err) {
         console.error("Error loading dropdowns", err);
       }
+      finally {
+        setLoading(false);
+      }
     }
     fetchAll();
     return () => {
@@ -236,7 +321,6 @@ export default function CreatePropertyListStep1({
     };
   }, []);
 
-  /* Handlers */
   /* Handlers */
   const handleInputChange = useCallback(
     (e) => {
@@ -317,6 +401,10 @@ export default function CreatePropertyListStep1({
       return aText.localeCompare(bText);
     });
 
+  if (loading) {
+    return <SkeletonLoader />;
+  }
+
   return (
     <div className="min-h-screen bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
       {/* Language Toggle */}
@@ -324,11 +412,10 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-black text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -337,22 +424,15 @@ export default function CreatePropertyListStep1({
       </div>
 
       {/* Form Section */}
-      <div className=" p-8">
+      <div className=" p-8 pt-2">
         {/* === Listing Info === */}
-        <h2 className="text-lg font-semibold mb-4">{t.listingInfo}</h2>
-        <div className="grid grid-cols-3 gap-5">
-          <Input
-            label="Property ID"
-            name="propertyId"
-            placeholder="e.g. P12345"
-            value={form.propertyId}
-            onChange={handleInputChange}
-          />
+        <h2 className="text-lg font-semibold mb-8">{t.listingInfo}</h2>
+        <div className="grid grid-cols-3 gap-8">
           <Select
-            label="Transaction Type"
+            label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
             name="transactionType"
             lang={lang}
-            value={form.transactionType || "Sale"} // ✅ Default to Sale if undefined
+            value={form.transactionType || "Sale"}
             onChange={handleInputChange}
             options={[
               { _id: "Sale", name: { en: "Sale", vi: "Bán" } },
@@ -360,16 +440,29 @@ export default function CreatePropertyListStep1({
               { _id: "Home stay", name: { en: "Home stay", vi: "Nhà nghỉ" } },
             ]}
           />
+
+          <Input
+            label={lang === "en" ? "Property ID" : "Mã bất động sản"}
+            name="propertyId"
+            placeholder={lang === "en" ? "e.g. P12345" : "ví dụ: P12345"}
+            value={form.propertyId}
+            onChange={handleInputChange}
+          />
+
           {/* ✅ Correct Project / Zone Selects */}
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 mb-1">
-              Project / Community<span className="text-red-500">*</span>
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
+              <span className="text-red-500">*</span>
             </label>
+
             <AntdSelect
               showSearch
               allowClear
-              placeholder="Search and Select"
+              placeholder={
+                lang === "en" ? "Search and Select" : "Tìm kiếm và chọn"
+              }
               optionFilterProp="children"
               value={form.projectId || undefined}
               onChange={(value) =>
@@ -380,7 +473,7 @@ export default function CreatePropertyListStep1({
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
-              className="w-full custom-select"
+              className="w-full custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
             >
               {dropdowns.properties?.map((project) => (
@@ -392,17 +485,20 @@ export default function CreatePropertyListStep1({
           </div>
 
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 mb-1">
-              Zone / Sub-area
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {lang === "en" ? "Area / Zone" : "Khu vực / Vùng"}
             </label>
+
             <AntdSelect
               showSearch
               allowClear
-              placeholder="Type or Select Zone / Sub-area"
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Area / Zone"
+                  : "Nhập hoặc chọn khu vực / vùng"
+              }
               value={form.zoneId || undefined}
-              onChange={(value) => {
-                handleInputChange({ name: "zoneId", value });
-              }}
+              onChange={(value) => handleInputChange({ name: "zoneId", value })}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
                   handleInputChange({ name: "zoneId", value: val });
@@ -424,27 +520,30 @@ export default function CreatePropertyListStep1({
           </div>
 
           <LocalizedInput
-            label="Block Name"
+            label={lang === "en" ? "Block Name" : "Tên khối"}
             name="blockName"
             lang={lang}
             value={form.blockName?.[lang]}
             onChange={handleLocalizedChange}
           />
+
           <LocalizedInput
-            label="Property Title"
+            label={lang === "en" ? "Property Title" : "Tiêu đề bất động sản"}
             name="title"
             lang={lang}
             value={form.title?.[lang]}
             onChange={handleLocalizedChange}
           />
+
           <Select
-            label="Property Type"
+            label={lang === "en" ? "Property Type" : "Loại bất động sản"}
             name="propertyType"
             lang={lang}
             options={dropdowns.types}
             value={form.propertyType}
             onChange={handleInputChange}
           />
+
           {/* <Select
             label="Country"
             name="country"
@@ -481,69 +580,75 @@ export default function CreatePropertyListStep1({
             value={form.address?.[lang]}
             onChange={handleLocalizedChange}
           /> */}
-          <Input
-            label="Date Listed"
+          <DatePicker
+            label={lang === "en" ? "Date Listed" : "Ngày niêm yết"}
             name="dateListed"
-            type="date"
             value={form.dateListed}
             onChange={handleInputChange}
           />
-          <Input
-            label="Available From"
+
+          <DatePicker
+            label={lang === "en" ? "Available From" : "Có sẵn từ"}
             name="availableFrom"
-            type="date"
             value={form.availableFrom}
             onChange={handleInputChange}
           />
+
           <Select
-            label="Availability Status"
+            label={lang === "en" ? "Availability Status" : "Trạng thái sẵn có"}
             name="availabilityStatus"
             lang={lang}
             options={dropdowns.statuses}
             value={form.availabilityStatus}
             onChange={handleInputChange}
           />
+
         </div>
 
         {/* === Property Info === */}
         <h2 className="text-lg font-semibold mt-8 mb-4">{t.propertyInfo}</h2>
         <div className="grid grid-cols-3 gap-5">
           <Select
-            label="Unit"
+            label={lang === "en" ? "Unit" : "Đơn vị"}
             name="unit"
             lang={lang}
             options={dropdowns.units}
             value={form.unit}
             onChange={handleInputChange}
           />
+
           <Input
-            label="Unit Size"
+            label={lang === "en" ? "Unit Size" : "Diện tích"}
             name="unitSize"
             value={form.unitSize}
             onChange={handleInputChange}
-            placeholder="Type here"
+            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
+
           <Input
-            label="Bedrooms"
+            label={lang === "en" ? "Bedrooms" : "Phòng ngủ"}
             name="bedrooms"
             value={form.bedrooms}
             onChange={handleInputChange}
-            placeholder="Type here"
+            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
+
           <Input
-            label="Bathrooms"
+            label={lang === "en" ? "Bathrooms" : "Phòng tắm"}
             name="bathrooms"
             value={form.bathrooms}
             onChange={handleInputChange}
-            placeholder="Type here"
+            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
+
           <Input
-            label="Floors"
+            label={lang === "en" ? "Floors" : "Số tầng"}
             name="floors"
             value={form.floors}
             onChange={handleInputChange}
-            placeholder="Type here"
+            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
+
           {/* <Input
             label="Floor Number"
             name="floorNumber"
@@ -551,14 +656,15 @@ export default function CreatePropertyListStep1({
             onChange={handleInputChange}
           /> */}
           <Select
-            label="Furnishing"
+            label={lang === "en" ? "Furnishing" : "Trang bị nội thất"}
             name="furnishing"
             lang={lang}
             options={dropdowns.furnishings}
             value={form.furnishing}
             onChange={handleInputChange}
-            placeholder="Type here"
+            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
+
           {/* <Input
             label="Year Built"
             name="yearBuilt"
@@ -567,13 +673,14 @@ export default function CreatePropertyListStep1({
             onChange={handleInputChange}
           /> */}
           <LocalizedInput
-            label="View"
+            label={lang === "en" ? "View" : "Hướng nhìn"}
             name="view"
             lang={lang}
             value={form.view?.[lang]}
             onChange={handleLocalizedChange}
-            placeholder="Type here"
+            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
+
           {/* <Select
             label="Parking Availability"
             name="parkingAvailability"
@@ -613,7 +720,7 @@ export default function CreatePropertyListStep1({
             className="grid grid-cols-3 gap-3 mb-4 items-end border-b border-gray-100 pb-3"
           >
             <div className="col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm text-[#131517] font-semibold mb-2">
                 {lang === "en" ? "Amenity Name (EN)" : "Tên tiện ích (VI)"}
               </label>
               <input
@@ -660,7 +767,7 @@ export default function CreatePropertyListStep1({
 
         <button
           onClick={addAmenity}
-          className="flex items-center gap-2 text-sm text-gray-700 hover:text-black mt-2"
+          className="flex items-center g text-[#131517] font-semibold hover:text-black mt-2"
         >
           <Plus className="w-4 h-4" />{" "}
           {lang === "en" ? "Add Amenity" : "Thêm Tiện Ích"}
@@ -669,11 +776,12 @@ export default function CreatePropertyListStep1({
         {/* === Description === */}
         <h2 className="text-lg font-semibold mt-8 mb-4">{t.description}</h2>
         <LocalizedTextarea
-          label="Description"
+          label={lang === "en" ? "Description" : "Mô tả"}
           name="description"
           lang={lang}
           value={form.description?.[lang]}
           onChange={handleLocalizedChange}
+          placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
         />
 
         {/* === Property Utility === */}
@@ -681,7 +789,7 @@ export default function CreatePropertyListStep1({
           <h2 className="text-lg font-semibold">{t.propertyUtility}</h2>
           <button
             onClick={addUtility}
-            className="flex items-center gap-2 text-sm text-gray-700 hover:text-black mt-2 cursor-pointer"
+            className="flex items-center g text-[#131517] font-semibold hover:text-black mt-2 cursor-pointer"
           >
             <CirclePlus size={22} />
           </button>
@@ -689,11 +797,11 @@ export default function CreatePropertyListStep1({
         {form.utilities.map((u, i) => (
           <div
             key={i}
-            className="grid grid-cols-2 gap-3 mb-4 items-end border-b border-gray-100 pb-3"
+            className="grid grid-cols-3 gap-3 mb-4 items-baseline border-b border-gray-100 pb-3"
           >
             {/* Utility Name (Language Controlled) */}
             <div className="col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm text-[#131517] font-semibold mb-2">
                 {lang === "en" ? "Utility Name (EN)" : "Tên tiện ích (VI)"}
               </label>
               <input
@@ -714,12 +822,12 @@ export default function CreatePropertyListStep1({
                     ? "Enter English name"
                     : "Nhập tên tiện ích tiếng Việt"
                 }
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
+                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
               />
             </div>
 
             <div className="col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1 -mt-16.5">
+              <label className="block text-sm text-[#131517] font-semibold mb-2 -mt-16.5">
                 {lang === "en" ? "Select Icon" : "Chọn Biểu Tượng"}
               </label>
 
@@ -768,11 +876,11 @@ export default function CreatePropertyListStep1({
             </div>
 
             {/* Delete Button */}
-            <div className="col-span-1 flex justify-end items-center">
+            <div className="col-span-1 flex justify-start items-end">
               {i > 0 && (
                 <button
                   onClick={() => removeUtility(i)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+                  className="p-3 text-red-500 cursor-pointer hover:bg-[#fb2c362b] hover:border-[#fb2c36] rounded-full border border-[#B1B1B1]"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -781,39 +889,40 @@ export default function CreatePropertyListStep1({
           </div>
         ))}
 
-        {/* Add Button */}
+        {/* Next */}
+        <div className="text-end flex justify-end">
+          <button
+            onClick={() => {
+              const syncLangFields = [
+                "title",
+                "address",
+                "description",
+                "view",
+                "whatsNearby",
+              ];
+              const updatedForm = { ...form };
+
+              syncLangFields.forEach((field) => {
+                const val = updatedForm[field];
+                if (val && typeof val === "object") {
+                  if (!val.vi || val.vi.trim() === "") val.vi = val.en || "";
+                  if (!val.en || val.en.trim() === "") val.en = val.vi || "";
+                }
+              });
+
+              onChange && onChange(updatedForm);
+              onNext(updatedForm);
+            }}
+            className="mt-4 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full flex items-center cursor-pointer gap-1.5"
+          >
+            {lang === "en" ? "Next" : "Tiếp theo"} <ArrowRight size={18} />
+          </button>
+
+        </div>
+
       </div>
 
-      {/* Next */}
-      <button
-        onClick={() => {
-          const syncLangFields = [
-            "title",
-            "address",
-            "description",
-            "view",
-            "whatsNearby",
-          ];
-          const updatedForm = { ...form };
 
-          syncLangFields.forEach((field) => {
-            const val = updatedForm[field];
-            if (val && typeof val === "object") {
-              if (!val.vi || val.vi.trim() === "") val.vi = val.en || "";
-              if (!val.en || val.en.trim() === "") val.en = val.vi || "";
-            }
-          });
-
-          // 🔹 Immediately inform parent (so propertyData has latest values)
-          onChange && onChange(updatedForm);
-
-          // 🔹 Proceed to next step
-          onNext(updatedForm);
-        }}
-        className="mt-8 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 flex items-center cursor-pointer gap-1.5"
-      >
-        Next <ArrowRight size={18} />
-      </button>
     </div>
   );
 }

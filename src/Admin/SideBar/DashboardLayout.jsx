@@ -117,7 +117,7 @@ const DashboardLayout = () => {
           );
         }
         return (
-          <div className="p-8">
+          <div className="p-8 pt-3">
             <ManageProperty
               openCreateProperty={() => setSubPage("CreateProperty")}
               openEditProperty={(property) => {
@@ -141,7 +141,7 @@ const DashboardLayout = () => {
         }
 
         return (
-          <div className="p-8 text-lg font-semibold">
+          <div className="p-8 text-lg pt-3 font-semibold">
             <OwnersLandlords
               openOwnerView={(owner) => {
                 setSelectedProperty(owner._id);
@@ -153,7 +153,7 @@ const DashboardLayout = () => {
 
       case "Staffs":
         return (
-          <div className="p-8 text-lg font-semibold">
+          <div className="p-8 pt-3 text-lg font-semibold">
             <Staffs />
           </div>
         );
@@ -177,27 +177,24 @@ const DashboardLayout = () => {
                   setSubPage(null);
                   setSubSubPage(null);
                 }}
-                className={`group flex cursor-pointer items-center gap-3 px-4 py-2 border-[1px] border-[#41398b47] rounded-full transition-all duration-200 ${
-                  activePage === item.key
-                    ? "bg-[#41398B] text-white"
-                    : "text-gray-700 hover:bg-[#41398B] hover:text-white"
-                }`}
+                className={`group flex cursor-pointer items-center gap-3 px-4 py-2 border-[1px] border-[#41398b47] rounded-full transition-all duration-200 ${activePage === item.key
+                  ? "bg-[#41398B] text-white"
+                  : "text-gray-700 hover:bg-[#41398B] hover:text-white"
+                  }`}
               >
                 <span
-                  className={`p-2 rounded-full transition-all duration-200 ${
-                    activePage === item.key
-                      ? "bg-[#fff] text-[#41398B]"
-                      : "bg-[#41398B] text-[#fff] group-hover:bg-white group-hover:text-[#41398B]"
-                  }`}
+                  className={`p-2 rounded-full transition-all duration-200 ${activePage === item.key
+                    ? "bg-[#fff] text-[#41398B]"
+                    : "bg-[#41398B] text-[#fff] group-hover:bg-white group-hover:text-[#41398B]"
+                    }`}
                 >
                   {item.icon}
                 </span>
                 <span
-                  className={`text-sm font-medium ${
-                    activePage === item.key
-                      ? "text-white"
-                      : "text-gray-800 group-hover:text-white"
-                  }`}
+                  className={`text-sm font-medium ${activePage === item.key
+                    ? "text-white"
+                    : "text-gray-800 group-hover:text-white"
+                    }`}
                 >
                   {item.label}
                 </span>

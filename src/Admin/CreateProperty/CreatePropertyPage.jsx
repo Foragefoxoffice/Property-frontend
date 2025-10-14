@@ -22,6 +22,9 @@ import {
   getAllDeposits,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
+import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations";
+
 
 /* =========================================================
    🧰 Safe Object Sanitizer
@@ -52,7 +55,7 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch {}
+    } catch { }
   }
   return result;
 }
@@ -70,6 +73,30 @@ export default function CreatePropertyPage({
   const [loading, setLoading] = useState(false);
   const [dropdowns, setDropdowns] = useState({});
   const [savedId, setSavedId] = useState(null);
+  const { language } = useLanguage();
+
+  const t = {
+    en: {
+      createProperty: "Create Property",
+      step1Label: "Listing & Property Information",
+      step2Label: "Media & Financial Information",
+      step3Label: "Contact / Management Details",
+      step4Label: "Review & Publish",
+      saving: "Saving...",
+      posted: "Property Posted successfully!",
+      errorSaving: "Error saving property draft",
+    },
+    vi: {
+      createProperty: "Tạo Bất Động Sản",
+      step1Label: "Thông Tin Liệt Kê & Bất Động Sản",
+      step2Label: "Phương Tiện & Thông Tin Tài Chính",
+      step3Label: "Chi Tiết Liên Hệ / Quản Lý",
+      step4Label: "Xem Lại & Đăng Bài",
+      saving: "Đang lưu...",
+      posted: "Đăng bất động sản thành công!",
+      errorSaving: "Lỗi khi lưu bản nháp bất động sản",
+    },
+  }[language];
 
   /* =========================================================
      🔽 Fetch dropdown data first
@@ -551,8 +578,6 @@ export default function CreatePropertyPage({
       }
 
       /* 🟢 END AUTO-CREATION BLOCK */
-
-      // Continue with property create/update logic
       let res;
       if (isEditMode && editData?._id) {
         res = await updatePropertyListing(editData._id, payload);
@@ -564,11 +589,10 @@ export default function CreatePropertyPage({
 
       const id = res?.data?.data?._id;
       setSavedId(id);
-      CommonToaster("✅ Property saved as draft!", "success");
       setStep(4);
     } catch (err) {
       console.error("❌ Draft save error:", err);
-      CommonToaster("Error saving property draft", "error");
+      CommonToaster(t.errorSaving, "error")
     } finally {
       setLoading(false);
     }
@@ -582,7 +606,12 @@ export default function CreatePropertyPage({
     setLoading(true);
     try {
       await updatePropertyListing(savedId, { status });
-      CommonToaster(`Property marked as ${status}!`, "success");
+      CommonToaster(
+        language === "vi"
+          ? `Bất động sản đã được đăng và đánh dấu là ${status === "Published" ? "Đã đăng" : "Bản nháp"}!`
+          : `Property Posted and marked as ${status}!`,
+        "success"
+      );
       if (goBack) goBack();
     } catch (err) {
       console.error(err);
@@ -600,11 +629,24 @@ export default function CreatePropertyPage({
   };
 
   const steps = [
-    { title: "Create Property", label: "Listing & Property Information" },
-    { title: "Create Property", label: "Media & Financial Information" },
-    { title: "Create Property", label: "Contact / Management Details" },
-    { title: "Create Property", label: "Review & Publish" },
+    {
+      title: t.createProperty,
+      label: t.step1Label,
+    },
+    {
+      title: t.createProperty,
+      label: t.step2Label,
+    },
+    {
+      title: t.createProperty,
+      label: t.step3Label,
+    },
+    {
+      title: t.createProperty,
+      label: t.step4Label,
+    },
   ];
+
 
   const renderStepContent = () => {
     switch (step) {
@@ -639,6 +681,7 @@ export default function CreatePropertyPage({
           <CreatePropertyListStep4
             savedId={savedId}
             onPublish={handleSubmitStatus}
+            onPrev={() => setStep(3)}   // ✅ add this line
           />
         );
       default:

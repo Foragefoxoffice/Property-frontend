@@ -200,21 +200,21 @@ export default function Staffs() {
   const SkeletonCard = () => (
     <div className="animate-pulse rounded-2xl p-5 shadow-sm bg-gray-100">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+        <div className="w-12 h-12 bg-[#41398b29] rounded-full"></div>
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-          <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-4 bg-[#41398b29] rounded w-2/3"></div>
+          <div className="h-3 bg-[#41398b29] rounded w-1/3"></div>
         </div>
       </div>
       <div className="mt-4 space-y-2">
-        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+        <div className="h-3 bg-[#41398b29] rounded w-1/2"></div>
+        <div className="h-3 bg-[#41398b29] rounded w-2/3"></div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen px-10 py-8 bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
+    <div className="min-h-screen px-4 py-4 bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-semibold text-gray-900">
@@ -376,8 +376,8 @@ export default function Staffs() {
                     ? "Chỉnh sửa nhân viên"
                     : "Edit Staff"
                   : language === "vi"
-                  ? "Thêm nhân viên mới"
-                  : "New Staff"}
+                    ? "Thêm nhân viên mới"
+                    : "New Staff"}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -393,11 +393,10 @@ export default function Staffs() {
                 <button
                   key={lang}
                   onClick={() => setActiveLang(lang)}
-                  className={`px-5 py-2 text-sm font-semibold ${
-                    activeLang === lang
-                      ? "border-b-2 border-[#41398B] text-black"
-                      : "text-gray-500"
-                  }`}
+                  className={`px-5 py-2 text-sm font-semibold ${activeLang === lang
+                    ? "border-b-2 border-[#41398B] text-black"
+                    : "text-gray-500"
+                    }`}
                 >
                   {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
                 </button>
@@ -553,8 +552,8 @@ export default function Staffs() {
                       ? "Cập nhật"
                       : "Update"
                     : language === "vi"
-                    ? "Thêm"
-                    : "Add"}
+                      ? "Thêm"
+                      : "Add"}
                 </button>
               </div>
             </form>

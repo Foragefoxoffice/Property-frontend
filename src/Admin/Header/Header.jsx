@@ -9,10 +9,14 @@ export default function Header() {
   const navigate = useNavigate();
   const [showLogout, setShowLogout] = useState(false);
   const { language, toggleLanguage } = useLanguage();
+  const labels = {
+    logout: { en: "Logout", vi: "Đăng xuất" },
+    loggedOut: { en: "You're Logged Out!", vi: "Bạn đã đăng xuất!" },
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    CommonToaster("You're Logged Out!", "error");
+    CommonToaster(labels.loggedOut[language], "error");
     navigate("/");
   };
 
@@ -36,11 +40,10 @@ export default function Header() {
             onClick={() => toggleLanguage("en")}
             aria-pressed={language === "en"}
             title="English"
-            className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center transition ring-1 ring-black/5 cursor-pointer ${
-              language === "en"
-                ? "bg-white shadow scale-[1.06]"
-                : "hover:bg-white/70"
-            }`}
+            className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center transition ring-1 ring-black/5 cursor-pointer ${language === "en"
+              ? "bg-[#9994ce47] shadow scale-[1.06]"
+              : "hover:bg-white/70"
+              }`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
               <defs>
@@ -123,11 +126,10 @@ export default function Header() {
             onClick={() => toggleLanguage("vi")}
             aria-pressed={language === "vi"}
             title="Tiếng Việt"
-            className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center transition ring-1 ring-black/5 cursor-pointer ${
-              language === "vi"
-                ? "bg-white shadow scale-[1.06]"
-                : "hover:bg-white/70"
-            }`}
+            className={`h-9 w-9 md:h-10 md:w-10 rounded-full flex items-center justify-center transition ring-1 ring-black/5 cursor-pointer ${language === "vi"
+              ? "bg-[#9994ce47] shadow scale-[1.06]"
+              : "hover:bg-white/70"
+              }`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
               <defs>
@@ -175,7 +177,7 @@ export default function Header() {
                   onClick={handleLogout}
                   className="flex items-center gap-1.5 w-full text-left px-4 py-2 text-sm bg-[red] text-white rounded transition cursor-pointer"
                 >
-                  <LogOut size={17} /> Logout
+                  <LogOut size={17} /> {labels.logout[language]}
                 </button>
               </motion.div>
             )}

@@ -111,10 +111,10 @@ export default function ManageProperty({
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
 
   return (
-    <div className="min-h-screen px-10 py-8">
+    <div className="min-h-screen px-2 py-2">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">{t.properties}</h1>
+        <h1 className="text-3xl font-semibold text-gray-900">{t.properties}</h1>
 
         <div className="flex items-center gap-4">
           <button
@@ -138,28 +138,26 @@ export default function ManageProperty({
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
+          className="w-full pl-10 pr-4 py-2 rounded-full border border-[#B2B2B3] focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
         />
       </div>
 
       {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
-          <div className="py-10 text-center text-gray-500">
-            {language === "vi"
-              ? "Đang tải bất động sản..."
-              : "Loading properties..."}
-          </div>
+          <SkeletonLoader />
         ) : (
           <table className="w-full text-sm text-gray-700">
-            <thead className="bg-gray-50 text-gray-600 text-left">
+            <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
               <tr>
-                <th className="px-6 py-3 font-medium">{t.property}</th>
-                <th className="px-6 py-3 font-medium">{t.transactionType}</th>
-                <th className="px-6 py-3 font-medium">{t.location}</th>
-                <th className="px-6 py-3 font-medium">{t.propertyType}</th>
-                <th className="px-6 py-3 font-medium">{t.status}</th>
-                <th className="px-6 py-3 font-medium text-right">Actions</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.property}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.transactionType}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.location}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.propertyType}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.status}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] text-right">
+                  {language === "vi" ? "Hành động" : "Actions"}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -182,9 +180,7 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 transition`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-4 flex items-center gap-3">
                       <img
@@ -195,8 +191,7 @@ export default function ManageProperty({
                       />
                       <div>
                         <p className="text-sm text-gray-600 font-medium">
-                          {t.propertyCode}:{" "}
-                          {info.listingInformationPropertyId || "—"}
+                          {t.propertyCode}: {info.listingInformationPropertyId || "—"}
                         </p>
                         <p className="text-gray-900 font-semibold">{title}</p>
                       </div>
@@ -208,39 +203,65 @@ export default function ManageProperty({
                         "—"}
                     </td>
                     <td className="px-6 py-4">{propertyType}</td>
+
+                    {/* ✅ Updated Status Display */}
                     <td className="px-6 py-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          p.status === "Published"
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
                             ? "bg-green-100 text-green-700"
                             : p.status === "Draft"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-gray-200 text-gray-700"
-                        }`}
-                      >
-                        {p.status === "Published"
-                          ? t.posted
-                          : p.status === "Draft"
-                          ? t.draft
-                          : p.status}
-                      </span>
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-gray-200 text-gray-700"
+                            }`}
+                        >
+                          <span
+                            className={`w-2 h-2 rounded-full ${p.status === "Published"
+                              ? "bg-green-600"
+                              : p.status === "Draft"
+                                ? "bg-yellow-500"
+                                : "bg-gray-500"
+                              }`}
+                          ></span>
+                          {/* ✅ Localized Status Label */}
+                          {p.status === "Published"
+                            ? language === "vi"
+                              ? "Đã đăng"
+                              : "Published"
+                            : p.status === "Draft"
+                              ? language === "vi"
+                                ? "Bản nháp"
+                                : "Draft"
+                              : p.status || "—"}
+                        </span>
+                      </div>
                     </td>
+
+                    {/* Actions */}
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
-                      <button className="p-2 hover:bg-gray-100 rounded-full">
+                      <button style={{
+                        justifyItems: "anchor-center"
+                      }} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
                         <Share2 className="w-4 h-4 text-gray-600" />
                       </button>
-                      <button className="p-2 hover:bg-gray-100 rounded-full">
+                      <button style={{
+                        justifyItems: "anchor-center"
+                      }} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
                         <Eye className="w-4 h-4 text-gray-600" />
                       </button>
-                      <button
+                      <button style={{
+                        justifyItems: "anchor-center"
+                      }}
                         onClick={() => openEditProperty(p)}
-                        className="p-2 hover:bg-gray-100 rounded-full"
+                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
                         <Pencil className="w-4 h-4 text-gray-600" />
                       </button>
-                      <button
+                      <button style={{
+                        justifyItems: "anchor-center"
+                      }}
                         onClick={() => confirmDelete(p._id)}
-                        className="p-2 hover:bg-red-50 rounded-full"
+                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </button>
@@ -289,22 +310,20 @@ export default function ManageProperty({
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`p-1 px-2 rounded ${
-                currentPage === 1
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100 text-gray-600"
-              }`}
+              className={`p-1 px-2 rounded ${currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "hover:bg-gray-100 text-gray-600"
+                }`}
             >
               &lt;
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`p-1 px-2 rounded ${
-                currentPage === totalPages
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100 text-gray-600"
-              }`}
+              className={`p-1 px-2 rounded ${currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "hover:bg-gray-100 text-gray-600"
+                }`}
             >
               &gt;
             </button>
@@ -348,3 +367,34 @@ export default function ManageProperty({
     </div>
   );
 }
+
+/* ✅ Skeleton Loader Component */
+const SkeletonLoader = () => {
+  return (
+    <div className="animate-pulse divide-y divide-gray-100">
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center justify-between px-6 py-4 bg-white"
+        >
+          <div className="flex items-center gap-4 w-1/3">
+            <div className="w-18 h-14 bg-[#41398b29] rounded-lg" />
+            <div className="flex flex-col gap-2 w-full">
+              <div className="h-3 bg-[#41398b29] rounded w-2/3" />
+              <div className="h-3 bg-[#41398b29] rounded w-1/2" />
+            </div>
+          </div>
+          <div className="h-3 bg-[#41398b29] rounded w-24" />
+          <div className="h-3 bg-[#41398b29] rounded w-20" />
+          <div className="h-3 bg-[#41398b29] rounded w-24" />
+          <div className="h-6 bg-[#41398b29] rounded-full w-20" />
+          <div className="flex gap-3">
+            {[...Array(4)].map((__, j) => (
+              <div key={j} className="w-10 h-10 bg-[#41398b29] rounded-full" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};

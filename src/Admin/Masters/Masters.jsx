@@ -21,7 +21,7 @@ export default function Masters({ openPropertyMaster, openCurrencyPage }) {
   return (
     <div className="p-8 min-h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
       {/* Header */}
-      <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+      <h2 className="text-3xl font-semibold text-gray-900 mb-6">
         {language === "vi" ? "Quản lý chính" : "Masters"}
       </h2>
 
@@ -31,11 +31,10 @@ export default function Masters({ openPropertyMaster, openCurrencyPage }) {
           <div
             key={index}
             onClick={item.onClick}
-            className={`flex items-center justify-between bg-white rounded-2xl px-6 py-5 shadow-sm hover:shadow-md transition-all duration-300 ${
-              item.name
+            className={`flex items-center justify-between bg-white rounded-2xl px-6 py-5 shadow-sm hover:shadow-md transition-all duration-300 ${item.name
                 ? "cursor-pointer hover:scale-[1.02]"
                 : "opacity-40 cursor-default"
-            }`}
+              }`}
           >
             {/* Name */}
             <span className="text-gray-800 font-medium text-base">
