@@ -21,6 +21,8 @@ import Currency from "../Currency/Currency";
 import Header from "../Header/Header";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import StaffView from "../AddMembers/StaffView";
+import PropertyManager from "../Property/PropertyManager";
 
 const DashboardLayout = () => {
   const [activePage, setActivePage] = useState("Properties");
@@ -118,7 +120,7 @@ const DashboardLayout = () => {
         }
         return (
           <div className="p-8 pt-3">
-            <ManageProperty
+            <PropertyManager
               openCreateProperty={() => setSubPage("CreateProperty")}
               openEditProperty={(property) => {
                 setSelectedProperty(property);
@@ -152,13 +154,27 @@ const DashboardLayout = () => {
         );
 
       case "Staffs":
+        if (subPage === "ViewStaff") {
+          return (
+            <div className="p-0">
+              <StaffView
+                staffId={selectedProperty}
+                goBack={() => setSubPage(null)}
+              />
+            </div>
+          );
+        }
+
         return (
           <div className="p-8 pt-3 text-lg font-semibold">
-            <Staffs />
+            <Staffs
+              openStaffView={(staff) => {
+                setSelectedProperty(staff._id);
+                setSubPage("ViewStaff");
+              }}
+            />
           </div>
         );
-      default:
-        return <div className="p-8">Select a menu item</div>;
     }
   };
 

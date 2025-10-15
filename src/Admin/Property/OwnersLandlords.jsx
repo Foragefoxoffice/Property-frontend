@@ -263,7 +263,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
                 <tr key={item._id} className="hover:bg-gray-100 transition">
                   <td className="px-6 py-4 flex items-center gap-3">
                     <img
-                      src={item.photo || "/images/dummy-img.jpg"}
+                      src={item.photo || "/dummy-img.jpg"}
                       alt={item.ownerName?.[language] || item.ownerName?.en}
                       className="w-10 h-10 rounded-full object-cover border border-gray-200"
                     />
@@ -285,18 +285,27 @@ const OwnersLandlords = ({ openOwnerView }) => {
                   <td className="px-6 py-4 text-center">
                     <div className="flex justify-center gap-2">
                       <button
+                        style={{
+                          justifyItems: "anchor-center"
+                        }}
                         onClick={() => openOwnerView(item)}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10"
                       >
                         <Eye className="text-gray-600" size={18} />
                       </button>
                       <button
+                        style={{
+                          justifyItems: "anchor-center"
+                        }}
                         onClick={() => openEditModal(item)}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10"
                       >
                         <Edit2 className="text-blue-500" size={18} />
                       </button>
                       <button
+                        style={{
+                          justifyItems: "anchor-center"
+                        }}
                         onClick={() =>
                           setDeleteConfirm({ show: true, id: item._id })
                         }

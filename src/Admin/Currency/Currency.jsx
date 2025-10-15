@@ -207,9 +207,8 @@ export default function Currency({ goBack }) {
       await updateCurrency(currency._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${
-              newStatus === "Active" ? "hoạt động" : "không hoạt động"
-            }`
+          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
+          }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -223,19 +222,31 @@ export default function Currency({ goBack }) {
   };
 
   // Mark default
-  const handleMarkDefault = async (id) => {
+  const handleMarkDefault = async (currency) => {
     try {
-      await markCurrencyAsDefault(id);
-      CommonToaster(
-        isVI
-          ? "Đã đặt làm mặc định thành công!"
-          : "Marked as default successfully!",
-        "success"
-      );
+      if (currency.isDefault) {
+        await markCurrencyAsDefault(currency._id);
+        CommonToaster(
+          isVI
+            ? "Đã bỏ đánh dấu là tiền tệ mặc định!"
+            : "Unmarked as default successfully!",
+          "success"
+        );
+      } else {
+        await markCurrencyAsDefault(currency._id);
+        CommonToaster(
+          isVI
+            ? "Đã đặt làm tiền tệ mặc định thành công!"
+            : "Marked as default successfully!",
+          "success"
+        );
+      }
       fetchCurrencies();
     } catch {
       CommonToaster(
-        isVI ? "Không thể đặt làm mặc định." : "Failed to mark as default.",
+        isVI
+          ? "Không thể thay đổi trạng thái mặc định."
+          : "Failed to toggle default status.",
         "error"
       );
     }
@@ -313,9 +324,8 @@ export default function Currency({ goBack }) {
               visibleData.map((row, i) => (
                 <tr
                   key={i}
-                  className={`${
-                    i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-gray-100`}
+                  className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100`}
                 >
                   <td className="px-6 py-3">
                     {isVI ? row.currencyCode.vi : row.currencyCode.en}
@@ -328,11 +338,10 @@ export default function Currency({ goBack }) {
                   </td>
                   <td className="px-6 py-3 flex items-center gap-2">
                     <span
-                      className={`px-4 py-1.5 rounded-full text-xs font-medium ${
-                        row.status === "Active"
-                          ? "bg-[#E8FFF0] text-[#12B76A]"
-                          : "bg-[#FFE8E8] text-[#F04438]"
-                      }`}
+                      className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
+                        ? "bg-[#E8FFF0] text-[#12B76A]"
+                        : "bg-[#FFE8E8] text-[#F04438]"
+                        }`}
                     >
                       {isVI
                         ? row.status === "Active"
@@ -379,19 +388,30 @@ export default function Currency({ goBack }) {
                               ? "Đánh dấu là không hoạt động"
                               : "Mark as Inactive"
                             : isVI
-                            ? "Đánh dấu là hoạt động"
-                            : "Mark as Active"}
+                              ? "Đánh dấu là hoạt động"
+                              : "Mark as Active"}
                         </button>
                         <button
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                          className={`flex items-center w-full px-4 py-2 text-sm hover:bg-gray-50 ${row.isDefault ? "text-red-600" : "text-gray-800"
+                            }`}
                           onClick={() => {
-                            handleMarkDefault(row._id);
+                            handleMarkDefault(row);
                             setOpenMenuIndex(null);
                           }}
                         >
-                          <Star size={14} className="mr-2" />{" "}
-                          {isVI ? "Đặt làm mặc định" : "Mark as Default"}
+                          <Star
+                            size={14}
+                            className={`mr-2 ${row.isDefault ? "text-red-500" : "text-gray-600"}`}
+                          />
+                          {row.isDefault
+                            ? isVI
+                              ? "Bỏ đánh dấu là mặc định"
+                              : "Unmark as Default"
+                            : isVI
+                              ? "Đặt làm mặc định"
+                              : "Mark as Default"}
                         </button>
+
                         <button
                           className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
                           onClick={() => {
@@ -435,9 +455,8 @@ export default function Currency({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${
-                  isVI ? "trên" : "of"
-                } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
+              } ${totalRows}`}
           </span>
           <div className="flex items-center gap-1">
             <button onClick={goToFirst} disabled={currentPage === 1}>
@@ -506,8 +525,8 @@ export default function Currency({ goBack }) {
                     ? "Edit Currency"
                     : "Chỉnh sửa tiền tệ"
                   : activeLang === "EN"
-                  ? "New Currency"
-                  : "Thêm tiền tệ mới"}
+                    ? "New Currency"
+                    : "Thêm tiền tệ mới"}
               </h2>
               <button
                 onClick={() => {
@@ -524,21 +543,19 @@ export default function Currency({ goBack }) {
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-[#41398B]"
-                }`}
+                className={`py-3 font-medium transition-all ${activeLang === "EN"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-[#41398B]"
+                  }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-[#41398B]"
-                }`}
+                className={`py-3 font-medium transition-all ${activeLang === "VI"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-[#41398B]"
+                  }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -640,8 +657,8 @@ export default function Currency({ goBack }) {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                  ? "Add"
-                  : "Thêm"}
+                    ? "Add"
+                    : "Thêm"}
               </button>
             </div>
           </div>

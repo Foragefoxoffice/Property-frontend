@@ -174,6 +174,7 @@ export default function CreatePropertyPage({
           dropdowns.properties,
           editData.listingInformation?.listingInformationProjectCommunity
         ),
+        propertyNo: editData.listingInformation?.listingInformationPropertyNo || { en: "", vi: "" },
         zoneId: findIdFromLocalized(
           dropdowns.zones,
           editData.listingInformation?.listingInformationZoneSubArea
@@ -356,6 +357,7 @@ export default function CreatePropertyPage({
           dropdowns.properties,
           normalized.projectId
         ),
+        listingInformationPropertyNo: wrap(normalized.propertyNo),
         listingInformationZoneSubArea: findLocalized(
           dropdowns.zones,
           normalized.zoneId

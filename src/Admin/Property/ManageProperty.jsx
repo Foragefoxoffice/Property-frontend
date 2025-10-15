@@ -20,6 +20,7 @@ import { translations } from "../../Language/translations";
 export default function ManageProperty({
   openCreateProperty,
   openEditProperty,
+  onViewProperty
 }) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -244,9 +245,11 @@ export default function ManageProperty({
                       }} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
                         <Share2 className="w-4 h-4 text-gray-600" />
                       </button>
-                      <button style={{
-                        justifyItems: "anchor-center"
-                      }} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
+                      <button
+                        onClick={() => onViewProperty(p._id)}
+                        style={{
+                          justifyItems: "anchor-center"
+                        }} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
                         <Eye className="w-4 h-4 text-gray-600" />
                       </button>
                       <button style={{

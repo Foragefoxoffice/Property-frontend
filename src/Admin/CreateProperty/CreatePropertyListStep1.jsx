@@ -201,6 +201,7 @@ export default function CreatePropertyListStep1({
   const [form, setForm] = useState({
     ...initialData,
     blockName: initialData.blockName || { en: "", vi: "" },
+    propertyNo: initialData.propertyNo || { en: "", vi: "" },
     title: initialData.title || { en: "", vi: "" },
     address: initialData.address || { en: "", vi: "" },
     description: initialData.description || { en: "", vi: "" },
@@ -535,6 +536,14 @@ export default function CreatePropertyListStep1({
             onChange={handleLocalizedChange}
           />
 
+          <LocalizedInput
+            label={lang === "en" ? "Property No" : "Số bất động sản"}
+            name="propertyNo"
+            lang={lang}
+            value={form.propertyNo?.[lang]}
+            onChange={handleLocalizedChange}
+          />
+
           <Select
             label={lang === "en" ? "Property Type" : "Loại bất động sản"}
             name="propertyType"
@@ -543,43 +552,6 @@ export default function CreatePropertyListStep1({
             value={form.propertyType}
             onChange={handleInputChange}
           />
-
-          {/* <Select
-            label="Country"
-            name="country"
-            lang={lang}
-            options={[
-              { _id: "VN", name: { en: "Vietnam", vi: "Việt Nam" } },
-              { _id: "IN", name: { en: "India", vi: "Ấn Độ" } },
-            ]}
-            value={form.country}
-            onChange={handleInputChange}
-          /> */}
-          {/* <Input
-            label="State"
-            name="state"
-            value={form.state}
-            onChange={handleInputChange}
-          />
-          <Input
-            label="City"
-            name="city"
-            value={form.city}
-            onChange={handleInputChange}
-          />
-          <Input
-            label="Postal Code"
-            name="postalCode"
-            value={form.postalCode}
-            onChange={handleInputChange}
-          />
-          <LocalizedInput
-            label="Address"
-            name="address"
-            lang={lang}
-            value={form.address?.[lang]}
-            onChange={handleLocalizedChange}
-          /> */}
           <DatePicker
             label={lang === "en" ? "Date Listed" : "Ngày niêm yết"}
             name="dateListed"
@@ -648,13 +620,6 @@ export default function CreatePropertyListStep1({
             onChange={handleInputChange}
             placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
-
-          {/* <Input
-            label="Floor Number"
-            name="floorNumber"
-            value={form.floorNumber}
-            onChange={handleInputChange}
-          /> */}
           <Select
             label={lang === "en" ? "Furnishing" : "Trang bị nội thất"}
             name="furnishing"
@@ -664,14 +629,6 @@ export default function CreatePropertyListStep1({
             onChange={handleInputChange}
             placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
-
-          {/* <Input
-            label="Year Built"
-            name="yearBuilt"
-            type="number"
-            value={form.yearBuilt}
-            onChange={handleInputChange}
-          /> */}
           <LocalizedInput
             label={lang === "en" ? "View" : "Hướng nhìn"}
             name="view"
@@ -680,99 +637,7 @@ export default function CreatePropertyListStep1({
             onChange={handleLocalizedChange}
             placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
-
-          {/* <Select
-            label="Parking Availability"
-            name="parkingAvailability"
-            lang={lang}
-            options={dropdowns.parkings}
-            value={form.parkingAvailability}
-            onChange={handleInputChange}
-          /> */}
-          {/* <Select
-            label="Pet Policy"
-            name="petPolicy"
-            lang={lang}
-            options={dropdowns.pets}
-            value={form.petPolicy}
-            onChange={handleInputChange}
-          /> */}
         </div>
-
-        {/* === What's Nearby === */}
-        {/* <h2 className="text-lg font-semibold mt-8 mb-4">{t.whatsNearby}</h2>
-        <LocalizedTextarea
-          label="What's Nearby"
-          name="whatsNearby"
-          lang={lang}
-          value={form.whatsNearby?.[lang]}
-          onChange={handleLocalizedChange}
-        /> */}
-
-        {/* === Amenities === */}
-        {/* <h2 className="text-lg font-semibold mt-8 mb-4">
-          {lang === "en" ? "Amenities" : "Tiện Ích"}
-        </h2>
-
-        {form.amenities.map((a, i) => (
-          <div
-            key={i}
-            className="grid grid-cols-3 gap-3 mb-4 items-end border-b border-gray-100 pb-3"
-          >
-            <div className="col-span-1">
-              <label className="block text-sm text-[#131517] font-semibold mb-2">
-                {lang === "en" ? "Amenity Name (EN)" : "Tên tiện ích (VI)"}
-              </label>
-              <input
-                type="text"
-                value={a.name?.[lang] || ""}
-                onChange={(e) =>
-                  setForm((prev) => {
-                    const updated = [...prev.amenities];
-                    updated[i].name = {
-                      ...(updated[i].name || { en: "", vi: "" }),
-                      [lang]: e.target.value,
-                    };
-                    return { ...prev, amenities: updated };
-                  })
-                }
-                placeholder={
-                  lang === "en" ? "Enter English name" : "Nhập tên tiếng Việt"
-                }
-                className="border rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
-              />
-            </div>
-
-            <div className="col-span-1">
-              <Input
-                label="KM"
-                name={`amenityKm-${i}`}
-                value={a.km}
-                onChange={(e) => handleAmenityChange(i, "km", e.target.value)}
-              />
-            </div>
-
-            <div className="col-span-1 flex justify-end items-center">
-              {i > 0 && (
-                <button
-                  onClick={() => removeAmenity(i)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-full"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-
-        <button
-          onClick={addAmenity}
-          className="flex items-center g text-[#131517] font-semibold hover:text-black mt-2"
-        >
-          <Plus className="w-4 h-4" />{" "}
-          {lang === "en" ? "Add Amenity" : "Thêm Tiện Ích"}
-        </button> */}
-
         {/* === Description === */}
         <h2 className="text-lg font-semibold mt-8 mb-4">{t.description}</h2>
         <LocalizedTextarea

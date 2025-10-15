@@ -22,7 +22,7 @@ import { translations } from "../../Language/translations";
 
 const colors = ["#E8E6FF", "#E0FFF9", "#FFECEC", "#E6F5FF"];
 
-export default function Staffs() {
+export default function Staffs({ openStaffView }) {
   const { language } = useLanguage();
   const t = translations[language];
 
@@ -237,7 +237,7 @@ export default function Staffs() {
           placeholder={language === "vi" ? "Tìm kiếm" : "Search staff..."}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
+          className="w-full pl-10 pr-4 py-2 rounded-full border border-[#B2B2B3] focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
         />
       </div>
 
@@ -252,13 +252,17 @@ export default function Staffs() {
               className="relative rounded-2xl p-5 shadow-sm"
               style={{ background: colors[i % colors.length] }}
             >
-              <button className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/40 transition border border-gray-400 cursor-pointer">
+              <button
+                onClick={() => openStaffView(staff)}
+                className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/40 transition border border-gray-400 cursor-pointer"
+              >
                 <MoveHorizontal size={18} className="text-gray-700" />
               </button>
 
+
               <div className="flex items-center gap-3">
                 <img
-                  src={staff.staffsImage || "/images/dummy-img.jpg"}
+                  src={staff.staffsImage || "/dummy-img.jpg"}
                   alt={staff.staffsName?.[language] || staff.staffsName?.en}
                   className="w-16 h-16 rounded-full object-cover"
                 />

@@ -4,6 +4,9 @@ import {
   ArrowRight,
   ChevronDown,
   Eye,
+  Mail,
+  Phone,
+  UserCog,
   X,
 } from "lucide-react";
 import { getAllOwners, getAllStaffs, getMe } from "../../Api/action";
@@ -79,29 +82,56 @@ export default function CreatePropertyListStep3({
     if (initialData && Object.keys(initialData).length > 0) {
       const cm = initialData.contactManagement || {};
 
-      setForm((prev) => ({
-        ...prev,
-        owner: initialData.owner ||
+      const updatedForm = {
+        owner:
+          initialData.owner ||
           cm.contactManagementOwner ||
-          prev.owner || { en: "", vi: "" },
-        ownerNotes: initialData.ownerNotes ||
+          { en: "", vi: "" },
+        ownerNotes:
+          initialData.ownerNotes ||
           cm.contactManagementOwnerNotes ||
-          prev.ownerNotes || { en: "", vi: "" },
-        consultant: initialData.consultant ||
+          { en: "", vi: "" },
+        consultant:
+          initialData.consultant ||
           cm.contactManagementConsultant ||
-          prev.consultant || { en: "", vi: "" },
-        connectingPoint: initialData.connectingPoint ||
+          { en: "", vi: "" },
+        connectingPoint:
+          initialData.connectingPoint ||
           cm.contactManagementConnectingPoint ||
-          prev.connectingPoint || { en: "", vi: "" },
-        connectingPointNotes: initialData.connectingPointNotes ||
+          { en: "", vi: "" },
+        connectingPointNotes:
+          initialData.connectingPointNotes ||
           cm.contactManagementConnectingPointNotes ||
-          prev.connectingPointNotes || { en: "", vi: "" },
-        internalNotes: initialData.internalNotes ||
+          { en: "", vi: "" },
+        internalNotes:
+          initialData.internalNotes ||
           cm.contactManagementInternalNotes ||
-          prev.internalNotes || { en: "", vi: "" },
-      }));
+          { en: "", vi: "" },
+      };
+
+      setForm((prev) => ({ ...prev, ...updatedForm }));
+
+      // ✅ Auto-set selectedOwner and selectedConnect
+      if (owners.length > 0 && updatedForm.owner?.en) {
+        const matchOwner = owners.find(
+          (o) =>
+            o.ownerName?.en === updatedForm.owner.en ||
+            o.ownerName?.vi === updatedForm.owner.vi
+        );
+        if (matchOwner) setSelectedOwner(matchOwner);
+      }
+
+      if (staffs.length > 0 && updatedForm.connectingPoint?.en) {
+        const matchStaff = staffs.find(
+          (s) =>
+            s.staffsName?.en === updatedForm.connectingPoint.en ||
+            s.staffsName?.vi === updatedForm.connectingPoint.vi
+        );
+        if (matchStaff) setSelectedConnect(matchStaff);
+      }
     }
-  }, [initialData]);
+  }, [initialData, owners, staffs]);
+
 
   /* =========================================================
      🔹 Fetch Owners, Staffs & Logged-in User
@@ -427,9 +457,8 @@ export default function CreatePropertyListStep3({
 
       {/* 👁 Popups */}
       {showOwnerView && selectedOwner && (
-        <PopupCard
+        <OwnerPopupCard
           onClose={() => setShowOwnerView(false)}
-          title="Owner / Landlord"
           data={{
             image: selectedOwner.ownerImage || selectedOwner.photo,
             name: selectedOwner.ownerName,
@@ -443,112 +472,238 @@ export default function CreatePropertyListStep3({
       )}
 
       {showConsultantView && selectedConsultant && (
-        <PopupCard
+        <StaffPopupCard
           onClose={() => setShowConsultantView(false)}
-          title="Property Consultant"
           data={selectedConsultant}
           lang={lang}
+          title="Property Consultant"
         />
       )}
 
       {showConnectView && selectedConnect && (
-        <PopupCard
+        <StaffPopupCard
           onClose={() => setShowConnectView(false)}
-          title="Connecting Point"
-          data={{
-            image: selectedConnect.staffsImage,
-            name: selectedConnect.staffsName,
-            id: selectedConnect.staffsId,
-            role: selectedConnect.staffsRole,
-            number: selectedConnect.staffsNumber,
-            notes: selectedConnect.staffsNotes,
-          }}
+          data={selectedConnect}
           lang={lang}
+          title="Connecting Point"
         />
       )}
     </div>
   );
 }
 
-/* =========================================================
-   🔹 Reusable PopupCard Component
-========================================================= */
-const PopupCard = ({ onClose, title, data, lang }) => {
-  // ✅ Helper: extract localized or plain string safely
-  const safeText = (val) => {
-    if (!val) return "";
-    if (typeof val === "string") return val;
-    if (typeof val === "object")
-      return val[lang] || val.en || JSON.stringify(val);
-    return String(val);
+const StaffPopupCard = ({ onClose, data, lang, title }) => {
+  const safeText = (val) =>
+    typeof val === "object" ? val?.[lang] || val?.en || "" : val || "";
+
+  const {
+    image,
+    name,
+    id,
+    role,
+    number,
+    email,
+    notes,
+  } = {
+    image: data.staffsImage || data.image,
+    name: data.staffsName || data.name,
+    id: data.staffsId || data.id,
+    role: data.staffsRole || data.role,
+    number: data.staffsNumber || data.number,
+    email: data.staffsEmail || data.email,
+    notes: data.staffsNotes || data.notes,
   };
+
+  const defaultImage = "/dummy-img.jpg";
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl w-full max-w-lg p-6 shadow-lg relative">
+      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-lg p-8 relative animate-fade-in">
+        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
         >
-          <X size={20} />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
 
-        <h2 className="text-lg font-semibold mb-4">{title}</h2>
+        {/* Header */}
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">
+          {safeText(name) || title || "Staff Details"}
+        </h2>
 
-        <div className="flex items-center gap-4 mb-4">
-          <img
-            src={
-              data.image || "https://via.placeholder.com/100x100.png?text=👤"
-            }
-            alt={safeText(data.name)}
-            className="w-20 h-20 rounded-full object-cover border"
-          />
-          <div>
-            <h3 className="text-xl font-semibold">{safeText(data.name)}</h3>
-            {data.type && (
-              <p className="text-gray-600 text-sm capitalize">
-                {safeText(data.type)}
-              </p>
+        {/* Card */}
+        <div className="relative bg-white rounded-2xl border border-gray-300 shadow-sm p-6 sm:p-8 flex flex-col sm:flex-row gap-8">
+          {/* Photo */}
+          <div className="flex-shrink-0 flex justify-center sm:justify-start">
+            <div>
+              <div className="w-44 h-44 rounded-xl overflow-hidden bg-[#e7e4fb] flex items-center justify-center">
+                <img
+                  src={image || defaultImage}
+                  alt={safeText(name) || "Staff"}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {id && (
+                <p className="text-sm text-gray-800 mt-4">
+                  <span className="font-medium">Staff ID:</span>{" "}
+                  <span className="text-gray-700">{safeText(id)}</span>
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Info */}
+          <div className="flex-1 text-gray-800">
+            <h2 className="text-lg font-semibold mb-1">
+              {safeText(name) || "Unnamed Staff"}
+            </h2>
+
+            {role && (
+              <div className="flex items-center gap-2 text-gray-600 mb-2">
+                <UserCog size={16} />
+                <span className="text-sm">{safeText(role)}</span>
+              </div>
+            )}
+
+            {number && (
+              <div className="flex items-center gap-2 text-gray-600 mb-2">
+                <Phone size={16} />
+                <span className="text-sm">{safeText(number)}</span>
+              </div>
+            )}
+
+            {email && (
+              <div className="flex items-center gap-2 text-gray-600 mb-3">
+                <Mail size={16} />
+                <span className="text-sm">{safeText(email)}</span>
+              </div>
+            )}
+
+            {notes && (
+              <>
+                <h3 className="font-medium text-gray-800 mb-1">Notes</h3>
+                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                  {safeText(notes) ||
+                    "No notes available for this staff."}
+                </p>
+              </>
             )}
           </div>
-        </div>
-
-        <div className="space-y-2 text-sm text-gray-700">
-          {data.id && (
-            <p>
-              <strong>ID:</strong> {safeText(data.id)}
-            </p>
-          )}
-          {data.number && (
-            <p>
-              <strong>📞 Contact:</strong> {safeText(data.number)}
-            </p>
-          )}
-          {data.facebook && (
-            <p>
-              <strong>🔗 Facebook:</strong>{" "}
-              <a
-                href={safeText(data.facebook)}
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-600 underline"
-              >
-                {safeText(data.facebook)}
-              </a>
-            </p>
-          )}
-          {data.role && (
-            <p>
-              <strong>Role:</strong> {safeText(data.role)}
-            </p>
-          )}
-          {data.notes && (
-            <p>
-              <strong>🗒 Notes:</strong> {safeText(data.notes) || "N/A"}
-            </p>
-          )}
         </div>
       </div>
     </div>
   );
 };
+
+/* =========================================================
+   🔹 Owner Popup (Keep First Design)
+========================================================= */
+const OwnerPopupCard = ({ onClose, data, lang }) => {
+  const safeText = (val) =>
+    typeof val === "object" ? val?.[lang] || val?.en || "" : val || "";
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-lg p-8 relative animate-fade-in">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          <X size={20} />
+        </button>
+
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">
+          {safeText(data.name) || "Owner"}
+        </h2>
+
+        <div className="flex flex-col sm:flex-row items-start gap-8 bg-[#fafafa] rounded-2xl p-6 border border-gray-300 relative">
+          {/* Avatar */}
+          <div className="flex-shrink-0">
+            <div className="w-32 h-32 rounded-full overflow-hidden bg-[#cfcafc] flex items-center justify-center">
+              <img
+                src={
+                  data.image || "/dummy-img.jpg"
+                }
+                alt={safeText(data.name)}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Info */}
+          <div className="flex-1 text-gray-800">
+            <h3 className="text-lg font-semibold mb-2">
+              {safeText(data.name) || "Unnamed Owner"}
+            </h3>
+            {data.number && (
+              <p className="text-gray-700 text-sm mb-3">
+                📞 {safeText(data.number)}
+              </p>
+            )}
+            {data.notes && (
+              <>
+                <h4 className="text-sm font-semibold mb-1">Notes</h4>
+                <p className="text-sm text-gray-600 leading-relaxed mb-3">
+                  {safeText(data.notes)}
+                </p>
+              </>
+            )}
+            {data.type && (
+              <p className="text-sm text-gray-700">
+                <span className="font-medium">Type:</span>{" "}
+                {safeText(data.type)}
+              </p>
+            )}
+          </div>
+
+          {/* Facebook */}
+          <div className="absolute top-6 right-6">
+            {data.facebook ? (
+              <a
+                href={
+                  safeText(data.facebook).startsWith("http")
+                    ? safeText(data.facebook)
+                    : `https://facebook.com/${safeText(data.facebook)}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  className="w-5 h-5 text-gray-700"
+                >
+                  <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.4 3h-1.9v7A10 10 0 0 0 22 12Z" />
+                </svg>
+              </a>
+            ) : (
+              <div className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 opacity-40 cursor-not-allowed">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  className="w-5 h-5 text-gray-400"
+                >
+                  <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.4 3h-1.9v7A10 10 0 0 0 22 12Z" />
+                </svg>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
