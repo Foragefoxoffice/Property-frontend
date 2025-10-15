@@ -257,20 +257,44 @@ export default function CreatePropertyListStep4({ savedId, onPublish, onPrev }) 
         </Section>
 
         {/* === Financial Details === */}
+        {/* === Financial Details === */}
         <Section title={labels.financialDetails[lang]}>
           <Grid3>
+            {/* Always show Currency */}
             <Field label={labels.currency[lang]} value={fd.financialDetailsCurrency} />
-            <Field label={labels.price[lang]} value={fd.financialDetailsPrice} />
-            <Field label={labels.deposit[lang]} value={safe(fd.financialDetailsDeposit)} />
-            <Field label={labels.paymentTerms[lang]} value={safe(fd.financialDetailsMainFee)} />
-            <Field label={labels.leasePrice[lang]} value={fd.financialDetailsLeasePrice} />
-            <Field label={labels.contractLength[lang]} value={fd.financialDetailsContractLength} />
-            <Field label={labels.pricePerNight[lang]} value={fd.financialDetailsPricePerNight} />
-            <Field label={labels.checkIn[lang]} value={fd.financialDetailsCheckIn} />
-            <Field label={labels.checkOut[lang]} value={fd.financialDetailsCheckOut} />
-            <Field label={labels.contractTerms[lang]} value={safe(fd.financialDetailsTerms)} />
+
+            {/* === SALE TYPE === */}
+            {safe(li.listingInformationTransactionType).toLowerCase() === "sale" && (
+              <>
+                <Field label={labels.price[lang]} value={fd.financialDetailsPrice} />
+                <Field label={labels.deposit[lang]} value={safe(fd.financialDetailsDeposit)} />
+                <Field label={labels.paymentTerms[lang]} value={safe(fd.financialDetailsMainFee)} />
+              </>
+            )}
+
+            {/* === LEASE TYPE === */}
+            {safe(li.listingInformationTransactionType).toLowerCase() === "lease" && (
+              <>
+                <Field label={labels.leasePrice[lang]} value={fd.financialDetailsLeasePrice} />
+                <Field label={labels.contractLength[lang]} value={fd.financialDetailsContractLength} />
+                <Field label={labels.deposit[lang]} value={safe(fd.financialDetailsDeposit)} />
+                <Field label={labels.paymentTerms[lang]} value={safe(fd.financialDetailsMainFee)} />
+              </>
+            )}
+
+            {/* === HOME STAY TYPE === */}
+            {safe(li.listingInformationTransactionType).toLowerCase() === "home stay" && (
+              <>
+                <Field label={labels.pricePerNight[lang]} value={fd.financialDetailsPricePerNight} />
+                <Field label={labels.checkIn[lang]} value={fd.financialDetailsCheckIn} />
+                <Field label={labels.checkOut[lang]} value={fd.financialDetailsCheckOut} />
+                <Field label={labels.deposit[lang]} value={safe(fd.financialDetailsDeposit)} />
+                <Field label={labels.paymentTerms[lang]} value={safe(fd.financialDetailsMainFee)} />
+              </>
+            )}
           </Grid3>
         </Section>
+
 
         {/* === Contact Management === */}
         <Section title={labels.contactManagement[lang]}>
@@ -312,6 +336,8 @@ export default function CreatePropertyListStep4({ savedId, onPublish, onPrev }) 
 
             <Field label={labels.connectingNotes[lang]} value={safe(cm.contactManagementConnectingPointNotes)} />
             <Field label={labels.internalNotes[lang]} value={safe(cm.contactManagementInternalNotes)} />
+            <Field label={lang === "en" ? "Source" : "Nguồn"} value={safe(cm.contactManagementSource)} />
+            <Field label={lang === "en" ? "Agent Fee" : "Phí Môi Giới"} value={cm.contactManagementAgentFee || 0} />
           </Grid3>
         </Section>
 

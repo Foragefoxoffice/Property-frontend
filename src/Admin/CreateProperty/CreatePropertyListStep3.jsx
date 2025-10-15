@@ -64,6 +64,7 @@ export default function CreatePropertyListStep3({
   const [showOwnerView, setShowOwnerView] = useState(false);
   const [showConsultantView, setShowConsultantView] = useState(false);
   const [showConnectView, setShowConnectView] = useState(false);
+  const [getUserData, setGetUserData] = useState("Admin")
 
   const [form, setForm] = useState({
     owner: initialData.owner || "",
@@ -133,6 +134,19 @@ export default function CreatePropertyListStep3({
   }, [initialData, owners, staffs]);
 
 
+  useEffect(() => {
+    getMeData()
+  }, [])
+
+  const getMeData = async () => {
+    try {
+      const response = await getMe();
+      setGetUserData(response?.data?.data || "")
+    } catch (error) {
+      console.log("Userdata", error)
+    }
+  }
+
   /* =========================================================
      🔹 Fetch Owners, Staffs & Logged-in User
   ========================================================= */
@@ -141,7 +155,6 @@ export default function CreatePropertyListStep3({
       const [ownersRes, staffsRes, meRes] = await Promise.all([
         getAllOwners(),
         getAllStaffs(),
-        getMe(),
       ]);
 
       const ownersData = ownersRes.data.data || [];
@@ -203,7 +216,7 @@ export default function CreatePropertyListStep3({
       title: "Contact / Management Details",
       owner: "Owner / Landlord",
       ownerNotes: "Owner Notes",
-      consultant: "Property Consultant (You)",
+      consultant: "Created By (You)",
       connectingPoint: "Connecting Point",
       connectingPointNotes: "Connecting Point Notes",
       internalNotes: "Internal Notes",
@@ -217,7 +230,7 @@ export default function CreatePropertyListStep3({
       title: "Chi Tiết Liên Hệ / Quản Lý",
       owner: "Chủ Sở Hữu / Người Cho Thuê",
       ownerNotes: "Ghi chú của Chủ Sở Hữu",
-      consultant: "Tư Vấn Viên Bất Động Sản (Bạn)",
+      consultant: "Được tạo bởi (Bạn)",
       connectingPoint: "Điểm Liên Hệ",
       connectingPointNotes: "Ghi chú về Điểm Liên Hệ",
       internalNotes: "Ghi chú nội bộ",
@@ -258,43 +271,63 @@ export default function CreatePropertyListStep3({
       <div className="grid grid-cols-1 gap-6">
         {/* 🏠 Owner / Landlord */}
         <div>
-          <label className="text-sm text-[#131517] font-semibold mb-3">
-            {t.owner}
-          </label>
-          <div className="flex items-center gap-2 mt-2">
-            <div className="relative flex-1">
-              <select
-                value={findIdByName(owners, form.owner)}
-                onChange={(e) => {
-                  const ownerId = e.target.value;
-                  const selected = owners.find((o) => o._id === ownerId);
-                  setSelectedOwner(selected);
-                  setForm((prev) => ({
-                    ...prev,
-                    owner: selected
-                      ? { en: selected.ownerName.en, vi: selected.ownerName.vi }
-                      : { en: "", vi: "" },
-                  }));
-                }}
-                className="appearance-none border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
-              >
-                <option value="">{t.selectOwner}</option>
-                {owners.map((opt) => (
-                  <option key={opt._id} value={opt._id}>
-                    {opt.ownerName?.[lang] || opt.ownerName?.en}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400 pointer-events-none" />
+
+          <div className="flex flex-wrap gap-4 items-baseline">
+            {/* 🧩 Owner Select Section */}
+            <div className="flex-1 min-w-[250px]">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.owner}
+              </label>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1 mt-2">
+                  <select
+                    value={findIdByName(owners, form.owner)}
+                    onChange={(e) => {
+                      const ownerId = e.target.value;
+                      const selected = owners.find((o) => o._id === ownerId);
+                      setSelectedOwner(selected);
+                      setForm((prev) => ({
+                        ...prev,
+                        owner: selected
+                          ? { en: selected.ownerName.en, vi: selected.ownerName.vi }
+                          : { en: "", vi: "" },
+                      }));
+                    }}
+                    className="appearance-none border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
+                  >
+                    <option value="">{t.selectOwner}</option>
+                    {owners.map((opt) => (
+                      <option key={opt._id} value={opt._id}>
+                        {opt.ownerName?.[lang] || opt.ownerName?.en}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400 pointer-events-none" />
+                </div>
+                {selectedOwner && (
+                  <button
+                    onClick={() => setShowOwnerView(true)}
+                    className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"
+                  >
+                    <Eye className="w-5 h-5 text-gray-700" />
+                  </button>
+                )}
+              </div>
             </div>
-            {selectedOwner && (
-              <button
-                onClick={() => setShowOwnerView(true)}
-                className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"
-              >
-                <Eye className="w-5 h-5 text-gray-700" />
-              </button>
-            )}
+
+            {/* 🧩 Source Input Section */}
+            <div className="flex-1 min-w-[250px]">
+              <label className="text-sm text-[#131517] font-semibold mb-2 block">
+                {lang === "en" ? "Source" : "Nguồn"} ({lang === "en" ? "English" : "Tiếng Việt"})
+              </label>
+              <input
+                type="text"
+                value={form.source?.[lang] || ""}
+                placeholder={t.typehere}
+                onChange={(e) => handleLocalizedChange(lang, "source", e.target.value)}
+                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
+              />
+            </div>
           </div>
         </div>
 
@@ -380,15 +413,34 @@ export default function CreatePropertyListStep3({
         </div>
 
         {/* 👩‍💼 Property Consultant (auto-filled from getMe) */}
-        <div>
-          <label className="text-sm text-[#131517] font-semibold mb-3">
-            {t.consultant}
-          </label>
-          <div className="flex items-center gap-2">
+        <div className="flex gap-4 items-baseline">
+          <div className="w-full">
+            <label className="text-sm text-[#131517] font-semibold mb-3">
+              {t.consultant}
+            </label>
+            <div className="flex items-center gap-2">
+              {getUserData ? (
+                <input
+                  type="text"
+                  value={getUserData.name}
+                  disabled
+                  className="border mt-2 border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
+                />
+              ) : (
+                <div className="text-gray-400">Loading...</div>
+              )}
+            </div>
+          </div>
+
+          <div className="w-full">
+            <label className="text-sm text-[#131517] font-semibold mb-3">
+              {lang === "en" ? "Agent Fee" : "Phí Môi Giới"}
+            </label>
             <input
-              type="text"
-              value={form.consultant?.[lang] || ""}
-              disabled
+              type="number"
+              value={form.agentFee || ""}
+              onChange={(e) => setForm((prev) => ({ ...prev, agentFee: e.target.value }))}
+              placeholder={t.typehere}
               className="border mt-2 border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -442,6 +494,8 @@ export default function CreatePropertyListStep3({
                   en: "",
                   vi: "",
                 },
+                contactManagementSource: form.source || { en: "", vi: "" },
+                contactManagementAgentFee: parseFloat(form.agentFee) || 0,
               },
             };
 

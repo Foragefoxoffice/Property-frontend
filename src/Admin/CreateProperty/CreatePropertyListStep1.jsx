@@ -50,7 +50,6 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
       >
         <option value="">{lang === "en" ? "Select" : "Chọn"}</option>
         {options.map((opt) => {
-          // 👇 If this dropdown is for "unit", show symbol instead of name
           const displayValue =
             name === "unit"
               ? lang === "vi"

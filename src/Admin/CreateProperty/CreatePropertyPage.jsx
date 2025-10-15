@@ -299,6 +299,11 @@ export default function CreatePropertyPage({
             en: "",
             vi: "",
           },
+          contactManagementSource:
+            editData.contactManagement?.contactManagementSource || { en: "", vi: "" },
+          contactManagementAgentFee:
+            editData.contactManagement?.contactManagementAgentFee || 0,
+
         },
 
         status: editData.status || "Draft",
@@ -447,6 +452,13 @@ export default function CreatePropertyPage({
         contactManagementInternalNotes: wrap(
           normalized.contactManagement?.contactManagementInternalNotes
         ),
+        contactManagementSource: wrap(
+          normalized.contactManagement?.contactManagementSource
+        ),
+        contactManagementAgentFee: parseFloat(
+          normalized.contactManagement?.contactManagementAgentFee || 0
+        ),
+
       },
 
       status: normalized.status || "Draft",
@@ -582,7 +594,7 @@ export default function CreatePropertyPage({
       /* 🟢 END AUTO-CREATION BLOCK */
       let res;
       if (isEditMode && editData?._id) {
-        res = await updatePropertyListing(editData._id, payload);
+        res = await updatePropertyListing(String(editData._id), payload);
       } else if (savedId) {
         res = await updatePropertyListing(savedId, payload);
       } else {

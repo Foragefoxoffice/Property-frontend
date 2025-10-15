@@ -144,6 +144,7 @@ export default function ManageProperty({
       </div>
 
       {/* Table */}
+      {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
           <SkeletonLoader />
@@ -151,16 +152,27 @@ export default function ManageProperty({
           <table className="w-full text-sm text-gray-700">
             <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
               <tr>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.property}</th>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.transactionType}</th>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.location}</th>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.propertyType}</th>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.status}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">
+                  {t.property}
+                </th>
+                <th className="px-6 py-3 font-medium text-[#111111]">
+                  {t.transactionType}
+                </th>
+                <th className="px-6 py-3 font-medium text-[#111111]">
+                  {t.propertyType}
+                </th>
+                <th className="px-6 py-3 font-medium text-[#111111]">
+                  {t.blockName}
+                </th>
+                <th className="px-6 py-3 font-medium text-[#111111]">
+                  {t.status}
+                </th>
                 <th className="px-6 py-3 font-medium text-[#111111] text-right">
                   {language === "vi" ? "Hành động" : "Actions"}
                 </th>
               </tr>
             </thead>
+
             <tbody>
               {currentRows.map((p, i) => {
                 const info = p.listingInformation || {};
@@ -169,20 +181,26 @@ export default function ManageProperty({
                   info.listingInformationPropertyTitle?.[language] ||
                   info.listingInformationPropertyTitle?.en ||
                   "—";
-                const type =
+                const transactionType =
                   info.listingInformationTransactionType?.[language] ||
                   info.listingInformationTransactionType?.en ||
                   "—";
                 const propertyType =
-                  info.listingInformationAvailabilityStatus?.[language] ||
-                  info.listingInformationAvailabilityStatus?.en ||
+                  info.listingInformationPropertyType?.[language] ||
+                  info.listingInformationPropertyType?.en ||
+                  "—";
+                const blockName =
+                  info.listingInformationBlockName?.[language] ||
+                  info.listingInformationBlockName?.en ||
                   "—";
 
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100 transition`}
                   >
+                    {/* 🏠 Property Image + Info */}
                     <td className="px-6 py-4 flex items-center gap-3">
                       <img
                         src={img || commonimg}
@@ -197,15 +215,17 @@ export default function ManageProperty({
                         <p className="text-gray-900 font-semibold">{title}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 capitalize">{type}</td>
-                    <td className="px-6 py-4">
-                      {info.listingInformationBlockName?.[language] ||
-                        info.listingInformationBlockName?.en ||
-                        "—"}
-                    </td>
+
+                    {/* 🔹 Transaction Type */}
+                    <td className="px-6 py-4 capitalize">{transactionType}</td>
+
+                    {/* 🔹 Property Type */}
                     <td className="px-6 py-4">{propertyType}</td>
 
-                    {/* ✅ Updated Status Display */}
+                    {/* 🔹 Block Name */}
+                    <td className="px-6 py-4">{blockName}</td>
+
+                    {/* 🔹 Status */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
@@ -224,7 +244,6 @@ export default function ManageProperty({
                                 : "bg-gray-500"
                               }`}
                           ></span>
-                          {/* ✅ Localized Status Label */}
                           {p.status === "Published"
                             ? language === "vi"
                               ? "Đã đăng"
@@ -238,31 +257,24 @@ export default function ManageProperty({
                       </div>
                     </td>
 
-                    {/* Actions */}
+                    {/* 🔹 Actions */}
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
-                      <button style={{
-                        justifyItems: "anchor-center"
-                      }} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
+                      <button className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
                         <Share2 className="w-4 h-4 text-gray-600" />
                       </button>
                       <button
                         onClick={() => onViewProperty(p._id)}
-                        style={{
-                          justifyItems: "anchor-center"
-                        }} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
+                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
+                      >
                         <Eye className="w-4 h-4 text-gray-600" />
                       </button>
-                      <button style={{
-                        justifyItems: "anchor-center"
-                      }}
+                      <button
                         onClick={() => openEditProperty(p)}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
                         <Pencil className="w-4 h-4 text-gray-600" />
                       </button>
-                      <button style={{
-                        justifyItems: "anchor-center"
-                      }}
+                      <button
                         onClick={() => confirmDelete(p._id)}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
@@ -286,6 +298,7 @@ export default function ManageProperty({
           </table>
         )}
       </div>
+
 
       {/* ✅ Pagination */}
       {!loading && totalRows > 0 && (

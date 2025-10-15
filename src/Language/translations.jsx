@@ -17,6 +17,7 @@ export const translations = {
     rowsPerPage: "Rows per page",
     of: "of",
     search: "Search",
+    blockName: "Block Name"
   },
 
   vi: {
@@ -37,5 +38,6 @@ export const translations = {
     rowsPerPage: "Số hàng mỗi trang",
     of: "trong tổng số",
     search: "Tìm kiếm",
+    blockName: "Tên khu / tòa nhà"
   },
 };

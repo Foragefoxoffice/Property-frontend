@@ -64,6 +64,20 @@ box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px !important;
     }
 }
   
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.2s ease-in-out;
+}
 
 
 .custom-dropdown .ant-select-item-option-selected {
