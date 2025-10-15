@@ -120,17 +120,21 @@ const DashboardLayout = () => {
           subPage?.startsWith("CreateProperty") ||
           subPage === "EditProperty"
         ) {
-          // ✅ Extract full transaction type, e.g. "Sale", "Lease", "Home Stay"
-          const transactionType =
-            subPage.replace("CreateProperty-", "") || null;
+          let transactionType = "Sale"; // ✅ default fallback
+
+          if (subPage && subPage.startsWith("CreateProperty-")) {
+            const type = subPage.replace("CreateProperty-", "").trim();
+            if (type && type !== "null" && type !== "undefined" && type !== "")
+              transactionType = type;
+          }
 
           return (
             <div className="p-0">
               <CreatePropertyPage
-                goBack={() => setSubPage(transactionType)} // 👈 go back to correct tab
+                goBack={() => setSubPage(transactionType)}
                 editData={selectedProperty}
                 isEditMode={subPage === "EditProperty"}
-                defaultTransactionType={transactionType}
+                defaultTransactionType={transactionType} // ✅ always clean value
               />
             </div>
           );

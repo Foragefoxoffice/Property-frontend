@@ -413,37 +413,56 @@ export default function CreatePropertyListStep2({
           <label className="text-sm text-[#131517] font-semibold mb-2">
             {t.currency}
           </label>
-          <select
-            value={form.currency?.symbol || ""}
-            onChange={(e) => {
+          <AntdSelect
+            showSearch
+            allowClear
+            placeholder={
+              lang === "en" ? "Select Currency" : "Chọn loại tiền tệ"
+            }
+            value={form.currency?.symbol || undefined}
+            onChange={(symbol) => {
               const selected = currencies.find(
-                (c) => c.currencySymbol?.en === e.target.value
+                (c) => c.currencySymbol?.en === symbol
               );
               if (selected) {
                 setForm((p) => ({
                   ...p,
                   currency: {
-                    symbol: selected.currencySymbol?.en,
-                    code: selected.currencyCode?.en,
-                    name: selected.currencyName?.en,
+                    symbol:
+                      selected.currencySymbol?.en ||
+                      selected.currencySymbol?.vi ||
+                      "$",
+                    code:
+                      selected.currencyCode?.en ||
+                      selected.currencyCode?.vi ||
+                      "USD",
+                    name:
+                      selected.currencyName?.en ||
+                      selected.currencyName?.vi ||
+                      "US Dollar",
                   },
+                }));
+              } else {
+                setForm((p) => ({
+                  ...p,
+                  currency: { symbol: "", code: "", name: "" },
                 }));
               }
             }}
-            className="appearance-none border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
-          >
-            <option value="">Select Currency</option>
-            {loadingCurrencies ? (
-              <option disabled>Loading...</option>
-            ) : (
-              currencies.map((c) => (
-                <option key={c._id} value={c.currencySymbol?.en}>
-                  {c.currencyName?.[lang.toUpperCase()] || c.currencyName?.en} (
-                  {c.currencySymbol?.en})
-                </option>
-              ))
-            )}
-          </select>
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            loading={loadingCurrencies}
+            notFoundContent={loadingCurrencies ? "Loading..." : null}
+            className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
+            popupClassName="custom-dropdown"
+            options={currencies.map((c) => ({
+              label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                c.currencySymbol?.en
+              })`,
+              value: c.currencySymbol?.en,
+            }))}
+          />
         </div>
 
         {/* Sale / Lease / Homestay pricing */}

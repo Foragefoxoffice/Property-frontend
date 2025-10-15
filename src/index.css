@@ -20,50 +20,73 @@ body {
 }
 
 /* === Custom Select Styling === */
+/* --- Select Input Box --- */
 .custom-select .ant-select-selector {
-  border: 1px solid #B2B2B3 !important; /* gray-300 */
-  border-radius: 8px !important;
-  height: 48px !important;
-  display: flex;
-  align-items: center;
-  box-shadow: none !important;
-  transition: border 0.2s ease;
-  font-size: 16px;
-}
-
-.custom-select .ant-select-selector:hover {
-  border-color: #B2B2B3 !important; 
-}
-
-.custom-select .ant-select-focused .ant-select-selector {
-  border-color: #B2B2B3 !important; 
-box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px !important;
-}
-
-.custom-select .ant-select-selection-placeholder {
-  color: #9ca3af !important; /* gray-400 */
+  height: 48px !important; /* makes it bigger */
+  font-size: 16px !important;
+  background-color: #f9fafb !important; /* light background */
+  border-radius: 10px !important;
+  border: 1px solid #b2b2b3 !important; /* light gray border */
+  transition: all 0.3s ease;
 }
 
 .custom-select .ant-select-selection-item {
-  color: #111827 !important; /* gray-900 */
-  font-weight: 500;
+  color: #111827 !important; /* dark text */
 }
 
-.custom-dropdown .ant-select-item {
+.custom-select .ant-select-arrow {
+  height: 10px;
+  margin-top: -6px;
   font-size: 14px;
-  padding: 6px 10px;
+  color: #2a2a2a !important;
 }
 
-.custom-dropdown .ant-select-item-option-active {
-  background-color: #f3f4f6 !important; /* gray-100 */
+/* --- Dropdown Menu --- */
+.custom-dropdown {
+  background-color: #ffffff !important;
+  border-radius: 10px !important;
+  padding: 6px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Dropdown Items --- */
+.custom-dropdown .ant-select-item {
+  font-size: 16px !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease;
+}
+
+.custom-dropdown .ant-select-item-option-selected {
+  color: #ffffff !important;
+}
+
+.ant-select-single {
+  height: 50px;
+}
+
+.ant-select-focused:where(
+    .css-dev-only-do-not-override-1odpy5d
+  ).ant-select-outlined:not(.ant-select-disabled):not(
+    .ant-select-customize-input
+  ):not(.ant-pagination-size-changer)
+  .ant-select-selector {
+  box-shadow: none !important;
+}
+
+.ant-select .ant-select-clear {
+  font-size: 17px;
+  height: 25px;
+  width: 14px;
+  margin-top: -11px;
 }
 
 .data-\[selected-single\=true\]\:bg-primary {
-    &[data-selected-single="true"] {
-        background-color: #41398B !important;
-    }
+  &[data-selected-single="true"] {
+    background-color: #41398b !important;
+  }
 }
-  
+
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -78,7 +101,6 @@ box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px !important;
 .animate-slideDown {
   animation: slideDown 0.2s ease-in-out;
 }
-
 
 .custom-dropdown .ant-select-item-option-selected {
   background-color: #e5e7eb !important; /* gray-200 */
@@ -198,5 +220,58 @@ box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px !important;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* loading animation */
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-bounce {
+  display: inline-block;
+  animation: bounce 1.4s infinite;
+}
+
+.animate-bounce.delay-150 {
+  animation-delay: 0.15s;
+}
+
+.animate-bounce.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animate-pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

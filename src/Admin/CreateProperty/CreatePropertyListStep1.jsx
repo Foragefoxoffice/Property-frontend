@@ -43,17 +43,25 @@ const Input = memo(
   )
 );
 
-const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
-  <div className="flex flex-col">
-    <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
-    <div className="relative">
-      <select
-        name={name}
-        value={value || ""}
-        onChange={onChange}
-        className="appearance-none border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
+const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
+  const { Option } = AntdSelect;
+
+  return (
+    <div className="flex flex-col">
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
+
+      <AntdSelect
+        showSearch
+        allowClear
+        placeholder={lang === "en" ? "Select" : "Chọn"}
+        optionFilterProp="children"
+        value={value || undefined}
+        onChange={(val) => onChange({ target: { name, value: val } })}
+        className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
+        popupClassName="custom-dropdown"
       >
-        <option value="">{lang === "en" ? "Select" : "Chọn"}</option>
         {options.map((opt) => {
           const displayValue =
             name === "unit"
@@ -65,16 +73,15 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
               : opt.name?.en || "Unnamed";
 
           return (
-            <option key={opt._id} value={opt._id}>
+            <Option key={opt._id} value={opt._id}>
               {displayValue}
-            </option>
+            </Option>
           );
         })}
-      </select>
-      <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400 pointer-events-none" />
+      </AntdSelect>
     </div>
-  </div>
-));
+  );
+});
 
 /* ======================================================
    LOCALIZED INPUT + TEXTAREA
@@ -464,7 +471,6 @@ export default function CreatePropertyListStep1({
           <div className="flex flex-col">
             <label className="text-sm text-[#131517] font-semibold mb-2">
               {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
-              <span className="text-red-500">*</span>
             </label>
 
             <AntdSelect
@@ -719,6 +725,7 @@ export default function CreatePropertyListStep1({
                 className="w-full custom-select"
                 onSearch={(val) => setSearchValue(val)}
                 filterOption={false}
+                popupClassName="custom-dropdown"
                 optionLabelProp="label"
                 dropdownRender={(menu) => (
                   <div className="max-h-60 overflow-auto">{menu}</div>

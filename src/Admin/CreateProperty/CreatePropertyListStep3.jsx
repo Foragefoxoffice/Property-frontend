@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getAllOwners, getAllStaffs, getMe } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
+import { Select as AntdSelect } from "antd";
 
 /* 🔹 Helper: Find matching ID by localized name */
 function findIdByName(arr, valueObj) {
@@ -44,7 +45,6 @@ const SkeletonLoader = () => (
   </div>
 );
 
-
 export default function CreatePropertyListStep3({
   onNext,
   onPrev,
@@ -64,7 +64,7 @@ export default function CreatePropertyListStep3({
   const [showOwnerView, setShowOwnerView] = useState(false);
   const [showConsultantView, setShowConsultantView] = useState(false);
   const [showConnectView, setShowConnectView] = useState(false);
-  const [getUserData, setGetUserData] = useState("Admin")
+  const [getUserData, setGetUserData] = useState("Admin");
 
   const [form, setForm] = useState({
     owner: initialData.owner || "",
@@ -84,30 +84,18 @@ export default function CreatePropertyListStep3({
       const cm = initialData.contactManagement || {};
 
       const updatedForm = {
-        owner:
-          initialData.owner ||
-          cm.contactManagementOwner ||
-          { en: "", vi: "" },
-        ownerNotes:
-          initialData.ownerNotes ||
-          cm.contactManagementOwnerNotes ||
-          { en: "", vi: "" },
-        consultant:
-          initialData.consultant ||
-          cm.contactManagementConsultant ||
-          { en: "", vi: "" },
-        connectingPoint:
-          initialData.connectingPoint ||
-          cm.contactManagementConnectingPoint ||
-          { en: "", vi: "" },
-        connectingPointNotes:
-          initialData.connectingPointNotes ||
-          cm.contactManagementConnectingPointNotes ||
-          { en: "", vi: "" },
-        internalNotes:
-          initialData.internalNotes ||
-          cm.contactManagementInternalNotes ||
-          { en: "", vi: "" },
+        owner: initialData.owner ||
+          cm.contactManagementOwner || { en: "", vi: "" },
+        ownerNotes: initialData.ownerNotes ||
+          cm.contactManagementOwnerNotes || { en: "", vi: "" },
+        consultant: initialData.consultant ||
+          cm.contactManagementConsultant || { en: "", vi: "" },
+        connectingPoint: initialData.connectingPoint ||
+          cm.contactManagementConnectingPoint || { en: "", vi: "" },
+        connectingPointNotes: initialData.connectingPointNotes ||
+          cm.contactManagementConnectingPointNotes || { en: "", vi: "" },
+        internalNotes: initialData.internalNotes ||
+          cm.contactManagementInternalNotes || { en: "", vi: "" },
       };
 
       setForm((prev) => ({ ...prev, ...updatedForm }));
@@ -133,19 +121,18 @@ export default function CreatePropertyListStep3({
     }
   }, [initialData, owners, staffs]);
 
-
   useEffect(() => {
-    getMeData()
-  }, [])
+    getMeData();
+  }, []);
 
   const getMeData = async () => {
     try {
       const response = await getMe();
-      setGetUserData(response?.data?.data || "")
+      setGetUserData(response?.data?.data || "");
     } catch (error) {
-      console.log("Userdata", error)
+      console.log("Userdata", error);
     }
-  }
+  };
 
   /* =========================================================
      🔹 Fetch Owners, Staffs & Logged-in User
@@ -188,8 +175,7 @@ export default function CreatePropertyListStep3({
     } catch (err) {
       console.error(err);
       CommonToaster("Failed to load data", "error");
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -255,10 +241,11 @@ export default function CreatePropertyListStep3({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -271,7 +258,6 @@ export default function CreatePropertyListStep3({
       <div className="grid grid-cols-1 gap-6">
         {/* 🏠 Owner / Landlord */}
         <div>
-
           <div className="flex flex-wrap gap-4 items-baseline">
             {/* 🧩 Owner Select Section */}
             <div className="flex-1 min-w-[250px]">
@@ -280,29 +266,37 @@ export default function CreatePropertyListStep3({
               </label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1 mt-2">
-                  <select
-                    value={findIdByName(owners, form.owner)}
-                    onChange={(e) => {
-                      const ownerId = e.target.value;
+                  <AntdSelect
+                    showSearch
+                    allowClear
+                    placeholder={t.selectOwner}
+                    value={findIdByName(owners, form.owner) || undefined}
+                    onChange={(ownerId) => {
                       const selected = owners.find((o) => o._id === ownerId);
                       setSelectedOwner(selected);
                       setForm((prev) => ({
                         ...prev,
                         owner: selected
-                          ? { en: selected.ownerName.en, vi: selected.ownerName.vi }
+                          ? {
+                              en: selected.ownerName?.en || "",
+                              vi: selected.ownerName?.vi || "",
+                            }
                           : { en: "", vi: "" },
                       }));
                     }}
-                    className="appearance-none border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
-                  >
-                    <option value="">{t.selectOwner}</option>
-                    {owners.map((opt) => (
-                      <option key={opt._id} value={opt._id}>
-                        {opt.ownerName?.[lang] || opt.ownerName?.en}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400 pointer-events-none" />
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    className="w-full custom-select focus:ring-2 focus:ring-gray-300"
+                    popupClassName="custom-dropdown"
+                    options={owners.map((opt) => ({
+                      label:
+                        opt.ownerName?.[lang] || opt.ownerName?.en || "Unnamed",
+                      value: opt._id,
+                    }))}
+                  />
                 </div>
                 {selectedOwner && (
                   <button
@@ -318,13 +312,16 @@ export default function CreatePropertyListStep3({
             {/* 🧩 Source Input Section */}
             <div className="flex-1 min-w-[250px]">
               <label className="text-sm text-[#131517] font-semibold mb-2 block">
-                {lang === "en" ? "Source" : "Nguồn"} ({lang === "en" ? "English" : "Tiếng Việt"})
+                {lang === "en" ? "Source" : "Nguồn"} (
+                {lang === "en" ? "English" : "Tiếng Việt"})
               </label>
               <input
                 type="text"
                 value={form.source?.[lang] || ""}
                 placeholder={t.typehere}
-                onChange={(e) => handleLocalizedChange(lang, "source", e.target.value)}
+                onChange={(e) =>
+                  handleLocalizedChange(lang, "source", e.target.value)
+                }
                 className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
               />
             </div>
@@ -352,34 +349,38 @@ export default function CreatePropertyListStep3({
           <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.connectingPoint}
           </label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-2">
             <div className="relative flex-1">
-              <select
-                value={findIdByName(staffs, form.connectingPoint)}
-                onChange={(e) => {
-                  const staffId = e.target.value;
+              <AntdSelect
+                showSearch
+                allowClear
+                placeholder={t.selectConnect}
+                value={findIdByName(staffs, form.connectingPoint) || undefined}
+                onChange={(staffId) => {
                   const selected = staffs.find((s) => s._id === staffId);
                   setSelectedConnect(selected);
                   setForm((prev) => ({
                     ...prev,
                     connectingPoint: selected
                       ? {
-                        en: selected.staffsName.en,
-                        vi: selected.staffsName.vi,
-                      }
+                          en: selected.staffsName?.en || "",
+                          vi: selected.staffsName?.vi || "",
+                        }
                       : { en: "", vi: "" },
                   }));
                 }}
-                className="appearance-none mt-2 border border-[#B2B2B3] h-12 rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none bg-white"
-              >
-                <option value="">{t.selectConnect}</option>
-                {staffs.map((s) => (
-                  <option key={s._id} value={s._id}>
-                    {s.staffsName?.[lang] || s.staffsName?.en}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 absolute right-3 top-3 text-gray-400 pointer-events-none" />
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                className="w-full custom-select focus:ring-2 focus:ring-gray-300"
+                popupClassName="custom-dropdown"
+                options={staffs.map((s) => ({
+                  label: s.staffsName?.[lang] || s.staffsName?.en || "Unnamed",
+                  value: s._id,
+                }))}
+              />
             </div>
             {selectedConnect && (
               <button
@@ -439,7 +440,9 @@ export default function CreatePropertyListStep3({
             <input
               type="number"
               value={form.agentFee || ""}
-              onChange={(e) => setForm((prev) => ({ ...prev, agentFee: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, agentFee: e.target.value }))
+              }
               placeholder={t.typehere}
               className="border mt-2 border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
@@ -550,15 +553,7 @@ const StaffPopupCard = ({ onClose, data, lang, title }) => {
   const safeText = (val) =>
     typeof val === "object" ? val?.[lang] || val?.en || "" : val || "";
 
-  const {
-    image,
-    name,
-    id,
-    role,
-    number,
-    email,
-    notes,
-  } = {
+  const { image, name, id, role, number, email, notes } = {
     image: data.staffsImage || data.image,
     name: data.staffsName || data.name,
     id: data.staffsId || data.id,
@@ -586,7 +581,11 @@ const StaffPopupCard = ({ onClose, data, lang, title }) => {
             stroke="currentColor"
             className="w-5 h-5"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
 
@@ -647,8 +646,7 @@ const StaffPopupCard = ({ onClose, data, lang, title }) => {
               <>
                 <h3 className="font-medium text-gray-800 mb-1">Notes</h3>
                 <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                  {safeText(notes) ||
-                    "No notes available for this staff."}
+                  {safeText(notes) || "No notes available for this staff."}
                 </p>
               </>
             )}
@@ -685,9 +683,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
           <div className="flex-shrink-0">
             <div className="w-32 h-32 rounded-full overflow-hidden bg-[#cfcafc] flex items-center justify-center">
               <img
-                src={
-                  data.image || "/dummy-img.jpg"
-                }
+                src={data.image || "/dummy-img.jpg"}
                 alt={safeText(data.name)}
                 className="w-full h-full object-cover"
               />
@@ -714,8 +710,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
             )}
             {data.type && (
               <p className="text-sm text-gray-700">
-                <span className="font-medium">Type:</span>{" "}
-                {safeText(data.type)}
+                <span className="font-medium">Type:</span> {safeText(data.type)}
               </p>
             )}
           </div>
@@ -760,4 +755,3 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
     </div>
   );
 };
-
