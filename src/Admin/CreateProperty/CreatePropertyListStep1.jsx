@@ -13,11 +13,14 @@ import {
 import { Select as AntdSelect } from "antd";
 import iconOptions from "../../data/iconOptions";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-
 
 /* ======================================================
    REUSABLE INPUT COMPONENTS
@@ -25,7 +28,9 @@ import { format } from "date-fns";
 const Input = memo(
   ({ label, name, type = "text", value, onChange, placeholder }) => (
     <div className="flex flex-col">
-      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
       <input
         type={type}
         name={name}
@@ -56,8 +61,8 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => (
                 ? opt.symbol?.vi || "—"
                 : opt.symbol?.en || "—"
               : lang === "vi"
-                ? opt.name?.vi || "Chưa đặt tên"
-                : opt.name?.en || "Unnamed";
+              ? opt.name?.vi || "Chưa đặt tên"
+              : opt.name?.en || "Unnamed";
 
           return (
             <option key={opt._id} value={opt._id}>
@@ -136,16 +141,18 @@ const DatePicker = memo(({ label, name, value, onChange }) => {
 
   return (
     <div className="flex flex-col">
-      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={`w-full justify-between
- text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${!date && "text-muted-foreground"
-              }`}
+ text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${
+   !date && "text-muted-foreground"
+ }`}
           >
-
             {date ? format(date, "PPP") : <span>Select date</span>}
             <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
           </Button>
@@ -187,7 +194,6 @@ const SkeletonLoader = () => (
   </div>
 );
 
-
 /* ======================================================
    MAIN COMPONENT
 ====================================================== */
@@ -195,10 +201,13 @@ export default function CreatePropertyListStep1({
   initialData = {},
   onNext,
   onChange,
+  defaultTransactionType,
 }) {
   const [lang, setLang] = useState("en");
   const [form, setForm] = useState({
     ...initialData,
+    transactionType:
+      initialData.transactionType || defaultTransactionType || "Sale",
     blockName: initialData.blockName || { en: "", vi: "" },
     propertyNo: initialData.propertyNo || { en: "", vi: "" },
     title: initialData.title || { en: "", vi: "" },
@@ -310,8 +319,7 @@ export default function CreatePropertyListStep1({
         }
       } catch (err) {
         console.error("Error loading dropdowns", err);
-      }
-      finally {
+      } finally {
         setLoading(false);
       }
     }
@@ -412,10 +420,11 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -432,13 +441,14 @@ export default function CreatePropertyListStep1({
             label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
             name="transactionType"
             lang={lang}
-            value={form.transactionType || "Sale"}
+            value={form.transactionType}
             onChange={handleInputChange}
             options={[
               { _id: "Sale", name: { en: "Sale", vi: "Bán" } },
               { _id: "Lease", name: { en: "Lease", vi: "Cho thuê" } },
-              { _id: "Home stay", name: { en: "Home stay", vi: "Nhà nghỉ" } },
+              { _id: "Home Stay", name: { en: "Home Stay", vi: "Nhà nghỉ" } },
             ]}
+            disabled={!!defaultTransactionType} // 👈 lock it if passed from tab
           />
 
           <Input
@@ -573,7 +583,6 @@ export default function CreatePropertyListStep1({
             value={form.availabilityStatus}
             onChange={handleInputChange}
           />
-
         </div>
 
         {/* === Property Info === */}
@@ -661,7 +670,7 @@ export default function CreatePropertyListStep1({
         {form.utilities.map((u, i) => (
           <div
             key={i}
-            className="grid grid-cols-3 gap-3 mb-4 items-baseline border-b border-gray-100 pb-3"
+            className="grid grid-cols-3 gap-3 mb-4 items-baseline pb-3"
           >
             {/* Utility Name (Language Controlled) */}
             <div className="col-span-1">
@@ -704,17 +713,22 @@ export default function CreatePropertyListStep1({
                     : "Tìm và chọn biểu tượng"
                 }
                 value={u.icon || undefined}
-                onChange={(value) => handleUtilityChange(i, "icon", value)}
+                onChange={(value, option) =>
+                  handleUtilityChange(i, "icon", option?.icon)
+                }
                 className="w-full custom-select"
-                classNames={{ popup: "custom-dropdown" }}
                 onSearch={(val) => setSearchValue(val)}
                 filterOption={false}
                 optionLabelProp="label"
+                dropdownRender={(menu) => (
+                  <div className="max-h-60 overflow-auto">{menu}</div>
+                )}
               >
                 {filteredIcons.map((item) => (
                   <Option
                     key={item.value}
-                    value={item.value}
+                    value={item.icon} // ✅ store image URL
+                    icon={item.icon}
                     label={
                       <div className="flex items-center gap-2">
                         <img
@@ -781,12 +795,8 @@ export default function CreatePropertyListStep1({
           >
             {lang === "en" ? "Next" : "Tiếp theo"} <ArrowRight size={18} />
           </button>
-
         </div>
-
       </div>
-
-
     </div>
   );
 }

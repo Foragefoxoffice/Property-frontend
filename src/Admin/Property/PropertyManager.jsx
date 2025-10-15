@@ -1,38 +1,51 @@
 import React, { useState } from "react";
 import ManageProperty from "./ManageProperty";
 import CreatePropertyListStep4 from "../CreateProperty/CreatePropertyListStep4";
+import CreatePropertyListStep1 from "../CreateProperty/CreatePropertyListStep1";
 
-export default function PropertyManager({ openCreateProperty, openEditProperty }) {
-    const [activeStep, setActiveStep] = useState("list"); // "list" | "view"
-    const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+export default function PropertyManager({
+  openCreateProperty,
+  openEditProperty,
+  propertyTypeFilter, // 👈 new prop (Sale / Lease / Home Stay)
+}) {
+  const [activeStep, setActiveStep] = useState("list");
+  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
 
-    const handleViewProperty = (propertyId) => {
-        setSelectedPropertyId(propertyId);
-        setActiveStep("view");
-    };
+  const handleViewProperty = (propertyId) => {
+    setSelectedPropertyId(propertyId);
+    setActiveStep("view");
+  };
 
-    const handleBackToList = () => {
-        setSelectedPropertyId(null);
-        setActiveStep("list");
-    };
+  const handleBackToList = () => {
+    setSelectedPropertyId(null);
+    setActiveStep("list");
+  };
 
-    return (
-        <div className="min-h-screen bg-[#f9f9fc]">
-            {activeStep === "list" && (
-                <ManageProperty
-                    openCreateProperty={openCreateProperty}
-                    openEditProperty={openEditProperty}
-                    onViewProperty={handleViewProperty}
-                />
-            )}
+  return (
+    <div className="min-h-screen">
+      {activeStep === "list" && (
+        <ManageProperty
+          openCreateProperty={openCreateProperty}
+          openEditProperty={openEditProperty}
+          onViewProperty={handleViewProperty}
+          filterByTransactionType={propertyTypeFilter} // 👈 filter the list
+        />
+      )}
 
-            {activeStep === "view" && (
-                <CreatePropertyListStep4
-                    savedId={selectedPropertyId}
-                    onPrev={handleBackToList}
-                    onPublish={() => handleBackToList()}
-                />
-            )}
-        </div>
-    );
+      {activeStep === "view" && (
+        <CreatePropertyListStep4
+          savedId={selectedPropertyId}
+          onPrev={handleBackToList}
+          onPublish={() => handleBackToList()}
+        />
+      )}
+
+      {activeStep === "create" && (
+        <CreatePropertyListStep1
+          defaultTransactionType={propertyTypeFilter} // 👈 pre-fill here
+          onNext={handleBackToList}
+        />
+      )}
+    </div>
+  );
 }

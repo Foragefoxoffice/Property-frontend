@@ -25,7 +25,6 @@ import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 
-
 /* =========================================================
    🧰 Safe Object Sanitizer
 ========================================================= */
@@ -55,7 +54,7 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch { }
+    } catch {}
   }
   return result;
 }
@@ -67,6 +66,7 @@ export default function CreatePropertyPage({
   goBack,
   editData = null,
   isEditMode = false,
+  defaultTransactionType = null, // ✅ add this line
 }) {
   const [step, setStep] = useState(1);
   const [propertyData, setPropertyData] = useState({});
@@ -174,7 +174,8 @@ export default function CreatePropertyPage({
           dropdowns.properties,
           editData.listingInformation?.listingInformationProjectCommunity
         ),
-        propertyNo: editData.listingInformation?.listingInformationPropertyNo || { en: "", vi: "" },
+        propertyNo: editData.listingInformation
+          ?.listingInformationPropertyNo || { en: "", vi: "" },
         zoneId: findIdFromLocalized(
           dropdowns.zones,
           editData.listingInformation?.listingInformationZoneSubArea
@@ -299,11 +300,10 @@ export default function CreatePropertyPage({
             en: "",
             vi: "",
           },
-          contactManagementSource:
-            editData.contactManagement?.contactManagementSource || { en: "", vi: "" },
+          contactManagementSource: editData.contactManagement
+            ?.contactManagementSource || { en: "", vi: "" },
           contactManagementAgentFee:
             editData.contactManagement?.contactManagementAgentFee || 0,
-
         },
 
         status: editData.status || "Draft",
@@ -458,7 +458,6 @@ export default function CreatePropertyPage({
         contactManagementAgentFee: parseFloat(
           normalized.contactManagement?.contactManagementAgentFee || 0
         ),
-
       },
 
       status: normalized.status || "Draft",
@@ -606,7 +605,7 @@ export default function CreatePropertyPage({
       setStep(4);
     } catch (err) {
       console.error("❌ Draft save error:", err);
-      CommonToaster(t.errorSaving, "error")
+      CommonToaster(t.errorSaving, "error");
     } finally {
       setLoading(false);
     }
@@ -622,7 +621,9 @@ export default function CreatePropertyPage({
       await updatePropertyListing(savedId, { status });
       CommonToaster(
         language === "vi"
-          ? `Bất động sản đã được đăng và đánh dấu là ${status === "Published" ? "Đã đăng" : "Bản nháp"}!`
+          ? `Bất động sản đã được đăng và đánh dấu là ${
+              status === "Published" ? "Đã đăng" : "Bản nháp"
+            }!`
           : `Property Posted and marked as ${status}!`,
         "success"
       );
@@ -661,7 +662,6 @@ export default function CreatePropertyPage({
     },
   ];
 
-
   const renderStepContent = () => {
     switch (step) {
       case 1:
@@ -670,6 +670,7 @@ export default function CreatePropertyPage({
             onNext={() => setStep(2)}
             onChange={handleStepChange}
             initialData={propertyData}
+            defaultTransactionType={defaultTransactionType} // ✅ add this line
           />
         );
       case 2:
@@ -695,7 +696,7 @@ export default function CreatePropertyPage({
           <CreatePropertyListStep4
             savedId={savedId}
             onPublish={handleSubmitStatus}
-            onPrev={() => setStep(3)}   // ✅ add this line
+            onPrev={() => setStep(3)} // ✅ add this line
           />
         );
       default:

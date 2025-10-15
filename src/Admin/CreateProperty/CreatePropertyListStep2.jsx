@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Plus,
-  X,
-  ArrowRight,
-  ArrowLeft,
-  Eye
-} from "lucide-react";
+import { Plus, X, ArrowRight, ArrowLeft, Eye } from "lucide-react";
 import { Select as AntdSelect } from "antd";
 import {
   getAllDeposits,
@@ -243,7 +237,15 @@ export default function CreatePropertyListStep2({
   /* =========================================================
      📦 Upload Box Component
   ========================================================== */
-  const UploadBox = ({ label, recommended, files, type, accept, handleFileUpload, handleRemove }) => {
+  const UploadBox = ({
+    label,
+    recommended,
+    files,
+    type,
+    accept,
+    handleFileUpload,
+    handleRemove,
+  }) => {
     const [preview, setPreview] = useState(null);
 
     return (
@@ -258,9 +260,19 @@ export default function CreatePropertyListStep2({
               className="relative w-56 h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group"
             >
               {type === "video" ? (
-                <video src={f.url} className="w-full h-full object-cover" muted loop playsInline />
+                <video
+                  src={f.url}
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                  playsInline
+                />
               ) : (
-                <img src={f.url} className="w-full h-full object-contain" alt="" />
+                <img
+                  src={f.url}
+                  className="w-full h-full object-contain"
+                  alt=""
+                />
               )}
 
               {/* Hover Overlay */}
@@ -287,7 +299,9 @@ export default function CreatePropertyListStep2({
               <div className="w-20 h-20 border border-dashed border-[#646466] rounded-full flex items-center justify-center">
                 <Plus className="w-5 h-5 text-gray-500" />
               </div>
-              <span className="text-sm text-[#646466] mt-2">{t.clickUpload}</span>
+              <span className="text-sm text-[#646466] mt-2">
+                {t.clickUpload}
+              </span>
             </div>
             <input
               type="file"
@@ -315,9 +329,18 @@ export default function CreatePropertyListStep2({
                 <X className="w-5 h-5 text-white" />
               </button>
               {type === "video" ? (
-                <video src={preview} className="w-full h-full object-contain rounded-lg" controls autoPlay />
+                <video
+                  src={preview}
+                  className="w-full h-full object-contain rounded-lg"
+                  controls
+                  autoPlay
+                />
               ) : (
-                <img src={preview} className="w-full h-full object-contain rounded-lg" alt="Preview" />
+                <img
+                  src={preview}
+                  className="w-full h-full object-contain rounded-lg"
+                  alt="Preview"
+                />
               )}
             </div>
           </div>
@@ -325,7 +348,6 @@ export default function CreatePropertyListStep2({
       </div>
     );
   };
-
 
   /* SHOW SKELETON IF LOADING */
   if (loading) return <SkeletonLoader />;
@@ -340,10 +362,11 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -468,7 +491,7 @@ export default function CreatePropertyListStep2({
           </>
         )}
 
-        {transactionType === "Home stay" && (
+        {transactionType === "Home Stay" && (
           <>
             <div className="flex flex-col">
               <label className="text-sm text-[#131517] font-semibold mb-2">
@@ -612,7 +635,6 @@ export default function CreatePropertyListStep2({
           {lang === "en" ? "Next" : "Tiếp theo"} <ArrowRight size={18} />
         </button>
       </div>
-
     </div>
   );
 }

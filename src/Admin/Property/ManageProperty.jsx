@@ -20,7 +20,8 @@ import { translations } from "../../Language/translations";
 export default function ManageProperty({
   openCreateProperty,
   openEditProperty,
-  onViewProperty
+  onViewProperty,
+  filterByTransactionType,
 }) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,23 +52,30 @@ export default function ManageProperty({
   const filteredProperties = useMemo(() => {
     return properties.filter((p) => {
       const info = p.listingInformation || {};
+      const type =
+        info.listingInformationTransactionType?.en?.toLowerCase() || "";
+
+      // ✅ Filter by transaction type if provided
+      if (
+        filterByTransactionType &&
+        type !== filterByTransactionType.toLowerCase()
+      ) {
+        return false;
+      }
+
       const title =
         info.listingInformationPropertyTitle?.[language] ||
         info.listingInformationPropertyTitle?.en ||
         "";
-      const type =
-        info.listingInformationTransactionType?.[language] ||
-        info.listingInformationTransactionType?.en ||
-        "";
       return (
         title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        type.includes(searchTerm.toLowerCase()) ||
         (info.listingInformationPropertyId || "")
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
       );
     });
-  }, [searchTerm, properties, language]);
+  }, [searchTerm, properties, language, filterByTransactionType]);
 
   // ✅ Pagination logic
   const totalRows = filteredProperties.length;
@@ -197,8 +205,9 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100 transition`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition`}
                   >
                     {/* 🏠 Property Image + Info */}
                     <td className="px-6 py-4 flex items-center gap-3">
@@ -210,7 +219,8 @@ export default function ManageProperty({
                       />
                       <div>
                         <p className="text-sm text-gray-600 font-medium">
-                          {t.propertyCode}: {info.listingInformationPropertyId || "—"}
+                          {t.propertyCode}:{" "}
+                          {info.listingInformationPropertyId || "—"}
                         </p>
                         <p className="text-gray-900 font-semibold">{title}</p>
                       </div>
@@ -229,52 +239,60 @@ export default function ManageProperty({
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
-                            ? "bg-green-100 text-green-700"
-                            : p.status === "Draft"
+                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
+                            p.status === "Published"
+                              ? "bg-green-100 text-green-700"
+                              : p.status === "Draft"
                               ? "bg-yellow-100 text-yellow-700"
                               : "bg-gray-200 text-gray-700"
-                            }`}
+                          }`}
                         >
                           <span
-                            className={`w-2 h-2 rounded-full ${p.status === "Published"
-                              ? "bg-green-600"
-                              : p.status === "Draft"
+                            className={`w-2 h-2 rounded-full ${
+                              p.status === "Published"
+                                ? "bg-green-600"
+                                : p.status === "Draft"
                                 ? "bg-yellow-500"
                                 : "bg-gray-500"
-                              }`}
+                            }`}
                           ></span>
                           {p.status === "Published"
                             ? language === "vi"
                               ? "Đã đăng"
                               : "Published"
                             : p.status === "Draft"
-                              ? language === "vi"
-                                ? "Bản nháp"
-                                : "Draft"
-                              : p.status || "—"}
+                            ? language === "vi"
+                              ? "Bản nháp"
+                              : "Draft"
+                            : p.status || "—"}
                         </span>
                       </div>
                     </td>
 
                     {/* 🔹 Actions */}
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
-                      <button className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer">
+                      <button
+                        style={{ justifyItems: "anchor-center" }}
+                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
+                      >
                         <Share2 className="w-4 h-4 text-gray-600" />
                       </button>
                       <button
+                        style={{ justifyItems: "anchor-center" }}
                         onClick={() => onViewProperty(p._id)}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
                         <Eye className="w-4 h-4 text-gray-600" />
                       </button>
                       <button
+                        style={{ justifyItems: "anchor-center" }}
                         onClick={() => openEditProperty(p)}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
                         <Pencil className="w-4 h-4 text-gray-600" />
                       </button>
                       <button
+                        style={{ justifyItems: "anchor-center" }}
                         onClick={() => confirmDelete(p._id)}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
@@ -298,7 +316,6 @@ export default function ManageProperty({
           </table>
         )}
       </div>
-
 
       {/* ✅ Pagination */}
       {!loading && totalRows > 0 && (
@@ -326,20 +343,22 @@ export default function ManageProperty({
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`p-1 px-2 rounded ${currentPage === 1
-                ? "text-gray-400 cursor-not-allowed"
-                : "hover:bg-gray-100 text-gray-600"
-                }`}
+              className={`p-1 px-2 rounded ${
+                currentPage === 1
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "hover:bg-gray-100 text-gray-600"
+              }`}
             >
               &lt;
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`p-1 px-2 rounded ${currentPage === totalPages
-                ? "text-gray-400 cursor-not-allowed"
-                : "hover:bg-gray-100 text-gray-600"
-                }`}
+              className={`p-1 px-2 rounded ${
+                currentPage === totalPages
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "hover:bg-gray-100 text-gray-600"
+              }`}
             >
               &gt;
             </button>

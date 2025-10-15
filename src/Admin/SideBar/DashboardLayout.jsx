@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, ChevronDown } from "lucide-react";
+import {
+  Home,
+  Users,
+  UserCog,
+  LayoutGrid,
+  Key,
+  BedDouble,
+  ChevronDown,
+} from "lucide-react";
 import PropertyMaster from "../MasterList/PropertyMaster";
 import Masters from "../Masters/Masters";
 import PropertyPage from "../MasterList/MasterListPage/PropertyPage";
@@ -108,13 +116,21 @@ const DashboardLayout = () => {
 
     switch (activePage) {
       case "Properties":
-        if (subPage === "CreateProperty" || subPage === "EditProperty") {
+        if (
+          subPage?.startsWith("CreateProperty") ||
+          subPage === "EditProperty"
+        ) {
+          // ✅ Extract full transaction type, e.g. "Sale", "Lease", "Home Stay"
+          const transactionType =
+            subPage.replace("CreateProperty-", "") || null;
+
           return (
             <div className="p-0">
               <CreatePropertyPage
-                goBack={() => setSubPage(null)}
+                goBack={() => setSubPage(transactionType)} // 👈 go back to correct tab
                 editData={selectedProperty}
                 isEditMode={subPage === "EditProperty"}
+                defaultTransactionType={transactionType}
               />
             </div>
           );
@@ -125,8 +141,10 @@ const DashboardLayout = () => {
           return (
             <div className="p-8 pt-3">
               <PropertyManager
-                type={subPage} // You can pass this prop to filter internally if needed
-                openCreateProperty={() => setSubPage("CreateProperty")}
+                propertyTypeFilter={subPage} // Pass tab type: Sale / Lease / Home Stay
+                openCreateProperty={
+                  () => setSubPage(`CreateProperty-${subPage}`) // include transaction type
+                }
                 openEditProperty={(property) => {
                   setSelectedProperty(property);
                   setSubPage("EditProperty");
@@ -140,7 +158,9 @@ const DashboardLayout = () => {
         return (
           <div className="p-8 pt-3">
             <PropertyManager
-              openCreateProperty={() => setSubPage("CreateProperty")}
+              openCreateProperty={
+                () => setSubPage(`CreateProperty-${subPage}`) // include transaction type
+              }
               openEditProperty={(property) => {
                 setSelectedProperty(property);
                 setSubPage("EditProperty");
@@ -148,7 +168,6 @@ const DashboardLayout = () => {
             />
           </div>
         );
-
 
       case "Owners / Landlords":
         if (subPage === "ViewOwner") {
@@ -222,26 +241,29 @@ const DashboardLayout = () => {
                       setSubSubPage(null);
                     }
                   }}
-                  className={`group flex w-full items-center justify-between gap-3 px-4 py-2 border-[1px] border-[#41398b47] rounded-full transition-all duration-200 ${activePage === item.key
-                    ? "bg-[#41398B] text-white"
-                    : "text-gray-700 hover:bg-[#41398B] hover:text-white"
-                    }`}
+                  className={`group flex w-full items-center justify-between gap-3 px-4 py-2 border-[1px] border-[#41398b47] rounded-full transition-all duration-200 ${
+                    activePage === item.key
+                      ? "bg-[#41398B] text-white"
+                      : "text-gray-700 hover:bg-[#41398B] hover:text-white"
+                  }`}
                 >
                   {/* Left Section (icon + label) */}
                   <div className="flex items-center gap-3">
                     <span
-                      className={`p-2 rounded-full transition-all duration-200 ${activePage === item.key
-                        ? "bg-[#fff] text-[#41398B]"
-                        : "bg-[#41398B] text-[#fff] group-hover:bg-white group-hover:text-[#41398B]"
-                        }`}
+                      className={`p-2 rounded-full transition-all duration-200 ${
+                        activePage === item.key
+                          ? "bg-[#fff] text-[#41398B]"
+                          : "bg-[#41398B] text-[#fff] group-hover:bg-white group-hover:text-[#41398B]"
+                      }`}
                     >
                       {item.icon}
                     </span>
                     <span
-                      className={`text-sm font-medium ${activePage === item.key
-                        ? "text-white"
-                        : "text-gray-800 group-hover:text-white"
-                        }`}
+                      className={`text-sm font-medium ${
+                        activePage === item.key
+                          ? "text-white"
+                          : "text-gray-800 group-hover:text-white"
+                      }`}
                     >
                       {item.label}
                     </span>
@@ -250,8 +272,9 @@ const DashboardLayout = () => {
                   {/* Right Section (Chevron only for Properties) */}
                   {item.key === "Properties" && (
                     <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-200 ${activePage === "Properties" ? "rotate-180" : "rotate-0"
-                        }`}
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        activePage === "Properties" ? "rotate-180" : "rotate-0"
+                      }`}
                     />
                   )}
                 </button>
@@ -260,33 +283,48 @@ const DashboardLayout = () => {
                 {item.key === "Properties" && activePage === "Properties" && (
                   <div className="mt-2 ml-8 flex flex-col gap-2 animate-slideDown">
                     {[
-                      { key: "Sale", label: "Sale", icon: <Home className="w-4 h-4" /> },
-                      { key: "Lease", label: "Lease", icon: <Key className="w-4 h-4" /> },
+                      {
+                        key: "Sale",
+                        label: "Sale",
+                        icon: <Home className="w-4 h-4" />,
+                      },
+                      {
+                        key: "Lease",
+                        label: "Lease",
+                        icon: <Key className="w-4 h-4" />,
+                      },
                       {
                         key: "Home Stay",
                         label: "Home Stay",
                         icon: <BedDouble className="w-4 h-4" />,
                       },
-                    ].map((sub) => (
-                      <button
-                        key={sub.key}
-                        onClick={() => setSubPage(sub.key)}
-                        className={`flex items-center gap-3 text-left text-sm px-3 py-2 rounded-full border-[1px] border-[#41398b47] transition-all duration-150 ${subPage === sub.key
-                          ? "bg-[#41398B] text-white font-semibold"
-                          : "text-gray-700 hover:bg-[#EAE8FD] hover:text-[#41398B]"
+                    ].map((sub) => {
+                      const isActive =
+                        subPage === sub.key ||
+                        subPage?.startsWith(`CreateProperty-${sub.key}`);
+                      return (
+                        <button
+                          key={sub.key}
+                          onClick={() => setSubPage(sub.key)}
+                          className={`flex items-center gap-3 text-left text-sm px-3 py-2 rounded-full border-[1px] border-[#41398b47] transition-all duration-150 ${
+                            isActive
+                              ? "bg-[#41398B] text-white font-semibold"
+                              : "text-gray-700 hover:bg-[#EAE8FD] hover:text-[#41398B]"
                           }`}
-                      >
-                        <span
-                          className={`p-1 rounded-full ${subPage === sub.key
-                            ? "bg-white text-[#41398B]"
-                            : "bg-[#41398B] text-white"
-                            }`}
                         >
-                          {sub.icon}
-                        </span>
-                        {sub.label}
-                      </button>
-                    ))}
+                          <span
+                            className={`p-1 rounded-full ${
+                              isActive
+                                ? "bg-white text-[#41398B]"
+                                : "bg-[#41398B] text-white"
+                            }`}
+                          >
+                            {sub.icon}
+                          </span>
+                          {sub.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
