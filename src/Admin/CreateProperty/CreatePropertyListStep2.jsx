@@ -122,9 +122,13 @@ export default function CreatePropertyListStep2({
       leasePrice: "Lease Price",
       contractLength: "Contract Length",
       pricePerNight: "Price Per Night",
-      checkIn: "Check-In Time",
+      checkIn: "Standard check in time",
       typehere: "Type here",
-      checkOut: "Check-Out Time",
+      checkOut: "Standard check out time",
+      agentFee: "Agent Fee",
+      agentFeeAgenda: "Agent Payment Agenda",
+      feeTax: "Fees & taxes",
+      legalDoc: "Legal Documents",
     },
     vi: {
       propertyImages: "Hình Ảnh Bất Động Sản",
@@ -143,8 +147,12 @@ export default function CreatePropertyListStep2({
       contractLength: "Thời Hạn Hợp Đồng",
       pricePerNight: "Giá Mỗi Đêm",
       typehere: "Nhập tại đây",
-      checkIn: "Giờ Nhận Phòng",
-      checkOut: "Giờ Trả Phòng",
+      checkIn: "Thời gian nhận phòng tiêu chuẩn",
+      checkOut: "Giờ trả phòng tiêu chuẩn",
+      agentFee: "Phí đại lý",
+      agentFeeAgenda: "Chương trình thanh toán đại lý",
+      feeTax: "Phí và thuế",
+      legalDoc: "Văn bản pháp luật",
     },
   }[lang];
 
@@ -161,6 +169,17 @@ export default function CreatePropertyListStep2({
     contractTerms: initialData.contractTerms || { en: "", vi: "" },
     depositPaymentTerms: initialData.depositPaymentTerms || { en: "", vi: "" },
     maintenanceFeeMonthly: initialData.maintenanceFeeMonthly || {
+      en: "",
+      vi: "",
+    },
+    financialDetailsAgentFee: initialData.financialDetailsAgentFee || "",
+    financialDetailsAgentPaymentAgenda:
+      initialData.financialDetailsAgentPaymentAgenda || { en: "", vi: "" },
+    financialDetailsFeeTax: initialData.financialDetailsFeeTax || {
+      en: "",
+      vi: "",
+    },
+    financialDetailsLegalDoc: initialData.financialDetailsLegalDoc || {
       en: "",
       vi: "",
     },
@@ -407,66 +426,72 @@ export default function CreatePropertyListStep2({
 
       {/* 💰 FINANCIAL DETAILS */}
       <h2 className="text-lg font-semibold mt-8 mb-4">{t.financialDetails}</h2>
-      <div className="grid grid-cols-3 gap-5">
-        {/* Currency */}
-        <div className="flex flex-col">
-          <label className="text-sm text-[#131517] font-semibold mb-2">
-            {t.currency}
-          </label>
-          <AntdSelect
-            showSearch
-            allowClear
-            placeholder={
-              lang === "en" ? "Select Currency" : "Chọn loại tiền tệ"
-            }
-            value={form.currency?.symbol || undefined}
-            onChange={(symbol) => {
-              const selected = currencies.find(
-                (c) => c.currencySymbol?.en === symbol
-              );
-              if (selected) {
-                setForm((p) => ({
-                  ...p,
-                  currency: {
-                    symbol:
-                      selected.currencySymbol?.en ||
-                      selected.currencySymbol?.vi ||
-                      "$",
-                    code:
-                      selected.currencyCode?.en ||
-                      selected.currencyCode?.vi ||
-                      "USD",
-                    name:
-                      selected.currencyName?.en ||
-                      selected.currencyName?.vi ||
-                      "US Dollar",
-                  },
-                }));
-              } else {
-                setForm((p) => ({
-                  ...p,
-                  currency: { symbol: "", code: "", name: "" },
-                }));
-              }
-            }}
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-            loading={loadingCurrencies}
-            notFoundContent={loadingCurrencies ? "Loading..." : null}
-            className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
-            popupClassName="custom-dropdown"
-            options={currencies.map((c) => ({
-              label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                c.currencySymbol?.en
-              })`,
-              value: c.currencySymbol?.en,
-            }))}
-          />
-        </div>
 
-        {/* Sale / Lease / Homestay pricing */}
-        {transactionType === "Sale" && (
+      {/* ✅ SALE UI */}
+      {transactionType === "Sale" && (
+        <div className="grid grid-cols-3 gap-5">
+          {/** 👉 KEEP YOUR EXACT SALE UI FIELDS HERE **/}
+
+          {/* Currency */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.currency}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en" ? "Select Currency" : "Chọn loại tiền tệ"
+              }
+              value={form.currency?.symbol || undefined}
+              onChange={(symbol) => {
+                const selected = currencies.find(
+                  (c) => c.currencySymbol?.en === symbol
+                );
+                if (selected) {
+                  setForm((p) => ({
+                    ...p,
+                    currency: {
+                      symbol:
+                        selected.currencySymbol?.en ||
+                        selected.currencySymbol?.vi ||
+                        "$",
+                      code:
+                        selected.currencyCode?.en ||
+                        selected.currencyCode?.vi ||
+                        "USD",
+                      name:
+                        selected.currencyName?.en ||
+                        selected.currencyName?.vi ||
+                        "US Dollar",
+                    },
+                  }));
+                } else {
+                  setForm((p) => ({
+                    ...p,
+                    currency: { symbol: "", code: "", name: "" },
+                  }));
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              loading={loadingCurrencies}
+              notFoundContent={loadingCurrencies ? "Loading..." : null}
+              className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
+              popupClassName="custom-dropdown"
+              options={currencies.map((c) => ({
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
+                value: c.currencySymbol?.en,
+              }))}
+            />
+          </div>
+
+          {/* Price */}
           <div className="flex flex-col">
             <label className="text-sm text-[#131517] font-semibold mb-2">
               {t.price}
@@ -479,154 +504,555 @@ export default function CreatePropertyListStep2({
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
-        )}
 
-        {transactionType === "Lease" && (
-          <>
-            <div className="flex flex-col">
-              <label className="text-sm text-[#131517] font-semibold mb-2">
-                {t.leasePrice}
-              </label>
-              <input
-                type="number"
-                value={form.leasePrice}
-                placeholder="Type here"
-                onChange={(e) => handleChange("leasePrice", e.target.value)}
-                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm text-[#131517] font-semibold mb-2">
-                {t.contractLength}
-              </label>
-              <input
-                type="text"
-                value={form.contractLength}
-                placeholder="Type here"
-                onChange={(e) => handleChange("contractLength", e.target.value)}
-                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-              />
-            </div>
-          </>
-        )}
-
-        {transactionType === "Home Stay" && (
-          <>
-            <div className="flex flex-col">
-              <label className="text-sm text-[#131517] font-semibold mb-2">
-                {t.pricePerNight}
-              </label>
-              <input
-                type="number"
-                placeholder="Type here"
-                value={form.pricePerNight}
-                onChange={(e) => handleChange("pricePerNight", e.target.value)}
-                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm text-[#131517] font-semibold mb-2">
-                {t.checkIn}
-              </label>
-              <input
-                type="text"
-                value={form.checkIn}
-                onChange={(e) => handleChange("checkIn", e.target.value)}
-                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="text-sm text-[#131517] font-semibold mb-2">
-                {t.checkOut}
-              </label>
-              <input
-                type="text"
-                value={form.checkOut}
-                onChange={(e) => handleChange("checkOut", e.target.value)}
-                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-              />
-            </div>
-          </>
-        )}
-
-        {/* 🏦 Deposit Type / Select */}
-        <div className="flex flex-col col-span-3">
-          <label className="text-sm text-[#131517] font-semibold mb-2">
-            {t.depositPaymentTerms}
-          </label>
-          <AntdSelect
-            showSearch
-            allowClear
-            placeholder={
-              lang === "en"
-                ? "Type or Select Deposit"
-                : "Nhập hoặc chọn khoản đặt cọc"
-            }
-            value={form.depositPaymentTerms?.[lang] || undefined}
-            onChange={(value) => {
-              // User selected an existing option
-              handleLocalizedChange(lang, "depositPaymentTerms", value);
-            }}
-            onSearch={(val) => {
-              // User typed a new value (same logic as Zone in Step 1)
-              if (val && val.trim() !== "") {
-                handleLocalizedChange(lang, "depositPaymentTerms", val.trim());
+          {/* Deposit */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.depositPaymentTerms}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Deposit"
+                  : "Nhập hoặc chọn khoản đặt cọc"
               }
-            }}
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-            notFoundContent={null}
-            className="w-full custom-select"
-            popupClassName="custom-dropdown"
-            options={deposits.map((opt) => ({
-              label: opt.name?.[lang] || "",
-              value: opt.name?.[lang] || "",
-            }))}
-          />
-        </div>
+              value={form.depositPaymentTerms?.[lang] || undefined}
+              onChange={(value) => {
+                // User selected an existing option
+                handleLocalizedChange(lang, "depositPaymentTerms", value);
+              }}
+              onSearch={(val) => {
+                // User typed a new value (same logic as Zone in Step 1)
+                if (val && val.trim() !== "") {
+                  handleLocalizedChange(
+                    lang,
+                    "depositPaymentTerms",
+                    val.trim()
+                  );
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={deposits.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "",
+              }))}
+            />
+          </div>
 
-        {/* 💳 Payment Terms Type / Select */}
-        <div className="flex flex-col col-span-3 mt-3">
-          <label className="text-sm text-[#131517] font-semibold mb-2">
-            {t.maintenanceFeeMonthly}
-          </label>
-          <AntdSelect
-            showSearch
-            allowClear
-            placeholder={
-              lang === "en"
-                ? "Type or Select Payment Term"
-                : "Nhập hoặc chọn điều khoản thanh toán"
-            }
-            value={form.maintenanceFeeMonthly?.[lang] || undefined}
-            onChange={(value) => {
-              // User selected existing term
-              handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
-            }}
-            onSearch={(val) => {
-              // User typed a new payment term (same behavior as Zone)
-              if (val && val.trim() !== "") {
+          {/* Payment Terms */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.maintenanceFeeMonthly}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Payment Term"
+                  : "Nhập hoặc chọn điều khoản thanh toán"
+              }
+              value={form.maintenanceFeeMonthly?.[lang] || undefined}
+              onChange={(value) => {
+                // User selected existing term
+                handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+              }}
+              onSearch={(val) => {
+                // User typed a new payment term (same behavior as Zone)
+                if (val && val.trim() !== "") {
+                  handleLocalizedChange(
+                    lang,
+                    "maintenanceFeeMonthly",
+                    val.trim()
+                  );
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={payments.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "", // ✅
+              }))}
+            />
+          </div>
+
+          {/* Fees & Taxes */}
+          <div className="flex flex-col col-span-3">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.feeTax}
+            </label>
+            <textarea
+              value={form.financialDetailsFeeTax?.[lang] || ""}
+              onChange={(e) =>
                 handleLocalizedChange(
                   lang,
-                  "maintenanceFeeMonthly",
-                  val.trim()
-                );
+                  "financialDetailsFeeTax",
+                  e.target.value
+                )
               }
-            }}
-            filterOption={(input, option) =>
-              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-            notFoundContent={null}
-            className="w-full custom-select"
-            popupClassName="custom-dropdown"
-            options={payments.map((opt) => ({
-              label: opt.name?.[lang] || "",
-              value: opt.name?.[lang] || "", // ✅
-            }))}
-          />
+              className="border border-[#B2B2B3] h-20 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              placeholder={t.typehere}
+            />
+          </div>
+
+          {/* Legal docs */}
+          <div className="flex flex-col col-span-3">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.legalDoc}
+            </label>
+            <textarea
+              value={form.financialDetailsLegalDoc?.[lang] || ""}
+              onChange={(e) =>
+                handleLocalizedChange(
+                  lang,
+                  "financialDetailsLegalDoc",
+                  e.target.value
+                )
+              }
+              className="border border-[#B2B2B3] h-20 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              placeholder={t.typehere}
+            />
+          </div>
+
+          {/* Agent Fee */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.agentFee}
+            </label>
+            <input
+              type="number"
+              placeholder={t.typehere}
+              value={form.financialDetailsAgentFee}
+              onChange={(e) =>
+                handleChange("financialDetailsAgentFee", e.target.value)
+              }
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            />
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ✅ LEASE UI */}
+      {transactionType === "Lease" && (
+        <div className="grid grid-cols-3 gap-5">
+          {/** 👉 KEEP YOUR EXACT LEASE UI FIELDS HERE **/}
+
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.currency}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en" ? "Select Currency" : "Chọn loại tiền tệ"
+              }
+              value={form.currency?.symbol || undefined}
+              onChange={(symbol) => {
+                const selected = currencies.find(
+                  (c) => c.currencySymbol?.en === symbol
+                );
+                if (selected) {
+                  setForm((p) => ({
+                    ...p,
+                    currency: {
+                      symbol:
+                        selected.currencySymbol?.en ||
+                        selected.currencySymbol?.vi ||
+                        "$",
+                      code:
+                        selected.currencyCode?.en ||
+                        selected.currencyCode?.vi ||
+                        "USD",
+                      name:
+                        selected.currencyName?.en ||
+                        selected.currencyName?.vi ||
+                        "US Dollar",
+                    },
+                  }));
+                } else {
+                  setForm((p) => ({
+                    ...p,
+                    currency: { symbol: "", code: "", name: "" },
+                  }));
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              loading={loadingCurrencies}
+              notFoundContent={loadingCurrencies ? "Loading..." : null}
+              className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
+              popupClassName="custom-dropdown"
+              options={currencies.map((c) => ({
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
+                value: c.currencySymbol?.en,
+              }))}
+            />
+          </div>
+
+          {/* Lease Price */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.leasePrice}
+            </label>
+            <input
+              type="number"
+              value={form.leasePrice}
+              placeholder={t.typehere}
+              onChange={(e) => handleChange("leasePrice", e.target.value)}
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            />
+          </div>
+
+          {/* Contract Length */}
+
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.contractLength}
+            </label>
+            <input
+              type="text"
+              value={form.contractLength}
+              placeholder={t.typehere}
+              onChange={(e) => handleChange("contractLength", e.target.value)}
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            />
+          </div>
+
+          {/* Deposit */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.depositPaymentTerms}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Deposit"
+                  : "Nhập hoặc chọn khoản đặt cọc"
+              }
+              value={form.depositPaymentTerms?.[lang] || undefined}
+              onChange={(value) => {
+                // User selected an existing option
+                handleLocalizedChange(lang, "depositPaymentTerms", value);
+              }}
+              onSearch={(val) => {
+                // User typed a new value (same logic as Zone in Step 1)
+                if (val && val.trim() !== "") {
+                  handleLocalizedChange(
+                    lang,
+                    "depositPaymentTerms",
+                    val.trim()
+                  );
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={deposits.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "",
+              }))}
+            />
+          </div>
+
+          {/* Payment Terms */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.maintenanceFeeMonthly}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Payment Term"
+                  : "Nhập hoặc chọn điều khoản thanh toán"
+              }
+              value={form.maintenanceFeeMonthly?.[lang] || undefined}
+              onChange={(value) => {
+                // User selected existing term
+                handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+              }}
+              onSearch={(val) => {
+                // User typed a new payment term (same behavior as Zone)
+                if (val && val.trim() !== "") {
+                  handleLocalizedChange(
+                    lang,
+                    "maintenanceFeeMonthly",
+                    val.trim()
+                  );
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={payments.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "", // ✅
+              }))}
+            />
+          </div>
+
+          {/* Agent Fee */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.agentFee}
+            </label>
+            <input
+              type="number"
+              placeholder={t.typehere}
+              value={form.financialDetailsAgentFee}
+              onChange={(e) =>
+                handleChange("financialDetailsAgentFee", e.target.value)
+              }
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            />
+          </div>
+
+          {/* Agent Payment Agenda */}
+          <div className="flex flex-col col-span-3">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.agentFeeAgenda}
+            </label>
+            <textarea
+              value={form.financialDetailsAgentPaymentAgenda?.[lang] || ""}
+              onChange={(e) =>
+                handleLocalizedChange(
+                  lang,
+                  "financialDetailsAgentPaymentAgenda",
+                  e.target.value
+                )
+              }
+              className="border border-[#B2B2B3] h-20 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              placeholder={t.typehere}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ✅ HOME STAY UI */}
+      {transactionType === "Home Stay" && (
+        <div className="grid grid-cols-3 gap-5">
+          {/** 👉 KEEP YOUR EXACT HOME STAY UI FIELDS HERE **/}
+
+          {/* Currency */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.currency}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en" ? "Select Currency" : "Chọn loại tiền tệ"
+              }
+              value={form.currency?.symbol || undefined}
+              onChange={(symbol) => {
+                const selected = currencies.find(
+                  (c) => c.currencySymbol?.en === symbol
+                );
+                if (selected) {
+                  setForm((p) => ({
+                    ...p,
+                    currency: {
+                      symbol:
+                        selected.currencySymbol?.en ||
+                        selected.currencySymbol?.vi ||
+                        "$",
+                      code:
+                        selected.currencyCode?.en ||
+                        selected.currencyCode?.vi ||
+                        "USD",
+                      name:
+                        selected.currencyName?.en ||
+                        selected.currencyName?.vi ||
+                        "US Dollar",
+                    },
+                  }));
+                } else {
+                  setForm((p) => ({
+                    ...p,
+                    currency: { symbol: "", code: "", name: "" },
+                  }));
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              loading={loadingCurrencies}
+              notFoundContent={loadingCurrencies ? "Loading..." : null}
+              className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
+              popupClassName="custom-dropdown"
+              options={currencies.map((c) => ({
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
+                value: c.currencySymbol?.en,
+              }))}
+            />
+          </div>
+
+          {/* Price Per Night */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.pricePerNight}
+            </label>
+            <input
+              type="number"
+              placeholder="Type here"
+              value={form.pricePerNight}
+              onChange={(e) => handleChange("pricePerNight", e.target.value)}
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            />
+          </div>
+
+          {/* Check In */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.checkIn}
+            </label>
+            <input
+              type="text"
+              value={form.checkIn}
+              onChange={(e) => handleChange("checkIn", e.target.value)}
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            />
+          </div>
+
+          {/* Check Out */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.checkOut}
+            </label>
+            <input
+              type="text"
+              value={form.checkOut}
+              onChange={(e) => handleChange("checkOut", e.target.value)}
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+            />
+          </div>
+
+          {/* Deposit */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.depositPaymentTerms}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Deposit"
+                  : "Nhập hoặc chọn khoản đặt cọc"
+              }
+              value={form.depositPaymentTerms?.[lang] || undefined}
+              onChange={(value) => {
+                // User selected an existing option
+                handleLocalizedChange(lang, "depositPaymentTerms", value);
+              }}
+              onSearch={(val) => {
+                // User typed a new value (same logic as Zone in Step 1)
+                if (val && val.trim() !== "") {
+                  handleLocalizedChange(
+                    lang,
+                    "depositPaymentTerms",
+                    val.trim()
+                  );
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={deposits.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "",
+              }))}
+            />
+          </div>
+
+          {/* Payment Terms */}
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {t.maintenanceFeeMonthly}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Payment Term"
+                  : "Nhập hoặc chọn điều khoản thanh toán"
+              }
+              value={form.maintenanceFeeMonthly?.[lang] || undefined}
+              onChange={(value) => {
+                // User selected existing term
+                handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+              }}
+              onSearch={(val) => {
+                // User typed a new payment term (same behavior as Zone)
+                if (val && val.trim() !== "") {
+                  handleLocalizedChange(
+                    lang,
+                    "maintenanceFeeMonthly",
+                    val.trim()
+                  );
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={payments.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "", // ✅
+              }))}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="flex justify-between mt-10">

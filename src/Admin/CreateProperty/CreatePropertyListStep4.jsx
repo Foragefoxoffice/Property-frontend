@@ -81,7 +81,7 @@ export default function CreatePropertyListStep4({
       en: "Contact / Management Details",
       vi: "Liên hệ / Quản lý",
     },
-    status: { en: "Status", vi: "Trạng thái" },
+    status: { en: "Publish the Website", vi: "Xuất bản trang web" },
     draft: { en: "Draft", vi: "Bản nháp" },
     published: { en: "Published", vi: "Đã đăng" },
     previous: { en: "Previous", vi: "Trước" },
@@ -99,7 +99,7 @@ export default function CreatePropertyListStep4({
     transactionType: { en: "Transaction Type", vi: "Loại giao dịch" },
     project: { en: "Project / Community", vi: "Dự án / Khu dân cư" },
     areaZone: { en: "Area / Zone", vi: "Khu vực / Vùng" },
-    block: { en: "Block", vi: "Khối" },
+    block: { en: "Block Name", vi: "Tên khối" },
     propertyTitle: { en: "Property Title", vi: "Tiêu đề bất động sản" },
     propertyType: { en: "Property Type", vi: "Loại bất động sản" },
     dateListed: { en: "Date Listed", vi: "Ngày niêm yết" },
@@ -130,7 +130,7 @@ export default function CreatePropertyListStep4({
     // Contact / Management
     owner: { en: "Owner / Landlord", vi: "Chủ sở hữu / Chủ nhà" },
     ownerNotes: { en: "Owner Notes", vi: "Ghi chú của chủ nhà" },
-    consultant: { en: "Consultant", vi: "Tư vấn viên" },
+    consultant: { en: "Created By", vi: "Được tạo bởi" },
     connectingPoint: { en: "Connecting Point", vi: "Điểm liên hệ" },
     connectingNotes: { en: "Connecting Notes", vi: "Ghi chú liên hệ" },
     internalNotes: { en: "Internal Notes", vi: "Ghi chú nội bộ" },
@@ -220,12 +220,12 @@ export default function CreatePropertyListStep4({
         <Section title={labels.listingInfo[lang]}>
           <Grid3>
             <Field
-              label={labels.propertyId[lang]}
-              value={li.listingInformationPropertyId}
-            />
-            <Field
               label={labels.transactionType[lang]}
               value={safe(li.listingInformationTransactionType)}
+            />
+            <Field
+              label={labels.propertyId[lang]}
+              value={li.listingInformationPropertyId}
             />
             <Field
               label={labels.project[lang]}
@@ -240,29 +240,32 @@ export default function CreatePropertyListStep4({
               value={safe(li.listingInformationBlockName)}
             />
             <Field
-              label={labels.propertyTitle[lang]}
-              value={safe(li.listingInformationPropertyTitle)}
+              label={lang === "en" ? "Property No" : "Số bất động sản"}
+              value={safe(li.listingInformationPropertyNo)}
             />
             <Field
               label={labels.propertyType[lang]}
               value={safe(li.listingInformationPropertyType)}
             />
             <Field
-              label={lang === "en" ? "Property No" : "Số bất động sản"}
-              value={safe(li.listingInformationPropertyNo)}
-            />
-            <Field
               label={labels.dateListed[lang]}
               value={li.listingInformationDateListed?.split("T")[0]}
             />
-            <Field
-              label={labels.availableFrom[lang]}
-              value={li.listingInformationAvailableFrom?.split("T")[0]}
-            />
-            <Field
-              label={labels.availabilityStatus[lang]}
-              value={safe(li.listingInformationAvailabilityStatus)}
-            />
+            {safe(li.listingInformationTransactionType).toLowerCase() ===
+            "home stay" ? (
+              ""
+            ) : (
+              <>
+                <Field
+                  label={labels.availableFrom[lang]}
+                  value={li.listingInformationAvailableFrom?.split("T")[0]}
+                />
+                <Field
+                  label={labels.availabilityStatus[lang]}
+                  value={safe(li.listingInformationAvailabilityStatus)}
+                />
+              </>
+            )}
           </Grid3>
         </Section>
 
@@ -288,6 +291,10 @@ export default function CreatePropertyListStep4({
               value={safe(pi.informationFurnishing)}
             />
             <Field label={labels.view[lang]} value={safe(pi.informationView)} />
+            <Field
+              label={labels.propertyTitle[lang]}
+              value={safe(li.listingInformationPropertyTitle)}
+            />
           </Grid3>
         </Section>
 
@@ -346,7 +353,7 @@ export default function CreatePropertyListStep4({
               value={fd.financialDetailsCurrency}
             />
 
-            {/* === SALE TYPE === */}
+            {/* ✅ SALE */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "sale" && (
               <>
@@ -362,10 +369,23 @@ export default function CreatePropertyListStep4({
                   label={labels.paymentTerms[lang]}
                   value={safe(fd.financialDetailsMainFee)}
                 />
+                <Field
+                  label={labels.contractTerms[lang]}
+                  value={safe(fd.financialDetailsContractTerms)}
+                />
+                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                <Field
+                  label="Fee / Tax"
+                  value={safe(fd.financialDetailsFeeTax)}
+                />
+                <Field
+                  label="Legal Documents"
+                  value={safe(fd.financialDetailsLegalDoc)}
+                />
               </>
             )}
 
-            {/* === LEASE TYPE === */}
+            {/* ✅ LEASE */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "lease" && (
               <>
@@ -385,10 +405,15 @@ export default function CreatePropertyListStep4({
                   label={labels.paymentTerms[lang]}
                   value={safe(fd.financialDetailsMainFee)}
                 />
+                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                <Field
+                  label="Agent Payment Agenda"
+                  value={safe(fd.financialDetailsAgentPaymentAgenda)}
+                />
               </>
             )}
 
-            {/* === HOME STAY TYPE === */}
+            {/* ✅ HOME STAY */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "home stay" && (
               <>
@@ -449,7 +474,7 @@ export default function CreatePropertyListStep4({
             />
 
             {/* Connecting Point with Eye */}
-            <div className="relative">
+            {/* <div className="relative">
               <Field
                 label={labels.connectingPoint[lang]}
                 value={safe(cm.contactManagementConnectingPoint)}
@@ -465,24 +490,24 @@ export default function CreatePropertyListStep4({
                   <Eye size={16} className="text-gray-600" />
                 </button>
               )}
-            </div>
+            </div> */}
 
-            <Field
+            {/* <Field
               label={labels.connectingNotes[lang]}
               value={safe(cm.contactManagementConnectingPointNotes)}
-            />
+            /> */}
             <Field
               label={labels.internalNotes[lang]}
               value={safe(cm.contactManagementInternalNotes)}
             />
-            <Field
+            {/* <Field
               label={lang === "en" ? "Source" : "Nguồn"}
               value={safe(cm.contactManagementSource)}
-            />
-            <Field
+            /> */}
+            {/* <Field
               label={lang === "en" ? "Agent Fee" : "Phí Môi Giới"}
               value={cm.contactManagementAgentFee || 0}
-            />
+            /> */}
           </Grid3>
         </Section>
 
@@ -593,19 +618,19 @@ const MediaGrid = ({ files = [], type }) => {
       {files.map((url, i) => (
         <div
           key={i}
-          className="relative group rounded-2xl overflow-hidden border shadow-sm hover:shadow-lg transition"
+          className="relative group rounded-2xl overflow-hidden hover:shadow-lg transition"
         >
           {type === "video" ? (
             <video
               src={url}
               controls
-              className="w-full h-50 object-contain bg-black/5"
+              className="w-full h-full object-contain bg-black/5"
             />
           ) : (
             <img
               src={url}
               alt=""
-              className="w-full h-50 object-contain group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
             />
           )}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition" />

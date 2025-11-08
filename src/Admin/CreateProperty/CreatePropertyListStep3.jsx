@@ -69,7 +69,11 @@ export default function CreatePropertyListStep3({
   const [form, setForm] = useState({
     owner: initialData.owner || "",
     ownerNotes: initialData.ownerNotes || { en: "", vi: "" },
-    consultant: initialData.consultant || "",
+    consultant: initialData.consultant ||
+      initialData.contactManagement?.contactManagementConsultant || {
+        en: "",
+        vi: "",
+      },
     connectingPoint: initialData.connectingPoint || "",
     connectingPointNotes: initialData.connectingPointNotes || {
       en: "",
@@ -199,9 +203,9 @@ export default function CreatePropertyListStep3({
   ========================================================= */
   const t = {
     en: {
-      title: "Contact / Management Details",
+      title: "Landlord Information",
       owner: "Owner / Landlord",
-      ownerNotes: "Owner Notes",
+      ownerNotes: "Owner / Landlord Notes",
       consultant: "Created By (You)",
       connectingPoint: "Connecting Point",
       connectingPointNotes: "Connecting Point Notes",
@@ -213,9 +217,9 @@ export default function CreatePropertyListStep3({
       prev: "Previous",
     },
     vi: {
-      title: "Chi Tiết Liên Hệ / Quản Lý",
+      title: "Thông tin chủ nhà",
       owner: "Chủ Sở Hữu / Người Cho Thuê",
-      ownerNotes: "Ghi chú của Chủ Sở Hữu",
+      ownerNotes: "Ghi chú của Chủ sở hữu / Chủ nhà",
       consultant: "Được tạo bởi (Bạn)",
       connectingPoint: "Điểm Liên Hệ",
       connectingPointNotes: "Ghi chú về Điểm Liên Hệ",
@@ -312,8 +316,7 @@ export default function CreatePropertyListStep3({
             {/* 🧩 Source Input Section */}
             <div className="flex-1 min-w-[250px]">
               <label className="text-sm text-[#131517] font-semibold mb-2 block">
-                {lang === "en" ? "Source" : "Nguồn"} (
-                {lang === "en" ? "English" : "Tiếng Việt"})
+                {lang === "en" ? "Source" : "Nguồn"}
               </label>
               <input
                 type="text"
@@ -331,7 +334,7 @@ export default function CreatePropertyListStep3({
         {/* 📝 Owner Notes */}
         <div>
           <label className="text-sm text-[#131517] font-semibold mb-3">
-            {t.ownerNotes} ({lang === "en" ? "English" : "Tiếng Việt"})
+            {t.ownerNotes}
           </label>
           <textarea
             value={form.ownerNotes?.[lang] || ""}
@@ -345,7 +348,7 @@ export default function CreatePropertyListStep3({
         </div>
 
         {/* 🔗 Connecting Point */}
-        <div>
+        {/* <div>
           <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.connectingPoint}
           </label>
@@ -391,10 +394,10 @@ export default function CreatePropertyListStep3({
               </button>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* 📝 Connecting Point Notes */}
-        <div>
+        {/* <div>
           <label className="text-sm text-[#131517] font-semibold mb-3">
             {t.connectingPointNotes}
           </label>
@@ -411,7 +414,7 @@ export default function CreatePropertyListStep3({
             rows={3}
             className="border mt-2 border-[#B2B2B3] rounded-lg w-full px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
           />
-        </div>
+        </div> */}
 
         {/* 👩‍💼 Property Consultant (auto-filled from getMe) */}
         <div className="flex gap-4 items-baseline">
@@ -433,7 +436,7 @@ export default function CreatePropertyListStep3({
             </div>
           </div>
 
-          <div className="w-full">
+          {/* <div className="w-full">
             <label className="text-sm text-[#131517] font-semibold mb-3">
               {lang === "en" ? "Agent Fee" : "Phí Môi Giới"}
             </label>
@@ -446,7 +449,7 @@ export default function CreatePropertyListStep3({
               placeholder={t.typehere}
               className="border mt-2 border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
-          </div>
+          </div> */}
         </div>
 
         {/* 📝 Internal Notes */}
@@ -483,9 +486,9 @@ export default function CreatePropertyListStep3({
                   en: "",
                   vi: "",
                 },
-                contactManagementConsultant: form.consultant || {
-                  en: "",
-                  vi: "",
+                contactManagementConsultant: {
+                  en: getUserData?.name || "",
+                  vi: getUserData?.name || "",
                 },
                 contactManagementConnectingPoint: form.connectingPoint || {
                   en: "",

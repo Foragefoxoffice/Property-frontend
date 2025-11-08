@@ -245,7 +245,7 @@ const DashboardLayout = () => {
                       setSubSubPage(null);
                     }
                   }}
-                  className={`group flex w-full items-center justify-between gap-3 px-4 py-2 border-[1px] border-[#41398b47] rounded-full transition-all duration-200 ${
+                  className={`group flex w-full cursor-pointer items-center justify-between gap-3 px-2 pr-3 py-2 rounded-full transition-all duration-200 ${
                     activePage === item.key
                       ? "bg-[#41398B] text-white"
                       : "text-gray-700 hover:bg-[#41398B] hover:text-white"
@@ -254,10 +254,10 @@ const DashboardLayout = () => {
                   {/* Left Section (icon + label) */}
                   <div className="flex items-center gap-3">
                     <span
-                      className={`p-2 rounded-full transition-all duration-200 ${
+                      className={`p-3 rounded-full transition-all duration-200 ${
                         activePage === item.key
                           ? "bg-[#fff] text-[#41398B]"
-                          : "bg-[#41398B] text-[#fff] group-hover:bg-white group-hover:text-[#41398B]"
+                          : "bg-[#E8E8FF] text-[#41398B] group-hover:bg-white group-hover:text-[#41398B]"
                       }`}
                     >
                       {item.icon}
@@ -285,17 +285,17 @@ const DashboardLayout = () => {
 
                 {/* Submenu for Properties */}
                 {item.key === "Properties" && activePage === "Properties" && (
-                  <div className="mt-2 ml-8 flex flex-col gap-2 animate-slideDown">
+                  <div className="mt-2 ml-4 flex flex-col gap-2 animate-slideDown">
                     {[
-                      {
-                        key: "Sale",
-                        label: "Sale",
-                        icon: <Home className="w-4 h-4" />,
-                      },
                       {
                         key: "Lease",
                         label: "Lease",
                         icon: <Key className="w-4 h-4" />,
+                      },
+                      {
+                        key: "Sale",
+                        label: "Sale",
+                        icon: <Home className="w-4 h-4" />,
                       },
                       {
                         key: "Home Stay",
@@ -310,17 +310,17 @@ const DashboardLayout = () => {
                         <button
                           key={sub.key}
                           onClick={() => setSubPage(sub.key)}
-                          className={`flex items-center gap-3 text-left text-sm px-3 py-2 rounded-full border-[1px] border-[#41398b47] transition-all duration-150 ${
+                          className={`flex items-center cursor-pointer gap-3 text-left text-sm px-1 py-1 rounded-full transition-all duration-150 ${
                             isActive
                               ? "bg-[#41398B] text-white font-semibold"
                               : "text-gray-700 hover:bg-[#EAE8FD] hover:text-[#41398B]"
                           }`}
                         >
                           <span
-                            className={`p-1 rounded-full ${
+                            className={`p-3 rounded-full ${
                               isActive
                                 ? "bg-white text-[#41398B]"
-                                : "bg-[#41398B] text-white"
+                                : "bg-[#E8E8FF] text-[#41398B]"
                             }`}
                           >
                             {sub.icon}

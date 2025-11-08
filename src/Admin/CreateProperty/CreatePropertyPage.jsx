@@ -23,7 +23,6 @@ import {
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
-import { translations } from "../../Language/translations";
 
 /* =========================================================
    🧰 Safe Object Sanitizer
@@ -79,8 +78,8 @@ export default function CreatePropertyPage({
     en: {
       createProperty: "Create Property",
       step1Label: "Listing & Property Information",
-      step2Label: "Media & Financial Information",
-      step3Label: "Contact / Management Details",
+      step2Label: "Library & finance Information",
+      step3Label: "Landlord Information",
       step4Label: "Review & Publish",
       saving: "Saving...",
       posted: "Property Posted successfully!",
@@ -89,8 +88,8 @@ export default function CreatePropertyPage({
     vi: {
       createProperty: "Tạo Bất Động Sản",
       step1Label: "Thông Tin Liệt Kê & Bất Động Sản",
-      step2Label: "Phương Tiện & Thông Tin Tài Chính",
-      step3Label: "Chi Tiết Liên Hệ / Quản Lý",
+      step2Label: "Thông tin thư viện & tài chính",
+      step3Label: "Thông tin chủ nhà",
       step4Label: "Xem Lại & Đăng Bài",
       saving: "Đang lưu...",
       posted: "Đăng bất động sản thành công!",
@@ -271,6 +270,27 @@ export default function CreatePropertyPage({
           vi: "",
         },
 
+        financialDetailsAgentFee:
+          editData.financialDetails?.financialDetailsAgentFee || 0,
+
+        financialDetailsAgentPaymentAgenda: editData.financialDetails
+          ?.financialDetailsAgentPaymentAgenda || {
+          en: "",
+          vi: "",
+        },
+
+        financialDetailsFeeTax: editData.financialDetails
+          ?.financialDetailsFeeTax || {
+          en: "",
+          vi: "",
+        },
+
+        financialDetailsLegalDoc: editData.financialDetails
+          ?.financialDetailsLegalDoc || {
+          en: "",
+          vi: "",
+        },
+
         // Contact management
         contactManagement: {
           contactManagementOwner: editData.contactManagement
@@ -431,6 +451,12 @@ export default function CreatePropertyPage({
         financialDetailsPricePerNight: num(normalized.pricePerNight),
         financialDetailsCheckIn: normalized.checkIn || "",
         financialDetailsCheckOut: normalized.checkOut || "",
+        financialDetailsAgentFee: num(normalized.financialDetailsAgentFee),
+        financialDetailsAgentPaymentAgenda: wrap(
+          normalized.financialDetailsAgentPaymentAgenda
+        ),
+        financialDetailsFeeTax: wrap(normalized.financialDetailsFeeTax),
+        financialDetailsLegalDoc: wrap(normalized.financialDetailsLegalDoc),
       },
 
       contactManagement: {

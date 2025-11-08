@@ -2,11 +2,12 @@ import axios from "axios";
 
 // ✅ Create axios instance
 const API = axios.create({
-  baseURL: (import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1").replace(/\/$/, ""),
+  baseURL: (
+    import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"
+  ).replace(/\/$/, ""),
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
-
 
 // ✅ Automatically attach JWT token if available
 API.interceptors.request.use(
@@ -169,7 +170,10 @@ export const deleteCurrency = (id) => API.delete(`/currency/${id}`);
 export const markCurrencyAsDefault = (id) => API.put(`/currency/${id}/default`);
 
 export const createPropertyListing = (data) => {
-  console.log("🔍 Creating Property via:", API.defaults.baseURL + "/create-property");
+  console.log(
+    "🔍 Creating Property via:",
+    API.defaults.baseURL + "/create-property"
+  );
   return API.post("/create-property", data);
 };
 export const getAllPropertyListings = (params) =>
@@ -178,6 +182,7 @@ export const updatePropertyListing = (id, data) =>
   API.put(`/create-property/${id}`, data);
 export const deletePropertyListing = (id) =>
   API.delete(`/create-property/${id}`);
+export const getNextPropertyId = () => API.get("/create-property/next-id");
 
 /* =========================================================
    ✨ EXPORT DEFAULT

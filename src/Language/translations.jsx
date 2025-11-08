@@ -6,6 +6,7 @@ export const translations = {
     masters: "Masters",
     addProperty: "Add Property",
     property: "Property",
+    propertyId: "Property ID",
     draft: "Draft",
     posted: "Posted",
     propertyCode: "Property Code",
@@ -13,11 +14,14 @@ export const translations = {
     propertyType: "Property Type",
     propertyName: "Property Name",
     transactionType: "Transaction Type",
+    propertyNo: "Property No.",
     status: "Status",
+    publishTheWebsite: "Publish the Website",
     rowsPerPage: "Rows per page",
     of: "of",
     search: "Search",
-    blockName: "Block Name"
+    blockName: "Block Name",
+    availabilitystatus: "Availability Status",
   },
 
   vi: {
@@ -25,10 +29,13 @@ export const translations = {
     owners: "Chủ sở hữu / Chủ nhà",
     staffs: "Nhân viên",
     masters: "Quản lý chính",
+    propertyId: "ID thuộc tính",
     addProperty: "Thêm bất động sản",
     property: "Bất động sản",
+    publishTheWebsite: "Xuất bản trang web",
     draft: "Bản nháp",
     posted: "Đã đăng",
+    propertyNo: "Số tài sản",
     propertyCode: "Mã bất động sản",
     location: "Tên khu / tòa nhà",
     propertyType: "Loại hình bất động sản",
@@ -38,6 +45,7 @@ export const translations = {
     rowsPerPage: "Số hàng mỗi trang",
     of: "trong tổng số",
     search: "Tìm kiếm",
-    blockName: "Tên khu / tòa nhà"
+    blockName: "Tên khu / tòa nhà",
+    availabilitystatus: "Tình trạng sẵn có",
   },
 };

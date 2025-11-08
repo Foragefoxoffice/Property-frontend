@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, memo } from "react";
-import { ArrowRight, ChevronDown, CirclePlus, Trash2 } from "lucide-react";
+import { ArrowRight, CirclePlus, Trash2 } from "lucide-react";
 import {
   getAllProperties,
   getAllZoneSubAreas,
@@ -9,6 +9,7 @@ import {
   getAllFurnishings,
   getAllParkings,
   getAllPetPolicies,
+  getNextPropertyId,
 } from "../../Api/action";
 import { Select as AntdSelect } from "antd";
 import iconOptions from "../../data/iconOptions";
@@ -90,7 +91,7 @@ const LocalizedInput = memo(
   ({ label, name, lang, value, onChange, placeholder }) => (
     <div className="flex flex-col">
       <label className="text-sm text-[#131517] font-semibold mb-2">
-        {label} ({lang === "en" ? "English" : "Tiếng Việt"})
+        {label}
       </label>
       <input
         name={name}
@@ -107,9 +108,9 @@ const LocalizedInput = memo(
 
 const LocalizedTextarea = memo(
   ({ label, name, lang, value, onChange, placeholder }) => (
-    <div className="flex flex-col">
+    <div className="flex flex-col mt-8">
       <label className="text-sm text-[#131517] font-semibold mb-2">
-        {label} ({lang === "en" ? "English" : "Tiếng Việt"})
+        {label}
       </label>
       <textarea
         name={name}
@@ -211,6 +212,7 @@ export default function CreatePropertyListStep1({
   defaultTransactionType,
 }) {
   const [lang, setLang] = useState("en");
+  const getToday = () => new Date().toISOString().split("T")[0];
   const [form, setForm] = useState({
     ...initialData,
     transactionType:
@@ -224,6 +226,7 @@ export default function CreatePropertyListStep1({
     whatsNearby: initialData.whatsNearby || { en: "", vi: "" },
     amenities: initialData.amenities || [{ name: "", km: "" }],
     utilities: initialData.utilities || [{ name: "", icon: "" }],
+    dateListed: initialData.dateListed || getToday(),
   });
   const [loading, setLoading] = useState(true);
 
@@ -251,6 +254,19 @@ export default function CreatePropertyListStep1({
     }
   }, [initialData]);
 
+  useEffect(() => {
+    async function fetchId() {
+      const res = await getNextPropertyId();
+      const nextId = res.data.nextId;
+
+      setForm((prev) => ({
+        ...prev,
+        propertyId: nextId,
+      }));
+    }
+    fetchId();
+  }, []);
+
   const [dropdowns, setDropdowns] = useState({
     properties: [],
     zones: [],
@@ -262,9 +278,9 @@ export default function CreatePropertyListStep1({
     pets: [],
   });
 
-  /* Fetch dropdowns once */
   useEffect(() => {
     let mounted = true;
+
     async function fetchAll() {
       try {
         const [
@@ -287,50 +303,62 @@ export default function CreatePropertyListStep1({
           getAllPetPolicies(),
         ]);
 
-        if (mounted) {
-          const allUnits = (unitRes.data?.data || []).filter(
-            (i) => i.status === "Active"
-          );
-          const defaultUnit = allUnits.find((u) => u.isDefault);
+        if (!mounted) return;
 
-          setDropdowns({
-            properties: (propRes.data?.data || []).filter(
-              (i) => i.status === "Active"
-            ),
-            zones: (zoneRes.data?.data || []).filter(
-              (i) => i.status === "Active"
-            ),
-            types: (typeRes.data?.data || []).filter(
-              (i) => i.status === "Active"
-            ),
-            statuses: (statusRes.data?.data || []).filter(
-              (i) => i.status === "Active"
-            ),
-            units: allUnits,
-            furnishings: (furnRes.data?.data || []).filter(
-              (i) => i.status === "Active"
-            ),
-            parkings: (parkRes.data?.data || []).filter(
-              (i) => i.status === "Active"
-            ),
-            pets: (petRes.data?.data || []).filter(
-              (i) => i.status === "Active"
-            ),
-          });
+        /* ✅ FILTER ACTIVE ITEMS */
+        const activeProperties = (propRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
+        const activeZones = (zoneRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
+        const activeTypes = (typeRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
+        const activeStatus = (statusRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
+        const allUnits = (unitRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
+        const activeFurnishings = (furnRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
+        const activeParking = (parkRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
+        const activePets = (petRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
 
-          // ✅ Auto-select default unit if not already selected
-          setForm((prev) => ({
-            ...prev,
-            unit: prev.unit || defaultUnit?._id || "",
-          }));
-        }
+        /* ✅ SET DROPDOWNS */
+        setDropdowns({
+          properties: activeProperties,
+          zones: activeZones,
+          types: activeTypes,
+          statuses: activeStatus,
+          units: allUnits,
+          furnishings: activeFurnishings,
+          parkings: activeParking,
+          pets: activePets,
+        });
+
+        /* ✅ SET FORM DEFAULTS (including auto-ID) */
+        const defaultUnit = allUnits.find((u) => u.isDefault);
+
+        setForm((prev) => ({
+          ...prev,
+          unit: prev.unit || defaultUnit?._id || "",
+        }));
       } catch (err) {
         console.error("Error loading dropdowns", err);
       } finally {
         setLoading(false);
       }
     }
+
     fetchAll();
+
     return () => {
       mounted = false;
     };
@@ -443,7 +471,7 @@ export default function CreatePropertyListStep1({
       <div className=" p-8 pt-2">
         {/* === Listing Info === */}
         <h2 className="text-lg font-semibold mb-8">{t.listingInfo}</h2>
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-3 gap-7">
           <Select
             label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
             name="transactionType"
@@ -455,13 +483,13 @@ export default function CreatePropertyListStep1({
               { _id: "Lease", name: { en: "Lease", vi: "Cho thuê" } },
               { _id: "Home Stay", name: { en: "Home Stay", vi: "Nhà nghỉ" } },
             ]}
-            disabled={!!defaultTransactionType} // 👈 lock it if passed from tab
+            disabled={!!defaultTransactionType}
           />
 
           <Input
             label={lang === "en" ? "Property ID" : "Mã bất động sản"}
             name="propertyId"
-            placeholder={lang === "en" ? "e.g. P12345" : "ví dụ: P12345"}
+            placeholder={lang === "en" ? "Auto Generated" : "Tự động tạo"}
             value={form.propertyId}
             onChange={handleInputChange}
           />
@@ -544,14 +572,6 @@ export default function CreatePropertyListStep1({
           />
 
           <LocalizedInput
-            label={lang === "en" ? "Property Title" : "Tiêu đề bất động sản"}
-            name="title"
-            lang={lang}
-            value={form.title?.[lang]}
-            onChange={handleLocalizedChange}
-          />
-
-          <LocalizedInput
             label={lang === "en" ? "Property No" : "Số bất động sản"}
             name="propertyNo"
             lang={lang}
@@ -573,22 +593,29 @@ export default function CreatePropertyListStep1({
             value={form.dateListed}
             onChange={handleInputChange}
           />
+          {form.transactionType === "Home Stay" ? (
+            ""
+          ) : (
+            <>
+              <DatePicker
+                label={lang === "en" ? "Available From" : "Có sẵn từ"}
+                name="availableFrom"
+                value={form.availableFrom}
+                onChange={handleInputChange}
+              />
 
-          <DatePicker
-            label={lang === "en" ? "Available From" : "Có sẵn từ"}
-            name="availableFrom"
-            value={form.availableFrom}
-            onChange={handleInputChange}
-          />
-
-          <Select
-            label={lang === "en" ? "Availability Status" : "Trạng thái sẵn có"}
-            name="availabilityStatus"
-            lang={lang}
-            options={dropdowns.statuses}
-            value={form.availabilityStatus}
-            onChange={handleInputChange}
-          />
+              <Select
+                label={
+                  lang === "en" ? "Availability Status" : "Trạng thái sẵn có"
+                }
+                name="availabilityStatus"
+                lang={lang}
+                options={dropdowns.statuses}
+                value={form.availabilityStatus}
+                onChange={handleInputChange}
+              />
+            </>
+          )}
         </div>
 
         {/* === Property Info === */}
@@ -628,7 +655,7 @@ export default function CreatePropertyListStep1({
           />
 
           <Input
-            label={lang === "en" ? "Floors" : "Số tầng"}
+            label={lang === "en" ? "Floor Range" : "Phạm vi sàn"}
             name="floors"
             value={form.floors}
             onChange={handleInputChange}
@@ -652,8 +679,16 @@ export default function CreatePropertyListStep1({
             placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
         </div>
+
+        <LocalizedTextarea
+          label={lang === "en" ? "Property Title" : "Tiêu đề bất động sản"}
+          name="title"
+          lang={lang}
+          value={form.title?.[lang]}
+          onChange={handleLocalizedChange}
+        />
+
         {/* === Description === */}
-        <h2 className="text-lg font-semibold mt-8 mb-4">{t.description}</h2>
         <LocalizedTextarea
           label={lang === "en" ? "Description" : "Mô tả"}
           name="description"
@@ -676,12 +711,12 @@ export default function CreatePropertyListStep1({
         {form.utilities.map((u, i) => (
           <div
             key={i}
-            className="grid grid-cols-3 gap-3 mb-4 items-baseline pb-3"
+            className="grid grid-cols-3 gap-8 mb-4 items-baseline pb-3"
           >
             {/* Utility Name (Language Controlled) */}
             <div className="col-span-1">
               <label className="block text-sm text-[#131517] font-semibold mb-2">
-                {lang === "en" ? "Utility Name (EN)" : "Tên tiện ích (VI)"}
+                {lang === "en" ? "Utility Name" : "Tên tiện ích"}
               </label>
               <input
                 type="text"
@@ -761,7 +796,7 @@ export default function CreatePropertyListStep1({
             </div>
 
             {/* Delete Button */}
-            <div className="col-span-1 flex justify-start items-end">
+            <div className="col-span-1">
               {i > 0 && (
                 <button
                   onClick={() => removeUtility(i)}

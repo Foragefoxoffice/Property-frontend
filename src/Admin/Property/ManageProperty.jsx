@@ -13,7 +13,6 @@ import {
   deletePropertyListing,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
-import commonimg from "../../assets/image/commonimg.jpg";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 
@@ -147,7 +146,7 @@ export default function ManageProperty({
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-10 pr-4 py-2 rounded-full border border-[#B2B2B3] focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
+          className="w-full pl-10 pr-4 py-3 rounded-full focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
         />
       </div>
 
@@ -161,34 +160,27 @@ export default function ManageProperty({
             <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
               <tr>
                 <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.property}
+                  {t.propertyId}
                 </th>
                 <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.transactionType}
+                  {t.propertyNo}
                 </th>
                 <th className="px-6 py-3 font-medium text-[#111111]">
                   {t.propertyType}
                 </th>
                 <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.blockName}
+                  {t.availabilitystatus}
                 </th>
                 <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.status}
+                  {t.publishTheWebsite}
                 </th>
-                <th className="px-6 py-3 font-medium text-[#111111] text-right">
-                  {language === "vi" ? "Hành động" : "Actions"}
-                </th>
+                <th className="px-6 py-3 font-medium text-[#111111] text-right"></th>
               </tr>
             </thead>
 
             <tbody>
               {currentRows.map((p, i) => {
                 const info = p.listingInformation || {};
-                const img = p.imagesVideos?.propertyImages?.[0];
-                const title =
-                  info.listingInformationPropertyTitle?.[language] ||
-                  info.listingInformationPropertyTitle?.en ||
-                  "—";
                 const transactionType =
                   info.listingInformationTransactionType?.[language] ||
                   info.listingInformationTransactionType?.en ||
@@ -210,24 +202,16 @@ export default function ManageProperty({
                     } hover:bg-gray-100 transition`}
                   >
                     {/* 🏠 Property Image + Info */}
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <img
-                        src={img || commonimg}
-                        alt="Property"
-                        className="w-14 h-14 rounded-lg object-cover"
-                        onError={(e) => (e.target.src = commonimg)}
-                      />
+                    <td className="px-6 py-4">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">
-                          {t.propertyCode}:{" "}
                           {info.listingInformationPropertyId || "—"}
                         </p>
-                        <p className="text-gray-900 font-semibold">{title}</p>
                       </div>
                     </td>
 
                     {/* 🔹 Transaction Type */}
-                    <td className="px-6 py-4 capitalize">{transactionType}</td>
+                    <td className="px-6 py-6 capitalize">{transactionType}</td>
 
                     {/* 🔹 Property Type */}
                     <td className="px-6 py-4">{propertyType}</td>
@@ -239,23 +223,14 @@ export default function ManageProperty({
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
+                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${
                             p.status === "Published"
                               ? "bg-green-100 text-green-700"
                               : p.status === "Draft"
-                              ? "bg-yellow-100 text-yellow-700"
+                              ? "bg-[#FFF3DE] text-[#FFA600]"
                               : "bg-gray-200 text-gray-700"
                           }`}
                         >
-                          <span
-                            className={`w-2 h-2 rounded-full ${
-                              p.status === "Published"
-                                ? "bg-green-600"
-                                : p.status === "Draft"
-                                ? "bg-yellow-500"
-                                : "bg-gray-500"
-                            }`}
-                          ></span>
                           {p.status === "Published"
                             ? language === "vi"
                               ? "Đã đăng"
