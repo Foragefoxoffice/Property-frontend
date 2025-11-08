@@ -169,6 +169,30 @@ export const updateCurrency = (id, data) => API.put(`/currency/${id}`, data);
 export const deleteCurrency = (id) => API.delete(`/currency/${id}`);
 export const markCurrencyAsDefault = (id) => API.put(`/currency/${id}/default`);
 
+// ✅ BLOCK APIs
+export const getAllBlocks = (params) => API.get("/block", { params });
+export const createBlock = (data) => API.post("/block", data);
+export const updateBlock = (id, data) => API.put(`/block/${id}`, data);
+export const deleteBlock = (id) => API.delete(`/block/${id}`);
+
+/* =========================================================
+   📌 FEE / TAX APIs
+========================================================= */
+export const getAllFeeTax = (params) => API.get("/feetax", { params });
+export const createFeeTax = (data) => API.post("/feetax", data);
+export const updateFeeTax = (id, data) => API.put(`/feetax/${id}`, data);
+export const deleteFeeTax = (id) => API.delete(`/feetax/${id}`);
+
+/* =========================================================
+   📄 LEGAL DOCUMENT APIs
+========================================================= */
+export const getAllLegalDocuments = (params) => API.get("/legaldocument", { params });
+export const createLegalDocument = (data) => API.post("/legaldocument", data);
+export const updateLegalDocument = (id, data) => API.put(`/legaldocument/${id}`, data);
+export const deleteLegalDocument = (id) => API.delete(`/legaldocument/${id}`);
+
+
+
 export const createPropertyListing = (data) => {
   console.log(
     "🔍 Creating Property via:",

@@ -15,6 +15,9 @@ export default function PropertyMaster({
   // openPetPolicyPage,
   openDepositPage,
   openPaymentPage,
+  openBlockPage,
+  openFeeTaxPage,
+  openLegalDocumentPage
 }) {
   const { language } = useLanguage();
 
@@ -34,6 +37,14 @@ export default function PropertyMaster({
           ? "Khu vực, khối hoặc tiểu khu cụ thể trong dự án hoặc quận — dùng để xác định vị trí nội bộ hoặc lọc."
           : "The specific section, block, or zone within a project or district — used for internal location mapping or filtering.",
       onClick: openZoneSubAreaPage,
+    },
+    {
+      name: language === "vi" ? "Tên khối" : "Block Name",
+      description:
+        language === "vi"
+          ? "Tên của block hoặc tòa nhà trong dự án."
+          : "Name of the block or tower under the selected area.",
+      onClick: openBlockPage,
     },
     {
       name: language === "vi" ? "Loại bất động sản" : "Property Type",
@@ -83,6 +94,22 @@ export default function PropertyMaster({
           : "Details the payment schedule and conditions.",
       onClick: openPaymentPage,
     },
+    {
+      name: language === "vi" ? "Phí và thuế" : "Fees & taxes",
+      description:
+        language === "vi"
+          ? "Chỉ định các loại phí, thuế hoặc khoản phí bổ sung liên quan đến bất động sản."
+          : "Specifies applicable fees, taxes, or additional charges related to the property.",
+      onClick: openFeeTaxPage,
+    },
+    {
+      name: language === "vi" ? "Văn bản pháp luật" : "Legal document",
+      description:
+        language === "vi"
+          ? "Chỉ giấy tờ chính thức hoặc hợp đồng cần thiết cho giao dịch bất động sản."
+          : "Refers to official paperwork or contracts required for the property transaction.",
+      onClick: openLegalDocumentPage,
+    },
     // Optional future items:
     // {
     //   name: language === "vi" ? "Chính sách thú cưng" : "Pet Policy",
@@ -123,9 +150,8 @@ export default function PropertyMaster({
           <div
             key={index}
             onClick={item.onClick}
-            className={`grid grid-cols-[2fr_4fr_auto] items-center px-6 py-4 text-sm text-gray-700 cursor-pointer ${
-              index % 2 === 1 ? "bg-gray-50" : "bg-white"
-            } hover:bg-gray-100 transition-colors`}
+            className={`grid grid-cols-[2fr_4fr_auto] items-center px-6 py-4 text-sm text-gray-700 cursor-pointer ${index % 2 === 1 ? "bg-gray-50" : "bg-white"
+              } hover:bg-gray-100 transition-colors`}
           >
             <div className="font-medium">{item.name}</div>
             <div className="text-gray-600 leading-snug">{item.description}</div>

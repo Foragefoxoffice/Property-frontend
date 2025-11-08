@@ -40,6 +40,40 @@ const SkeletonLoader = () => (
   </div>
 );
 
+/* === Media Preview Modal === */
+const MediaPreviewModal = ({ url, type, onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div className="relative max-w-3xl w-full mx-4 bg-white rounded-2xl p-4 shadow-xl">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 z-99 right-3 bg-white/90 hover:bg-white text-gray-700 p-2 rounded-full shadow"
+          aria-label="Close"
+        >
+          <X className="cursor-pointer" size={20} />
+        </button>
+
+        {/* Preview */}
+        {type === "video" ? (
+          <video
+            src={url}
+            controls
+            autoPlay
+            className="w-full h-[75vh] object-contain rounded-lg bg-black"
+          />
+        ) : (
+          <img
+            src={url}
+            alt="Preview"
+            className="w-full max-h-[80vh] object-contain rounded-lg bg-gray-50"
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function CreatePropertyListStep4({
   savedId,
   onPublish,
@@ -59,6 +93,10 @@ export default function CreatePropertyListStep4({
   const [showStaffPopup, setShowStaffPopup] = useState(false);
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [selectedStaff, setSelectedStaff] = useState(null);
+
+  // media preview state
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewType, setPreviewType] = useState(null);
 
   const labels = {
     reviewTitle: {
@@ -205,6 +243,11 @@ export default function CreatePropertyListStep4({
   const ownerData = findOwnerByForm(cm.contactManagementOwner);
   const staffData = findStaffByForm(cm.contactManagementConnectingPoint);
 
+  const openPreview = (url, type) => {
+    setPreviewUrl(url);
+    setPreviewType(type);
+  };
+
   return (
     <div className="bg-white min-h-screen p-6 rounded-2xl">
       {/* Sticky Header */}
@@ -252,7 +295,7 @@ export default function CreatePropertyListStep4({
               value={li.listingInformationDateListed?.split("T")[0]}
             />
             {safe(li.listingInformationTransactionType).toLowerCase() ===
-            "home stay" ? (
+              "home stay" ? (
               ""
             ) : (
               <>
@@ -332,18 +375,29 @@ export default function CreatePropertyListStep4({
 
         {/* === Media Sections === */}
         <Section title={labels.propertyImages[lang]}>
-          <MediaGrid files={iv.propertyImages} type="image" />
+          <MediaGrid
+            files={iv.propertyImages}
+            type="image"
+            onPreview={openPreview}
+          />
         </Section>
 
         <Section title={labels.propertyVideos[lang]}>
-          <MediaGrid files={iv.propertyVideo} type="video" />
+          <MediaGrid
+            files={iv.propertyVideo}
+            type="video"
+            onPreview={openPreview}
+          />
         </Section>
 
         <Section title={labels.floorPlans[lang]}>
-          <MediaGrid files={iv.floorPlan} type="image" />
+          <MediaGrid
+            files={iv.floorPlan}
+            type="image"
+            onPreview={openPreview}
+          />
         </Section>
 
-        {/* === Financial Details === */}
         {/* === Financial Details === */}
         <Section title={labels.financialDetails[lang]}>
           <Grid3>
@@ -356,89 +410,89 @@ export default function CreatePropertyListStep4({
             {/* ✅ SALE */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "sale" && (
-              <>
-                <Field
-                  label={labels.price[lang]}
-                  value={fd.financialDetailsPrice}
-                />
-                <Field
-                  label={labels.deposit[lang]}
-                  value={safe(fd.financialDetailsDeposit)}
-                />
-                <Field
-                  label={labels.paymentTerms[lang]}
-                  value={safe(fd.financialDetailsMainFee)}
-                />
-                <Field
-                  label={labels.contractTerms[lang]}
-                  value={safe(fd.financialDetailsContractTerms)}
-                />
-                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
-                <Field
-                  label="Fee / Tax"
-                  value={safe(fd.financialDetailsFeeTax)}
-                />
-                <Field
-                  label="Legal Documents"
-                  value={safe(fd.financialDetailsLegalDoc)}
-                />
-              </>
-            )}
+                <>
+                  <Field
+                    label={labels.price[lang]}
+                    value={fd.financialDetailsPrice}
+                  />
+                  <Field
+                    label={labels.deposit[lang]}
+                    value={safe(fd.financialDetailsDeposit)}
+                  />
+                  <Field
+                    label={labels.paymentTerms[lang]}
+                    value={safe(fd.financialDetailsMainFee)}
+                  />
+                  <Field
+                    label={labels.contractTerms[lang]}
+                    value={safe(fd.financialDetailsContractTerms)}
+                  />
+                  <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                  <Field
+                    label="Fee / Tax"
+                    value={safe(fd.financialDetailsFeeTax)}
+                  />
+                  <Field
+                    label="Legal Documents"
+                    value={safe(fd.financialDetailsLegalDoc)}
+                  />
+                </>
+              )}
 
             {/* ✅ LEASE */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "lease" && (
-              <>
-                <Field
-                  label={labels.leasePrice[lang]}
-                  value={fd.financialDetailsLeasePrice}
-                />
-                <Field
-                  label={labels.contractLength[lang]}
-                  value={fd.financialDetailsContractLength}
-                />
-                <Field
-                  label={labels.deposit[lang]}
-                  value={safe(fd.financialDetailsDeposit)}
-                />
-                <Field
-                  label={labels.paymentTerms[lang]}
-                  value={safe(fd.financialDetailsMainFee)}
-                />
-                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
-                <Field
-                  label="Agent Payment Agenda"
-                  value={safe(fd.financialDetailsAgentPaymentAgenda)}
-                />
-              </>
-            )}
+                <>
+                  <Field
+                    label={labels.leasePrice[lang]}
+                    value={fd.financialDetailsLeasePrice}
+                  />
+                  <Field
+                    label={labels.contractLength[lang]}
+                    value={fd.financialDetailsContractLength}
+                  />
+                  <Field
+                    label={labels.deposit[lang]}
+                    value={safe(fd.financialDetailsDeposit)}
+                  />
+                  <Field
+                    label={labels.paymentTerms[lang]}
+                    value={safe(fd.financialDetailsMainFee)}
+                  />
+                  <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                  <Field
+                    label="Agent Payment Agenda"
+                    value={safe(fd.financialDetailsAgentPaymentAgenda)}
+                  />
+                </>
+              )}
 
             {/* ✅ HOME STAY */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "home stay" && (
-              <>
-                <Field
-                  label={labels.pricePerNight[lang]}
-                  value={fd.financialDetailsPricePerNight}
-                />
-                <Field
-                  label={labels.checkIn[lang]}
-                  value={fd.financialDetailsCheckIn}
-                />
-                <Field
-                  label={labels.checkOut[lang]}
-                  value={fd.financialDetailsCheckOut}
-                />
-                <Field
-                  label={labels.deposit[lang]}
-                  value={safe(fd.financialDetailsDeposit)}
-                />
-                <Field
-                  label={labels.paymentTerms[lang]}
-                  value={safe(fd.financialDetailsMainFee)}
-                />
-              </>
-            )}
+                <>
+                  <Field
+                    label={labels.pricePerNight[lang]}
+                    value={fd.financialDetailsPricePerNight}
+                  />
+                  <Field
+                    label={labels.checkIn[lang]}
+                    value={fd.financialDetailsCheckIn}
+                  />
+                  <Field
+                    label={labels.checkOut[lang]}
+                    value={fd.financialDetailsCheckOut}
+                  />
+                  <Field
+                    label={labels.deposit[lang]}
+                    value={safe(fd.financialDetailsDeposit)}
+                  />
+                  <Field
+                    label={labels.paymentTerms[lang]}
+                    value={safe(fd.financialDetailsMainFee)}
+                  />
+                </>
+              )}
           </Grid3>
         </Section>
 
@@ -458,8 +512,9 @@ export default function CreatePropertyListStep4({
                     setShowOwnerPopup(true);
                   }}
                   className="absolute top-9 right-3 p-1 bg-gray-100 rounded-full hover:bg-gray-200"
+                  aria-label="View owner"
                 >
-                  <Eye size={16} className="text-gray-600" />
+                  <Eye size={16} className="text-gray-600 cursor-pointer" />
                 </button>
               )}
             </div>
@@ -473,41 +528,11 @@ export default function CreatePropertyListStep4({
               value={safe(cm.contactManagementConsultant)}
             />
 
-            {/* Connecting Point with Eye */}
-            {/* <div className="relative">
-              <Field
-                label={labels.connectingPoint[lang]}
-                value={safe(cm.contactManagementConnectingPoint)}
-              />
-              {staffData && (
-                <button
-                  onClick={() => {
-                    setSelectedStaff(staffData);
-                    setShowStaffPopup(true);
-                  }}
-                  className="absolute top-9 right-3 p-1 bg-gray-100 rounded-full hover:bg-gray-200"
-                >
-                  <Eye size={16} className="text-gray-600" />
-                </button>
-              )}
-            </div> */}
-
-            {/* <Field
-              label={labels.connectingNotes[lang]}
-              value={safe(cm.contactManagementConnectingPointNotes)}
-            /> */}
+            {/* (Connecting Point UI kept commented as in your code) */}
             <Field
               label={labels.internalNotes[lang]}
               value={safe(cm.contactManagementInternalNotes)}
             />
-            {/* <Field
-              label={lang === "en" ? "Source" : "Nguồn"}
-              value={safe(cm.contactManagementSource)}
-            /> */}
-            {/* <Field
-              label={lang === "en" ? "Agent Fee" : "Phí Môi Giới"}
-              value={cm.contactManagementAgentFee || 0}
-            /> */}
           </Grid3>
         </Section>
 
@@ -578,6 +603,18 @@ export default function CreatePropertyListStep4({
           title={labels.connectingPoint[lang]}
         />
       )}
+
+      {/* Media Preview Modal */}
+      {previewUrl && (
+        <MediaPreviewModal
+          url={previewUrl}
+          type={previewType}
+          onClose={() => {
+            setPreviewUrl(null);
+            setPreviewType(null);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -610,7 +647,8 @@ const Field = ({ label, value }) => (
   </div>
 );
 
-const MediaGrid = ({ files = [], type }) => {
+/* UPDATED: MediaGrid with Eye icon + object-contain thumbnails */
+const MediaGrid = ({ files = [], type, onPreview }) => {
   if (!files?.length) return <p className="text-gray-500">No media uploaded</p>;
 
   return (
@@ -618,22 +656,34 @@ const MediaGrid = ({ files = [], type }) => {
       {files.map((url, i) => (
         <div
           key={i}
-          className="relative group rounded-2xl overflow-hidden hover:shadow-lg transition"
+          className="relative group rounded-2xl overflow-hidden border bg-white hover:shadow-lg transition"
         >
+          {/* Thumbnail (object-contain as requested) */}
           {type === "video" ? (
             <video
               src={url}
-              controls
+              muted
+              playsInline
               className="w-full h-full object-contain bg-black/5"
             />
           ) : (
             <img
               src={url}
               alt=""
-              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-contain bg-gray-50"
             />
           )}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition" />
+
+          {/* Overlay + Eye */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <button
+              onClick={() => onPreview(url, type)}
+              className="p-3 bg-white rounded-full shadow hover:scale-110 transition"
+              aria-label="Preview"
+            >
+              <Eye className="text-gray-700 cursor-pointer" size={20} />
+            </button>
+          </div>
         </div>
       ))}
     </div>

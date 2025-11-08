@@ -20,6 +20,8 @@ import {
   getAllPayments,
   createDeposit,
   getAllDeposits,
+  getAllFeeTax,
+  getAllLegalDocuments,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -53,7 +55,7 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch {}
+    } catch { }
   }
   return result;
 }
@@ -112,6 +114,7 @@ export default function CreatePropertyPage({
           furnRes,
           parkRes,
           petRes,
+          feeTaxRes, legalRes
         ] = await Promise.all([
           getAllProperties(),
           getAllZoneSubAreas(),
@@ -121,6 +124,8 @@ export default function CreatePropertyPage({
           getAllFurnishings(),
           getAllParkings(),
           getAllPetPolicies(),
+          getAllFeeTax(),
+          getAllLegalDocuments(),
         ]);
 
         setDropdowns({
@@ -132,6 +137,8 @@ export default function CreatePropertyPage({
           furnishings: furnRes.data?.data || [],
           parkings: parkRes.data?.data || [],
           pets: petRes.data?.data || [],
+          feeTaxes: feeTaxRes.data?.data || [],
+          legalDocs: legalRes.data?.data || [],
         });
       } catch (err) {
         console.error("Dropdown fetch error:", err);
@@ -383,10 +390,7 @@ export default function CreatePropertyPage({
           normalized.projectId
         ),
         listingInformationPropertyNo: wrap(normalized.propertyNo),
-        listingInformationZoneSubArea: findLocalized(
-          dropdowns.zones,
-          normalized.zoneId
-        ),
+        listingInformationZoneSubArea: wrap(normalized.zoneName),
         listingInformationPropertyTitle: wrap(normalized.title),
         listingInformationBlockName: wrap(normalized.blockName),
         listingInformationPropertyType: findLocalized(
@@ -503,6 +507,19 @@ export default function CreatePropertyPage({
         ...(dataFromStep || {}),
       });
 
+
+      if (mergedData.blockNameText) {
+        mergedData.blockName = {
+          en: mergedData.blockNameText,
+          vi: mergedData.blockNameText,
+        };
+      }
+      if (mergedData.zoneName) {
+        mergedData.zone = {
+          en: mergedData.zoneName,
+          vi: mergedData.zoneName,
+        };
+      }
       const payload = buildPayload(mergedData, dropdowns);
 
       /* 🟢 AUTO-CREATE NEW ZONE / DEPOSIT / PAYMENT TERMS BEFORE SAVING */
@@ -519,11 +536,7 @@ export default function CreatePropertyPage({
         return { en: "", vi: "" };
       };
 
-      const zoneName =
-        typeof mergedData.zoneId === "string"
-          ? mergedData.zoneId.trim()
-          : mergedData.zoneId?.name?.en || mergedData.zoneId?.name?.vi || "";
-
+      const zoneName = mergedData.zoneName || mergedData.zone?.en || mergedData.zone?.vi || "";
       const deposit = normalizeLocalized(mergedData.depositPaymentTerms);
       const paymentTerm = normalizeLocalized(mergedData.maintenanceFeeMonthly);
 
@@ -647,9 +660,8 @@ export default function CreatePropertyPage({
       await updatePropertyListing(savedId, { status });
       CommonToaster(
         language === "vi"
-          ? `Bất động sản đã được đăng và đánh dấu là ${
-              status === "Published" ? "Đã đăng" : "Bản nháp"
-            }!`
+          ? `Bất động sản đã được đăng và đánh dấu là ${status === "Published" ? "Đã đăng" : "Bản nháp"
+          }!`
           : `Property Posted and marked as ${status}!`,
         "success"
       );

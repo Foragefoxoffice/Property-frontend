@@ -13,29 +13,31 @@ import {
   ChevronRight,
   ChevronsRight,
 } from "lucide-react";
+
 import {
-  createProperty,
-  deleteProperty,
-  updateProperty,
-  getAllProperties,
+  createFeeTax,
+  deleteFeeTax,
+  updateFeeTax,
+  getAllFeeTax,
 } from "../../../Api/action";
+
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
 
-export default function PropertyPage({ goBack }) {
+export default function FeeTaxPage({ goBack }) {
   const { language } = useLanguage();
   const isVI = language === "vi";
 
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
-  const [properties, setProperties] = useState([]);
+  const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [editingProperty, setEditingProperty] = useState(null);
+  const [editingRecord, setEditingRecord] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
-  // Pagination
+  // ✅ Pagination
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -47,15 +49,15 @@ export default function PropertyPage({ goBack }) {
     status: "Active",
   });
 
-  // ✅ Fetch Properties
-  const fetchProperties = async () => {
+  // ✅ Load FeeTax records
+  const fetchRecords = async () => {
     try {
       setLoading(true);
-      const res = await getAllProperties();
-      setProperties(res.data.data || []);
-    } catch (error) {
+      const res = await getAllFeeTax();
+      setRecords(res.data.data || []);
+    } catch {
       CommonToaster(
-        isVI ? "Không thể tải danh sách dự án." : "Failed to load properties.",
+        isVI ? "Không thể tải danh sách phí / thuế." : "Failed to load Fee/Tax list.",
         "error"
       );
     } finally {
@@ -64,186 +66,195 @@ export default function PropertyPage({ goBack }) {
   };
 
   useEffect(() => {
-    fetchProperties();
+    fetchRecords();
   }, []);
 
-  const totalRows = properties.length;
+  // ✅ Pagination logic
+  const totalRows = records.length;
   const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
-  const visibleData = properties.slice(startIndex, endIndex);
+  const visibleRows = records.slice(startIndex, endIndex);
 
-  // Handle input
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  // ✅ Open Add Modal
-  const openAddModal = () => {
-    setEditingProperty(null);
-    setForm({
-      code_en: "",
-      code_vi: "",
-      name_en: "",
-      name_vi: "",
-      status: "Active",
-    });
-    setActiveLang(language === "vi" ? "VI" : "EN");
-    setShowModal(true);
-  };
-
-  // ✅ Open Edit Modal
-  const openEditModal = (property) => {
-    setEditingProperty(property);
-    setForm({
-      code_en: property.code.en,
-      code_vi: property.code.vi,
-      name_en: property.name.en,
-      name_vi: property.name.vi,
-      status: property.status,
-    });
-    setActiveLang(language === "vi" ? "VI" : "EN");
-    setShowModal(true);
-  };
-
-  // ✅ Submit Add/Edit
-  const handleSubmit = async () => {
-    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
-      CommonToaster("Please fill all English and Vietnamese fields", "error");
-      return;
-    }
-
-    try {
-      if (editingProperty) {
-        await updateProperty(editingProperty._id, form);
-        CommonToaster("Property updated successfully", "success");
-      } else {
-        await createProperty(form);
-        CommonToaster("Property added successfully", "success");
-      }
-
-      setShowModal(false);
-      fetchProperties();
-      setEditingProperty(null);
-    } catch {
-      CommonToaster("Failed to save data.", "error");
-    }
-  };
-
-  // ✅ Delete
-  const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
-  const handleDelete = async () => {
-    try {
-      await deleteProperty(deleteConfirm.id);
-      CommonToaster("Deleted successfully!", "success");
-      setDeleteConfirm({ show: false, id: null });
-      fetchProperties();
-    } catch {
-      CommonToaster("Failed to delete property.", "error");
-    }
-  };
-
-  // ✅ Toggle Active / Inactive
-  const handleToggleStatus = async (property) => {
-    const newStatus = property.status === "Active" ? "Inactive" : "Active";
-    try {
-      await updateProperty(property._id, { status: newStatus });
-      CommonToaster(
-        isVI
-          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
-          }`
-          : `Marked as ${newStatus}`,
-        "success"
-      );
-      fetchProperties();
-    } catch {
-      CommonToaster("Failed to update status.", "error");
-    }
-  };
-
-  // Pagination
   const goToFirst = () => setCurrentPage(1);
   const goToLast = () => setCurrentPage(totalPages);
   const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
   const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
+  // ✅ Input Change
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  // ✅ Add / Edit
+  const handleSubmit = async () => {
+    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+      CommonToaster(
+        isVI
+          ? "Vui lòng điền đầy đủ trường tiếng Anh & tiếng Việt."
+          : "Please fill all English & Vietnamese fields.",
+        "error"
+      );
+      return;
+    }
+
+    try {
+      if (editingRecord) {
+        await updateFeeTax(editingRecord._id, form);
+        CommonToaster(
+          isVI ? "Cập nhật thành công!" : "Fee/Tax updated successfully!",
+          "success"
+        );
+      } else {
+        await createFeeTax(form);
+        CommonToaster(
+          isVI ? "Thêm mới thành công!" : "Fee/Tax created successfully!",
+          "success"
+        );
+      }
+
+      setShowModal(false);
+      setEditingRecord(null);
+      setForm({
+        code_en: "",
+        code_vi: "",
+        name_en: "",
+        name_vi: "",
+        status: "Active",
+      });
+      fetchRecords();
+      setCurrentPage(1);
+    } catch {
+      CommonToaster(
+        isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
+        "error"
+      );
+    }
+  };
+
+  // ✅ Edit
+  const handleEdit = (record) => {
+    setEditingRecord(record);
+    setForm({
+      code_en: record.code.en,
+      code_vi: record.code.vi,
+      name_en: record.name.en,
+      name_vi: record.name.vi,
+      status: record.status,
+    });
+    setActiveLang(language === "vi" ? "VI" : "EN");
+    setShowModal(true);
+  };
+
+  // ✅ Delete
+  const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
+
+  const handleDelete = async () => {
+    try {
+      await deleteFeeTax(deleteConfirm.id);
+      CommonToaster(
+        isVI ? "Xóa thành công!" : "Deleted successfully!",
+        "success"
+      );
+      setDeleteConfirm({ show: false, id: null });
+      fetchRecords();
+    } catch {
+      CommonToaster(
+        isVI ? "Không thể xóa." : "Failed to delete.",
+        "error"
+      );
+    }
+  };
+
+  // ✅ Status Toggle
+  const handleToggleStatus = async (record) => {
+    const newStatus = record.status === "Active" ? "Inactive" : "Active";
+
+    try {
+      await updateFeeTax(record._id, { status: newStatus });
+
+      CommonToaster(
+        isVI
+          ? newStatus === "Active"
+            ? "Đã chuyển sang hoạt động"
+            : "Đã chuyển sang không hoạt động"
+          : `Marked as ${newStatus}`,
+        "success"
+      );
+
+      fetchRecords();
+    } catch {
+      CommonToaster(
+        isVI ? "Không thể cập nhật trạng thái." : "Status update failed.",
+        "error"
+      );
+    }
+  };
+
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD] relative">
-      {/* Header */}
+    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
+
+      {/* ✅ Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft className="w-4 h-4" />
           </button>
           <h2 className="text-2xl font-semibold text-gray-900">
-            {isVI ? "Dự án / Khu cộng đồng" : "Project / Community"}
+            {isVI ? "Phí và thuế" : "Fees & taxes"}
           </h2>
         </div>
 
         <button
-          onClick={openAddModal}
-          className="flex items-center cursor-pointer gap-2 bg-[#41398B] hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm"
+          onClick={() => {
+            setShowModal(true);
+            setEditingRecord(null);
+            setActiveLang(language === "vi" ? "VI" : "EN");
+          }}
+          className="flex items-center gap-2 bg-[#41398B] hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm"
         >
-          <Plus size={16} />
-          {isVI ? "Thêm dự án / Cộng đồng" : "Add Project / Community"}
+          <Plus className="w-4 h-4" />
+          {isVI ? "Thêm Phí và thuế" : "Add Fees & taxes"}
         </button>
       </div>
 
-      {/* Table */}
-      <div
-        className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"
-          }`}
-      >
+      {/* ✅ TABLE */}
+      <div className={`transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"}`}>
         {loading ? (
           <CommonSkeleton rows={6} />
         ) : (
           <table className="w-full text-sm border-collapse">
             <thead className="bg-gray-50 text-gray-700">
               <tr>
-                <th className="px-6 py-3 font-medium text-left">
-                  {isVI ? "Mã (VI)" : "Code (EN)"}
-                </th>
-                <th className="px-6 py-3 font-medium text-left">
-                  {isVI ? "Tên dự án / Cộng đồng" : "Name (EN)"}
-                </th>
-                <th className="px-6 py-3 font-medium text-left">
-                  {isVI ? "Tình trạng" : "Status"}
-                </th>
-                <th className="px-6 py-3 font-medium text-right">
-                  {isVI ? "Hành động" : "Actions"}
-                </th>
+                <th className="px-6 py-3 text-left">{isVI ? "Mã" : "Code"}</th>
+                <th className="px-6 py-3 text-left">{isVI ? "Tên" : "Name"}</th>
+                <th className="px-6 py-3 text-left">{isVI ? "Trạng thái" : "Status"}</th>
+                <th className="px-6 py-3 text-right">{isVI ? "Hành động" : "Actions"}</th>
               </tr>
             </thead>
+
             <tbody>
-              {visibleData.length === 0 ? (
+              {visibleRows.length === 0 ? (
                 <tr>
                   <td colSpan="4" className="text-center py-6 text-gray-500">
-                    {isVI ? "Không có dữ liệu." : "No records found."}
+                    {isVI ? "Không có dữ liệu" : "No records found"}
                   </td>
                 </tr>
               ) : (
-                visibleData.map((row, i) => (
+                visibleRows.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
                   >
-                    <td className="px-6 py-3">
-                      {isVI ? row.code.vi : row.code.en}
-                    </td>
-                    <td className="px-6 py-3">
-                      {isVI ? row.name.vi : row.name.en}
-                    </td>
+                    <td className="px-6 py-3">{isVI ? row.code.vi : row.code.en}</td>
+                    <td className="px-6 py-3">{isVI ? row.name.vi : row.name.en}</td>
 
-                    {/* ✅ Styled & Translated Status Badge */}
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
-                          }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium 
+                          ${row.status === "Active" ? "bg-[#E8FFF0] text-[#12B76A]" : "bg-[#FFE8E8] text-[#F04438]"}`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -253,7 +264,7 @@ export default function PropertyPage({ goBack }) {
                       </span>
                     </td>
 
-                    {/* ✅ Dropdown Actions */}
+                    {/* ✅ ACTIONS */}
                     <td className="px-6 py-3 text-right relative">
                       <button
                         className="p-2 rounded-full hover:bg-gray-100"
@@ -261,37 +272,39 @@ export default function PropertyPage({ goBack }) {
                           setOpenMenuIndex(openMenuIndex === i ? null : i)
                         }
                       >
-                        <MoreVertical size={16} className="text-gray-600" />
+                        <MoreVertical size={16} />
                       </button>
 
                       {openMenuIndex === i && (
-                        <div className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2">
+                        <div className="absolute right-8 top-10 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-44 py-2">
                           <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                            className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-50"
                             onClick={() => {
-                              openEditModal(row);
+                              handleEdit(row);
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Pencil size={14} className="mr-2 text-gray-800" />
+                            <Pencil size={14} className="mr-2" />
                             {isVI ? "Chỉnh sửa" : "Edit"}
                           </button>
+
                           <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                            className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-50"
                             onClick={() => {
                               handleToggleStatus(row);
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Eye size={14} className="mr-2 text-gray-800" />
-                            {row.status === "Active"
-                              ? isVI
-                                ? "Đánh dấu là không hoạt động"
-                                : "Mark as Inactive"
-                              : isVI
-                                ? "Đánh dấu là hoạt động"
+                            <Eye size={14} className="mr-2" />
+                            {isVI
+                              ? row.status === "Active"
+                                ? "Đánh dấu không hoạt động"
+                                : "Đánh dấu hoạt động"
+                              : row.status === "Active"
+                                ? "Mark as Inactive"
                                 : "Mark as Active"}
                           </button>
+
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
                             onClick={() => {
@@ -299,7 +312,7 @@ export default function PropertyPage({ goBack }) {
                               setOpenMenuIndex(null);
                             }}
                           >
-                            <Trash2 size={14} className="mr-2 text-[#F04438]" />
+                            <Trash2 size={14} className="mr-2" />
                             {isVI ? "Xóa" : "Delete"}
                           </button>
                         </div>
@@ -313,7 +326,7 @@ export default function PropertyPage({ goBack }) {
         )}
       </div>
 
-      {/* Pagination */}
+      {/* ✅ Pagination */}
       <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
@@ -324,7 +337,7 @@ export default function PropertyPage({ goBack }) {
                 setRowsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="border rounded-md px-2 py-1 text-gray-700"
+              className="border rounded-md px-2 py-1"
             >
               {[5, 10, 20].map((n) => (
                 <option key={n} value={n}>
@@ -333,12 +346,13 @@ export default function PropertyPage({ goBack }) {
               ))}
             </select>
           </div>
+
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
-              } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
           </span>
+
           <div className="flex items-center gap-1">
             <button onClick={goToFirst} disabled={currentPage === 1}>
               <ChevronsLeft size={16} />
@@ -362,21 +376,23 @@ export default function PropertyPage({ goBack }) {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* ✅ Delete Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-lg">
             <div className="flex items-center mb-3">
               <AlertTriangle className="text-red-600 mr-2" />
-              <h3 className="font-semibold text-gray-800">
-                {isVI ? "Xác nhận xóa" : "Confirm Deletion"}
+              <h3 className="font-semibold">
+                {isVI ? "Xác nhận xóa" : "Confirm Delete"}
               </h3>
             </div>
-            <p className="text-sm text-gray-600 mb-5">
+
+            <p className="text-sm mb-5">
               {isVI
-                ? "Bạn có chắc chắn muốn xóa dự án này? Hành động này không thể hoàn tác."
-                : "Are you sure you want to delete this project? This action cannot be undone."}
+                ? "Bạn có chắc muốn xóa mục này? Hành động này không thể hoàn tác."
+                : "Are you sure you want to delete this? This action cannot be undone."}
             </p>
+
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
@@ -384,6 +400,7 @@ export default function PropertyPage({ goBack }) {
               >
                 {isVI ? "Hủy" : "Cancel"}
               </button>
+
               <button
                 onClick={handleDelete}
                 className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
@@ -395,48 +412,51 @@ export default function PropertyPage({ goBack }) {
         </div>
       )}
 
-      {/* ✅ Add/Edit Modal with Independent Language Tabs */}
+      {/* ✅ Add / Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+
             {/* Header */}
             <div className="flex justify-between items-center px-6 py-4">
-              <h2 className="text-lg font-medium text-gray-800">
-                {editingProperty
+              <h2 className="text-lg font-medium">
+                {editingRecord
                   ? activeLang === "EN"
-                    ? "Edit Project / Community"
-                    : "Chỉnh sửa dự án / cộng đồng"
+                    ? "Edit Fees & taxes"
+                    : "Chỉnh sửa Phí và thuế"
                   : activeLang === "EN"
-                    ? "New Project / Community"
-                    : "Thêm dự án / cộng đồng mới"}
+                    ? "New Fees & taxes"
+                    : "Thêm Phí và thuế"}
               </h2>
+
               <button
                 onClick={() => {
                   setShowModal(false);
-                  setEditingProperty(null);
+                  setEditingRecord(null);
                 }}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] text-white"
               >
                 <X size={18} />
               </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex justify-start gap-8 px-6">
+            <div className="flex gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                className={`py-3 font-medium ${activeLang === "EN"
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
               </button>
+
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                className={`py-3 font-medium ${activeLang === "VI"
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)
@@ -448,61 +468,56 @@ export default function PropertyPage({ goBack }) {
               {activeLang === "EN" ? (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Code<span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium mb-1">
+                      Code <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="text"
                       name="code_en"
-                      placeholder="Type here"
                       value={form.code_en}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                      placeholder="Type here"
+                      className="w-full px-4 py-2 border rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Project / Community<span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium mb-1">
+                      Fees & taxes <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="text"
                       name="name_en"
-                      placeholder="Type here"
                       value={form.name_en}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                      placeholder="Type here"
+                      className="w-full px-4 py-2 border rounded-lg"
                     />
                   </div>
                 </>
               ) : (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mã<span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium mb-1">
+                      Mã <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="text"
                       name="code_vi"
-                      placeholder="Nhập tại đây"
                       value={form.code_vi}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                      placeholder="Nhập tại đây"
+                      className="w-full px-4 py-2 border rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Dự án / Khu cộng đồng
-                      <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium mb-1">
+                      Phí và thuế <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="text"
                       name="name_vi"
-                      placeholder="Nhập tại đây"
                       value={form.name_vi}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                      placeholder="Nhập tại đây"
+                      className="w-full px-4 py-2 border rounded-lg"
                     />
                   </div>
                 </>
@@ -510,21 +525,22 @@ export default function PropertyPage({ goBack }) {
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end items-center gap-3 px-6 py-4">
+            <div className="flex justify-end gap-3 px-6 py-4">
               <button
                 onClick={() => {
                   setShowModal(false);
-                  setEditingProperty(null);
+                  setEditingRecord(null);
                 }}
-                className="px-5 py-2 cursor-pointer rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 border rounded-full hover:bg-gray-100"
               >
                 {activeLang === "EN" ? "Cancel" : "Hủy"}
               </button>
+
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 cursor-pointer rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
+                className="px-6 py-2 bg-[#41398B] text-white rounded-full hover:bg-[#41398be3]"
               >
-                {editingProperty
+                {editingRecord
                   ? activeLang === "EN"
                     ? "Update"
                     : "Cập nhật"
@@ -536,6 +552,7 @@ export default function PropertyPage({ goBack }) {
           </div>
         </div>
       )}
+
     </div>
   );
 }

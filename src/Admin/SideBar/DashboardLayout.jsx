@@ -32,6 +32,9 @@ import { translations } from "../../Language/translations";
 import StaffView from "../AddMembers/StaffView";
 import PropertyManager from "../Property/PropertyManager";
 import { Chevron } from "react-day-picker";
+import BlockPage from "../MasterList/MasterListPage/BlockPage";
+import FeeTaxPage from "../MasterList/MasterListPage/FeeTaxPage";
+import LegalDocumentPage from "../MasterList/MasterListPage/LegalDocumentPage";
 
 const DashboardLayout = () => {
   const [activePage, setActivePage] = useState("Properties");
@@ -68,6 +71,8 @@ const DashboardLayout = () => {
           return <PropertyPage goBack={() => setSubSubPage(null)} />;
         if (subSubPage === "ZoneSubAreaPage")
           return <ZoneSubAreaPage goBack={() => setSubSubPage(null)} />;
+        if (subSubPage === "BlockPage")
+          return <BlockPage goBack={() => setSubSubPage(null)} />;
         if (subSubPage === "PropertyTypePage")
           return <PropertTypePage goBack={() => setSubSubPage(null)} />;
         if (subSubPage === "AvailabilityStatusPage")
@@ -84,12 +89,17 @@ const DashboardLayout = () => {
           return <DepositPage goBack={() => setSubSubPage(null)} />;
         if (subSubPage === "PaymentPage")
           return <PaymentPage goBack={() => setSubSubPage(null)} />;
+        if (subSubPage === "FeeTaxPage")
+          return <FeeTaxPage goBack={() => setSubSubPage(null)} />;
+        if (subSubPage === "LegalDocumentPage")
+          return <LegalDocumentPage goBack={() => setSubSubPage(null)} />;
 
         return (
           <PropertyMaster
             goBack={() => setSubPage(null)}
             openPropertyPage={() => setSubSubPage("PropertyPage")}
             openZoneSubAreaPage={() => setSubSubPage("ZoneSubAreaPage")}
+            openBlockPage={() => setSubSubPage("BlockPage")}
             openPropertyTypePage={() => setSubSubPage("PropertyTypePage")}
             openAvailabilityStatusPage={() =>
               setSubSubPage("AvailabilityStatusPage")
@@ -100,6 +110,8 @@ const DashboardLayout = () => {
             openPetPolicyPage={() => setSubSubPage("PetPolicyPage")}
             openDepositPage={() => setSubSubPage("DepositPage")}
             openPaymentPage={() => setSubSubPage("PaymentPage")}
+            openFeeTaxPage={() => setSubSubPage("FeeTaxPage")}
+            openLegalDocumentPage={() => setSubSubPage("LegalDocumentPage")}
           />
         );
       }
@@ -245,29 +257,26 @@ const DashboardLayout = () => {
                       setSubSubPage(null);
                     }
                   }}
-                  className={`group flex w-full cursor-pointer items-center justify-between gap-3 px-2 pr-3 py-2 rounded-full transition-all duration-200 ${
-                    activePage === item.key
-                      ? "bg-[#41398B] text-white"
-                      : "text-gray-700 hover:bg-[#41398B] hover:text-white"
-                  }`}
+                  className={`group flex w-full cursor-pointer items-center justify-between gap-3 px-2 pr-3 py-2 rounded-full transition-all duration-200 ${activePage === item.key
+                    ? "bg-[#41398B] text-white"
+                    : "text-gray-700 hover:bg-[#41398B] hover:text-white"
+                    }`}
                 >
                   {/* Left Section (icon + label) */}
                   <div className="flex items-center gap-3">
                     <span
-                      className={`p-3 rounded-full transition-all duration-200 ${
-                        activePage === item.key
-                          ? "bg-[#fff] text-[#41398B]"
-                          : "bg-[#E8E8FF] text-[#41398B] group-hover:bg-white group-hover:text-[#41398B]"
-                      }`}
+                      className={`p-3 rounded-full transition-all duration-200 ${activePage === item.key
+                        ? "bg-[#fff] text-[#41398B]"
+                        : "bg-[#E8E8FF] text-[#41398B] group-hover:bg-white group-hover:text-[#41398B]"
+                        }`}
                     >
                       {item.icon}
                     </span>
                     <span
-                      className={`text-sm font-medium ${
-                        activePage === item.key
-                          ? "text-white"
-                          : "text-gray-800 group-hover:text-white"
-                      }`}
+                      className={`text-sm font-medium ${activePage === item.key
+                        ? "text-white"
+                        : "text-gray-800 group-hover:text-white"
+                        }`}
                     >
                       {item.label}
                     </span>
@@ -276,9 +285,8 @@ const DashboardLayout = () => {
                   {/* Right Section (Chevron only for Properties) */}
                   {item.key === "Properties" && (
                     <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-200 ${
-                        activePage === "Properties" ? "rotate-180" : "rotate-0"
-                      }`}
+                      className={`w-4 h-4 transition-transform duration-200 ${activePage === "Properties" ? "rotate-180" : "rotate-0"
+                        }`}
                     />
                   )}
                 </button>
@@ -310,18 +318,16 @@ const DashboardLayout = () => {
                         <button
                           key={sub.key}
                           onClick={() => setSubPage(sub.key)}
-                          className={`flex items-center cursor-pointer gap-3 text-left text-sm px-1 py-1 rounded-full transition-all duration-150 ${
-                            isActive
-                              ? "bg-[#41398B] text-white font-semibold"
-                              : "text-gray-700 hover:bg-[#EAE8FD] hover:text-[#41398B]"
-                          }`}
+                          className={`flex items-center cursor-pointer gap-3 text-left text-sm px-1 py-1 rounded-full transition-all duration-150 ${isActive
+                            ? "bg-[#41398B] text-white font-semibold"
+                            : "text-gray-700 hover:bg-[#EAE8FD] hover:text-[#41398B]"
+                            }`}
                         >
                           <span
-                            className={`p-3 rounded-full ${
-                              isActive
-                                ? "bg-white text-[#41398B]"
-                                : "bg-[#E8E8FF] text-[#41398B]"
-                            }`}
+                            className={`p-3 rounded-full ${isActive
+                              ? "bg-white text-[#41398B]"
+                              : "bg-[#E8E8FF] text-[#41398B]"
+                              }`}
                           >
                             {sub.icon}
                           </span>

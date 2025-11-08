@@ -9,6 +9,7 @@ import {
   getAllFurnishings,
   getAllParkings,
   getAllPetPolicies,
+  getAllBlocks,
   getNextPropertyId,
 } from "../../Api/action";
 import { Select as AntdSelect } from "antd";
@@ -70,8 +71,8 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
                 ? opt.symbol?.vi || "—"
                 : opt.symbol?.en || "—"
               : lang === "vi"
-              ? opt.name?.vi || "Chưa đặt tên"
-              : opt.name?.en || "Unnamed";
+                ? opt.name?.vi || "Chưa đặt tên"
+                : opt.name?.en || "Unnamed";
 
           return (
             <Option key={opt._id} value={opt._id}>
@@ -157,9 +158,8 @@ const DatePicker = memo(({ label, name, value, onChange }) => {
           <Button
             variant="outline"
             className={`w-full justify-between
- text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${
-   !date && "text-muted-foreground"
- }`}
+ text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${!date && "text-muted-foreground"
+              }`}
           >
             {date ? format(date, "PPP") : <span>Select date</span>}
             <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
@@ -227,6 +227,9 @@ export default function CreatePropertyListStep1({
     amenities: initialData.amenities || [{ name: "", km: "" }],
     utilities: initialData.utilities || [{ name: "", icon: "" }],
     dateListed: initialData.dateListed || getToday(),
+    projectId: initialData.projectId || "",
+    zoneId: initialData.zoneId || "",
+    blockId: initialData.blockId || "",
   });
   const [loading, setLoading] = useState(true);
 
@@ -270,6 +273,7 @@ export default function CreatePropertyListStep1({
   const [dropdowns, setDropdowns] = useState({
     properties: [],
     zones: [],
+    blocks: [],
     types: [],
     statuses: [],
     units: [],
@@ -292,6 +296,7 @@ export default function CreatePropertyListStep1({
           furnRes,
           parkRes,
           petRes,
+          blocksRes,
         ] = await Promise.all([
           getAllProperties(),
           getAllZoneSubAreas(),
@@ -301,6 +306,7 @@ export default function CreatePropertyListStep1({
           getAllFurnishings(),
           getAllParkings(),
           getAllPetPolicies(),
+          getAllBlocks(),
         ]);
 
         if (!mounted) return;
@@ -330,6 +336,9 @@ export default function CreatePropertyListStep1({
         const activePets = (petRes.data?.data || []).filter(
           (i) => i.status === "Active"
         );
+        const activeBlocks = (blocksRes.data?.data || []).filter(
+          (i) => i.status === "Active"
+        );
 
         /* ✅ SET DROPDOWNS */
         setDropdowns({
@@ -341,6 +350,7 @@ export default function CreatePropertyListStep1({
           furnishings: activeFurnishings,
           parkings: activeParking,
           pets: activePets,
+          blocks: activeBlocks,
         });
 
         /* ✅ SET FORM DEFAULTS (including auto-ID) */
@@ -363,6 +373,7 @@ export default function CreatePropertyListStep1({
       mounted = false;
     };
   }, []);
+
 
   /* Handlers */
   const handleInputChange = useCallback(
@@ -444,6 +455,62 @@ export default function CreatePropertyListStep1({
       return aText.localeCompare(bText);
     });
 
+  const syncLinkedFields = useCallback(
+    (changedField, value, label) => {
+      let updated = { ...form, [changedField]: value };
+
+      const { properties, zones, blocks } = dropdowns;
+
+      /* ✅ CASE 1 — User selected BLOCK */
+      if (changedField === "blockId") {
+        const block = blocks.find((b) => b._id === value);
+        if (block) {
+          updated.blockNameText = label;
+          updated.zoneId = block.zone?._id || "";
+          updated.zoneName = lang === "vi" ? block.zone?.name.vi : block.zone?.name.en;
+
+          updated.projectId = block.property?._id || "";
+          updated.projectName = lang === "vi"
+            ? block.property?.name.vi
+            : block.property?.name.en;
+        }
+      }
+
+      /* ✅ CASE 2 — User selected ZONE */
+      if (changedField === "zoneId") {
+        const zone = zones.find((z) => z._id === value);
+        if (zone) {
+          updated.zoneName = label;
+          updated.zone = { en: label, vi: label };
+          updated.projectId = zone.property?._id || "";
+          updated.projectName = lang === "vi"
+            ? zone.property?.name.vi
+            : zone.property?.name.en;
+
+          updated.blockId = "";
+          updated.blockNameText = "";
+        }
+      }
+
+      /* ✅ CASE 3 — User selected PROJECT */
+      if (changedField === "projectId") {
+        const project = properties.find((p) => p._id === value);
+        if (project) {
+          updated.projectName = label;
+        }
+        updated.zoneId = "";
+        updated.zoneName = "";
+        updated.blockId = "";
+        updated.blockNameText = "";
+      }
+
+      setForm(updated);
+      onChange && onChange(updated);
+    },
+    [form, dropdowns, lang]
+  );
+
+
   if (loading) {
     return <SkeletonLoader />;
   }
@@ -455,17 +522,17 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
           </button>
         ))}
       </div>
+
 
       {/* Form Section */}
       <div className=" p-8 pt-2">
@@ -494,7 +561,100 @@ export default function CreatePropertyListStep1({
             onChange={handleInputChange}
           />
 
-          {/* ✅ Correct Project / Zone Selects */}
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold mb-2">
+              {lang === "en" ? "Block Name" : "Tên khối"}
+            </label>
+
+            <AntdSelect
+              showSearch
+              allowClear
+              labelInValue
+              placeholder={lang === "en" ? "Select Block" : "Chọn Khối"}
+              value={
+                form.blockId
+                  ? { value: form.blockId, label: form.blockNameText || "" }
+                  : undefined
+              }
+              onChange={(val) => {
+                setForm((p) => ({
+                  ...p,
+                  blockId: val.value,
+                  blockNameText: val.label,
+                  blockName: { en: val.label, vi: val.label }  // ✅ add this
+                }));
+                syncLinkedFields("blockId", val.value, val.label);
+              }}
+              onSearch={(input) =>
+                setForm((prev) => ({
+                  ...prev,
+                  blockNameText: input,
+                  blockName: { en: input, vi: input }  // ✅ add this
+                }))
+              }
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+            >
+              {dropdowns.blocks
+                .filter((b) => !form.zoneId || b.zone?._id === form.zoneId)
+                .map((block) => (
+                  <AntdSelect.Option
+                    key={block._id}
+                    value={block._id}
+                    label={lang === "vi" ? block.name.vi : block.name.en}
+                  >
+                    {lang === "vi" ? block.name.vi : block.name.en}
+                  </AntdSelect.Option>
+                ))}
+            </AntdSelect>
+
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {lang === "en" ? "Area / Zone" : "Khu vực / Vùng"}
+            </label>
+            <AntdSelect
+              showSearch
+              allowClear
+              labelInValue
+              placeholder={lang === "en"
+                ? "Type or Select Area / Zone"
+                : "Nhập hoặc chọn khu vực / vùng"}
+              value={
+                form.zoneId
+                  ? { value: form.zoneId, label: form.zoneName || "" }
+                  : undefined
+              }
+              onChange={(val) => {
+                setForm((p) => ({
+                  ...p,
+                  zoneId: val.value,
+                  zoneName: val.label,
+                  zone: { en: val.label, vi: val.label }
+                }));
+                syncLinkedFields("zoneId", val.value, val.label);
+              }}
+              filterOption={(input, option) =>
+                option?.label?.toLowerCase().includes(input.toLowerCase())
+              }
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={dropdowns.zones.map((zone) => ({
+                label: lang === "vi" ? zone.name.vi : zone.name.en,
+                value: zone._id,
+              }))}
+              onSearch={(input) =>
+                setForm((prev) => ({
+                  ...prev,
+                  zoneName: input,
+                  zone: { en: input, vi: input }   // ✅ add this
+                }))
+              }
+
+            />
+
+          </div>
 
           <div className="flex flex-col">
             <label className="text-sm text-[#131517] font-semibold mb-2">
@@ -509,8 +669,8 @@ export default function CreatePropertyListStep1({
               }
               optionFilterProp="children"
               value={form.projectId || undefined}
-              onChange={(value) =>
-                handleInputChange({ target: { name: "projectId", value } })
+              onChange={(val, option) =>
+                syncLinkedFields("projectId", val, option?.children)
               }
               filterOption={(input, option) =>
                 (option?.children ?? "")
@@ -527,49 +687,6 @@ export default function CreatePropertyListStep1({
               ))}
             </AntdSelect>
           </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {lang === "en" ? "Area / Zone" : "Khu vực / Vùng"}
-            </label>
-
-            <AntdSelect
-              showSearch
-              allowClear
-              placeholder={
-                lang === "en"
-                  ? "Type or Select Area / Zone"
-                  : "Nhập hoặc chọn khu vực / vùng"
-              }
-              value={form.zoneId || undefined}
-              onChange={(value) => handleInputChange({ name: "zoneId", value })}
-              onSearch={(val) => {
-                if (val && val.trim() !== "") {
-                  handleInputChange({ name: "zoneId", value: val });
-                }
-              }}
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              notFoundContent={null}
-              className="w-full custom-select"
-              popupClassName="custom-dropdown"
-              options={dropdowns.zones?.map((zone) => ({
-                label: lang === "vi" ? zone.name?.vi : zone.name?.en,
-                value: zone._id,
-              }))}
-            />
-          </div>
-
-          <LocalizedInput
-            label={lang === "en" ? "Block Name" : "Tên khối"}
-            name="blockName"
-            lang={lang}
-            value={form.blockName?.[lang]}
-            onChange={handleLocalizedChange}
-          />
 
           <LocalizedInput
             label={lang === "en" ? "Property No" : "Số bất động sản"}

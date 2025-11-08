@@ -4,7 +4,9 @@ import { Select as AntdSelect } from "antd";
 import {
   getAllDeposits,
   getAllPayments,
-  getAllCurrencies, // ✅ import currency API
+  getAllCurrencies,
+  getAllFeeTax,
+  getAllLegalDocuments, // ✅ import currency API
 } from "../../Api/action";
 
 /* =========================================================
@@ -45,7 +47,8 @@ export default function CreatePropertyListStep2({
   const [currencies, setCurrencies] = useState([]);
   const [loadingCurrencies, setLoadingCurrencies] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [feeTaxes, setFeeTaxes] = useState([]);
+  const [legalDocs, setLegalDocs] = useState([]);
   /* =========================================================
      🗂️ Load Deposits + Payments + Currencies
   ========================================================== */
@@ -53,10 +56,12 @@ export default function CreatePropertyListStep2({
     async function loadDropdowns() {
       try {
         setLoadingCurrencies(true);
-        const [depRes, payRes, curRes] = await Promise.all([
+        const [depRes, payRes, curRes, feeTaxRes, legalRes] = await Promise.all([
           getAllDeposits(),
           getAllPayments(),
           getAllCurrencies(),
+          getAllFeeTax(),
+          getAllLegalDocuments(),
         ]);
 
         setDeposits(
@@ -65,6 +70,9 @@ export default function CreatePropertyListStep2({
         setPayments(
           (payRes.data?.data || []).filter((p) => p.status === "Active")
         );
+
+        setFeeTaxes((feeTaxRes.data?.data || []).filter((p) => p.status === "Active"));
+        setLegalDocs((legalRes.data?.data || []).filter((p) => p.status === "Active"));
 
         const allCurrencies = curRes.data?.data || [];
         setCurrencies(allCurrencies);
@@ -175,14 +183,8 @@ export default function CreatePropertyListStep2({
     financialDetailsAgentFee: initialData.financialDetailsAgentFee || "",
     financialDetailsAgentPaymentAgenda:
       initialData.financialDetailsAgentPaymentAgenda || { en: "", vi: "" },
-    financialDetailsFeeTax: initialData.financialDetailsFeeTax || {
-      en: "",
-      vi: "",
-    },
-    financialDetailsLegalDoc: initialData.financialDetailsLegalDoc || {
-      en: "",
-      vi: "",
-    },
+    financialDetailsFeeTax: initialData.financialDetailsFeeTax || { en: "", vi: "", id: "" },
+    financialDetailsLegalDoc: initialData.financialDetailsLegalDoc || { en: "", vi: "", id: "" },
   });
 
   const [images, setImages] = useState(initialData.propertyImages || []);
@@ -381,11 +383,10 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -483,9 +484,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -592,42 +592,77 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Fees & Taxes */}
-          <div className="flex flex-col col-span-3">
+          <div className="flex flex-col">
             <label className="text-sm text-[#131517] font-semibold mb-2">
               {t.feeTax}
             </label>
-            <textarea
-              value={form.financialDetailsFeeTax?.[lang] || ""}
-              onChange={(e) =>
-                handleLocalizedChange(
-                  lang,
-                  "financialDetailsFeeTax",
-                  e.target.value
-                )
+
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Fee / Tax"
+                  : "Nhập hoặc chọn phí / thuế"
               }
-              className="border border-[#B2B2B3] h-20 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-              placeholder={t.typehere}
+              value={form.financialDetailsFeeTax?.[lang] || undefined}
+              onChange={(value) => {
+                handleLocalizedChange(lang, "financialDetailsFeeTax", value);
+              }}
+              onSearch={(val) => {
+                if (val.trim() !== "") {
+                  handleLocalizedChange(lang, "financialDetailsFeeTax", val.trim());
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={feeTaxes.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "",
+              }))}
             />
           </div>
 
-          {/* Legal docs */}
-          <div className="flex flex-col col-span-3">
+          {/* Legal Documents */}
+          <div className="flex flex-col">
             <label className="text-sm text-[#131517] font-semibold mb-2">
               {t.legalDoc}
             </label>
-            <textarea
-              value={form.financialDetailsLegalDoc?.[lang] || ""}
-              onChange={(e) =>
-                handleLocalizedChange(
-                  lang,
-                  "financialDetailsLegalDoc",
-                  e.target.value
-                )
+
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Legal Document"
+                  : "Nhập hoặc chọn tài liệu pháp lý"
               }
-              className="border border-[#B2B2B3] h-20 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-              placeholder={t.typehere}
+              value={form.financialDetailsLegalDoc?.[lang] || undefined}
+              onChange={(value) => {
+                handleLocalizedChange(lang, "financialDetailsLegalDoc", value);
+              }}
+              onSearch={(val) => {
+                if (val.trim() !== "") {
+                  handleLocalizedChange(lang, "financialDetailsLegalDoc", val.trim());
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={legalDocs.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "",
+              }))}
             />
           </div>
+
 
           {/* Agent Fee */}
           <div className="flex flex-col">
@@ -702,9 +737,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -918,9 +952,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
