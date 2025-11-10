@@ -692,48 +692,119 @@ const MediaGrid = ({ files = [], type, onPreview }) => {
 
 /* === Popups === */
 const OwnerPopupCard = ({ onClose, data, lang }) => {
-  const safeText = (val) =>
-    typeof val === "object" ? val?.[lang] || val?.en || "" : val || "";
+  const safeText = (obj) =>
+    typeof obj === "object" ? obj?.[lang] || obj?.en || "" : obj || "";
+
+  const social = data.socialMedia_iconName?.map((icon, i) => ({
+    icon,
+    link:
+      lang === "vi"
+        ? data.socialMedia_link_vi?.[i]
+        : data.socialMedia_link_en?.[i],
+  }));
+
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-lg p-8 relative">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-8 relative animate-fade-in border border-gray-100">
+
+        {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
         >
-          <X size={20} />
+          <X className="cursor-pointer" size={22} />
         </button>
 
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">
-          {safeText(data.ownerName)}
-        </h2>
+        {/* Header */}
+        <div className="text-center mb-3">
+          <div className="w-25 h-25 mx-auto rounded-full bg-[#E5E7EB] flex items-center justify-center shadow-md select-none">
+            <span className="text-4xl font-semibold text-gray-700">
+              {safeText(data.ownerName)?.charAt(0)?.toUpperCase()}
+            </span>
+          </div>
+          <h2 className="text-2xl font-semibold mt-4">
+            {safeText(data.ownerName)}
+          </h2>
+          <p className="text-gray-500 text-sm mt-1">{data.gender}</p>
+        </div>
 
-        <div className="flex flex-col sm:flex-row items-start gap-8 bg-[#fafafa] rounded-2xl p-6 border border-gray-300 relative">
-          <div className="flex-shrink-0">
-            <div className="w-32 h-32 rounded-full overflow-hidden bg-[#cfcafc] flex items-center justify-center">
-              <img
-                src={data.ownerImage || "/dummy-img.jpg"}
-                alt={safeText(data.ownerName)}
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {/* Details Sections */}
+        <div className="space-y-6 text-center">
+
+          {/* Phone */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-700 mb-1">
+              {lang === "vi" ? "Số điện thoại" : "Phone Numbers"}
+            </h4>
+            {data.phoneNumbers?.length ? (
+              <div className="space-y-1">
+                {data.phoneNumbers.map((num, i) => (
+                  <div key={i} className="flex items-center gap-2 text-md text-gray-700 justify-center">
+                    <Phone size={16} className="text-gray-500" />
+                    {num}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-sm">—</p>
+            )}
           </div>
 
-          <div className="flex-1 text-gray-800">
-            <h3 className="text-lg font-semibold mb-2">
-              {safeText(data.ownerName)}
-            </h3>
-            <p className="text-gray-700 text-sm mb-2">
-              📞 {safeText(data.ownerNumber) || "N/A"}
-            </p>
-            <h4 className="text-sm font-semibold mb-1">Notes</h4>
-            <p className="text-sm text-gray-600 leading-relaxed mb-3">
+          {/* Email */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-700 mb-1">Email</h4>
+            {data.emailAddresses?.length ? (
+              data.emailAddresses.map((mail, i) => (
+                <div key={i} className="flex items-center gap-2 text-md text-gray-700 justify-center">
+                  <Mail size={16} className="text-gray-500" />
+                  {mail}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm">—</p>
+            )}
+          </div>
+
+          {/* Social Media */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-700 mb-1">
+              {lang === "vi" ? "Mạng xã hội" : "Social Media"}
+            </h4>
+
+            {social?.length ? (
+              <div className="space-y-2">
+                {social.map((s, i) => (
+                  <div key={i} className="flex items-center gap-3 text-sm justify-center">
+                    <span className="px-2 py-1 bg-gray-200 rounded-full text-xs font-medium">
+                      {s.icon || "—"}
+                    </span>
+                    {s.link ? (
+                      <a
+                        href={s.link.startsWith("http") ? s.link : `https://${s.link}`}
+                        target="_blank"
+                        className="text-[#41398B] font-medium hover:underline"
+                      >
+                        {s.link}
+                      </a>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-sm">—</p>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-700 mb-1">
+              {lang === "vi" ? "Ghi chú" : "Notes"}
+            </h4>
+            <p className="text-gray-700 text-md whitespace-pre-wrap">
               {safeText(data.ownerNotes) ||
-                "No notes available for this owner."}
-            </p>
-            <p className="text-sm text-gray-700">
-              <span className="font-medium">Type:</span>{" "}
-              {safeText(data.ownerType) || "N/A"}
+                (lang === "vi" ? "Không có ghi chú" : "No notes")}
             </p>
           </div>
         </div>

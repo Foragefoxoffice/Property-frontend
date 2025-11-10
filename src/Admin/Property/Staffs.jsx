@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   MoveHorizontal,
   Phone,
+  CirclePlus,
 } from "lucide-react";
 import {
   getAllStaffs,
@@ -19,8 +20,35 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { Select } from "antd";
 
 const colors = ["#E8E6FF", "#E0FFF9", "#FFECEC", "#E6F5FF"];
+const CustomSelect = ({ label, name, value, onChange, options = [], lang }) => {
+  const { Option } = Select;
+  return (
+    <div className="flex flex-col">
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
+      <Select
+        showSearch
+        allowClear
+        value={value || undefined}
+        placeholder={lang === "vi" ? "Chọn" : "Select"}
+        optionFilterProp="children"
+        onChange={(val) => onChange(val)}
+        className="w-full h-10 custom-select"
+        popupClassName="custom-dropdown"
+      >
+        {options.map((opt) => (
+          <Option key={opt.value} value={opt.value}>
+            {opt.label}
+          </Option>
+        ))}
+      </Select>
+    </div>
+  );
+};
 
 export default function Staffs({ openStaffView }) {
   const { language } = useLanguage();
@@ -40,11 +68,12 @@ export default function Staffs({ openStaffView }) {
     staffsImage: "",
     staffsName_en: "",
     staffsName_vi: "",
+    staffsEmail: "",
     staffsId: "",
     staffsRole_en: "",
     staffsRole_vi: "",
-    staffsNumber: "",
-    staffsEmail: "",
+    staffsGender: "",
+    staffsNumbers: [""],
     staffsNotes_en: "",
     staffsNotes_vi: "",
   });
@@ -68,6 +97,19 @@ export default function Staffs({ openStaffView }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const addPhoneField = () => {
+    setForm(prev => ({
+      ...prev,
+      staffsNumbers: [...prev.staffsNumbers, ""]
+    }));
+  };
+
+  const updatePhoneField = (index, value) => {
+    const updated = [...form.staffsNumbers];
+    updated[index] = value;
+    setForm(prev => ({ ...prev, staffsNumbers: updated }));
   };
 
   const handleChange = (lang, field, value) => {
@@ -105,43 +147,56 @@ export default function Staffs({ openStaffView }) {
     if (staff) {
       setEditMode(true);
       setEditingStaff(staff);
+
       const filledForm = {
         staffsImage: staff.staffsImage || "",
         staffsName_en: staff.staffsName?.en || "",
         staffsName_vi: staff.staffsName?.vi || "",
-        staffsId: staff.staffsId || "",
         staffsEmail: staff.staffsEmail || "",
+        staffsId: staff.staffsId || "",
         staffsRole_en: staff.staffsRole?.en || "",
         staffsRole_vi: staff.staffsRole?.vi || "",
-        staffsNumber: staff.staffsNumber || "",
+        staffsGender: staff.staffsGender || "",
+        staffsNumbers: staff.staffsNumbers?.length
+          ? staff.staffsNumbers
+          : [""], // ✅ Always array
         staffsNotes_en: staff.staffsNotes?.en || "",
         staffsNotes_vi: staff.staffsNotes?.vi || "",
       };
+
       setForm(filledForm);
       setPhotoPreview(staff.staffsImage || null);
     } else {
       setEditMode(false);
       setEditingStaff(null);
+
       setForm({
         staffsImage: "",
         staffsName_en: "",
         staffsName_vi: "",
+        staffsEmail: "",
         staffsId: "",
         staffsRole_en: "",
         staffsRole_vi: "",
-        staffsNumber: "",
-        staffsEmail: "",
+        staffsGender: "",
+        staffsNumbers: [""], // ✅ Always array
         staffsNotes_en: "",
         staffsNotes_vi: "",
       });
+
       setPhotoPreview(null);
     }
+
     setShowModal(true);
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const payload = { ...form };
+    const payload = {
+      ...form,
+      staffsNumbers: form.staffsNumbers.filter(n => n.trim() !== "")
+    };
     try {
       if (editMode && editingStaff?._id) {
         await updateStaff(editingStaff._id, payload);
@@ -249,65 +304,57 @@ export default function Staffs({ openStaffView }) {
           filtered.map((staff, i) => (
             <div
               key={staff._id}
-              className="relative rounded-2xl p-5 shadow-sm"
+              className="relative rounded-2xl p-6 shadow-sm border border-gray-200"
               style={{ background: colors[i % colors.length] }}
             >
+              {/* Expand / View Button */}
               <button
                 onClick={() => openStaffView(staff)}
-                className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/40 transition border border-gray-400 cursor-pointer"
+                className="absolute top-3 right-3 p-1.5 rounded-full border border-gray-400 hover:bg-white/50 transition cursor-pointer"
               >
                 <MoveHorizontal size={18} className="text-gray-700" />
               </button>
 
+              {/* Top Section */}
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-white/40 flex items-center justify-center">
+                  <img
+                    src={staff.staffsImage || "/dummy-img.jpg"}
+                    alt="profile"
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                </div>
 
-              <div className="flex items-center gap-3">
-                <img
-                  src={staff.staffsImage || "/dummy-img.jpg"}
-                  alt={staff.staffsName?.[language] || staff.staffsName?.en}
-                  className="w-16 h-16 rounded-full object-cover"
-                />
                 <div>
-                  <h3 className="font-semibold text-gray-800">
+                  <h3 className="text-gray-900 font-semibold text-lg leading-tight">
                     {staff.staffsName?.[language] || staff.staffsName?.en}
                   </h3>
-                  <p className="text-sm text-gray-600">
-                    {language === "vi"
-                      ? `Mã nhân viên: ${staff.staffsId}`
-                      : `Staff ID: ${staff.staffsId}`}
+
+                  <p className="text-sm text-gray-700 mt-0.5">
+                    {language === "vi" ? "ID:" : "ID:"} {staff.staffsId}
                   </p>
                 </div>
               </div>
+              <div className="flex justify-between items-end mt-6">
+                {/* Role Section */}
+                <div>
+                  <p className="text-xs text-gray-500">
+                    {language === "vi" ? "Chức vụ" : "Role"}
+                  </p>
 
-              <div className="flex justify-between items-center gap-2 mt-8">
-                <div className="mt-4 text-sm text-gray-700">
-                  <p>
-                    <span className="font-medium">
-                      {language === "vi" ? "Chức vụ:" : "Role:"}
-                    </span>{" "}
+                  <p className="text-sm font-medium text-gray-800 mt-1">
                     {staff.staffsRole?.[language] || staff.staffsRole?.en}
                   </p>
-                  <p className="mt-1 flex items-center gap-1">
-                    <Phone size={16} /> {staff.staffsNumber}
-                  </p>
                 </div>
-                <div>
-                  <button
-                    onClick={() => openModal(staff)}
-                    className="p-2 rounded-full hover:bg-gray-200 cursor-pointer"
-                  >
-                    <Edit2 size={16} className="text-blue-500" />
-                  </button>
-                  <button
-                    onClick={() =>
-                      setDeleteConfirm({ show: true, id: staff._id })
-                    }
-                    className="p-2 rounded-full hover:bg-red-50 cursor-pointer"
-                  >
-                    <Trash2 size={16} className="text-red-500" />
-                  </button>
+
+                {/* Phone Section */}
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <Phone size={16} />
+                  {staff.staffsNumbers?.[0] || "-"}
                 </div>
               </div>
             </div>
+
           ))
         ) : (
           <div className="col-span-full flex flex-col items-center justify-center py-20 text-center bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -353,13 +400,13 @@ export default function Staffs({ openStaffView }) {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
-                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 rounded-full cursor-pointer border border-gray-300 text-gray-700 hover:bg-gray-100"
               >
                 {language === "vi" ? "Hủy" : "Cancel"}
               </button>
               <button
                 onClick={handleDelete}
-                className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
+                className="px-6 py-2 cursor-pointer rounded-full bg-red-600 text-white hover:bg-red-700"
               >
                 {language === "vi" ? "Xóa" : "Delete"}
               </button>
@@ -397,7 +444,7 @@ export default function Staffs({ openStaffView }) {
                 <button
                   key={lang}
                   onClick={() => setActiveLang(lang)}
-                  className={`px-5 py-2 text-sm font-semibold ${activeLang === lang
+                  className={`px-5 py-2 text-sm font-semibold cursor-pointer ${activeLang === lang
                     ? "border-b-2 border-[#41398B] text-black"
                     : "text-gray-500"
                     }`}
@@ -454,7 +501,7 @@ export default function Staffs({ openStaffView }) {
                 ].map(({ key, label }) => (
                   <div key={key}>
                     <label className="block text-sm font-medium mb-1 text-gray-700">
-                      {label} <span className="text-red-500">*</span>
+                      {label}
                     </label>
                     <input
                       type="text"
@@ -465,42 +512,10 @@ export default function Staffs({ openStaffView }) {
                       onChange={(e) =>
                         handleChange(activeLang, key, e.target.value)
                       }
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
                     />
                   </div>
                 ))}
-
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700">
-                    {language === "vi" ? "Mã nhân viên" : "Staff ID"}
-                  </label>
-                  <input
-                    type="text"
-                    name="staffsId"
-                    value={form.staffsId}
-                    onChange={handleBaseChange}
-                    placeholder={
-                      language === "vi" ? "Nhập tại đây" : "Type here"
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-gray-700">
-                    {language === "vi" ? "Số điện thoại" : "Contact Number"}
-                  </label>
-                  <input
-                    type="text"
-                    name="staffsNumber"
-                    value={form.staffsNumber}
-                    onChange={handleBaseChange}
-                    placeholder={
-                      language === "vi" ? "Nhập tại đây" : "Type here"
-                    }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
-                  />
-                </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-1 text-gray-700">
@@ -514,8 +529,83 @@ export default function Staffs({ openStaffView }) {
                     placeholder={
                       language === "vi" ? "Nhập tại đây" : "Type here"
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
                   />
+                </div>
+
+                <div>
+                  <CustomSelect
+                    label={language === "vi" ? "Giới tính" : "Gender"}
+                    name="staffsGender"
+                    lang={language}
+                    value={form.staffsGender}
+                    onChange={(val) => setForm((p) => ({ ...p, staffsGender: val }))}
+                    options={[
+                      { value: "Male", label: language === "vi" ? "Nam" : "Male" },
+                      { value: "Female", label: language === "vi" ? "Nữ" : "Female" },
+                      { value: "Other", label: language === "vi" ? "Khác" : "Other" },
+                    ]}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700">
+                    {language === "vi" ? "Mã nhân viên" : "Staff ID"}
+                  </label>
+                  <input
+                    type="text"
+                    name="staffsId"
+                    value={form.staffsId}
+                    onChange={handleBaseChange}
+                    placeholder={
+                      language === "vi" ? "Nhập tại đây" : "Type here"
+                    }
+                    className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-gray-700">
+                    {language === "vi" ? "Số điện thoại" : "Phone Number"}
+                  </label>
+
+                  {form.staffsNumbers.map((num, idx) => (
+                    <div key={idx} className="flex items-center gap-3 mt-2">
+                      <input
+                        type="text"
+                        placeholder={language === "vi" ? "Nhập tại đây" : "Type here"}
+                        value={num}
+                        onChange={(e) => updatePhoneField(idx, e.target.value)}
+                        className="border rounded-lg px-3 py-3 text-sm w-full"
+                      />
+
+                      {idx === form.staffsNumbers.length - 1 ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setForm((p) => ({
+                              ...p,
+                              staffsNumbers: [...p.staffsNumbers, ""],
+                            }))
+                          }
+                        >
+                          <CirclePlus className="cursor-pointer" size={22} />
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setForm((p) => ({
+                              ...p,
+                              staffsNumbers: p.staffsNumbers.filter((_, i) => i !== idx),
+                            }))
+                          }
+                        >
+                          <X className="cursor-pointer" size={20} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
 
                 <div>
@@ -533,7 +623,7 @@ export default function Staffs({ openStaffView }) {
                     onChange={(e) =>
                       handleChange(activeLang, "staffsNotes", e.target.value)
                     }
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#41398B] outline-none resize-none"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm focus:ring-2 focus:ring-[#41398B] outline-none resize-none"
                   ></textarea>
                 </div>
               </div>
@@ -543,13 +633,13 @@ export default function Staffs({ openStaffView }) {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-5 py-2 border border-gray-300 rounded-full text-gray-700 text-sm hover:bg-gray-100"
+                  className="px-5 cursor-pointer py-2 border border-gray-300 rounded-full text-gray-700 text-sm hover:bg-gray-100"
                 >
                   {language === "vi" ? "Hủy" : "Cancel"}
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full text-sm"
+                  className="px-6 py-2 cursor-pointer bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full text-sm"
                 >
                   {editMode
                     ? language === "vi"

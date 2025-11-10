@@ -1,7 +1,7 @@
 export const translations = {
   en: {
     properties: "Properties",
-    owners: "Owners / Landlords",
+    owners: "Landlords",
     staffs: "Staffs",
     masters: "Masters",
     addProperty: "Add Property",
@@ -26,7 +26,7 @@ export const translations = {
 
   vi: {
     properties: "Bất động sản",
-    owners: "Chủ sở hữu / Chủ nhà",
+    owners: "Chủ nhà",
     staffs: "Nhân viên",
     masters: "Quản lý chính",
     propertyId: "ID thuộc tính",

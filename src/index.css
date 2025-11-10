@@ -103,7 +103,7 @@ body {
 }
 
 .custom-dropdown .ant-select-item-option-selected {
-  background-color: #41398b !important; /* gray-200 */
+  background-color: #41398b !important;
   font-weight: 500;
 }
 

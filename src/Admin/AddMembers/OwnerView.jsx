@@ -124,71 +124,89 @@ export default function OwnerView({ ownerId, goBack }) {
         </div>
 
         {/* Card */}
-        <div className="relative bg-white rounded-2xl shadow-md p-6 sm:p-8 flex flex-col sm:flex-row gap-8 border border-gray-100">
-          {/* Facebook Icon */}
-          {facebookLink ? (
-            <a
-              href={facebookLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="absolute top-4 right-4 bg-white border border-gray-200 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
-            >
-              <Facebook className="text-gray-700" size={20} />
-            </a>
-          ) : (
-            <div className="absolute top-4 right-4 bg-gray-100 border border-gray-200 w-10 h-10 flex items-center justify-center rounded-full opacity-60 cursor-not-allowed">
-              <Facebook className="text-gray-400" size={20} />
-            </div>
-          )}
+        {/* Card */}
+        <div className="relative bg-white rounded-2xl shadow-md px-6 py-8 border border-gray-100 flex gap-6">
 
-          {/* Photo */}
-          <div className="flex-shrink-0 flex justify-center sm:justify-start">
-            <div>
-              <div className="w-44 h-44 rounded-xl overflow-hidden bg-[#e7e4fb] flex items-center justify-center">
-                <img
-                  src={photo || defaultImage}
-                  alt={ownerName?.[language] || "Owner"}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="text-sm text-gray-800 mt-4">
-                <span className="font-medium">
-                  {language === "vi" ? "Loại:" : "Type:"}
-                </span>{" "}
-                <span className="text-gray-700">
-                  {ownerType?.[language] || ownerType?.en || "Owner"}
-                </span>
-              </p>
-            </div>
-          </div>
+          {/* LEFT SIDE – Owner Info */}
+          <div className="flex-1">
 
-          {/* Info */}
-          <div className="flex-1 text-gray-800">
-            <h2 className="text-lg font-semibold mb-1">
-              {ownerName?.[language] || ownerName?.en || "Unnamed Owner"}
+            {/* ✅ NAME */}
+            <h2 className="text-lg font-semibold text-gray-800">
+              {owner.ownerName?.[language] || owner.ownerName?.en || "Unnamed Owner"}
             </h2>
 
-            <div className="flex items-center gap-2 text-gray-600 mb-3">
-              <PhoneCall size={16} />
-              <span className="text-sm">
-                {ownerNumber?.[language] ||
-                  ownerNumber?.en ||
-                  "+84 00000 00000"}
-              </span>
-            </div>
+            {/* ✅ ALL PHONE NUMBERS */}
+            {owner.phoneNumbers?.length > 0 &&
+              owner.phoneNumbers.map((num, i) => (
+                <div key={i} className="flex items-center gap-2 text-gray-600 mt-3">
+                  <PhoneCall size={16} />
+                  <span className="text-sm">{num || "-"} </span>
+                </div>
+              ))}
 
-            <h3 className="font-medium text-gray-800 mb-1">
+            {/* ✅ ALL EMAIL ADDRESSES */}
+            {owner.emailAddresses?.length > 0 &&
+              owner.emailAddresses.map((email, i) => (
+                <div key={i} className="flex items-center gap-2 text-gray-600 mt-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect width="20" height="16" x="2" y="4" rx="2" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                  <span className="text-sm">{email || "-"}</span>
+                </div>
+              ))}
+
+            {/* ✅ NOTES */}
+            <h3 className="font-medium text-gray-800 mt-5">
               {language === "vi" ? "Ghi chú" : "Notes"}
             </h3>
-            <p className="text-sm text-gray-700 leading-relaxed mb-4 whitespace-pre-line">
-              {ownerNotes?.[language] ||
-                ownerNotes?.en ||
+            <p className="text-sm text-gray-700 leading-relaxed mt-1 whitespace-pre-line">
+              {owner.ownerNotes?.[language] ||
+                owner.ownerNotes?.en ||
                 (language === "vi"
                   ? "Không có ghi chú nào cho chủ sở hữu này."
                   : "No notes available for this owner.")}
             </p>
           </div>
+
+          {/* RIGHT SIDE – ALL SOCIAL ICONS */}
+          <div className="flex flex-col items-end gap-3">
+
+            {owner.socialMedia_iconName?.length > 0 &&
+              owner.socialMedia_iconName.map((icon, i) => {
+                const link =
+                  owner.socialMedia_link_en?.[i] ||
+                  owner.socialMedia_link_vi?.[i] ||
+                  "";
+
+                const finalLink = link.startsWith("http") ? link : `https://${link}`;
+
+                return (
+                  <a
+                    key={i}
+                    href={finalLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-100 transition"
+                  >
+                    <Facebook size={20} className="text-gray-700" />
+                  </a>
+                );
+              })}
+
+          </div>
         </div>
+
       </div>
     </div>
   );

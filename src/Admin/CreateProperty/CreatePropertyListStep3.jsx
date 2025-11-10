@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
   ChevronDown,
+  CirclePlus,
   Eye,
   Mail,
   Phone,
@@ -12,6 +13,7 @@ import {
 import { getAllOwners, getAllStaffs, getMe } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { Select as AntdSelect } from "antd";
+import OwnerModal from "../Property/OwnerModal";
 
 /* 🔹 Helper: Find matching ID by localized name */
 function findIdByName(arr, valueObj) {
@@ -65,15 +67,15 @@ export default function CreatePropertyListStep3({
   const [showConsultantView, setShowConsultantView] = useState(false);
   const [showConnectView, setShowConnectView] = useState(false);
   const [getUserData, setGetUserData] = useState("Admin");
-
+  const [showAddOwnerModal, setShowAddOwnerModal] = useState(false);
   const [form, setForm] = useState({
     owner: initialData.owner || "",
     ownerNotes: initialData.ownerNotes || { en: "", vi: "" },
     consultant: initialData.consultant ||
       initialData.contactManagement?.contactManagementConsultant || {
-        en: "",
-        vi: "",
-      },
+      en: "",
+      vi: "",
+    },
     connectingPoint: initialData.connectingPoint || "",
     connectingPointNotes: initialData.connectingPointNotes || {
       en: "",
@@ -245,17 +247,27 @@ export default function CreatePropertyListStep3({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
           </button>
         ))}
       </div>
+
+      {showAddOwnerModal && (
+        <div style={{ zIndex: 999 }}>
+          <OwnerModal
+            onClose={() => {
+              setShowAddOwnerModal(false);
+              fetchData();
+            }}
+          />
+        </div>
+      )}
 
       <h2 className="text-lg font-semibold mb-6">{t.title}</h2>
 
@@ -282,24 +294,35 @@ export default function CreatePropertyListStep3({
                         ...prev,
                         owner: selected
                           ? {
-                              en: selected.ownerName?.en || "",
-                              vi: selected.ownerName?.vi || "",
-                            }
+                            en: selected.ownerName?.en || "",
+                            vi: selected.ownerName?.vi || "",
+                          }
                           : { en: "", vi: "" },
                       }));
                     }}
                     filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
+                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
                     }
                     className="w-full custom-select focus:ring-2 focus:ring-gray-300"
                     popupClassName="custom-dropdown"
                     options={owners.map((opt) => ({
-                      label:
-                        opt.ownerName?.[lang] || opt.ownerName?.en || "Unnamed",
+                      label: opt.ownerName?.[lang] || opt.ownerName?.en,
                       value: opt._id,
                     }))}
+
+                    /* ✅ Here we add the custom bottom button */
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+
+                        <div
+                          className="mt-2 p-3 bg-[#41398B] text-white text-center rounded-lg cursor-pointer flex gap-2 justify-center items-center"
+                          onClick={() => setShowAddOwnerModal(true)}  // ✅ OPEN STAFF MODAL
+                        >
+                          <CirclePlus size={18} /> New Landlords
+                        </div>
+                      </>
+                    )}
                   />
                 </div>
                 {selectedOwner && (
@@ -519,14 +542,7 @@ export default function CreatePropertyListStep3({
       {showOwnerView && selectedOwner && (
         <OwnerPopupCard
           onClose={() => setShowOwnerView(false)}
-          data={{
-            image: selectedOwner.ownerImage || selectedOwner.photo,
-            name: selectedOwner.ownerName,
-            type: selectedOwner.ownerType,
-            number: selectedOwner.ownerNumber,
-            facebook: selectedOwner.ownerFacebook,
-            notes: selectedOwner.ownerNotes,
-          }}
+          data={selectedOwner}     // ✅ pass full original object
           lang={lang}
         />
       )}
@@ -661,100 +677,128 @@ const StaffPopupCard = ({ onClose, data, lang, title }) => {
 };
 
 /* =========================================================
-   🔹 Owner Popup (Keep First Design)
+   ✅ BEAUTIFUL FULL OWNER POPUP UI
 ========================================================= */
 const OwnerPopupCard = ({ onClose, data, lang }) => {
-  const safeText = (val) =>
-    typeof val === "object" ? val?.[lang] || val?.en || "" : val || "";
+  const safeText = (obj) =>
+    typeof obj === "object" ? obj?.[lang] || obj?.en || "" : obj || "";
+
+  const social = data.socialMedia_iconName?.map((icon, i) => ({
+    icon,
+    link:
+      lang === "vi"
+        ? data.socialMedia_link_vi?.[i]
+        : data.socialMedia_link_en?.[i],
+  }));
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-lg p-8 relative animate-fade-in">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-8 relative animate-fade-in border border-gray-100">
+
+        {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
         >
-          <X size={20} />
+          <X className="cursor-pointer" size={22} />
         </button>
 
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">
-          {safeText(data.name) || "Owner"}
-        </h2>
-
-        <div className="flex flex-col sm:flex-row items-start gap-8 bg-[#fafafa] rounded-2xl p-6 border border-gray-300 relative">
-          {/* Avatar */}
-          <div className="flex-shrink-0">
-            <div className="w-32 h-32 rounded-full overflow-hidden bg-[#cfcafc] flex items-center justify-center">
-              <img
-                src={data.image || "/dummy-img.jpg"}
-                alt={safeText(data.name)}
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {/* Header */}
+        <div className="text-center mb-3">
+          <div className="w-25 h-25 mx-auto rounded-full bg-[#E5E7EB] flex items-center justify-center shadow-md select-none">
+            <span className="text-4xl font-semibold text-gray-700">
+              {safeText(data.ownerName)?.charAt(0)?.toUpperCase()}
+            </span>
           </div>
+          <h2 className="text-2xl font-semibold mt-4">
+            {safeText(data.ownerName)}
+          </h2>
+          <p className="text-gray-500 text-sm mt-1">{data.gender}</p>
+        </div>
 
-          {/* Info */}
-          <div className="flex-1 text-gray-800">
-            <h3 className="text-lg font-semibold mb-2">
-              {safeText(data.name) || "Unnamed Owner"}
-            </h3>
-            {data.number && (
-              <p className="text-gray-700 text-sm mb-3">
-                📞 {safeText(data.number)}
-              </p>
-            )}
-            {data.notes && (
-              <>
-                <h4 className="text-sm font-semibold mb-1">Notes</h4>
-                <p className="text-sm text-gray-600 leading-relaxed mb-3">
-                  {safeText(data.notes)}
-                </p>
-              </>
-            )}
-            {data.type && (
-              <p className="text-sm text-gray-700">
-                <span className="font-medium">Type:</span> {safeText(data.type)}
-              </p>
-            )}
-          </div>
+        {/* Details Sections */}
+        <div className="space-y-6 text-center">
 
-          {/* Facebook */}
-          <div className="absolute top-6 right-6">
-            {data.facebook ? (
-              <a
-                href={
-                  safeText(data.facebook).startsWith("http")
-                    ? safeText(data.facebook)
-                    : `https://facebook.com/${safeText(data.facebook)}`
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 hover:bg-gray-100"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 text-gray-700"
-                >
-                  <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.4 3h-1.9v7A10 10 0 0 0 22 12Z" />
-                </svg>
-              </a>
-            ) : (
-              <div className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 opacity-40 cursor-not-allowed">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 text-gray-400"
-                >
-                  <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.4 3h-1.9v7A10 10 0 0 0 22 12Z" />
-                </svg>
+          {/* Phone */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-700 mb-1">
+              {lang === "vi" ? "Số điện thoại" : "Phone Numbers"}
+            </h4>
+            {data.phoneNumbers?.length ? (
+              <div className="space-y-1">
+                {data.phoneNumbers.map((num, i) => (
+                  <div key={i} className="flex items-center gap-2 text-md text-gray-700 justify-center">
+                    <Phone size={16} className="text-gray-500" />
+                    {num}
+                  </div>
+                ))}
               </div>
+            ) : (
+              <p className="text-gray-400 text-sm">—</p>
             )}
+          </div>
+
+          {/* Email */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-700 mb-1">Email</h4>
+            {data.emailAddresses?.length ? (
+              data.emailAddresses.map((mail, i) => (
+                <div key={i} className="flex items-center gap-2 text-md text-gray-700 justify-center">
+                  <Mail size={16} className="text-gray-500" />
+                  {mail}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm">—</p>
+            )}
+          </div>
+
+          {/* Social Media */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-700 mb-1">
+              {lang === "vi" ? "Mạng xã hội" : "Social Media"}
+            </h4>
+
+            {social?.length ? (
+              <div className="space-y-2">
+                {social.map((s, i) => (
+                  <div key={i} className="flex items-center gap-3 text-sm justify-center">
+                    <span className="px-2 py-1 bg-gray-200 rounded-full text-xs font-medium">
+                      {s.icon || "—"}
+                    </span>
+                    {s.link ? (
+                      <a
+                        href={s.link.startsWith("http") ? s.link : `https://${s.link}`}
+                        target="_blank"
+                        className="text-[#41398B] font-medium hover:underline"
+                      >
+                        {s.link}
+                      </a>
+                    ) : (
+                      <span className="text-gray-400">—</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-sm">—</p>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div>
+            <h4 className="text-md font-semibold text-gray-700 mb-1">
+              {lang === "vi" ? "Ghi chú" : "Notes"}
+            </h4>
+            <p className="text-gray-700 text-md whitespace-pre-wrap">
+              {safeText(data.ownerNotes) ||
+                (lang === "vi" ? "Không có ghi chú" : "No notes")}
+            </p>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+

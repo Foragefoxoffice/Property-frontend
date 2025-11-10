@@ -18,49 +18,82 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { Select } from "antd";
 
+/* ==========================================================
+   ✅ Custom Select Component
+========================================================== */
+const CustomSelect = ({ label, name, value, onChange, options = [], lang }) => {
+  const { Option } = Select;
+  return (
+    <div className="flex flex-col w-full mb-3">
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
+
+      <Select
+        showSearch
+        allowClear
+        placeholder={lang === "vi" ? "Chọn" : "Select"}
+        value={value || undefined}
+        onChange={(val) => onChange(val)}
+        className="w-full h-11 custom-select"
+        popupClassName="custom-dropdown"
+      >
+        {options.map((opt) => (
+          <Option key={opt.value} value={opt.value}>
+            {opt.label}
+          </Option>
+        ))}
+      </Select>
+    </div>
+  );
+};
+
+/* ==========================================================
+   ✅ MAIN PAGE
+========================================================== */
 const OwnersLandlords = ({ openOwnerView }) => {
   const { language } = useLanguage();
   const t = translations[language];
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
+
   const [owners, setOwners] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [photoPreview, setPhotoPreview] = useState(null);
+
+  const [showModal, setShowModal] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+
   const [editMode, setEditMode] = useState(false);
   const [editingOwner, setEditingOwner] = useState(null);
 
   const [formData, setFormData] = useState({
     ownerName_en: "",
     ownerName_vi: "",
-    ownerType_en: "",
-    ownerType_vi: "",
-    ownerNumber_en: "",
-    ownerNumber_vi: "",
-    ownerFacebook_en: "",
-    ownerFacebook_vi: "",
     ownerNotes_en: "",
     ownerNotes_vi: "",
-    photo: "",
+    gender: "",
   });
 
-  // ✅ Fetch all owners
+  const [phoneRows, setPhoneRows] = useState([{ number: "" }]);
+  const [emailRows, setEmailRows] = useState([{ email: "" }]);
+
+  const [socialMedia, setSocialMedia] = useState([
+    { iconName: "", link_en: "", link_vi: "" },
+  ]);
+
+  /* ==========================================================
+     ✅ Fetch Owners
+  ========================================================== */
   const fetchOwners = async () => {
     try {
       setLoading(true);
       const res = await getAllOwners();
       setOwners(res.data.data || []);
-    } catch (err) {
-      console.error(err);
-      CommonToaster(
-        language === "vi"
-          ? "Không thể tải danh sách chủ sở hữu / chủ nhà"
-          : "Failed to load owners",
-        "error"
-      );
+    } catch {
+      CommonToaster("Failed to load owners", "error");
     } finally {
       setLoading(false);
     }
@@ -70,262 +103,217 @@ const OwnersLandlords = ({ openOwnerView }) => {
     fetchOwners();
   }, []);
 
-  // ✅ Handle input change
-  const handleChange = (lang, field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [`${field}_${lang.toLowerCase()}`]: value,
-    }));
-  };
-
-  // ✅ Handle image upload
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 1 * 1024 * 1024) {
-      CommonToaster(
-        language === "vi"
-          ? "Kích thước ảnh tối đa là 1MB"
-          : "Maximum image size is 1MB",
-        "error"
-      );
-      return;
-    }
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPhotoPreview(reader.result);
-      setFormData((prev) => ({ ...prev, photo: reader.result }));
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // ✅ Open Add Modal
+  /* ==========================================================
+     ✅ Open Add Modal
+  ========================================================== */
   const openAddModal = () => {
     setEditMode(false);
     setEditingOwner(null);
+
     setFormData({
       ownerName_en: "",
       ownerName_vi: "",
-      ownerType_en: "",
-      ownerType_vi: "",
-      ownerNumber_en: "",
-      ownerNumber_vi: "",
-      ownerFacebook_en: "",
-      ownerFacebook_vi: "",
       ownerNotes_en: "",
       ownerNotes_vi: "",
-      photo: "",
+      gender: "",
     });
-    setPhotoPreview(null);
+
+    setPhoneRows([{ number: "" }]);
+    setEmailRows([{ email: "" }]);
+
+    setSocialMedia([{ iconName: "", link_en: "", link_vi: "" }]);
+
     setShowModal(true);
   };
 
-  // ✅ Open Edit Modal
+  /* ==========================================================
+     ✅ Open Edit Modal
+  ========================================================== */
   const openEditModal = (owner) => {
     setEditMode(true);
     setEditingOwner(owner);
+
+    // Phone numbers
+    setPhoneRows(
+      owner.phoneNumbers?.length
+        ? owner.phoneNumbers.map((p) => ({ number: p }))
+        : [{ number: "" }]
+    );
+
+    // Emails
+    setEmailRows(
+      owner.emailAddresses?.length
+        ? owner.emailAddresses.map((e) => ({ email: e }))
+        : [{ email: "" }]
+    );
+
+    // Social media
+    const sm = owner.socialMedia_iconName?.map((_, i) => ({
+      iconName: owner.socialMedia_iconName[i] || "",
+      link_en: owner.socialMedia_link_en[i] || "",
+      link_vi: owner.socialMedia_link_vi[i] || "",
+    })) || [
+        { iconName: "", link_en: "", link_vi: "" },
+      ];
+
+    setSocialMedia(sm);
+
+    // Form Data
     setFormData({
       ownerName_en: owner.ownerName?.en || "",
       ownerName_vi: owner.ownerName?.vi || "",
-      ownerType_en: owner.ownerType?.en || "",
-      ownerType_vi: owner.ownerType?.vi || "",
-      ownerNumber_en: owner.ownerNumber?.en || "",
-      ownerNumber_vi: owner.ownerNumber?.vi || "",
-      ownerFacebook_en: owner.ownerFacebook?.en || "",
-      ownerFacebook_vi: owner.ownerFacebook?.vi || "",
       ownerNotes_en: owner.ownerNotes?.en || "",
       ownerNotes_vi: owner.ownerNotes?.vi || "",
-      photo: owner.photo || "",
+      gender: owner.gender || "",
     });
-    setPhotoPreview(owner.photo || null);
+
     setShowModal(true);
   };
 
-  // ✅ Submit Owner (Add / Update)
+  /* ==========================================================
+     ✅ Submit Owner
+  ========================================================== */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const payload = {
+      ...formData,
+      phoneNumbers: phoneRows.map((p) => p.number.trim()),
+      emailAddresses: emailRows.map((e) => e.email.trim()),
+      socialMedia_iconName: socialMedia.map((s) => s.iconName.trim()),
+      socialMedia_link_en: socialMedia.map((s) => s.link_en.trim()),
+      socialMedia_link_vi: socialMedia.map((s) => s.link_vi.trim()),
+    };
+
     try {
-      if (editMode && editingOwner?._id) {
-        await updateOwner(editingOwner._id, formData);
-        CommonToaster(
-          language === "vi"
-            ? "Cập nhật chủ sở hữu / chủ nhà thành công"
-            : "Owner updated successfully",
-          "success"
-        );
+      if (editMode) {
+        await updateOwner(editingOwner._id, payload);
+        CommonToaster("Owner updated", "success");
       } else {
-        await createOwner({ ...formData });
-        CommonToaster(
-          language === "vi"
-            ? "Thêm chủ sở hữu / chủ nhà thành công"
-            : "Owner created successfully",
-          "success"
-        );
+        await createOwner(payload);
+        CommonToaster("Owner created", "success");
       }
       setShowModal(false);
-      setPhotoPreview(null);
       fetchOwners();
-    } catch (err) {
-      console.error(err);
-      CommonToaster(
-        err.response?.data?.message ||
-        (language === "vi"
-          ? "Lỗi khi lưu thông tin chủ sở hữu / chủ nhà"
-          : "Error saving owner"),
-        "error"
-      );
+    } catch {
+      CommonToaster("Error saving owner", "error");
     }
   };
 
-  // ✅ Delete Owner
+  /* ==========================================================
+     ✅ Delete Owner
+  ========================================================== */
   const handleDelete = async () => {
     try {
       await deleteOwner(deleteConfirm.id);
-      CommonToaster(
-        language === "vi"
-          ? "Xóa chủ sở hữu / chủ nhà thành công"
-          : "Owner deleted successfully",
-        "success"
-      );
+      CommonToaster("Owner deleted", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchOwners();
-    } catch (err) {
-      CommonToaster(
-        language === "vi"
-          ? "Không thể xóa chủ sở hữu / chủ nhà"
-          : "Failed to delete owner",
-        "error"
-      );
+    } catch {
+      CommonToaster("Delete failed", "error");
     }
   };
 
+  /* ==========================================================
+     ✅ Filter Table
+  ========================================================== */
   const filteredOwners = owners.filter((item) =>
-    (item.ownerName?.[language] || item.ownerName?.en || "")
+    (item.ownerName?.[language] || "")
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
 
+  const firstPhone = (item) =>
+    item.phoneNumbers?.length ? item.phoneNumbers[0] : "-";
+
+  const firstEmail = (item) =>
+    item.emailAddresses?.length ? item.emailAddresses[0] : "-";
+
+  /* ==========================================================
+     ✅ RETURN UI
+  ========================================================== */
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD] p-2">
-      {/* Header */}
+    <div className="min-h-screen p-2">
+
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-semibold text-gray-900">{t.owners}</h1>
+        <h1 className="text-3xl font-semibold">{t.owners}</h1>
         <button
-          className="flex items-center gap-2 text-sm text-white px-4 py-4 rounded-full shadow bg-[#41398B] hover:bg-[#41398be3] transition-all cursor-pointer"
           onClick={openAddModal}
+          className="flex items-center gap-2 px-4 py-2 text-white bg-[#41398B] rounded-full shadow"
         >
           <Plus size={18} />
-          <span>
-            {language === "vi"
-              ? "Chủ sở hữu / Chủ nhà mới"
-              : "New Owner / Landlord"}
-          </span>
+          {language === "vi" ? "Chủ sở hữu mới" : "New Owner"}
         </button>
       </div>
 
-      {/* Search */}
-      <div className="flex items-center bg-white border border-[#B2B2B3] rounded-full px-4 py-3 w-full max-w-md mb-6">
-        <Search className="text-gray-500 mr-2" size={18} />
+      {/* SEARCH */}
+      <div className="flex items-center bg-white border rounded-full px-4 py-3 mb-6 max-w-md">
+        <Search size={18} className="text-gray-600 mr-2" />
         <input
           type="text"
-          placeholder={language === "vi" ? "Tìm kiếm" : "Search"}
-          className="outline-none flex-1 text-gray-700 placeholder-gray-400 text-sm"
+          placeholder={language === "vi" ? "Tìm kiếm" : "Search..."}
+          className="flex-1 outline-none"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl overflow-hidden shadow">
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-100 text-gray-600 text-sm uppercase">
+      {/* TABLE */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
             <tr>
-              <th className="text-left px-6 py-3">
-                {language === "vi" ? "Tên" : "Name"}
-              </th>
-              <th className="text-left px-6 py-3">
-                {language === "vi" ? "Loại" : "Type"}
-              </th>
-              <th className="text-left px-6 py-3">
-                {language === "vi" ? "Số liên hệ" : "Contact Number"}
-              </th>
-              <th className="text-left px-6 py-3">Facebook</th>
-              <th className="text-center px-6 py-3">
-                {language === "vi" ? "Hành động" : "Actions"}
-              </th>
+              <th className="px-6 py-3 text-left">Name</th>
+              <th className="px-6 py-3 text-left">Gender</th>
+              <th className="px-6 py-3 text-left">Phone</th>
+              <th className="px-6 py-3 text-left">Email</th>
+              <th className="px-6 py-3 text-center">Actions</th>
             </tr>
           </thead>
+
           <tbody className="text-sm">
-            {loading ? (
-              <SkeletonLoader />
-            ) : filteredOwners.length > 0 ? (
-              filteredOwners.map((item) => (
-                <tr key={item._id} className="hover:bg-gray-100 transition">
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img
-                      src={item.photo || "/dummy-img.jpg"}
-                      alt={item.ownerName?.[language] || item.ownerName?.en}
-                      className="w-10 h-10 rounded-full object-cover border border-gray-200"
-                    />
-                    <span className="font-medium text-gray-900">
-                      {item.ownerName?.[language] || item.ownerName?.en}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-700">
-                    {item.ownerType?.[language] || item.ownerType?.en}
-                  </td>
-                  <td className="px-6 py-4 text-gray-700">
-                    {item.ownerNumber?.[language] || item.ownerNumber?.en}
-                  </td>
-                  <td className="px-6 py-4 text-gray-700">
-                    {item.ownerFacebook?.[language] ||
-                      item.ownerFacebook?.en ||
-                      "-"}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex justify-center gap-2">
-                      <button
-                        style={{
-                          justifyItems: "anchor-center"
-                        }}
-                        onClick={() => openOwnerView(item)}
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10"
-                      >
-                        <Eye className="text-gray-600" size={18} />
-                      </button>
-                      <button
-                        style={{
-                          justifyItems: "anchor-center"
-                        }}
-                        onClick={() => openEditModal(item)}
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10"
-                      >
-                        <Edit2 className="text-blue-500" size={18} />
-                      </button>
-                      <button
-                        style={{
-                          justifyItems: "anchor-center"
-                        }}
-                        onClick={() =>
-                          setDeleteConfirm({ show: true, id: item._id })
-                        }
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10"
-                      >
-                        <Trash2 className="text-red-500" size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
+            {filteredOwners.map((item) => (
+              <tr key={item._id} className="hover:bg-gray-100 transition">
+                <td className="px-6 py-4">{item.ownerName?.[language]}</td>
+                <td className="px-6 py-4">{item.gender}</td>
+                <td className="px-6 py-4">{firstPhone(item)}</td>
+                <td className="px-6 py-4">{firstEmail(item)}</td>
+
+                {/* ACTIONS */}
+                <td className="px-6 py-4 text-center">
+                  <div className="flex justify-center gap-2">
+                    <button
+                      onClick={() => openOwnerView(item)}
+                      className="p-2 border rounded-full hover:bg-gray-200"
+                    >
+                      <Eye size={18} />
+                    </button>
+
+                    <button
+                      onClick={() => openEditModal(item)}
+                      className="p-2 border rounded-full hover:bg-gray-200"
+                    >
+                      <Edit2 size={18} className="text-blue-500" />
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setDeleteConfirm({ show: true, id: item._id })
+                      }
+                      className="p-2 border rounded-full hover:bg-gray-200"
+                    >
+                      <Trash2 size={18} className="text-red-500" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+
+            {!filteredOwners.length && (
               <tr>
-                <td
-                  colSpan="5"
-                  className="text-center py-6 text-gray-500 italic"
-                >
-                  {language === "vi"
-                    ? "Không có kết quả phù hợp."
-                    : "No results found."}
+                <td colSpan={5} className="text-center py-6 text-gray-500">
+                  No results found.
                 </td>
               </tr>
             )}
@@ -333,251 +321,386 @@ const OwnersLandlords = ({ openOwnerView }) => {
         </table>
       </div>
 
-      {/* ✅ Delete Confirmation Modal */}
+      {/* DELETE MODAL */}
       {deleteConfirm.show && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
-            <div className="flex items-center mb-4">
-              <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-800">
-                {language === "vi" ? "Xác nhận xóa" : "Confirm Deletion"}
-              </h3>
-            </div>
-            <p className="text-gray-600 text-sm mb-6">
-              {language === "vi"
-                ? "Bạn có chắc chắn muốn xóa chủ sở hữu / chủ nhà này? Hành động này không thể hoàn tác."
-                : "Are you sure you want to delete this owner/landlord? This action cannot be undone."}
-            </p>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirm({ show: false, id: null })}
-                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
-              >
-                {language === "vi" ? "Hủy" : "Cancel"}
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
-              >
-                {language === "vi" ? "Xóa" : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteModal
+          language={language}
+          onCancel={() => setDeleteConfirm({ show: false, id: null })}
+          onDelete={handleDelete}
+        />
       )}
 
-      {/* ✅ Add / Edit Modal */}
+      {/* ADD / EDIT OWNER MODAL */}
       {showModal && (
         <AddEditOwnerModal
-          {...{
-            activeLang,
-            setActiveLang,
-            formData,
-            handleChange,
-            handlePhotoUpload,
-            photoPreview,
-            handleSubmit,
-            setShowModal,
-            editMode,
-            language,
-          }}
+          activeLang={activeLang}
+          setActiveLang={setActiveLang}
+          formData={formData}
+          setFormData={setFormData}
+          handleChange={(lang, name, val) =>
+            setFormData((p) => ({ ...p, [`${name}_${lang.toLowerCase()}`]: val }))
+          }
+          handleSubmit={handleSubmit}
+          setShowModal={setShowModal}
+          editMode={editMode}
+          language={language}
+          socialMedia={socialMedia}
+          setSocialMedia={setSocialMedia}
+          phoneRows={phoneRows}
+          setPhoneRows={setPhoneRows}
+          emailRows={emailRows}
+          setEmailRows={setEmailRows}
         />
       )}
     </div>
   );
 };
 
-/* ✅ Skeleton Loader */
-const SkeletonLoader = () => {
-  return (
-    <>
-      {[...Array(6)].map((_, i) => (
-        <tr key={i} className="animate-pulse">
-          <td className="px-6 py-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#41398b29]" />
-            <div className="flex flex-col gap-2">
-              <div className="w-32 h-3 bg-[#41398b29] rounded" />
-              <div className="w-24 h-3 bg-[#41398b29] rounded" />
-            </div>
-          </td>
-          <td className="px-6 py-4">
-            <div className="w-20 h-3 bg-[#41398b29] rounded" />
-          </td>
-          <td className="px-6 py-4">
-            <div className="w-28 h-3 bg-[#41398b29] rounded" />
-          </td>
-          <td className="px-6 py-4">
-            <div className="w-20 h-3 bg-[#41398b29] rounded" />
-          </td>
-          <td className="px-6 py-4 text-center">
-            <div className="flex justify-center gap-2">
-              {[...Array(3)].map((_, j) => (
-                <div
-                  key={j}
-                  className="w-10 h-10 bg-[#41398b29] rounded-full"
-                ></div>
-              ))}
-            </div>
-          </td>
-        </tr>
-      ))}
-    </>
-  );
-};
+/* ==========================================================
+   ✅ DELETE MODAL
+========================================================== */
+const DeleteModal = ({ language, onCancel, onDelete }) => (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
+      <h3 className="text-lg font-semibold flex items-center gap-2">
+        <AlertTriangle className="text-red-500" />
+        {language === "vi" ? "Xác nhận xóa" : "Confirm Delete"}
+      </h3>
 
-/* ✅ Modal (unchanged) */
+      <p className="mt-4 text-sm text-gray-600">
+        {language === "vi"
+          ? "Bạn có chắc muốn xóa?"
+          : "Are you sure you want to delete this owner?"}
+      </p>
+
+      <div className="flex justify-end mt-6 gap-3">
+        <button
+          className="px-4 py-2 border rounded-full hover:bg-gray-100"
+          onClick={onCancel}
+        >
+          {language === "vi" ? "Hủy" : "Cancel"}
+        </button>
+        <button
+          className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
+          onClick={onDelete}
+        >
+          {language === "vi" ? "Xóa" : "Delete"}
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+/* ==========================================================
+   ✅ ADD / EDIT OWNER MODAL (EN/VI Dynamic UI)
+========================================================== */
 const AddEditOwnerModal = ({
   activeLang,
   setActiveLang,
   formData,
+  setFormData,
   handleChange,
-  handlePhotoUpload,
-  photoPreview,
   handleSubmit,
   setShowModal,
   editMode,
   language,
-}) => (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl w-full max-w-2xl shadow-xl relative overflow-hidden">
-      {/* Header */}
-      <div className="flex justify-between items-center px-6 py-4 border-b">
-        <h2 className="text-base font-semibold">
-          {editMode
-            ? language === "vi"
-              ? "Chỉnh sửa chủ sở hữu / chủ nhà"
-              : "Edit Owner / Landlord"
-            : language === "vi"
-              ? "Thêm chủ sở hữu / chủ nhà mới"
-              : "New Owner / Landlord"}
-        </h2>
-        <button
-          onClick={() => setShowModal(false)}
-          className="text-gray-100 bg-[#41398B] hover:bg-[#41398be3] p-1 rounded-full cursor-pointer"
-        >
-          <X size={20} />
-        </button>
-      </div>
+  socialMedia,
+  setSocialMedia,
+  phoneRows,
+  setPhoneRows,
+  emailRows,
+  setEmailRows,
+}) => {
 
-      {/* Tabs */}
-      <div className="flex bg-gray-50 px-6">
-        {["EN", "VI"].map((lang) => (
+  /* ✅ UI LABELS + PLACEHOLDERS for EN/VI */
+  const uiText = {
+    EN: {
+      modalTitleAdd: "New Owner",
+      modalTitleEdit: "Edit Owner",
+      name: "Owner Name",
+      namePlaceholder: "Enter owner name",
+      gender: "Gender",
+      phone: "Phone Number",
+      phonePlaceholder: "Enter phone number",
+      email: "Email",
+      emailPlaceholder: "Enter email address",
+      social: "Social Media",
+      socialIcon: "Icon Name",
+      socialLink: "Social Link (EN)",
+      notes: "Notes",
+      notesPlaceholder: "Enter notes...",
+      cancel: "Cancel",
+      submitAdd: "Add",
+      submitEdit: "Update",
+    },
+    VI: {
+      modalTitleAdd: "Chủ sở hữu mới",
+      modalTitleEdit: "Chỉnh sửa chủ sở hữu",
+      name: "Tên chủ sở hữu",
+      namePlaceholder: "Nhập tên chủ sở hữu",
+      gender: "Giới tính",
+      phone: "Số điện thoại",
+      phonePlaceholder: "Nhập số điện thoại",
+      email: "Email",
+      emailPlaceholder: "Nhập email",
+      social: "Mạng xã hội",
+      socialIcon: "Tên icon",
+      socialLink: "Liên kết MXH (VI)",
+      notes: "Ghi chú",
+      notesPlaceholder: "Nhập ghi chú...",
+      cancel: "Hủy",
+      submitAdd: "Thêm",
+      submitEdit: "Cập nhật",
+    },
+  };
+
+  const text = uiText[activeLang];
+
+  const addSocialRow = () =>
+    setSocialMedia([
+      ...socialMedia,
+      { iconName: "", link_en: "", link_vi: "" },
+    ]);
+
+  const updateSocialRow = (i, key, val) => {
+    const next = [...socialMedia];
+    next[i][key] = val;
+    setSocialMedia(next);
+  };
+
+  const removeSocialRow = (i) =>
+    setSocialMedia(
+      socialMedia.length === 1
+        ? [{ iconName: "", link_en: "", link_vi: "" }]
+        : socialMedia.filter((_, x) => x !== i)
+    );
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex py-12 items-start justify-center z-50 overflow-y-auto">
+      <div className="bg-white rounded-xl w-full max-w-2xl shadow-xl">
+
+        {/* HEADER */}
+        <div className="flex justify-between items-center px-6 py-4 border-b">
+          <h2 className="text-lg font-semibold">
+            {editMode ? text.modalTitleEdit : text.modalTitleAdd}
+          </h2>
           <button
-            key={lang}
-            onClick={() => setActiveLang(lang)}
-            className={`px-5 py-3 text-sm font-medium transition-all cursor-pointer ${activeLang === lang
-              ? "border-b-2 border-[#41398B] text-black bg-white"
-              : "text-gray-500 hover:text-black"
-              }`}
+            onClick={() => setShowModal(false)}
+            className="bg-[#41398B] text-white p-1 rounded-full cursor-pointer"
           >
-            {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
+            <X size={18} />
           </button>
-        ))}
-      </div>
-
-      {/* Body */}
-      <div className="p-6 overflow-y-auto max-h-[80vh]">
-        {/* Upload */}
-        <div className="flex gap-6 mb-6">
-          <label className="flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-lg w-32 h-32 cursor-pointer hover:border-gray-400 bg-gray-50">
-            {photoPreview ? (
-              <img
-                src={photoPreview}
-                alt="preview"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            ) : (
-              <>
-                <CirclePlus size={18} className="text-gray-500 mb-1" />
-                <span className="text-xs text-gray-600">
-                  {language === "vi" ? "Tải ảnh lên" : "Upload Photo"}
-                </span>
-              </>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handlePhotoUpload}
-            />
-          </label>
-          <p className="text-sm text-gray-500 self-center leading-relaxed">
-            {language === "vi"
-              ? "Kích thước hình ảnh ưu tiên: 240px x 240px @ 72 DPI — Tối đa: 1MB"
-              : "Preferred image size: 240px x 240px @ 72 DPI — Max: 1MB"}
-          </p>
         </div>
 
-        {/* Form */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {[{ key: "ownerName", label: language === "vi" ? "Tên" : "Name" },
-          { key: "ownerType", label: language === "vi" ? "Loại" : "Type" },
-          {
-            key: "ownerNumber",
-            label: language === "vi" ? "Số liên hệ" : "Contact Number",
-          },
-          { key: "ownerFacebook", label: "Facebook" }].map(
-            ({ key, label }) => (
-              <div key={key}>
-                <label className="block text-sm font-medium mb-1 text-gray-700">
-                  {label} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder={language === "vi" ? "Nhập tại đây" : "Type here"}
-                  value={formData[`${key}_${activeLang.toLowerCase()}`] || ""}
-                  onChange={(e) =>
-                    handleChange(activeLang, key, e.target.value)
-                  }
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 outline-none"
-                />
-              </div>
-            )
-          )}
+        {/* LANGUAGE TABS */}
+        <div className="flex bg-gray-50 px-6">
+          {["EN", "VI"].map((lng) => (
+            <button
+              key={lng}
+              onClick={() => setActiveLang(lng)}
+              className={`px-5 py-3 text-sm font-medium cursor-pointer ${activeLang === lng
+                ? "border-b-2 border-[#41398B]"
+                : "text-gray-500"
+                }`}
+            >
+              {lng === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
+            </button>
+          ))}
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              {language === "vi" ? "Ghi chú" : "Notes"}{" "}
-              <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              placeholder={language === "vi" ? "Nhập tại đây" : "Type here"}
-              rows={3}
-              value={formData[`ownerNotes_${activeLang.toLowerCase()}`] || ""}
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+
+          {/* NAME */}
+          <div className="mb-3">
+            <label className="font-medium text-sm">{text.name}</label>
+            <input
+              type="text"
+              placeholder={text.namePlaceholder}
+              value={formData[`ownerName_${activeLang.toLowerCase()}`]}
               onChange={(e) =>
-                handleChange(activeLang, "ownerNotes", e.target.value)
+                handleChange(activeLang, "ownerName", e.target.value)
               }
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#41398B] focus:border-[#41398B] outline-none resize-none"
+              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm mt-1"
             />
           </div>
 
-          {/* Footer */}
-          <div className="flex justify-end gap-3 pt-6 mt-8">
+          {/* GENDER */}
+          <CustomSelect
+            label={text.gender}
+            name="gender"
+            lang={activeLang}
+            value={formData.gender}
+            onChange={(val) => setFormData((p) => ({ ...p, gender: val }))}
+            options={[
+              { value: "Male", label: activeLang === "VI" ? "Nam" : "Male" },
+              { value: "Female", label: activeLang === "VI" ? "Nữ" : "Female" },
+              { value: "Other", label: activeLang === "VI" ? "Khác" : "Other" },
+            ]}
+          />
+
+          {/* PHONE */}
+          <div className="mb-3">
+            <label className="font-medium text-sm">{text.phone}</label>
+
+            {phoneRows.map((row, idx) => (
+              <div key={idx} className="flex items-center gap-3 mt-3">
+                <input
+                  type="text"
+                  placeholder={text.phonePlaceholder}
+                  value={row.number}
+                  onChange={(e) => {
+                    const next = [...phoneRows];
+                    next[idx].number = e.target.value;
+                    setPhoneRows(next);
+                  }}
+                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full"
+                />
+
+                {idx === phoneRows.length - 1 ? (
+                  <CirclePlus
+                    className="cursor-pointer"
+                    size={22}
+                    onClick={() =>
+                      setPhoneRows([...phoneRows, { number: "" }])
+                    }
+                  />
+                ) : (
+                  <X
+                    className="cursor-pointer"
+                    size={20}
+                    onClick={() =>
+                      setPhoneRows(phoneRows.filter((_, i) => i !== idx))
+                    }
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* EMAIL */}
+          <div className="mb-3">
+            <label className="font-medium text-sm">{text.email}</label>
+
+            {emailRows.map((row, idx) => (
+              <div key={idx} className="flex items-center gap-3 mt-3">
+                <input
+                  type="email"
+                  placeholder={text.emailPlaceholder}
+                  value={row.email}
+                  onChange={(e) => {
+                    const next = [...emailRows];
+                    next[idx].email = e.target.value;
+                    setEmailRows(next);
+                  }}
+                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full"
+                />
+
+                {idx === emailRows.length - 1 ? (
+                  <CirclePlus
+                    className="cursor-pointer"
+                    size={22}
+                    onClick={() =>
+                      setEmailRows([...emailRows, { email: "" }])
+                    }
+                  />
+                ) : (
+                  <X
+                    className="cursor-pointer"
+                    size={20}
+                    onClick={() =>
+                      setEmailRows(emailRows.filter((_, i) => i !== idx))
+                    }
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* SOCIAL */}
+          <div className="mb-3">
+            <label className="font-medium text-sm">{text.social}</label>
+
+            {socialMedia.map((row, idx) => (
+              <div key={idx} className="flex items-center gap-3 mt-3">
+
+                {/* Icon Name */}
+                <input
+                  type="text"
+                  placeholder={text.socialIcon}
+                  value={row.iconName}
+                  onChange={(e) =>
+                    updateSocialRow(idx, "iconName", e.target.value)
+                  }
+                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-1/2"
+                />
+
+                {/* Link */}
+                <input
+                  type="text"
+                  placeholder={text.socialLink}
+                  value={activeLang === "EN" ? row.link_en : row.link_vi}
+                  onChange={(e) =>
+                    updateSocialRow(
+                      idx,
+                      activeLang === "EN" ? "link_en" : "link_vi",
+                      e.target.value
+                    )
+                  }
+                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-1/2"
+                />
+
+                {idx === socialMedia.length - 1 ? (
+                  <CirclePlus
+                    size={22}
+                    className="cursor-pointer"
+                    onClick={addSocialRow}
+                  />
+                ) : (
+                  <X
+                    size={20}
+                    className="cursor-pointer"
+                    onClick={() => removeSocialRow(idx)}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* NOTES */}
+          <div className="mb-3">
+            <label className="font-medium text-sm">{text.notes}</label>
+            <textarea
+              rows="3"
+              placeholder={text.notesPlaceholder}
+              value={formData[`ownerNotes_${activeLang.toLowerCase()}`]}
+              onChange={(e) =>
+                handleChange(activeLang, "ownerNotes", e.target.value)
+              }
+              className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full mt-1"
+            ></textarea>
+          </div>
+
+          {/* FOOTER */}
+          <div className="flex justify-end gap-3 pt-6 border-t">
             <button
               type="button"
               onClick={() => setShowModal(false)}
-              className="px-5 py-2 border border-gray-300 rounded-full text-gray-700 text-sm hover:bg-gray-100"
+              className="px-4 py-2 border rounded-full hover:bg-gray-100 cursor-pointer"
             >
-              {language === "vi" ? "Hủy" : "Cancel"}
+              {text.cancel}
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full text-sm cursor-pointer"
+              className="px-4 py-2 bg-[#41398B] text-white rounded-full cursor-pointer"
             >
-              {editMode
-                ? language === "vi"
-                  ? "Cập nhật"
-                  : "Edit"
-                : language === "vi"
-                  ? "Thêm"
-                  : "Add"}
+              {editMode ? text.submitEdit : text.submitAdd}
             </button>
           </div>
         </form>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default OwnersLandlords;

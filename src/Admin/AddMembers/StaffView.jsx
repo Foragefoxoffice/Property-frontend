@@ -107,53 +107,57 @@ export default function StaffView({ staffId, goBack }) {
         </div>
 
         {/* Card */}
-        <div className="relative bg-white rounded-2xl shadow-md p-6 sm:p-8 flex flex-col sm:flex-row gap-8 border border-gray-100">
-          {/* Photo */}
-          <div className="flex-shrink-0 flex justify-center sm:justify-start">
-            <div>
-              <div className="w-44 h-44 rounded-xl overflow-hidden bg-[#e7e4fb] flex items-center justify-center">
+        {/* Card */}
+        <div className="relative bg-white rounded-2xl shadow-md p-6 sm:p-8 border border-gray-100">
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-8">
+
+            {/* LEFT — IMAGE */}
+            <div className="flex-shrink-0">
+              <div className="w-48 h-48 rounded-xl overflow-hidden bg-[#e7e4fb] flex items-center justify-center">
                 <img
                   src={staffsImage || defaultImage}
                   alt={staffsName?.[language] || "Staff"}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="text-sm text-gray-800 mt-4">
-                <span className="font-medium">
-                  {language === "vi" ? "Mã nhân viên:" : "Staff ID:"}
-                </span>{" "}
-                <span className="text-gray-700">{staffsId || "N/A"}</span>
+            </div>
+
+            {/* MIDDLE — DETAILS */}
+            <div className="flex-1 text-gray-800">
+              {/* Name */}
+              <h2 className="text-xl font-semibold mb-2">
+                {staffsName?.[language] || staffsName?.en}
+              </h2>
+
+              {/* Phones */}
+              {staff.staffsNumbers?.map((phone, index) => (
+                <div key={index} className="flex items-center gap-2 text-gray-700 text-sm mb-1">
+                  <Phone size={16} />
+                  <span>{phone}</span>
+                </div>
+              ))}
+
+              {/* Role */}
+              <p className="text-sm text-gray-800 mt-3">
+                <span className="font-semibold">{language === "vi" ? "Chức vụ:" : "Role:"}</span>{" "}
+                {staffsRole?.[language] || staffsRole?.en || "N/A"}
+              </p>
+
+              {/* Staff ID */}
+              <p className="text-sm text-gray-500 mt-1">
+                <span className="font-semibold">{language === "vi" ? "Mã nhân viên:" : "Staff ID:"}</span>{" "}
+                {staffsId}
               </p>
             </div>
           </div>
 
-          {/* Info */}
-          <div className="flex-1 text-gray-800">
-            <h2 className="text-lg font-semibold mb-1">
-              {staffsName?.[language] || staffsName?.en || "Unnamed Staff"}
-            </h2>
-
-            <div className="flex items-center gap-2 text-gray-600 mb-2">
-              <UserCog size={16} />
-              <span className="text-sm">
-                {staffsRole?.[language] || staffsRole?.en || "-"}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-gray-600 mb-2">
-              <Phone size={16} />
-              <span className="text-sm">{staffsNumber || "N/A"}</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-gray-600 mb-3">
-              <Mail size={16} />
-              <span className="text-sm">{staffsEmail || "N/A"}</span>
-            </div>
-
-            <h3 className="font-medium text-gray-800 mb-1">
+          {/* NOTES */}
+          <div className="mt-10">
+            <h3 className="text-sm font-semibold text-gray-800">
               {language === "vi" ? "Ghi chú" : "Notes"}
             </h3>
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+            <p className="text-sm text-gray-700 mt-2 leading-relaxed">
               {staffsNotes?.[language] ||
                 staffsNotes?.en ||
                 (language === "vi"
@@ -161,7 +165,9 @@ export default function StaffView({ staffId, goBack }) {
                   : "No notes available for this staff.")}
             </p>
           </div>
+
         </div>
+
       </div>
     </div>
   );

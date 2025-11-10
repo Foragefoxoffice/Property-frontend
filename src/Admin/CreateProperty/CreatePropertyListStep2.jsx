@@ -8,6 +8,7 @@ import {
   getAllFeeTax,
   getAllLegalDocuments, // ✅ import currency API
 } from "../../Api/action";
+import { CommonToaster } from "@/Common/CommonToaster";
 
 /* =========================================================
    💜 SKELETON LOADER (with bg-[#41398b29])
@@ -219,6 +220,27 @@ export default function CreatePropertyListStep2({
   }, [initialData]);
 
   /* =========================================================
+   ✅ File Size Limits
+   Images & floorplan: 2 MB
+   Videos: 10 MB
+========================================================= */
+  function validateFileSize(file, type) {
+    const imageLimit = 2 * 1024 * 1024; // 2MB
+    const videoLimit = 10 * 1024 * 1024; // 10MB
+
+    if (type === "video" && file.size > videoLimit) {
+      CommonToaster("Video size must be under 10MB", "error");
+      return false;
+    }
+
+    if ((type === "image" || type === "floor") && file.size > imageLimit) {
+      CommonToaster("Image must be under 2MB", "error");
+      return false;
+    }
+
+    return true;
+  }
+  /* =========================================================
      📁 Upload Helpers
   ========================================================== */
   const fileToBase64 = (file) =>
@@ -232,8 +254,13 @@ export default function CreatePropertyListStep2({
   const handleFileUpload = async (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // ✅ Check size
+    if (!validateFileSize(file, type)) return;
+
     const base64 = await fileToBase64(file);
     const newFile = { file, url: base64 };
+
     if (type === "image") setImages((p) => [...p, newFile]);
     if (type === "video") setVideos((p) => [...p, newFile]);
     if (type === "floor") setFloorPlans((p) => [...p, newFile]);
