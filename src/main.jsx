@@ -43,7 +43,7 @@ createRoot(document.getElementById("root")).render(
           }
         />
         <Route path="/manage-property" element={<ManageProperty />} />
-        <Route path="/property-showcase" element={<PropertyShowcase />} />
+        <Route path="/property-showcase/:id" element={<PropertyShowcase />} />
         {/* Add other routes as needed */}
       </Routes>
     </StrictMode>

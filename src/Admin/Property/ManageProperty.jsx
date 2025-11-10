@@ -15,6 +15,7 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { useNavigate } from "react-router-dom";
 
 export default function ManageProperty({
   openCreateProperty,
@@ -28,7 +29,7 @@ export default function ManageProperty({
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
-
+  const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
 
@@ -197,9 +198,8 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 transition`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100 transition`}
                   >
                     {/* 🏠 Property Image + Info */}
                     <td className="px-6 py-4">
@@ -223,23 +223,22 @@ export default function ManageProperty({
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${
-                            p.status === "Published"
-                              ? "bg-green-100 text-green-700"
-                              : p.status === "Draft"
+                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
+                            ? "bg-green-100 text-green-700"
+                            : p.status === "Draft"
                               ? "bg-[#FFF3DE] text-[#FFA600]"
                               : "bg-gray-200 text-gray-700"
-                          }`}
+                            }`}
                         >
                           {p.status === "Published"
                             ? language === "vi"
                               ? "Đã đăng"
                               : "Published"
                             : p.status === "Draft"
-                            ? language === "vi"
-                              ? "Bản nháp"
-                              : "Draft"
-                            : p.status || "—"}
+                              ? language === "vi"
+                                ? "Bản nháp"
+                                : "Draft"
+                              : p.status || "—"}
                         </span>
                       </div>
                     </td>
@@ -254,14 +253,19 @@ export default function ManageProperty({
                       </button>
                       <button
                         style={{ justifyItems: "anchor-center" }}
-                        onClick={() => onViewProperty(p._id)}
+                        onClick={() =>
+                          navigate(
+                            `/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`
+                          )
+                        }
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
                         <Eye className="w-4 h-4 text-gray-600" />
                       </button>
+
                       <button
-                        style={{ justifyItems: "anchor-center" }}
                         onClick={() => openEditProperty(p)}
+                        style={{ justifyItems: "anchor-center" }}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
                         <Pencil className="w-4 h-4 text-gray-600" />
@@ -318,22 +322,20 @@ export default function ManageProperty({
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`p-1 px-2 rounded ${
-                currentPage === 1
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100 text-gray-600"
-              }`}
+              className={`p-1 px-2 rounded ${currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "hover:bg-gray-100 text-gray-600"
+                }`}
             >
               &lt;
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`p-1 px-2 rounded ${
-                currentPage === totalPages
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100 text-gray-600"
-              }`}
+              className={`p-1 px-2 rounded ${currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "hover:bg-gray-100 text-gray-600"
+                }`}
             >
               &gt;
             </button>
