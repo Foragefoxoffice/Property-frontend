@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, X, ArrowRight, ArrowLeft, Eye } from "lucide-react";
 import { Select as AntdSelect } from "antd";
-import {
-  getAllDeposits,
-  getAllPayments,
-  getAllCurrencies,
-  getAllFeeTax,
-  getAllLegalDocuments, // ✅ import currency API
-} from "../../Api/action";
 import { CommonToaster } from "@/Common/CommonToaster";
 
 /* =========================================================
@@ -41,81 +34,19 @@ export default function CreatePropertyListStep2({
   onPrev,
   onChange,
   initialData = {},
+  dropdownLoading,
+  dropdowns = {},
 }) {
   const [lang, setLang] = useState("en");
-  const [deposits, setDeposits] = useState([]);
-  const [payments, setPayments] = useState([]);
-  const [currencies, setCurrencies] = useState([]);
-  const [loadingCurrencies, setLoadingCurrencies] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [feeTaxes, setFeeTaxes] = useState([]);
-  const [legalDocs, setLegalDocs] = useState([]);
-  /* =========================================================
-     🗂️ Load Deposits + Payments + Currencies
-  ========================================================== */
-  useEffect(() => {
-    async function loadDropdowns() {
-      try {
-        setLoadingCurrencies(true);
-        const [depRes, payRes, curRes, feeTaxRes, legalRes] = await Promise.all(
-          [
-            getAllDeposits(),
-            getAllPayments(),
-            getAllCurrencies(),
-            getAllFeeTax(),
-            getAllLegalDocuments(),
-          ]
-        );
-
-        setDeposits(
-          (depRes.data?.data || []).filter((d) => d.status === "Active")
-        );
-        setPayments(
-          (payRes.data?.data || []).filter((p) => p.status === "Active")
-        );
-
-        setFeeTaxes(
-          (feeTaxRes.data?.data || []).filter((p) => p.status === "Active")
-        );
-        setLegalDocs(
-          (legalRes.data?.data || []).filter((p) => p.status === "Active")
-        );
-
-        const allCurrencies = curRes.data?.data || [];
-        setCurrencies(allCurrencies);
-
-        // ✅ Find default currency (isDefault: true)
-        const defaultCurrency = allCurrencies.find((c) => c.isDefault);
-
-        // ✅ Set default currency automatically if not manually provided
-        if (!initialData.currency && defaultCurrency) {
-          setForm((p) => ({
-            ...p,
-            currency: {
-              symbol:
-                defaultCurrency.currencySymbol?.en ||
-                defaultCurrency.currencySymbol?.vi ||
-                "$",
-              code:
-                defaultCurrency.currencyCode?.en ||
-                defaultCurrency.currencyCode?.vi ||
-                "USD",
-              name:
-                defaultCurrency.currencyName?.en ||
-                defaultCurrency.currencyName?.vi ||
-                "US Dollar",
-            },
-          }));
-        }
-      } catch (err) {
-        console.error("Error fetching dropdowns:", err);
-      } finally {
-        setLoadingCurrencies(false);
-        setLoading(false);
-      }
-    }
-    loadDropdowns();
-  }, []);
+  const {
+    currencies = [],
+    deposits = [],
+    payments = [],
+    feeTaxes = [],
+    legalDocs = [],
+  } = dropdowns || {};
+  // alias the loading flag used by AntdSelect to your prop
+  const loadingCurrencies = !!dropdownLoading;
 
   /* =========================================================
      🏷️ Translations
@@ -411,8 +342,7 @@ export default function CreatePropertyListStep2({
     );
   };
 
-  /* SHOW SKELETON IF LOADING */
-  if (loading) return <SkeletonLoader />;
+  if (dropdownLoading) return <SkeletonLoader />;
 
   /* =========================================================
      🧱 RENDER
@@ -424,10 +354,11 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -525,8 +456,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -789,8 +721,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -1004,8 +937,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />

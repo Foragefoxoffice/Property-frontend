@@ -13,10 +13,14 @@ import {
   getNextPropertyId,
   getAllFloorRanges,
 } from "../../Api/action";
-import { Select as AntdSelect } from "antd";
+import { Select as AntdSelect, Switch } from "antd";
 import iconOptions from "../../data/iconOptions";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
@@ -27,7 +31,9 @@ import { format } from "date-fns";
 const Input = memo(
   ({ label, name, type = "text", value, onChange, placeholder }) => (
     <div className="flex flex-col">
-      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
       <input
         type={type}
         name={name}
@@ -45,7 +51,9 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
 
   return (
     <div className="flex flex-col">
-      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
 
       <AntdSelect
         showSearch
@@ -64,8 +72,8 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
                 ? opt.symbol?.vi || "—"
                 : opt.symbol?.en || "—"
               : lang === "vi"
-                ? opt.name?.vi || "Chưa đặt tên"
-                : opt.name?.en || "Unnamed";
+              ? opt.name?.vi || "Chưa đặt tên"
+              : opt.name?.en || "Unnamed";
 
           return (
             <Option key={opt._id} value={opt._id}>
@@ -81,32 +89,44 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
 /* ======================================================
    LOCALIZED INPUT + TEXTAREA
 ====================================================== */
-const LocalizedInput = memo(({ label, name, lang, value, onChange, placeholder }) => (
-  <div className="flex flex-col">
-    <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
-    <input
-      name={name}
-      value={value || ""}
-      onChange={(e) => onChange(lang, name, e.target.value)}
-      placeholder={placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")}
-      className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-    />
-  </div>
-));
+const LocalizedInput = memo(
+  ({ label, name, lang, value, onChange, placeholder }) => (
+    <div className="flex flex-col">
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
+      <input
+        name={name}
+        value={value || ""}
+        onChange={(e) => onChange(lang, name, e.target.value)}
+        placeholder={
+          placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")
+        }
+        className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+      />
+    </div>
+  )
+);
 
-const LocalizedTextarea = memo(({ label, name, lang, value, onChange, placeholder }) => (
-  <div className="flex flex-col mt-8">
-    <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
-    <textarea
-      name={name}
-      value={value || ""}
-      onChange={(e) => onChange(lang, name, e.target.value)}
-      placeholder={placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")}
-      rows={3}
-      className="border border-[#B2B2B3] rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
-    />
-  </div>
-));
+const LocalizedTextarea = memo(
+  ({ label, name, lang, value, onChange, placeholder }) => (
+    <div className="flex flex-col mt-8">
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
+      <textarea
+        name={name}
+        value={value || ""}
+        onChange={(e) => onChange(lang, name, e.target.value)}
+        placeholder={
+          placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")
+        }
+        rows={3}
+        className="border border-[#B2B2B3] rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+      />
+    </div>
+  )
+);
 
 const DatePicker = memo(({ label, name, value, onChange }) => {
   const [date, setDate] = useState(value ? new Date(value) : null);
@@ -130,13 +150,16 @@ const DatePicker = memo(({ label, name, value, onChange }) => {
 
   return (
     <div className="flex flex-col">
-      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
+      <label className="text-sm text-[#131517] font-semibold mb-2">
+        {label}
+      </label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={`w-full justify-between text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${!date && "text-muted-foreground"
-              }`}
+            className={`w-full justify-between text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${
+              !date && "text-muted-foreground"
+            }`}
           >
             {date ? format(date, "PPP") : <span>Select date</span>}
             <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
@@ -187,12 +210,14 @@ export default function CreatePropertyListStep1({
   onNext,
   onChange,
   defaultTransactionType,
+  dropdowns, // ✅ Correct
 }) {
   const [lang, setLang] = useState("en");
   const getToday = () => new Date().toISOString().split("T")[0];
   const [form, setForm] = useState({
     ...initialData,
-    transactionType: initialData.transactionType || defaultTransactionType || "Sale",
+    transactionType:
+      initialData.transactionType || defaultTransactionType || "Sale",
     blockName: initialData.blockName || { en: "", vi: "" },
     propertyNo: initialData.propertyNo || { en: "", vi: "" },
     title: initialData.title || { en: "", vi: "" },
@@ -206,8 +231,44 @@ export default function CreatePropertyListStep1({
     projectId: initialData.projectId || "",
     zoneId: initialData.zoneId || "",
     blockId: initialData.blockId || "",
+
+    listingInformationVisibility: initialData.listingInformationVisibility || {
+      transactionType: false,
+      propertyId: false,
+      projectCommunity: false,
+      areaZone: false,
+      blockName: false,
+      propertyNo: false,
+      dateListed: false,
+      availableFrom: false,
+      availabilityStatus: false,
+    },
+
+    propertyInformationVisibility:
+      initialData.propertyInformationVisibility || {
+        unit: false,
+        unitSize: false,
+        bedrooms: false,
+        bathrooms: false,
+        floorRange: false,
+        furnishing: false,
+        view: false,
+      },
+
+    titleVisibility: initialData.titleVisibility || false,
+    descriptionVisibility: initialData.descriptionVisibility || false,
+    propertyUtilityVisibility: initialData.propertyUtilityVisibility || false,
   });
-  const [loading, setLoading] = useState(true);
+  const loading =
+    !dropdowns ||
+    !dropdowns.properties ||
+    !dropdowns.zones ||
+    !dropdowns.blocks ||
+    !dropdowns.types ||
+    !dropdowns.units ||
+    !dropdowns.furnishings ||
+    !dropdowns.statuses ||
+    !dropdowns.floorRanges;
 
   /* ✅ Sync when editing an existing property */
   useEffect(() => {
@@ -215,12 +276,15 @@ export default function CreatePropertyListStep1({
       setForm((prev) => ({
         ...prev,
         ...initialData,
-        blockName: initialData.blockName || prev.blockName || { en: "", vi: "" },
+        blockName: initialData.blockName ||
+          prev.blockName || { en: "", vi: "" },
         title: initialData.title || prev.title || { en: "", vi: "" },
         address: initialData.address || prev.address || { en: "", vi: "" },
-        description: initialData.description || prev.description || { en: "", vi: "" },
+        description: initialData.description ||
+          prev.description || { en: "", vi: "" },
         view: initialData.view || prev.view || { en: "", vi: "" },
-        whatsNearby: initialData.whatsNearby || prev.whatsNearby || { en: "", vi: "" },
+        whatsNearby: initialData.whatsNearby ||
+          prev.whatsNearby || { en: "", vi: "" },
         utilities:
           initialData.utilities && initialData.utilities.length
             ? initialData.utilities
@@ -228,112 +292,6 @@ export default function CreatePropertyListStep1({
       }));
     }
   }, [initialData]);
-
-  useEffect(() => {
-    async function fetchId() {
-      const res = await getNextPropertyId();
-      const nextId = res.data.nextId;
-
-      setForm((prev) => ({
-        ...prev,
-        propertyId: nextId,
-      }));
-    }
-    fetchId();
-  }, []);
-
-  const [dropdowns, setDropdowns] = useState({
-    properties: [],
-    zones: [],
-    blocks: [],
-    types: [],
-    statuses: [],
-    units: [],
-    furnishings: [],
-    parkings: [],
-    pets: [],
-    floorRanges: [],
-  });
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function fetchAll() {
-      try {
-        const [
-          propRes,
-          zoneRes,
-          typeRes,
-          statusRes,
-          unitRes,
-          furnRes,
-          parkRes,
-          petRes,
-          blocksRes,
-          floorRangeRes,
-        ] = await Promise.all([
-          getAllProperties(),
-          getAllZoneSubAreas(),
-          getAllPropertyTypes(),
-          getAllAvailabilityStatuses(),
-          getAllUnits(),
-          getAllFurnishings(),
-          getAllParkings(),
-          getAllPetPolicies(),
-          getAllBlocks(),
-          getAllFloorRanges(),
-        ]);
-
-        if (!mounted) return;
-
-        /* ✅ FILTER ACTIVE ITEMS */
-        const activeProperties = (propRes.data?.data || []).filter((i) => i.status === "Active");
-        const activeZones = (zoneRes.data?.data || []).filter((i) => i.status === "Active");
-        const activeTypes = (typeRes.data?.data || []).filter((i) => i.status === "Active");
-        const activeStatus = (statusRes.data?.data || []).filter((i) => i.status === "Active");
-        const allUnits = (unitRes.data?.data || []).filter((i) => i.status === "Active");
-        const activeFurnishings = (furnRes.data?.data || []).filter((i) => i.status === "Active");
-        const activeParking = (parkRes.data?.data || []).filter((i) => i.status === "Active");
-        const activePets = (petRes.data?.data || []).filter((i) => i.status === "Active");
-        const activeBlocks = (blocksRes.data?.data || []).filter((i) => i.status === "Active");
-        const activeFloorRanges = (floorRangeRes.data?.data || []).filter(
-          (i) => i.status === "Active"
-        );
-
-        /* ✅ SET DROPDOWNS */
-        setDropdowns({
-          properties: activeProperties,
-          zones: activeZones,
-          types: activeTypes,
-          statuses: activeStatus,
-          units: allUnits,
-          furnishings: activeFurnishings,
-          parkings: activeParking,
-          pets: activePets,
-          blocks: activeBlocks,
-          floorRanges: activeFloorRanges,
-        });
-
-        /* ✅ SET FORM DEFAULTS (including auto-ID) */
-        const defaultUnit = allUnits.find((u) => u.isDefault);
-
-        setForm((prev) => ({
-          ...prev,
-          unit: prev.unit || defaultUnit?._id || "",
-        }));
-      } catch (err) {
-        console.error("Error loading dropdowns", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchAll();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   /* Handlers */
   const handleInputChange = useCallback(
@@ -386,10 +344,12 @@ export default function CreatePropertyListStep1({
 
   const t = {
     listingInfo: lang === "en" ? "Listing Information" : "Thông Tin Niêm Yết",
-    propertyInfo: lang === "en" ? "Property Information" : "Thông Tin Bất Động Sản",
+    propertyInfo:
+      lang === "en" ? "Property Information" : "Thông Tin Bất Động Sản",
     whatsNearby: lang === "en" ? "What's Nearby?" : "Gần Đây Có Gì?",
     description: lang === "en" ? "Description" : "Mô Tả",
-    propertyUtility: lang === "en" ? "Property Utility" : "Tiện Ích Bất Động Sản",
+    propertyUtility:
+      lang === "en" ? "Property Utility" : "Tiện Ích Bất Động Sản",
   };
 
   const { Option } = AntdSelect;
@@ -398,7 +358,9 @@ export default function CreatePropertyListStep1({
 
   // Filter + prioritize dynamically
   const filteredIcons = iconOptions
-    .filter((opt) => opt.labelText.toLowerCase().includes(searchValue.toLowerCase()))
+    .filter((opt) =>
+      opt.labelText.toLowerCase().includes(searchValue.toLowerCase())
+    )
     .sort((a, b) => {
       const q = searchValue.toLowerCase();
       const aText = a.labelText.toLowerCase();
@@ -421,11 +383,15 @@ export default function CreatePropertyListStep1({
         const block = blocks.find((b) => b._id === value);
         if (block) {
           updated.blockNameText = label;
-          updated.blockName = { en: block.name?.en || label, vi: block.name?.vi || label };
+          updated.blockName = {
+            en: block.name?.en || label,
+            vi: block.name?.vi || label,
+          };
 
           // set zone
           updated.zoneId = block.zone?._id || "";
-          updated.zoneName = lang === "vi" ? block.zone?.name?.vi : block.zone?.name?.en;
+          updated.zoneName =
+            lang === "vi" ? block.zone?.name?.vi : block.zone?.name?.en;
           updated.zone = {
             en: block.zone?.name?.en || updated.zoneName || "",
             vi: block.zone?.name?.vi || updated.zoneName || "",
@@ -443,18 +409,23 @@ export default function CreatePropertyListStep1({
         const zone = zones.find((z) => z._id === value);
         if (zone) {
           updated.zoneName = label;
-          updated.zone = { en: zone.name?.en || label, vi: zone.name?.vi || label };
+          updated.zone = {
+            en: zone.name?.en || label,
+            vi: zone.name?.vi || label,
+          };
 
           // ensure project matches zone
           updated.projectId = zone.property?._id || "";
-          updated.projectName = lang === "vi" ? zone.property?.name?.vi : zone.property?.name?.en;
+          updated.projectName =
+            lang === "vi" ? zone.property?.name?.vi : zone.property?.name?.en;
 
           // auto-pick first block under this zone
           const zoneBlocks = blocks.filter((b) => b.zone?._id === zone._id);
           if (zoneBlocks.length > 0) {
             const firstBlock = zoneBlocks[0];
             updated.blockId = firstBlock._id;
-            updated.blockNameText = lang === "vi" ? firstBlock.name?.vi : firstBlock.name?.en;
+            updated.blockNameText =
+              lang === "vi" ? firstBlock.name?.vi : firstBlock.name?.en;
             updated.blockName = {
               en: firstBlock.name?.en || updated.blockNameText || "",
               vi: firstBlock.name?.vi || updated.blockNameText || "",
@@ -482,24 +453,30 @@ export default function CreatePropertyListStep1({
         updated.projectName = label || "";
 
         // Filter zones by selected project
-        const projectZones = dropdowns.zones.filter((z) => z.property?._id === value);
+        const projectZones = (dropdowns.zones || []).filter(
+          (z) => z.property?._id === value
+        );
 
         // Auto-select first zone (if exists)
         if (projectZones.length > 0) {
           const firstZone = projectZones[0];
           updated.zoneId = firstZone._id;
-          updated.zoneName = lang === "vi" ? firstZone.name?.vi : firstZone.name?.en;
+          updated.zoneName =
+            lang === "vi" ? firstZone.name?.vi : firstZone.name?.en;
           updated.zone = {
             en: firstZone.name?.en || updated.zoneName || "",
             vi: firstZone.name?.vi || updated.zoneName || "",
           };
 
           // Auto-select first block in that zone (if exists)
-          const zoneBlocks = dropdowns.blocks.filter((b) => b.zone?._id === firstZone._id);
+          const zoneBlocks = (dropdowns.blocks || []).filter(
+            (b) => b.zone?._id === firstZone._id
+          );
           if (zoneBlocks.length > 0) {
             const firstBlock = zoneBlocks[0];
             updated.blockId = firstBlock._id;
-            updated.blockNameText = lang === "vi" ? firstBlock.name?.vi : firstBlock.name?.en;
+            updated.blockNameText =
+              lang === "vi" ? firstBlock.name?.vi : firstBlock.name?.en;
             updated.blockName = {
               en: firstBlock.name?.en || updated.blockNameText || "",
               vi: firstBlock.name?.vi || updated.blockNameText || "",
@@ -527,9 +504,7 @@ export default function CreatePropertyListStep1({
     [form, dropdowns, lang, onChange]
   );
 
-  if (loading) {
-    return <SkeletonLoader />;
-  }
+  if (loading) return <SkeletonLoader />;
 
   return (
     <div className="min-h-screen bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
@@ -538,8 +513,11 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng ? "border-b-2 border-[#41398B] text-black" : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -579,16 +557,21 @@ export default function CreatePropertyListStep1({
             <label className="text-sm text-[#131517] font-semibold mb-2">
               {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
             </label>
-
             <AntdSelect
               showSearch
               allowClear
-              placeholder={lang === "en" ? "Search and Select" : "Tìm kiếm và chọn"}
+              placeholder={
+                lang === "en" ? "Search and Select" : "Tìm kiếm và chọn"
+              }
               optionFilterProp="children"
               value={form.projectId || undefined}
-              onChange={(val, option) => syncLinkedFields("projectId", val, option?.children)}
+              onChange={(val, option) =>
+                syncLinkedFields("projectId", val, option?.children)
+              }
               filterOption={(input, option) =>
-                (option?.children ?? "").toLowerCase().includes(input.toLowerCase())
+                (option?.children ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
               className="w-full custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
@@ -609,9 +592,15 @@ export default function CreatePropertyListStep1({
               showSearch
               allowClear
               labelInValue
-              placeholder={lang === "en" ? "Type or Select Area / Zone" : "Nhập hoặc chọn khu vực / vùng"}
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Area / Zone"
+                  : "Nhập hoặc chọn khu vực / vùng"
+              }
               value={
-                form.zoneId ? { value: form.zoneId, label: form.zoneName || "" } : undefined
+                form.zoneId
+                  ? { value: form.zoneId, label: form.zoneName || "" }
+                  : undefined
               }
               onChange={(val) => {
                 // keep displayed state
@@ -624,11 +613,15 @@ export default function CreatePropertyListStep1({
                 // trigger auto block pick & ensure project consistency
                 syncLinkedFields("zoneId", val.value, val.label);
               }}
-              filterOption={(input, option) => option?.label?.toLowerCase().includes(input.toLowerCase())}
+              filterOption={(input, option) =>
+                option?.label?.toLowerCase().includes(input.toLowerCase())
+              }
               className="w-full custom-select"
               popupClassName="custom-dropdown"
               options={dropdowns.zones
-                .filter((z) => !form.projectId || z.property?._id === form.projectId)
+                .filter(
+                  (z) => !form.projectId || z.property?._id === form.projectId
+                )
                 .map((zone) => ({
                   label: lang === "vi" ? zone.name.vi : zone.name.en,
                   value: zone._id,
@@ -654,7 +647,9 @@ export default function CreatePropertyListStep1({
               labelInValue
               placeholder={lang === "en" ? "Select Block" : "Chọn Khối"}
               value={
-                form.blockId ? { value: form.blockId, label: form.blockNameText || "" } : undefined
+                form.blockId
+                  ? { value: form.blockId, label: form.blockNameText || "" }
+                  : undefined
               }
               onChange={(val) => {
                 setForm((p) => ({
@@ -689,6 +684,18 @@ export default function CreatePropertyListStep1({
             </AntdSelect>
           </div>
 
+          <Switch
+            checked={form.listingInformationVisibility?.propertyNo}
+            onChange={(val) =>
+              setForm((p) => ({
+                ...p,
+                listingInformationVisibility: {
+                  ...p.listingInformationVisibility,
+                  propertyNo: val,
+                },
+              }))
+            }
+          />
           <LocalizedInput
             label={lang === "en" ? "Property No" : "Số bất động sản"}
             name="propertyNo"
@@ -725,7 +732,9 @@ export default function CreatePropertyListStep1({
               />
 
               <Select
-                label={lang === "en" ? "Availability Status" : "Trạng thái sẵn có"}
+                label={
+                  lang === "en" ? "Availability Status" : "Trạng thái sẵn có"
+                }
                 name="availabilityStatus"
                 lang={lang}
                 options={dropdowns.statuses}
@@ -780,14 +789,21 @@ export default function CreatePropertyListStep1({
             <AntdSelect
               showSearch
               allowClear
-              placeholder={lang === "en" ? "Select Floor Range" : "Chọn phạm vi tầng"}
+              placeholder={
+                lang === "en" ? "Select Floor Range" : "Chọn phạm vi tầng"
+              }
               value={
-                form.floors ? (lang === "vi" ? form.floors.vi : form.floors.en) : undefined
+                form.floors
+                  ? lang === "vi"
+                    ? form.floors.vi
+                    : form.floors.en
+                  : undefined
               }
               onChange={(value, option) => {
                 const fr = dropdowns.floorRanges.find(
                   (item) =>
-                    (lang === "vi" ? item.name?.vi : item.name?.en) === option.label
+                    (lang === "vi" ? item.name?.vi : item.name?.en) ===
+                    option.label
                 );
 
                 if (fr) {
@@ -858,7 +874,10 @@ export default function CreatePropertyListStep1({
           </button>
         </div>
         {form.utilities.map((u, i) => (
-          <div key={i} className="grid grid-cols-3 gap-8 mb-4 items-baseline pb-3">
+          <div
+            key={i}
+            className="grid grid-cols-3 gap-8 mb-4 items-baseline pb-3"
+          >
             {/* Utility Name (Language Controlled) */}
             <div className="col-span-1">
               <label className="block text-sm text-[#131517] font-semibold mb-2">
@@ -878,7 +897,9 @@ export default function CreatePropertyListStep1({
                   })
                 }
                 placeholder={
-                  lang === "en" ? "Enter English name" : "Nhập tên tiện ích tiếng Việt"
+                  lang === "en"
+                    ? "Enter English name"
+                    : "Nhập tên tiện ích tiếng Việt"
                 }
                 className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
               />
@@ -892,15 +913,23 @@ export default function CreatePropertyListStep1({
               <AntdSelect
                 showSearch
                 allowClear
-                placeholder={lang === "en" ? "Search and Select Icon" : "Tìm và chọn biểu tượng"}
+                placeholder={
+                  lang === "en"
+                    ? "Search and Select Icon"
+                    : "Tìm và chọn biểu tượng"
+                }
                 value={u.icon || undefined}
-                onChange={(value, option) => handleUtilityChange(i, "icon", option?.icon)}
+                onChange={(value, option) =>
+                  handleUtilityChange(i, "icon", option?.icon)
+                }
                 className="w-full custom-select"
                 onSearch={(val) => setSearchValue(val)}
                 filterOption={false}
                 popupClassName="custom-dropdown"
                 optionLabelProp="label"
-                dropdownRender={(menu) => <div className="max-h-60 overflow-auto">{menu}</div>}
+                dropdownRender={(menu) => (
+                  <div className="max-h-60 overflow-auto">{menu}</div>
+                )}
               >
                 {filteredIcons.map((item) => (
                   <Option
@@ -909,13 +938,21 @@ export default function CreatePropertyListStep1({
                     icon={item.icon}
                     label={
                       <div className="flex items-center gap-2">
-                        <img src={item.icon} alt={item.name[lang]} className="w-5 h-5 object-contain" />
+                        <img
+                          src={item.icon}
+                          alt={item.name[lang]}
+                          className="w-5 h-5 object-contain"
+                        />
                         <span>{item.name[lang]}</span>
                       </div>
                     }
                   >
                     <div className="flex items-center gap-2">
-                      <img src={item.icon} alt={item.name[lang]} className="w-5 h-5 object-contain" />
+                      <img
+                        src={item.icon}
+                        alt={item.name[lang]}
+                        className="w-5 h-5 object-contain"
+                      />
                       <span>{item.name[lang]}</span>
                     </div>
                   </Option>
@@ -941,7 +978,13 @@ export default function CreatePropertyListStep1({
         <div className="text-end flex justify-end">
           <button
             onClick={() => {
-              const syncLangFields = ["title", "address", "description", "view", "whatsNearby"];
+              const syncLangFields = [
+                "title",
+                "address",
+                "description",
+                "view",
+                "whatsNearby",
+              ];
               const updatedForm = { ...form };
 
               syncLangFields.forEach((field) => {
@@ -953,7 +996,17 @@ export default function CreatePropertyListStep1({
               });
 
               onChange && onChange(updatedForm);
-              onNext(updatedForm);
+              onNext({
+                ...updatedForm,
+                listingInformationVisibility:
+                  updatedForm.listingInformationVisibility,
+                propertyInformationVisibility:
+                  updatedForm.propertyInformationVisibility,
+                titleVisibility: updatedForm.titleVisibility,
+                descriptionVisibility: updatedForm.descriptionVisibility,
+                propertyUtilityVisibility:
+                  updatedForm.propertyUtilityVisibility,
+              });
             }}
             className="mt-4 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full flex items-center cursor-pointer gap-1.5"
           >

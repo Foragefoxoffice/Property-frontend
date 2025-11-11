@@ -22,6 +22,13 @@ import {
   getAllDeposits,
   getAllFeeTax,
   getAllLegalDocuments,
+  getAllCurrencies,
+  getAllOwners,
+  getAllStaffs,
+  getMe,
+  getNextPropertyId,
+  getAllBlocks,
+  getAllFloorRanges,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -55,7 +62,7 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch { }
+    } catch {}
   }
   return result;
 }
@@ -75,7 +82,12 @@ export default function CreatePropertyPage({
   const [dropdowns, setDropdowns] = useState({});
   const [savedId, setSavedId] = useState(null);
   const { language } = useLanguage();
-
+  const [step3Api, setStep3Api] = useState({
+    owners: [],
+    staffs: [],
+    me: null,
+    loading: true,
+  });
   const t = {
     en: {
       createProperty: "Create Property",
@@ -101,19 +113,60 @@ export default function CreatePropertyPage({
 
   const getStepTitle = () => {
     if (defaultTransactionType === "Lease") {
-      return language === "vi" ? "Tạo Bất Động Sản Cho Thuê" : "Create Lease Property";
+      return language === "vi"
+        ? "Tạo Bất Động Sản Cho Thuê"
+        : "Create Lease Property";
     }
     if (defaultTransactionType === "Sale") {
-      return language === "vi" ? "Tạo Bất Động Sản Bán" : "Create Sale Property";
+      return language === "vi"
+        ? "Tạo Bất Động Sản Bán"
+        : "Create Sale Property";
     }
     if (defaultTransactionType === "Home Stay") {
-      return language === "vi" ? "Tạo Bất Động Sản Home Stay" : "Create Home Stay Property";
+      return language === "vi"
+        ? "Tạo Bất Động Sản Home Stay"
+        : "Create Home Stay Property";
     }
 
     // ✅ fallback to default original text
     return t.createProperty;
   };
 
+  useEffect(() => {
+    async function loadStep3Data() {
+      try {
+        const [ownersRes, staffsRes, meRes] = await Promise.all([
+          getAllOwners(),
+          getAllStaffs(),
+          getMe(),
+        ]);
+
+        setStep3Api({
+          owners: ownersRes.data?.data || [],
+          staffs: staffsRes.data?.data || [],
+          me: meRes?.data?.data || null,
+          loading: false,
+        });
+      } catch (err) {
+        console.log("Step3 API error:", err);
+        setStep3Api((prev) => ({ ...prev, loading: false }));
+      }
+    }
+
+    loadStep3Data();
+  }, []);
+
+  useEffect(() => {
+    async function loadNextId() {
+      try {
+        const res = await getNextPropertyId();
+        setPropertyData((prev) => ({ ...prev, propertyId: res.data.nextId }));
+      } catch (err) {
+        console.error("next id error", err);
+      }
+    }
+    if (!isEditMode) loadNextId();
+  }, []);
 
   /* =========================================================
      🔽 Fetch dropdown data first
@@ -130,7 +183,13 @@ export default function CreatePropertyPage({
           furnRes,
           parkRes,
           petRes,
-          feeTaxRes, legalRes
+          blocksRes,
+          floorRangeRes,
+          feeTaxRes,
+          legalRes,
+          depositsRes,
+          paymentsRes,
+          currenciesRes,
         ] = await Promise.all([
           getAllProperties(),
           getAllZoneSubAreas(),
@@ -140,8 +199,13 @@ export default function CreatePropertyPage({
           getAllFurnishings(),
           getAllParkings(),
           getAllPetPolicies(),
+          getAllBlocks(),
+          getAllFloorRanges(),
           getAllFeeTax(),
           getAllLegalDocuments(),
+          getAllDeposits(),
+          getAllPayments(),
+          getAllCurrencies(),
         ]);
 
         setDropdowns({
@@ -153,8 +217,13 @@ export default function CreatePropertyPage({
           furnishings: furnRes.data?.data || [],
           parkings: parkRes.data?.data || [],
           pets: petRes.data?.data || [],
+          blocks: blocksRes.data?.data || [],
+          floorRanges: floorRangeRes.data?.data || [],
           feeTaxes: feeTaxRes.data?.data || [],
           legalDocs: legalRes.data?.data || [],
+          deposits: depositsRes.data?.data || [],
+          payments: paymentsRes.data?.data || [],
+          currencies: currenciesRes.data?.data || [],
         });
       } catch (err) {
         console.error("Dropdown fetch error:", err);
@@ -505,6 +574,33 @@ export default function CreatePropertyPage({
           normalized.contactManagement?.contactManagementAgentFee || 0
         ),
       },
+      /* ✅ VISIBILITY SETTINGS */
+      listingInformationVisibility: normalized.listingInformationVisibility || {
+        transactionType: false,
+        propertyId: false,
+        projectCommunity: false,
+        areaZone: false,
+        blockName: false,
+        propertyNo: false,
+        dateListed: false,
+        availableFrom: false,
+        availabilityStatus: false,
+      },
+
+      propertyInformationVisibility:
+        normalized.propertyInformationVisibility || {
+          unit: false,
+          unitSize: false,
+          bedrooms: false,
+          bathrooms: false,
+          floorRange: false,
+          furnishing: false,
+          view: false,
+        },
+
+      titleVisibility: normalized.titleVisibility || false,
+      descriptionVisibility: normalized.descriptionVisibility || false,
+      propertyUtilityVisibility: normalized.propertyUtilityVisibility || false,
 
       status: normalized.status || "Draft",
     };
@@ -522,7 +618,6 @@ export default function CreatePropertyPage({
         ...propertyData,
         ...(dataFromStep || {}),
       });
-
 
       if (mergedData.blockNameText) {
         mergedData.blockName = {
@@ -552,7 +647,8 @@ export default function CreatePropertyPage({
         return { en: "", vi: "" };
       };
 
-      const zoneName = mergedData.zoneName || mergedData.zone?.en || mergedData.zone?.vi || "";
+      const zoneName =
+        mergedData.zoneName || mergedData.zone?.en || mergedData.zone?.vi || "";
       const deposit = normalizeLocalized(mergedData.depositPaymentTerms);
       const paymentTerm = normalizeLocalized(mergedData.maintenanceFeeMonthly);
 
@@ -676,8 +772,9 @@ export default function CreatePropertyPage({
       await updatePropertyListing(savedId, { status });
       CommonToaster(
         language === "vi"
-          ? `Bất động sản đã được đăng và đánh dấu là ${status === "Published" ? "Đã đăng" : "Bản nháp"
-          }!`
+          ? `Bất động sản đã được đăng và đánh dấu là ${
+              status === "Published" ? "Đã đăng" : "Bản nháp"
+            }!`
           : `Property Posted and marked as ${status}!`,
         "success"
       );
@@ -704,7 +801,6 @@ export default function CreatePropertyPage({
     { title: getStepTitle(), label: t.step4Label },
   ];
 
-
   const renderStepContent = () => {
     switch (step) {
       case 1:
@@ -713,7 +809,8 @@ export default function CreatePropertyPage({
             onNext={() => setStep(2)}
             onChange={handleStepChange}
             initialData={propertyData}
-            defaultTransactionType={defaultTransactionType} // ✅ add this line
+            defaultTransactionType={defaultTransactionType}
+            dropdowns={dropdowns}
           />
         );
       case 2:
@@ -723,6 +820,8 @@ export default function CreatePropertyPage({
             onPrev={() => setStep(1)}
             onChange={handleStepChange}
             initialData={propertyData}
+            dropdowns={dropdowns}
+            dropdownLoading={!dropdowns.currencies}
           />
         );
       case 3:
@@ -732,6 +831,10 @@ export default function CreatePropertyPage({
             onChange={handleStepChange}
             initialData={propertyData}
             onSave={handleSaveDraft}
+            owners={step3Api.owners}
+            staffs={step3Api.staffs}
+            me={step3Api.me}
+            loading={step3Api.loading}
           />
         );
       case 4:

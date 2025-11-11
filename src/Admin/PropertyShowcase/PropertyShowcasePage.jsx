@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import PropertyShowcase from "../Admin/PropertyShowcase/PropertyHome";
-import PropertyDetailsSection from "./PropertyShowcase/PropertyDetailSection";
-import { getSinglePropertyByPropertyID } from "@/Api/action";
+import PropertyDetailsSection from "./PropertyDetailSection";
+import { getSingleListingByPropertyID } from "@/Api/action";
 import { useParams } from "react-router-dom";
+import PropertyHome from "./PropertyHome";
 
 const PropertyShowcasePage = () => {
   const { id } = useParams();
@@ -12,7 +12,7 @@ const PropertyShowcasePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getSinglePropertyByPropertyID(id);
+        const res = await getSingleListingByPropertyID(id);
         console.log("🏠 Fetched property data:", res.data.data);
         setProperty(res.data.data);
       } catch (err) {
@@ -48,7 +48,7 @@ const PropertyShowcasePage = () => {
 
   return (
     <div className="fade-in">
-      <PropertyShowcase property={property} />
+      <PropertyHome property={property} />
       <PropertyDetailsSection property={property} />
     </div>
   );

@@ -59,10 +59,8 @@ export const getAllProperties = (params) => API.get("/property", { params });
 export const createProperty = (data) => API.post("/property", data);
 export const updateProperty = (id, data) => API.put(`/property/${id}`, data);
 export const deleteProperty = (id) => API.delete(`/property/${id}`);
-export const getSinglePropertyByPropertyID = (pid) =>
-  API.get(`/create-property/pid/${pid}`);
-
-
+export const getSingleListingByPropertyID = (id) =>
+  API.get(`/propertyListing/pid/${id}`);
 
 /* =========================================================
    🗺️ ZONE / SUB-AREA APIs
@@ -190,9 +188,11 @@ export const deleteFeeTax = (id) => API.delete(`/feetax/${id}`);
 /* =========================================================
    📄 LEGAL DOCUMENT APIs
 ========================================================= */
-export const getAllLegalDocuments = (params) => API.get("/legaldocument", { params });
+export const getAllLegalDocuments = (params) =>
+  API.get("/legaldocument", { params });
 export const createLegalDocument = (data) => API.post("/legaldocument", data);
-export const updateLegalDocument = (id, data) => API.put(`/legaldocument/${id}`, data);
+export const updateLegalDocument = (id, data) =>
+  API.put(`/legaldocument/${id}`, data);
 export const deleteLegalDocument = (id) => API.delete(`/legaldocument/${id}`);
 
 /* =========================================================
@@ -200,9 +200,9 @@ export const deleteLegalDocument = (id) => API.delete(`/legaldocument/${id}`);
 ========================================================= */
 export const getAllFloorRanges = (params) => API.get("/floorrange", { params });
 export const createFloorRange = (data) => API.post("/floorrange", data);
-export const updateFloorRange = (id, data) => API.put(`/floorrange/${id}`, data);
+export const updateFloorRange = (id, data) =>
+  API.put(`/floorrange/${id}`, data);
 export const deleteFloorRange = (id) => API.delete(`/floorrange/${id}`);
-
 
 export const createPropertyListing = (data) => {
   console.log(

@@ -11,7 +11,7 @@ import { ToastContainer } from "react-toastify";
 import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { LanguageProvider } from "./Language/LanguageContext.jsx";
-import PropertyShowcase from "./Admin/PropertyShowcase.jsx";
+import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -43,7 +43,10 @@ createRoot(document.getElementById("root")).render(
           }
         />
         <Route path="/manage-property" element={<ManageProperty />} />
-        <Route path="/property-showcase/:id" element={<PropertyShowcase />} />
+        <Route
+          path="/property-showcase/:id"
+          element={<PropertyShowcasePage />}
+        />
         {/* Add other routes as needed */}
       </Routes>
     </StrictMode>
