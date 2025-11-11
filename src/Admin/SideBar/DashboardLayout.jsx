@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   Key,
   BedDouble,
+  ChevronDown,
 } from "lucide-react";
 
 import PropertyMaster from "../MasterList/PropertyMaster";
@@ -33,53 +34,28 @@ import PropertyManager from "../Property/PropertyManager";
 import BlockPage from "../MasterList/MasterListPage/BlockPage";
 import FeeTaxPage from "../MasterList/MasterListPage/FeeTaxPage";
 import LegalDocumentPage from "../MasterList/MasterListPage/LegalDocumentPage";
+import FloorRange from "../MasterList/MasterListPage/FloorRangePage";
 
 const DashboardLayout = () => {
   const [activePage, setActivePage] = useState("Lease");
   const [subPage, setSubPage] = useState(null);
   const [subSubPage, setSubSubPage] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [propertiesOpen, setPropertiesOpen] = useState(true); // dropdown state
 
   const { language } = useLanguage();
   const t = translations[language];
 
-  /* ✅ Updated Main Menu */
   const menuItems = [
-    {
-      key: "Lease",
-      label: "Lease",
-      icon: <Key className="w-4 h-4" />,
-    },
-    {
-      key: "Sale",
-      label: "Sale",
-      icon: <Home className="w-4 h-4" />,
-    },
-    {
-      key: "Home Stay",
-      label: "Home Stay",
-      icon: <BedDouble className="w-4 h-4" />,
-    },
-    {
-      key: "Landlords",
-      label: t.owners,
-      icon: <Users className="w-4 h-4" />,
-    },
-    {
-      key: "Staffs",
-      label: t.staffs,
-      icon: <UserCog className="w-4 h-4" />,
-    },
-    {
-      key: "Masters",
-      label: t.masters,
-      icon: <LayoutGrid className="w-4 h-4" />,
-    },
+    { key: "Lease", label: "Lease", icon: <Key className="w-4 h-4" /> },
+    { key: "Sale", label: "Sale", icon: <Home className="w-4 h-4" /> },
+    { key: "Home Stay", label: "Home Stay", icon: <BedDouble className="w-4 h-4" /> },
+    { key: "Landlords", label: t.owners, icon: <Users className="w-4 h-4" /> },
+    { key: "Staffs", label: t.staffs, icon: <UserCog className="w-4 h-4" /> },
+    { key: "Masters", label: t.masters, icon: <LayoutGrid className="w-4 h-4" /> },
   ];
 
-  /* ✅ Main Page Rendering */
   const renderPage = () => {
-    /* ✅ MASTERS */
     if (activePage === "Masters") {
       if (subPage === "PropertyMaster") {
         if (subSubPage === "PropertyPage")
@@ -108,6 +84,8 @@ const DashboardLayout = () => {
           return <FeeTaxPage goBack={() => setSubSubPage(null)} />;
         if (subSubPage === "LegalDocumentPage")
           return <LegalDocumentPage goBack={() => setSubSubPage(null)} />;
+        if (subSubPage === "FloorRangePage")
+          return <FloorRange goBack={() => setSubSubPage(null)} />;
 
         return (
           <PropertyMaster
@@ -127,6 +105,7 @@ const DashboardLayout = () => {
             openPaymentPage={() => setSubSubPage("PaymentPage")}
             openFeeTaxPage={() => setSubSubPage("FeeTaxPage")}
             openLegalDocumentPage={() => setSubSubPage("LegalDocumentPage")}
+            openFloorRangePage={() => setSubSubPage("FloorRangePage")}
           />
         );
       }
@@ -143,7 +122,6 @@ const DashboardLayout = () => {
       );
     }
 
-    /* ✅ LEASE / SALE / HOME STAY — Now Act as Main Pages */
     if (["Lease", "Sale", "Home Stay"].includes(activePage)) {
       if (
         subPage?.startsWith("CreateProperty") ||
@@ -184,7 +162,6 @@ const DashboardLayout = () => {
       );
     }
 
-    /* ✅ OWNERS */
     if (activePage === "Landlords") {
       if (subPage === "ViewOwner") {
         return (
@@ -207,7 +184,6 @@ const DashboardLayout = () => {
       );
     }
 
-    /* ✅ STAFFS */
     if (activePage === "Staffs") {
       if (subPage === "ViewStaff") {
         return (
@@ -239,43 +215,101 @@ const DashboardLayout = () => {
         <div className="w-[280px] flex flex-col items-center py-6">
           <div className="flex flex-col w-full gap-4 px-4">
 
-            {menuItems.map((item) => (
-              <div key={item.key} className="w-full">
-                <button
-                  onClick={() => {
-                    setActivePage(item.key);
-                    setSubPage(null);
-                    setSubSubPage(null);
-                  }}
-                  className={`group flex w-full cursor-pointer items-center justify-between gap-3 px-2 pr-3 py-2 rounded-full transition-all duration-200 
-                    ${activePage === item.key
-                      ? "bg-[#41398B] text-white"
-                      : "text-gray-700 hover:bg-[#41398B] hover:text-white"
-                    }`}
+            {/* ✅ Properties Dropdown */}
+            <div className="w-full">
+              <button
+                onClick={() => setPropertiesOpen(!propertiesOpen)}
+                className="group flex w-full cursor-pointer items-center justify-between gap-3 px-2 pr-3 py-2 rounded-full transition-all duration-200 
+                  text-gray-700 hover:bg-[#41398B] hover:text-white"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white group-hover:text-[#41398B]">
+                    <Home className="w-4 h-4" />
+                  </span>
+                  <span className="text-sm font-medium group-hover:text-white">
+                    Properties
+                  </span>
+                </div>
+                <span
+                  className={`transition-transform duration-200 ${propertiesOpen ? "rotate-180" : ""}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`p-3 rounded-full transition-all duration-200 ${activePage === item.key
-                        ? "bg-white text-[#41398B]"
-                        : "bg-[#E8E8FF] text-[#41398B] group-hover:bg-white group-hover:text-[#41398B]"
-                        }`}
-                    >
-                      {item.icon}
-                    </span>
+                  <ChevronDown />
+                </span>
+              </button>
 
-                    <span
-                      className={`text-sm font-medium ${activePage === item.key
-                        ? "text-white"
-                        : "text-gray-800 group-hover:text-white"
-                        }`}
-                    >
-                      {item.label}
-                    </span>
-                  </div>
-                </button>
-              </div>
-            ))}
+              {propertiesOpen && (
+                <div className="ml-10 mt-2 flex flex-col gap-2">
+                  {["Lease", "Sale", "Home Stay"].map((key) => {
+                    const item = menuItems.find((m) => m.key === key);
+                    return (
+                      <button
+                        key={item.key}
+                        onClick={() => {
+                          setActivePage(item.key);
+                          setSubPage(null);
+                          setSubSubPage(null);
+                        }}
+                        className={`group flex w-full cursor-pointer items-center gap-3 px-2 pr-3 py-2 rounded-full transition-all duration-200 
+                          ${activePage === item.key
+                            ? "bg-[#41398B] text-white"
+                            : "text-gray-700 hover:bg-[#41398B] hover:text-white"
+                          }`}
+                      >
+                        <span
+                          className={`p-3 rounded-full transition-all duration-200 ${activePage === item.key
+                            ? "bg-white text-[#41398B]"
+                            : "bg-[#E8E8FF] text-[#41398B] group-hover:bg-white group-hover:text-[#41398B]"
+                            }`}
+                        >
+                          {item.icon}
+                        </span>
+                        <span className="text-sm font-medium">{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
+            {/* ✅ Other menu items */}
+            {menuItems
+              .filter((m) => !["Lease", "Sale", "Home Stay"].includes(m.key))
+              .map((item) => (
+                <div key={item.key} className="w-full">
+                  <button
+                    onClick={() => {
+                      setActivePage(item.key);
+                      setSubPage(null);
+                      setSubSubPage(null);
+                    }}
+                    className={`group flex w-full cursor-pointer items-center justify-between gap-3 px-2 pr-3 py-2 rounded-full transition-all duration-200 
+                      ${activePage === item.key
+                        ? "bg-[#41398B] text-white"
+                        : "text-gray-700 hover:bg-[#41398B] hover:text-white"
+                      }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`p-3 rounded-full transition-all duration-200 ${activePage === item.key
+                          ? "bg-white text-[#41398B]"
+                          : "bg-[#E8E8FF] text-[#41398B] group-hover:bg-white group-hover:text-[#41398B]"
+                          }`}
+                      >
+                        {item.icon}
+                      </span>
+
+                      <span
+                        className={`text-sm font-medium ${activePage === item.key
+                          ? "text-white"
+                          : "text-gray-800 group-hover:text-white"
+                          }`}
+                      >
+                        {item.label}
+                      </span>
+                    </div>
+                  </button>
+                </div>
+              ))}
           </div>
         </div>
 

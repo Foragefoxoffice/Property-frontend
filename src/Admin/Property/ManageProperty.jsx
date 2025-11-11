@@ -16,6 +16,8 @@ import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { useNavigate } from "react-router-dom";
+import { Dropdown, Menu } from "antd";
+import { MoreVertical } from "lucide-react";
 
 export default function ManageProperty({
   openCreateProperty,
@@ -123,8 +125,15 @@ export default function ManageProperty({
     <div className="min-h-screen px-2 py-2">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-semibold text-gray-900">{t.properties}</h1>
-
+        <h1 className="text-3xl font-semibold text-gray-900">
+          {filterByTransactionType === "Lease"
+            ? t.propertyTitleLease
+            : filterByTransactionType === "Sale"
+              ? t.propertyTitleSale
+              : filterByTransactionType === "Home Stay"
+                ? t.propertyTitleHomeStay
+                : ""}
+        </h1>
         <div className="flex items-center gap-4">
           <button
             onClick={openCreateProperty}
@@ -151,7 +160,6 @@ export default function ManageProperty({
         />
       </div>
 
-      {/* Table */}
       {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {loading ? (
@@ -190,6 +198,10 @@ export default function ManageProperty({
                   info.listingInformationPropertyType?.[language] ||
                   info.listingInformationPropertyType?.en ||
                   "—";
+                const propertyNo =
+                  info.listingInformationPropertyNo?.[language] ||
+                  info.listingInformationPropertyNo?.en ||
+                  "—";
                 const blockName =
                   info.listingInformationBlockName?.[language] ||
                   info.listingInformationBlockName?.en ||
@@ -211,7 +223,7 @@ export default function ManageProperty({
                     </td>
 
                     {/* 🔹 Transaction Type */}
-                    <td className="px-6 py-6 capitalize">{transactionType}</td>
+                    <td className="px-6 py-6 capitalize">{propertyNo}</td>
 
                     {/* 🔹 Property Type */}
                     <td className="px-6 py-4">{propertyType}</td>
@@ -247,12 +259,6 @@ export default function ManageProperty({
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
                       <button
                         style={{ justifyItems: "anchor-center" }}
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
-                      >
-                        <Share2 className="w-4 h-4 text-gray-600" />
-                      </button>
-                      <button
-                        style={{ justifyItems: "anchor-center" }}
                         onClick={() =>
                           navigate(
                             `/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`
@@ -268,7 +274,7 @@ export default function ManageProperty({
                         style={{ justifyItems: "anchor-center" }}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
-                        <Pencil className="w-4 h-4 text-gray-600" />
+                        <Pencil color="#1d47ffff" className="w-4 h-4 text-gray-600" />
                       </button>
                       <button
                         style={{ justifyItems: "anchor-center" }}
@@ -277,6 +283,24 @@ export default function ManageProperty({
                       >
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </button>
+                      <Dropdown
+                        trigger={["click"]}
+                        menu={{
+                          items: [
+                            { key: "1", label: "Dummy Option 1" },
+                            { key: "2", label: "Dummy Option 2" },
+                            { key: "3", label: "Dummy Option 3" },
+                          ],
+                        }}
+                        placement="bottomRight"
+                      >
+                        <button
+                          className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex items-center justify-center"
+                        >
+                          <MoreVertical className="w-4 h-4 text-gray-600" />
+                        </button>
+                      </Dropdown>
+
                     </td>
                   </tr>
                 );

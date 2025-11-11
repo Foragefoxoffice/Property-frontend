@@ -195,6 +195,13 @@ export const createLegalDocument = (data) => API.post("/legaldocument", data);
 export const updateLegalDocument = (id, data) => API.put(`/legaldocument/${id}`, data);
 export const deleteLegalDocument = (id) => API.delete(`/legaldocument/${id}`);
 
+/* =========================================================
+   🏢 FLOOR RANGE APIs
+========================================================= */
+export const getAllFloorRanges = (params) => API.get("/floorrange", { params });
+export const createFloorRange = (data) => API.post("/floorrange", data);
+export const updateFloorRange = (id, data) => API.put(`/floorrange/${id}`, data);
+export const deleteFloorRange = (id) => API.delete(`/floorrange/${id}`);
 
 
 export const createPropertyListing = (data) => {

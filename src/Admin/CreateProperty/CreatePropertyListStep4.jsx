@@ -328,7 +328,10 @@ export default function CreatePropertyListStep4({
               label={labels.bathrooms[lang]}
               value={pi.informationBathrooms}
             />
-            <Field label={labels.floors[lang]} value={pi.informationFloors} />
+            <Field
+              label={labels.floors[lang]}
+              value={safe(pi.informationFloors)}
+            />
             <Field
               label={labels.furnishing[lang]}
               value={safe(pi.informationFurnishing)}

@@ -17,7 +17,8 @@ export default function PropertyMaster({
   openPaymentPage,
   openBlockPage,
   openFeeTaxPage,
-  openLegalDocumentPage
+  openLegalDocumentPage,
+  openFloorRangePage
 }) {
   const { language } = useLanguage();
 
@@ -69,6 +70,14 @@ export default function PropertyMaster({
           ? "Định nghĩa đơn vị đo được sử dụng cho diện tích bất động sản — xác định cách hiển thị kích thước và giá theo diện tích."
           : "Defines the measurement unit used for the property's area (size) — determines how the property's dimensions and price per area are displayed.",
       onClick: openUnitPage,
+    },
+    {
+      name: language === "vi" ? "Phạm vi sàn" : "Floor Range",
+      description:
+        language === "vi"
+          ? "Chỉ định phạm vi tầng được bao phủ, chẳng hạn như 1–5 hoặc 6–10, để xác định vị trí theo chiều dọc của bất động sản trong tòa nhà."
+          : "Specifies the range of floors covered, such as 1–5 or 6–10, to define the property’s vertical location within a building.",
+      onClick: openFloorRangePage,
     },
     {
       name: language === "vi" ? "Tình trạng nội thất" : "Furnishing",

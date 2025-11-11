@@ -99,6 +99,22 @@ export default function CreatePropertyPage({
     },
   }[language];
 
+  const getStepTitle = () => {
+    if (defaultTransactionType === "Lease") {
+      return language === "vi" ? "Tạo Bất Động Sản Cho Thuê" : "Create Lease Property";
+    }
+    if (defaultTransactionType === "Sale") {
+      return language === "vi" ? "Tạo Bất Động Sản Bán" : "Create Sale Property";
+    }
+    if (defaultTransactionType === "Home Stay") {
+      return language === "vi" ? "Tạo Bất Động Sản Home Stay" : "Create Home Stay Property";
+    }
+
+    // ✅ fallback to default original text
+    return t.createProperty;
+  };
+
+
   /* =========================================================
      🔽 Fetch dropdown data first
   ========================================================== */
@@ -412,7 +428,7 @@ export default function CreatePropertyPage({
         informationUnitSize: num(normalized.unitSize),
         informationBedrooms: num(normalized.bedrooms),
         informationBathrooms: num(normalized.bathrooms),
-        informationFloors: num(normalized.floors),
+        informationFloors: wrap(normalized.floors),
         informationFurnishing: findLocalized(
           dropdowns.furnishings,
           normalized.furnishing
@@ -444,8 +460,8 @@ export default function CreatePropertyPage({
       financialDetails: {
         financialDetailsCurrency:
           typeof normalized.currency === "object"
-            ? normalized.currency.symbol || "$"
-            : normalized.currency || "$",
+            ? normalized.currency.name || "USD"
+            : normalized.currency || "USD",
         financialDetailsPrice: num(normalized.price),
         financialDetailsTerms: wrap(normalized.contractTerms),
         financialDetailsDeposit: wrap(normalized.depositPaymentTerms),
@@ -682,23 +698,12 @@ export default function CreatePropertyPage({
   };
 
   const steps = [
-    {
-      title: t.createProperty,
-      label: t.step1Label,
-    },
-    {
-      title: t.createProperty,
-      label: t.step2Label,
-    },
-    {
-      title: t.createProperty,
-      label: t.step3Label,
-    },
-    {
-      title: t.createProperty,
-      label: t.step4Label,
-    },
+    { title: getStepTitle(), label: t.step1Label },
+    { title: getStepTitle(), label: t.step2Label },
+    { title: getStepTitle(), label: t.step3Label },
+    { title: getStepTitle(), label: t.step4Label },
   ];
+
 
   const renderStepContent = () => {
     switch (step) {

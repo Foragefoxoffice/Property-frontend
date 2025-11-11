@@ -22,6 +22,9 @@ export const translations = {
     search: "Search",
     blockName: "Block Name",
     availabilitystatus: "Availability Status",
+    propertyTitleLease: "Lease Properties",
+    propertyTitleSale: "Sale Properties",
+    propertyTitleHomeStay: "Home Stay Properties",
   },
 
   vi: {
@@ -47,5 +50,8 @@ export const translations = {
     search: "Tìm kiếm",
     blockName: "Tên khu / tòa nhà",
     availabilitystatus: "Tình trạng sẵn có",
+    propertyTitleLease: "Thuê Bất động sản",
+    propertyTitleSale: "Bán Bất động sản",
+    propertyTitleHomeStay: "Home Stay Bất động sản",
   },
 };

@@ -424,11 +424,10 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -526,9 +525,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -791,9 +789,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -931,7 +928,7 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Agent Payment Agenda */}
-          <div className="flex flex-col col-span-3">
+          <div className="flex flex-col">
             <label className="text-sm text-[#131517] font-semibold mb-2">
               {t.agentFeeAgenda}
             </label>
@@ -944,7 +941,7 @@ export default function CreatePropertyListStep2({
                   e.target.value
                 )
               }
-              className="border border-[#B2B2B3] rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              className="border border-[#B2B2B3] rounded-lg px-3 py-2 h-12 focus:ring-2 focus:ring-gray-300 outline-none"
               placeholder={t.typehere}
             />
           </div>
@@ -1007,9 +1004,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
