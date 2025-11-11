@@ -22,7 +22,7 @@ import {
   getAllProperties,
   getAllZoneSubAreas,
 } from "../../../Api/action";
-import { Select as AntdSelect } from "antd"
+import { Select as AntdSelect } from "antd";
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
@@ -88,7 +88,6 @@ export default function BlockPage({ goBack }) {
       console.log("Zone fetch error:", error);
     }
   };
-
 
   // ✅ Pagination Calculations
   const totalRows = blocks.length;
@@ -165,7 +164,9 @@ export default function BlockPage({ goBack }) {
     // 1️⃣ Fetch zones first
     let zoneOptions = [];
     if (block.property?._id) {
-      const zoneRes = await getAllZoneSubAreas({ property: block.property._id });
+      const zoneRes = await getAllZoneSubAreas({
+        property: block.property._id,
+      });
       zoneOptions = zoneRes?.data?.data || [];
       setZones(zoneOptions);
     }
@@ -185,8 +186,6 @@ export default function BlockPage({ goBack }) {
     setShowModal(true);
   };
 
-
-
   // ✅ Delete
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
 
@@ -200,10 +199,7 @@ export default function BlockPage({ goBack }) {
       setDeleteConfirm({ show: false, id: null });
       fetchBlocks();
     } catch {
-      CommonToaster(
-        isVI ? "Không thể xóa." : "Failed to delete.",
-        "error"
-      );
+      CommonToaster(isVI ? "Không thể xóa." : "Failed to delete.", "error");
     }
   };
 
@@ -214,8 +210,9 @@ export default function BlockPage({ goBack }) {
       await updateBlock(block._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
-          }`
+          ? `Đã chuyển sang ${
+              newStatus === "Active" ? "hoạt động" : "không hoạt động"
+            }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -230,7 +227,6 @@ export default function BlockPage({ goBack }) {
 
   return (
     <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff]">
-
       {/* ✅ Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -293,10 +289,7 @@ export default function BlockPage({ goBack }) {
             <tbody>
               {visibleData.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan="4"
-                    className="py-6 text-center text-gray-500"
-                  >
+                  <td colSpan="4" className="py-6 text-center text-gray-500">
                     {isVI ? "Không có dữ liệu." : "No records found."}
                   </td>
                 </tr>
@@ -304,8 +297,9 @@ export default function BlockPage({ goBack }) {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -321,10 +315,11 @@ export default function BlockPage({ goBack }) {
                     </td>
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                          ? "bg-[#E8FFF0] text-[#12B76A]"
-                          : "bg-[#FFE8E8] text-[#F04438]"
-                          }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
+                          row.status === "Active"
+                            ? "bg-[#E8FFF0] text-[#12B76A]"
+                            : "bg-[#FFE8E8] text-[#F04438]"
+                        }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -375,8 +370,8 @@ export default function BlockPage({ goBack }) {
                                 ? "Đánh dấu không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                                ? "Đánh dấu hoạt động"
-                                : "Mark as Active"}
+                              ? "Đánh dấu hoạt động"
+                              : "Mark as Active"}
                           </button>
 
                           <button
@@ -426,7 +421,9 @@ export default function BlockPage({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
 
           {/* Pagination Buttons */}
@@ -490,7 +487,6 @@ export default function BlockPage({ goBack }) {
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
-
             {/* Modal Header */}
             <div className="flex justify-between items-center px-6 py-4">
               <h2 className="text-lg font-medium text-gray-800">
@@ -499,8 +495,8 @@ export default function BlockPage({ goBack }) {
                     ? "Edit Block"
                     : "Chỉnh sửa khối"
                   : activeLang === "EN"
-                    ? "New Block"
-                    : "Thêm khối mới"}
+                  ? "New Block"
+                  : "Thêm khối mới"}
               </h2>
 
               <button
@@ -519,20 +515,22 @@ export default function BlockPage({ goBack }) {
             <div className="flex gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium ${activeLang === "EN"
-                  ? "border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium ${
+                  activeLang === "EN"
+                    ? "border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 English (EN)
               </button>
 
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium ${activeLang === "VI"
-                  ? "border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium ${
+                  activeLang === "VI"
+                    ? "border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -555,18 +553,6 @@ export default function BlockPage({ goBack }) {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Block Name<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="name_en"
-                      value={form.name_en}
-                      onChange={handleChange}
-                      placeholder="Type here"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
                   <div>
                     <label>Project / Community</label>
                     <AntdSelect
@@ -607,6 +593,19 @@ export default function BlockPage({ goBack }) {
                       ))}
                     </AntdSelect>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Block Name<span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="name_en"
+                      value={form.name_en}
+                      onChange={handleChange}
+                      placeholder="Type here"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    />
+                  </div>
                 </>
               ) : (
                 <>
@@ -622,28 +621,16 @@ export default function BlockPage({ goBack }) {
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Tên khối <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="name_vi"
-                      value={form.name_vi}
-                      onChange={handleChange}
-                      placeholder="Nhập tại đây"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-
                   <div>
                     <label>Dự án / Cộng đồng</label>
                     <AntdSelect
-                      key={"property-" + activeLang}   // ✅ important
+                      key={"property-" + activeLang} // ✅ important
                       style={{ marginTop: 7 }}
                       showSearch
                       allowClear
-                      placeholder={activeLang === "VI" ? "Chọn dự án" : "Select Project"}
+                      placeholder={
+                        activeLang === "VI" ? "Chọn dự án" : "Select Project"
+                      }
                       value={form.property || undefined}
                       onChange={(value) => handlePropertySelect(value)}
                       optionFilterProp="children"
@@ -661,11 +648,13 @@ export default function BlockPage({ goBack }) {
                   <div>
                     <label>Khu vực / Khu vực</label>
                     <AntdSelect
-                      key={"zone-" + activeLang}   // ✅ important
+                      key={"zone-" + activeLang} // ✅ important
                       style={{ marginTop: 7 }}
                       showSearch
                       allowClear
-                      placeholder={activeLang === "VI" ? "Chọn khu vực" : "Select Zone"}
+                      placeholder={
+                        activeLang === "VI" ? "Chọn khu vực" : "Select Zone"
+                      }
                       value={form.zone || null}
                       onChange={(value) => setForm({ ...form, zone: value })}
                       optionFilterProp="children"
@@ -678,6 +667,18 @@ export default function BlockPage({ goBack }) {
                         </AntdSelect.Option>
                       ))}
                     </AntdSelect>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Tên khối <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      name="name_vi"
+                      value={form.name_vi}
+                      onChange={handleChange}
+                      placeholder="Nhập tại đây"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    />
                   </div>
                 </>
               )}
@@ -702,8 +703,8 @@ export default function BlockPage({ goBack }) {
                     ? "Cập nhật"
                     : "Update"
                   : isVI
-                    ? "Thêm"
-                    : "Add"}
+                  ? "Thêm"
+                  : "Add"}
               </button>
             </div>
           </div>

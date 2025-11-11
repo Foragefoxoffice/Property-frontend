@@ -5,14 +5,16 @@ import { useNavigate } from "react-router-dom";
 
 export default function PropertyShowcase({ property }) {
   const [current, setCurrent] = useState(0);
-  const navigate = useNavigate()
   // ✅ Dynamic Images from backend
   const images = property?.imagesVideos?.propertyImages || [];
 
   // ✅ Transaction Type
-  const type = property?.listingInformation?.listingInformationTransactionType?.en;
-  const propertyType = property?.listingInformation?.listingInformationPropertyType?.en;
-  const title = property?.listingInformation?.listingInformationPropertyTitle?.en;
+  const type =
+    property?.listingInformation?.listingInformationTransactionType?.en;
+  const propertyType =
+    property?.listingInformation?.listingInformationPropertyType?.en;
+  const title =
+    property?.listingInformation?.listingInformationPropertyTitle?.en;
 
   // ✅ Prices based on category
   const priceSale = property?.financialDetails?.financialDetailsPrice;
@@ -28,62 +30,97 @@ export default function PropertyShowcase({ property }) {
     return () => clearInterval(int);
   }, [images]);
 
+  // ✅ Format number with commas
+  const formatNumber = (num) => {
+    if (!num) return num;
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const formatShowcasePrice = () => {
+    if (type === "Sale") {
+      return {
+        amount: `₫ ${formatNumber(priceSale)}`,
+        suffix: "",
+      };
+    }
+
+    if (type === "Lease") {
+      return {
+        amount: `₫ ${formatNumber(priceLease)}`,
+        suffix: "/month",
+      };
+    }
+
+    if (type === "Home Stay") {
+      return {
+        amount: `$ ${formatNumber(priceNight)}`,
+        suffix: "/per night",
+      };
+    }
+
+    return { amount: "-", suffix: "" };
+  };
+
+  const { amount: showcaseAmount, suffix: showcaseSuffix } =
+    formatShowcasePrice();
+
+  const getTypeColor = () => {
+    switch (type) {
+      case "Sale":
+        return "#FFE6E7";
+      case "Lease":
+        return "#DAFFF9";
+      case "Home Stay":
+        return "#DEF6FE";
+      default:
+        return "#F2F2F2";
+    }
+  };
+
   return (
     <div className="bg-white md:min-h-screen flex flex-col lg:flex-row">
-
       {/* LEFT CONTENT */}
       <div className="w-full lg:w-1/2 p-6 flex flex-col justify-center gap-10 order-2 lg:order-1">
-
         {/* Tags */}
         <div>
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span className="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full">
-              {type}
+          <div className="flex flex-wrap gap-3 mb-3">
+            <span
+              className="text-black text-md px-3 py-1 rounded-full font-semibold"
+              style={{ backgroundColor: getTypeColor() }}
+            >
+              For {type}
             </span>
-
-            <span className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
+            <span className="bg-[#F8F7F3] text-black-600 text-md px-3 py-1 rounded-full font-semibold">
               {propertyType}
             </span>
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl sm:text-4xl font-semibold leading-snug mb-4">
+          <h2 className="text-4xl sm:text-5xl font-semibold leading-snug mb-4">
             {title}
           </h2>
 
-          <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700 border border-gray-400 px-3 py-2 rounded-full cursor-pointer w-fit">
-            <Share2 className="w-5 h-5" />
+          <button className="flex items-center gap-2 text-black-500 hover:text-gray-700 border border-gray-400 px-3 py-2 rounded-full cursor-pointer w-fit">
+            <Share2 className="w-6 h-8" />
           </button>
         </div>
 
         {/* ✅ Dynamic PRICE */}
         <div>
-          {type === "Sale" && (
-            <>
-              <p className="text-gray-700 mb-2">Price:</p>
-              <p className="text-3xl font-bold">₫ {priceSale}</p>
-            </>
-          )}
-
-          {type === "Lease" && (
-            <>
-              <p className="text-gray-700 mb-2">Monthly Rent:</p>
-              <p className="text-3xl font-bold">₫ {priceLease}</p>
-            </>
-          )}
-
-          {type === "Home Stay" && (
-            <>
-              <p className="text-gray-700 mb-2">Price / Night:</p>
-              <p className="text-3xl font-bold">₫ {priceNight}</p>
-            </>
-          )}
+          <p className="text-gray-700 mb-2">Price:</p>
+          <div className="flex items-end gap-1">
+            <span className="text-3xl font-bold">{showcaseAmount}</span>
+            {showcaseSuffix && (
+              <span className="text-gray-500 mb-1 text-sm">
+                {showcaseSuffix}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
       {/* RIGHT SECTION */}
       <div className="w-full lg:w-2/3 relative order-1 lg:order-2">
-
         <div className="relative w-full overflow-hidden max-h-[90vh]">
           <AnimatePresence mode="wait">
             <motion.img
@@ -113,8 +150,11 @@ export default function PropertyShowcase({ property }) {
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`w-20 h-16 rounded-lg overflow-hidden border-2 transition ${current === i ? "border-black scale-105" : "border-transparent hover:border-gray-300"
-                }`}
+              className={`w-20 h-16 rounded-lg overflow-hidden border-2 transition ${
+                current === i
+                  ? "border-black scale-105"
+                  : "border-transparent hover:border-gray-300"
+              }`}
             >
               <img src={img} className="object-cover w-full h-full" />
             </button>
@@ -127,8 +167,11 @@ export default function PropertyShowcase({ property }) {
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`w-24 h-20 rounded-lg border-2 transition ${current === i ? "border-black scale-105" : "border-transparent hover:border-gray-300"
-                }`}
+              className={`w-24 h-20 rounded-lg border-2 transition ${
+                current === i
+                  ? "border-black scale-105"
+                  : "border-transparent hover:border-gray-300"
+              }`}
             >
               <img src={img} className="object-cover w-full h-full" />
             </button>

@@ -13,6 +13,7 @@ const PropertyShowcasePage = () => {
     const fetchData = async () => {
       try {
         const res = await getSinglePropertyByPropertyID(id);
+        console.log("🏠 Fetched property data:", res.data.data);
         setProperty(res.data.data);
       } catch (err) {
         console.error("❌ Error fetching property:", err);

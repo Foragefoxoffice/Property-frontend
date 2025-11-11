@@ -57,13 +57,15 @@ export default function CreatePropertyListStep2({
     async function loadDropdowns() {
       try {
         setLoadingCurrencies(true);
-        const [depRes, payRes, curRes, feeTaxRes, legalRes] = await Promise.all([
-          getAllDeposits(),
-          getAllPayments(),
-          getAllCurrencies(),
-          getAllFeeTax(),
-          getAllLegalDocuments(),
-        ]);
+        const [depRes, payRes, curRes, feeTaxRes, legalRes] = await Promise.all(
+          [
+            getAllDeposits(),
+            getAllPayments(),
+            getAllCurrencies(),
+            getAllFeeTax(),
+            getAllLegalDocuments(),
+          ]
+        );
 
         setDeposits(
           (depRes.data?.data || []).filter((d) => d.status === "Active")
@@ -72,8 +74,12 @@ export default function CreatePropertyListStep2({
           (payRes.data?.data || []).filter((p) => p.status === "Active")
         );
 
-        setFeeTaxes((feeTaxRes.data?.data || []).filter((p) => p.status === "Active"));
-        setLegalDocs((legalRes.data?.data || []).filter((p) => p.status === "Active"));
+        setFeeTaxes(
+          (feeTaxRes.data?.data || []).filter((p) => p.status === "Active")
+        );
+        setLegalDocs(
+          (legalRes.data?.data || []).filter((p) => p.status === "Active")
+        );
 
         const allCurrencies = curRes.data?.data || [];
         setCurrencies(allCurrencies);
@@ -184,8 +190,16 @@ export default function CreatePropertyListStep2({
     financialDetailsAgentFee: initialData.financialDetailsAgentFee || "",
     financialDetailsAgentPaymentAgenda:
       initialData.financialDetailsAgentPaymentAgenda || { en: "", vi: "" },
-    financialDetailsFeeTax: initialData.financialDetailsFeeTax || { en: "", vi: "", id: "" },
-    financialDetailsLegalDoc: initialData.financialDetailsLegalDoc || { en: "", vi: "", id: "" },
+    financialDetailsFeeTax: initialData.financialDetailsFeeTax || {
+      en: "",
+      vi: "",
+      id: "",
+    },
+    financialDetailsLegalDoc: initialData.financialDetailsLegalDoc || {
+      en: "",
+      vi: "",
+      id: "",
+    },
   });
 
   const [images, setImages] = useState(initialData.propertyImages || []);
@@ -410,10 +424,11 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -511,8 +526,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -638,11 +654,17 @@ export default function CreatePropertyListStep2({
               }}
               onSearch={(val) => {
                 if (val.trim() !== "") {
-                  handleLocalizedChange(lang, "financialDetailsFeeTax", val.trim());
+                  handleLocalizedChange(
+                    lang,
+                    "financialDetailsFeeTax",
+                    val.trim()
+                  );
                 }
               }}
               filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
               notFoundContent={null}
               className="w-full custom-select"
@@ -674,11 +696,17 @@ export default function CreatePropertyListStep2({
               }}
               onSearch={(val) => {
                 if (val.trim() !== "") {
-                  handleLocalizedChange(lang, "financialDetailsLegalDoc", val.trim());
+                  handleLocalizedChange(
+                    lang,
+                    "financialDetailsLegalDoc",
+                    val.trim()
+                  );
                 }
               }}
               filterOption={(input, option) =>
-                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
               }
               notFoundContent={null}
               className="w-full custom-select"
@@ -689,7 +717,6 @@ export default function CreatePropertyListStep2({
               }))}
             />
           </div>
-
 
           {/* Agent Fee */}
           <div className="flex flex-col">
@@ -764,8 +791,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -907,7 +935,7 @@ export default function CreatePropertyListStep2({
             <label className="text-sm text-[#131517] font-semibold mb-2">
               {t.agentFeeAgenda}
             </label>
-            <textarea
+            <input
               value={form.financialDetailsAgentPaymentAgenda?.[lang] || ""}
               onChange={(e) =>
                 handleLocalizedChange(
@@ -916,7 +944,7 @@ export default function CreatePropertyListStep2({
                   e.target.value
                 )
               }
-              className="border border-[#B2B2B3] h-20 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              className="border border-[#B2B2B3] rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
               placeholder={t.typehere}
             />
           </div>
@@ -979,8 +1007,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />

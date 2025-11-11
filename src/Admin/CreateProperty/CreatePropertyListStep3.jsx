@@ -73,9 +73,9 @@ export default function CreatePropertyListStep3({
     ownerNotes: initialData.ownerNotes || { en: "", vi: "" },
     consultant: initialData.consultant ||
       initialData.contactManagement?.contactManagementConsultant || {
-      en: "",
-      vi: "",
-    },
+        en: "",
+        vi: "",
+      },
     connectingPoint: initialData.connectingPoint || "",
     connectingPointNotes: initialData.connectingPointNotes || {
       en: "",
@@ -208,7 +208,7 @@ export default function CreatePropertyListStep3({
       title: "Landlord Information",
       owner: "Owner / Landlord",
       ownerNotes: "Owner / Landlord Notes",
-      consultant: "Created By (You)",
+      consultant: "Created By",
       connectingPoint: "Connecting Point",
       connectingPointNotes: "Connecting Point Notes",
       internalNotes: "Internal Notes",
@@ -222,7 +222,7 @@ export default function CreatePropertyListStep3({
       title: "Thông tin chủ nhà",
       owner: "Chủ Sở Hữu / Người Cho Thuê",
       ownerNotes: "Ghi chú của Chủ sở hữu / Chủ nhà",
-      consultant: "Được tạo bởi (Bạn)",
+      consultant: "Được tạo bởi",
       connectingPoint: "Điểm Liên Hệ",
       connectingPointNotes: "Ghi chú về Điểm Liên Hệ",
       internalNotes: "Ghi chú nội bộ",
@@ -247,10 +247,11 @@ export default function CreatePropertyListStep3({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -294,14 +295,16 @@ export default function CreatePropertyListStep3({
                         ...prev,
                         owner: selected
                           ? {
-                            en: selected.ownerName?.en || "",
-                            vi: selected.ownerName?.vi || "",
-                          }
+                              en: selected.ownerName?.en || "",
+                              vi: selected.ownerName?.vi || "",
+                            }
                           : { en: "", vi: "" },
                       }));
                     }}
                     filterOption={(input, option) =>
-                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
                     }
                     className="w-full custom-select focus:ring-2 focus:ring-gray-300"
                     popupClassName="custom-dropdown"
@@ -309,7 +312,6 @@ export default function CreatePropertyListStep3({
                       label: opt.ownerName?.[lang] || opt.ownerName?.en,
                       value: opt._id,
                     }))}
-
                     /* ✅ Here we add the custom bottom button */
                     dropdownRender={(menu) => (
                       <>
@@ -317,7 +319,7 @@ export default function CreatePropertyListStep3({
 
                         <div
                           className="mt-2 p-3 bg-[#41398B] text-white text-center rounded-lg cursor-pointer flex gap-2 justify-center items-center"
-                          onClick={() => setShowAddOwnerModal(true)}  // ✅ OPEN STAFF MODAL
+                          onClick={() => setShowAddOwnerModal(true)} // ✅ OPEN STAFF MODAL
                         >
                           <CirclePlus size={18} /> New Landlords
                         </div>
@@ -542,7 +544,7 @@ export default function CreatePropertyListStep3({
       {showOwnerView && selectedOwner && (
         <OwnerPopupCard
           onClose={() => setShowOwnerView(false)}
-          data={selectedOwner}     // ✅ pass full original object
+          data={selectedOwner} // ✅ pass full original object
           lang={lang}
         />
       )}
@@ -694,7 +696,6 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-8 relative animate-fade-in border border-gray-100">
-
         {/* Close */}
         <button
           onClick={onClose}
@@ -718,7 +719,6 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
 
         {/* Details Sections */}
         <div className="space-y-6 text-center">
-
           {/* Phone */}
           <div>
             <h4 className="text-md font-semibold text-gray-700 mb-1">
@@ -727,7 +727,10 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
             {data.phoneNumbers?.length ? (
               <div className="space-y-1">
                 {data.phoneNumbers.map((num, i) => (
-                  <div key={i} className="flex items-center gap-2 text-md text-gray-700 justify-center">
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 text-md text-gray-700 justify-center"
+                  >
                     <Phone size={16} className="text-gray-500" />
                     {num}
                   </div>
@@ -743,7 +746,10 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
             <h4 className="text-md font-semibold text-gray-700 mb-1">Email</h4>
             {data.emailAddresses?.length ? (
               data.emailAddresses.map((mail, i) => (
-                <div key={i} className="flex items-center gap-2 text-md text-gray-700 justify-center">
+                <div
+                  key={i}
+                  className="flex items-center gap-2 text-md text-gray-700 justify-center"
+                >
                   <Mail size={16} className="text-gray-500" />
                   {mail}
                 </div>
@@ -762,13 +768,20 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
             {social?.length ? (
               <div className="space-y-2">
                 {social.map((s, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm justify-center">
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 text-sm justify-center"
+                  >
                     <span className="px-2 py-1 bg-gray-200 rounded-full text-xs font-medium">
                       {s.icon || "—"}
                     </span>
                     {s.link ? (
                       <a
-                        href={s.link.startsWith("http") ? s.link : `https://${s.link}`}
+                        href={
+                          s.link.startsWith("http")
+                            ? s.link
+                            : `https://${s.link}`
+                        }
                         target="_blank"
                         className="text-[#41398B] font-medium hover:underline"
                       >
@@ -800,5 +813,3 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
     </div>
   );
 };
-
-
