@@ -20,6 +20,12 @@ export default function Header() {
     navigate("/");
   };
 
+  const userName = localStorage.getItem("userName") || "";
+  const initials = userName
+    ? userName.slice(0, 2).toUpperCase()
+    : "US";
+
+
   return (
     <header className="w-full bg-gradient-to-b from-[#eae8fd94] to-[#F7F6F9] flex items-center justify-between px-8 py-5 relative">
       {/* Left Logo */}
@@ -158,12 +164,13 @@ export default function Header() {
           onMouseEnter={() => setShowLogout(true)}
           onMouseLeave={() => setShowLogout(false)}
         >
-          <img
-            src="https://i.pravatar.cc/40"
-            alt="Profile"
-            className="w-9 h-9 rounded-full border border-gray-200 shadow-sm cursor-pointer hover:opacity-90 transition"
-          />
-
+          <div
+            className="w-10 h-10 rounded-full bg-[#41398B] text-white 
+             flex items-center justify-center text-sm font-bold 
+             cursor-pointer shadow-sm"
+          >
+            {initials}
+          </div>
           <AnimatePresence>
             {showLogout && (
               <motion.div

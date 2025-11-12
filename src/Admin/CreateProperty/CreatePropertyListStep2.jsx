@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, X, ArrowRight, ArrowLeft, Eye } from "lucide-react";
-import { Select as AntdSelect } from "antd";
+import { Select as AntdSelect, Switch } from "antd";
 import { CommonToaster } from "@/Common/CommonToaster";
 
 /* =========================================================
@@ -131,6 +131,19 @@ export default function CreatePropertyListStep2({
       vi: "",
       id: "",
     },
+    videoVisibility: initialData.videoVisibility || false,
+    floorImageVisibility: initialData.floorImageVisibility || false,
+    financialVisibility:
+      initialData.financialVisibility || {
+        contractLength: false,
+        deposit: false,
+        paymentTerm: false,
+        feeTaxes: false,
+        legalDocs: false,
+        agentFee: false,
+        checkIn: false,
+        checkOut: false,
+      },
   });
 
   const [images, setImages] = useState(initialData.propertyImages || []);
@@ -163,6 +176,28 @@ export default function CreatePropertyListStep2({
       setFloorPlans(initialData.floorPlans || []);
     }
   }, [initialData]);
+
+  // ✅ Auto-select default currency once dropdowns arrive
+  useEffect(() => {
+    if (!currencies?.length) return;
+
+    // Skip if user already has a currency (edit mode)
+    if (form.currency?.symbol) return;
+
+    const def = currencies.find(c => c.isDefault);
+
+    if (def) {
+      setForm(prev => ({
+        ...prev,
+        currency: {
+          symbol: def.currencySymbol?.en || def.currencySymbol?.vi || "",
+          code: def.currencyCode?.en || def.currencyCode?.vi || "",
+          name: def.currencyName?.en || def.currencyName?.vi || ""
+        }
+      }));
+    }
+  }, [currencies]);
+
 
   /* =========================================================
    ✅ File Size Limits
@@ -354,11 +389,10 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -377,25 +411,76 @@ export default function CreatePropertyListStep2({
         handleRemove={handleRemove}
       />
 
-      <UploadBox
-        label={t.propertyVideo}
-        recommended={t.recommendedVid}
-        files={videos}
-        type="video"
-        accept="video/*"
-        handleFileUpload={handleFileUpload}
-        handleRemove={handleRemove}
-      />
+      <div className="flex flex-col w-full gap-1">
 
-      <UploadBox
-        label={t.floorPlan}
-        recommended={t.recommendedImg}
-        files={floorPlans}
-        type="floor"
-        accept="image/*"
-        handleFileUpload={handleFileUpload}
-        handleRemove={handleRemove}
-      />
+        {/* ✅ Top Row: Label + Hide Public + Switch */}
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-sm text-[#131517] font-semibold">
+          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">
+              {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+            </span>
+            <Switch
+              checked={form.videoVisibility}
+              style={{
+                "--antd-switch-handle-color": "#fff",
+                "--antd-switch-color": "#41398B",
+              }}
+              onChange={(val) =>
+                setForm((p) => ({
+                  ...p,
+                  videoVisibility: val,
+                }))
+              }
+            />
+          </div>
+        </div>
+        <UploadBox
+          label={t.propertyVideo}
+          recommended={t.recommendedVid}
+          files={videos}
+          type="video"
+          accept="video/*"
+          handleFileUpload={handleFileUpload}
+          handleRemove={handleRemove}
+        />
+      </div>
+
+
+      <div className="flex flex-col w-full gap-1">
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-sm text-[#131517] font-semibold">
+          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">
+              {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+            </span>
+            <Switch
+              checked={form.floorImageVisibility}
+              style={{
+                "--antd-switch-handle-color": "#fff",
+                "--antd-switch-color": "#41398B",
+              }}
+              onChange={(val) =>
+                setForm((p) => ({
+                  ...p,
+                  floorImageVisibility: val,
+                }))
+              }
+            />
+          </div>
+        </div>
+        <UploadBox
+          label={t.floorPlan}
+          recommended={t.recommendedImg}
+          files={floorPlans}
+          type="floor"
+          accept="image/*"
+          handleFileUpload={handleFileUpload}
+          handleRemove={handleRemove}
+        />
+      </div>
 
       {/* 💰 FINANCIAL DETAILS */}
       <h2 className="text-lg font-semibold mt-8 mb-4">{t.financialDetails}</h2>
@@ -456,9 +541,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -522,10 +606,29 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Payment Terms */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.maintenanceFeeMonthly}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.maintenanceFeeMonthly}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.paymentTerm}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        paymentTerm: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -536,11 +639,9 @@ export default function CreatePropertyListStep2({
               }
               value={form.maintenanceFeeMonthly?.[lang] || undefined}
               onChange={(value) => {
-                // User selected existing term
                 handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
               }}
               onSearch={(val) => {
-                // User typed a new payment term (same behavior as Zone)
                 if (val && val.trim() !== "") {
                   handleLocalizedChange(
                     lang,
@@ -559,17 +660,36 @@ export default function CreatePropertyListStep2({
               popupClassName="custom-dropdown"
               options={payments.map((opt) => ({
                 label: opt.name?.[lang] || "",
-                value: opt.name?.[lang] || "", // ✅
+                value: opt.name?.[lang] || "",
               }))}
             />
           </div>
 
-          {/* Fees & Taxes */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.feeTax}
-            </label>
 
+          {/* Fees & Taxes */}
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.feeTax}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.feeTaxes}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        feeTaxes: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -584,11 +704,7 @@ export default function CreatePropertyListStep2({
               }}
               onSearch={(val) => {
                 if (val.trim() !== "") {
-                  handleLocalizedChange(
-                    lang,
-                    "financialDetailsFeeTax",
-                    val.trim()
-                  );
+                  handleLocalizedChange(lang, "financialDetailsFeeTax", val.trim());
                 }
               }}
               filterOption={(input, option) =>
@@ -607,11 +723,30 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Legal Documents */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.legalDoc}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.legalDoc}
+              </label>
 
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.legalDocs}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        legalDocs: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -649,10 +784,31 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Agent Fee */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.agentFee}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.agentFee}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+
+                <Switch
+                  checked={form.financialVisibility?.agentFee}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        agentFee: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <input
               type="number"
               placeholder={t.typehere}
@@ -660,7 +816,7 @@ export default function CreatePropertyListStep2({
               onChange={(e) =>
                 handleChange("financialDetailsAgentFee", e.target.value)
               }
-              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
         </div>
@@ -721,9 +877,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -744,25 +899,67 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Contract Length */}
+          <div className="flex flex-col w-full gap-1">
 
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.contractLength}
-            </label>
+            {/* ✅ Top Row: Label + Hide Public + Switch */}
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.contractLength}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.contractLength}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        contractLength: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            {/* ✅ Input Below */}
             <input
               type="text"
               value={form.contractLength}
               placeholder={t.typehere}
               onChange={(e) => handleChange("contractLength", e.target.value)}
-              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
 
           {/* Deposit */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.depositPaymentTerms}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.depositPaymentTerms}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.deposit}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        deposit: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -773,17 +970,11 @@ export default function CreatePropertyListStep2({
               }
               value={form.depositPaymentTerms?.[lang] || undefined}
               onChange={(value) => {
-                // User selected an existing option
                 handleLocalizedChange(lang, "depositPaymentTerms", value);
               }}
               onSearch={(val) => {
-                // User typed a new value (same logic as Zone in Step 1)
                 if (val && val.trim() !== "") {
-                  handleLocalizedChange(
-                    lang,
-                    "depositPaymentTerms",
-                    val.trim()
-                  );
+                  handleLocalizedChange(lang, "depositPaymentTerms", val.trim());
                 }
               }}
               filterOption={(input, option) =>
@@ -802,10 +993,30 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Payment Terms */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.maintenanceFeeMonthly}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.maintenanceFeeMonthly}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.paymentTerm}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        paymentTerm: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -816,17 +1027,11 @@ export default function CreatePropertyListStep2({
               }
               value={form.maintenanceFeeMonthly?.[lang] || undefined}
               onChange={(value) => {
-                // User selected existing term
                 handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
               }}
               onSearch={(val) => {
-                // User typed a new payment term (same behavior as Zone)
                 if (val && val.trim() !== "") {
-                  handleLocalizedChange(
-                    lang,
-                    "maintenanceFeeMonthly",
-                    val.trim()
-                  );
+                  handleLocalizedChange(lang, "maintenanceFeeMonthly", val.trim());
                 }
               }}
               filterOption={(input, option) =>
@@ -839,16 +1044,36 @@ export default function CreatePropertyListStep2({
               popupClassName="custom-dropdown"
               options={payments.map((opt) => ({
                 label: opt.name?.[lang] || "",
-                value: opt.name?.[lang] || "", // ✅
+                value: opt.name?.[lang] || "",
               }))}
             />
           </div>
 
           {/* Agent Fee */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.agentFee}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.agentFee}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.agentFee}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        agentFee: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <input
               type="number"
               placeholder={t.typehere}
@@ -856,7 +1081,7 @@ export default function CreatePropertyListStep2({
               onChange={(e) =>
                 handleChange("financialDetailsAgentFee", e.target.value)
               }
-              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
 
@@ -937,9 +1162,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -960,36 +1184,97 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Check In */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.checkIn}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.checkIn}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.checkIn}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        checkIn: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <input
               type="text"
               value={form.checkIn}
+              placeholder={t.typehere}
               onChange={(e) => handleChange("checkIn", e.target.value)}
-              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
 
           {/* Check Out */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.checkOut}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.checkOut}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.checkOut}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        checkOut: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <input
               type="text"
               value={form.checkOut}
+              placeholder={t.typehere}
               onChange={(e) => handleChange("checkOut", e.target.value)}
-              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
 
           {/* Deposit */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.depositPaymentTerms}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.depositPaymentTerms}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+
+                <Switch
+                  checked={form.financialVisibility?.depositPaymentTerms}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        depositPaymentTerms: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -1000,11 +1285,9 @@ export default function CreatePropertyListStep2({
               }
               value={form.depositPaymentTerms?.[lang] || undefined}
               onChange={(value) => {
-                // User selected an existing option
                 handleLocalizedChange(lang, "depositPaymentTerms", value);
               }}
               onSearch={(val) => {
-                // User typed a new value (same logic as Zone in Step 1)
                 if (val && val.trim() !== "") {
                   handleLocalizedChange(
                     lang,
@@ -1029,10 +1312,29 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Payment Terms */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.maintenanceFeeMonthly}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.maintenanceFeeMonthly}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.maintenanceFeeMonthly}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        maintenanceFeeMonthly: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -1043,11 +1345,9 @@ export default function CreatePropertyListStep2({
               }
               value={form.maintenanceFeeMonthly?.[lang] || undefined}
               onChange={(value) => {
-                // User selected existing term
                 handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
               }}
               onSearch={(val) => {
-                // User typed a new payment term (same behavior as Zone)
                 if (val && val.trim() !== "") {
                   handleLocalizedChange(
                     lang,
@@ -1066,7 +1366,7 @@ export default function CreatePropertyListStep2({
               popupClassName="custom-dropdown"
               options={payments.map((opt) => ({
                 label: opt.name?.[lang] || "",
-                value: opt.name?.[lang] || "", // ✅
+                value: opt.name?.[lang] || "",
               }))}
             />
           </div>

@@ -40,6 +40,16 @@ const SkeletonLoader = () => (
   </div>
 );
 
+const formatDMY = (dateStr) => {
+  if (!dateStr) return "—";
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+
 /* === Media Preview Modal === */
 const MediaPreviewModal = ({ url, type, onClose }) => {
   return (
@@ -266,10 +276,7 @@ export default function CreatePropertyListStep4({
               label={labels.transactionType[lang]}
               value={safe(li.listingInformationTransactionType)}
             />
-            <Field
-              label={labels.propertyId[lang]}
-              value={li.listingInformationPropertyId}
-            />
+            <Field label={labels.propertyId[lang]} value={li.listingInformationPropertyId} />
             <Field
               label={labels.project[lang]}
               value={safe(li.listingInformationProjectCommunity)}
@@ -292,7 +299,7 @@ export default function CreatePropertyListStep4({
             />
             <Field
               label={labels.dateListed[lang]}
-              value={li.listingInformationDateListed?.split("T")[0]}
+              value={formatDMY(li.listingInformationDateListed)}
             />
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "home stay" ? (
@@ -301,7 +308,7 @@ export default function CreatePropertyListStep4({
               <>
                 <Field
                   label={labels.availableFrom[lang]}
-                  value={li.listingInformationAvailableFrom?.split("T")[0]}
+                  value={formatDMY(li.listingInformationAvailableFrom)}
                 />
                 <Field
                   label={labels.availabilityStatus[lang]}

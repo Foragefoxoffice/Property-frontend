@@ -1,17 +1,7 @@
 import React, { useState, useEffect, useCallback, memo } from "react";
 import { ArrowRight, CirclePlus, Trash2 } from "lucide-react";
 import {
-  getAllProperties,
-  getAllZoneSubAreas,
-  getAllPropertyTypes,
-  getAllAvailabilityStatuses,
-  getAllUnits,
-  getAllFurnishings,
-  getAllParkings,
-  getAllPetPolicies,
-  getAllBlocks,
   getNextPropertyId,
-  getAllFloorRanges,
 } from "../../Api/action";
 import { Select as AntdSelect, Switch } from "antd";
 import iconOptions from "../../data/iconOptions";
@@ -72,8 +62,8 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
                 ? opt.symbol?.vi || "—"
                 : opt.symbol?.en || "—"
               : lang === "vi"
-              ? opt.name?.vi || "Chưa đặt tên"
-              : opt.name?.en || "Unnamed";
+                ? opt.name?.vi || "Chưa đặt tên"
+                : opt.name?.en || "Unnamed";
 
           return (
             <Option key={opt._id} value={opt._id}>
@@ -110,7 +100,7 @@ const LocalizedInput = memo(
 
 const LocalizedTextarea = memo(
   ({ label, name, lang, value, onChange, placeholder }) => (
-    <div className="flex flex-col mt-8">
+    <div className="flex flex-col">
       <label className="text-sm text-[#131517] font-semibold mb-2">
         {label}
       </label>
@@ -157,11 +147,10 @@ const DatePicker = memo(({ label, name, value, onChange }) => {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={`w-full justify-between text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${
-              !date && "text-muted-foreground"
-            }`}
+            className={`w-full justify-between text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${!date && "text-muted-foreground"
+              }`}
           >
-            {date ? format(date, "PPP") : <span>Select date</span>}
+            {date ? format(date, "dd/MM/yyyy") : <span>Select date</span>}
             <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
           </Button>
         </PopoverTrigger>
@@ -259,6 +248,22 @@ export default function CreatePropertyListStep1({
     descriptionVisibility: initialData.descriptionVisibility || false,
     propertyUtilityVisibility: initialData.propertyUtilityVisibility || false,
   });
+
+
+  // ✅ Auto-generate ID when transactionType changes
+  useEffect(() => {
+    if (!form.transactionType) return;
+
+    getNextPropertyId(form.transactionType)
+      .then((res) => {
+        setForm((prev) => ({
+          ...prev,
+          propertyId: res.data.nextId,
+        }));
+      })
+      .catch((err) => console.log(err));
+  }, [form.transactionType]);
+
   const loading =
     !dropdowns ||
     !dropdowns.properties ||
@@ -513,11 +518,10 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -584,10 +588,35 @@ export default function CreatePropertyListStep1({
             </AntdSelect>
           </div>
 
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {lang === "en" ? "Area / Zone" : "Khu vực / Vùng"}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            {/* ✅ Top Row: Label + Switch */}
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Area / Zone" : "Khu vực / Vùng"}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.listingInformationVisibility?.areaZone}
+                  style={{
+                    '--antd-switch-handle-color': '#fff',
+                    '--antd-switch-color': '#41398B',
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      listingInformationVisibility: {
+                        ...p.listingInformationVisibility,
+                        areaZone: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            {/* ✅ Select dropdown below */}
             <AntdSelect
               showSearch
               allowClear
@@ -603,14 +632,14 @@ export default function CreatePropertyListStep1({
                   : undefined
               }
               onChange={(val) => {
-                // keep displayed state
                 setForm((p) => ({
                   ...p,
                   zoneId: val.value,
                   zoneName: val.label,
                   zone: { en: val.label, vi: val.label },
                 }));
-                // trigger auto block pick & ensure project consistency
+
+                // ✅ keep auto-sync logic
                 syncLinkedFields("zoneId", val.value, val.label);
               }}
               filterOption={(input, option) =>
@@ -630,17 +659,38 @@ export default function CreatePropertyListStep1({
                 setForm((prev) => ({
                   ...prev,
                   zoneName: input,
-                  zone: { en: input, vi: input }, // ✅ keep both localized mirrors
+                  zone: { en: input, vi: input },
                 }))
               }
             />
           </div>
 
-          <div className="flex flex-col">
-            <label className="text-sm font-semibold mb-2">
-              {lang === "en" ? "Block Name" : "Tên khối"}
-            </label>
 
+          <div className="flex flex-col w-full gap-1">
+
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm font-semibold">
+                {lang === "en" ? "Block Name" : "Tên khối"}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.listingInformationVisibility?.blockName}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      listingInformationVisibility: {
+                        ...p.listingInformationVisibility,
+                        blockName: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            {/* ✅ Drop-down Below */}
             <AntdSelect
               showSearch
               allowClear
@@ -684,25 +734,40 @@ export default function CreatePropertyListStep1({
             </AntdSelect>
           </div>
 
-          <Switch
-            checked={form.listingInformationVisibility?.propertyNo}
-            onChange={(val) =>
-              setForm((p) => ({
-                ...p,
-                listingInformationVisibility: {
-                  ...p.listingInformationVisibility,
-                  propertyNo: val,
-                },
-              }))
-            }
-          />
-          <LocalizedInput
-            label={lang === "en" ? "Property No" : "Số bất động sản"}
-            name="propertyNo"
-            lang={lang}
-            value={form.propertyNo?.[lang]}
-            onChange={handleLocalizedChange}
-          />
+
+          <div className="flex flex-col gap-1 w-full">
+            {/* Top row: Label + Switch */}
+            <div className="flex items-center justify-between w-full">
+              <label className="text-sm font-medium">
+                {lang === "en" ? "Property No" : "Số bất động sản"}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.listingInformationVisibility?.propertyNo}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      listingInformationVisibility: {
+                        ...p.listingInformationVisibility,
+                        propertyNo: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Input field */}
+            <LocalizedInput
+              name="propertyNo"
+              lang={lang}
+              placeholder="Type here"
+              value={form.propertyNo?.[lang]}
+              onChange={handleLocalizedChange}
+            />
+          </div>
 
           <Select
             label={lang === "en" ? "Property Type" : "Loại bất động sản"}
@@ -724,12 +789,44 @@ export default function CreatePropertyListStep1({
             ""
           ) : (
             <>
-              <DatePicker
-                label={lang === "en" ? "Available From" : "Có sẵn từ"}
-                name="availableFrom"
-                value={form.availableFrom}
-                onChange={handleInputChange}
-              />
+              <div className="flex flex-col w-full">
+                <div className="flex items-center justify-between ">
+                  <label className="text-sm text-[#131517] font-semibold">
+                    {lang === "en" ? "Available From" : "Có sẵn từ"}
+                  </label>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                    <Switch
+                      checked={form.listingInformationVisibility?.availableFrom}
+                      style={{
+                        "--antd-switch-handle-color": "#fff",
+                        "--antd-switch-color": "#41398B",
+                      }}
+                      onChange={(val) =>
+                        setForm((p) => ({
+                          ...p,
+                          listingInformationVisibility: {
+                            ...p.listingInformationVisibility,
+                            availableFrom: val,
+                          },
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+                {/* ✅ DatePicker Below */}
+                <DatePicker
+                  name="availableFrom"
+                  placeholder={
+                    lang === "en" ? "Available From" : "Có sẵn từ"
+                  }
+                  value={form.availableFrom}
+                  onChange={handleInputChange}
+                  className="w-full"
+                />
+              </div>
+
 
               <Select
                 label={
@@ -748,44 +845,175 @@ export default function CreatePropertyListStep1({
         {/* === Property Info === */}
         <h2 className="text-lg font-semibold mt-8 mb-4">{t.propertyInfo}</h2>
         <div className="grid grid-cols-3 gap-5">
-          <Select
-            label={lang === "en" ? "Unit" : "Đơn vị"}
-            name="unit"
-            lang={lang}
-            options={dropdowns.units}
-            value={form.unit}
-            onChange={handleInputChange}
-          />
+          <div className="flex flex-col w-full">
+            <div className="flex items-center justify-between">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Unit" : "Đơn vị"}
+              </label>
 
-          <Input
-            label={lang === "en" ? "Unit Size" : "Diện tích"}
-            name="unitSize"
-            value={form.unitSize}
-            onChange={handleInputChange}
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-          />
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.propertyInformationVisibility?.unit}
+                  style={{
+                    "--antd-switch-handle-color": "#fff",
+                    "--antd-switch-color": "#41398B",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      propertyInformationVisibility: {
+                        ...p.propertyInformationVisibility,
+                        unit: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <Select
+              name="unit"
+              lang={lang}
+              options={dropdowns.units}
+              value={form.unit}
+              onChange={handleInputChange}
+            />
+          </div>
 
-          <Input
-            label={lang === "en" ? "Bedrooms" : "Phòng ngủ"}
-            name="bedrooms"
-            value={form.bedrooms}
-            onChange={handleInputChange}
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-          />
+          <div className="flex flex-col w-full">
 
-          <Input
-            label={lang === "en" ? "Bathrooms" : "Phòng tắm"}
-            name="bathrooms"
-            value={form.bathrooms}
-            onChange={handleInputChange}
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-          />
+            <div className="flex items-center justify-between">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Unit Size" : "Diện tích"}
+              </label>
 
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {lang === "en" ? "Floor Range" : "Phạm vi tầng"}
-            </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.propertyInformationVisibility?.unitSize}
+                  style={{
+                    "--antd-switch-handle-color": "#fff",
+                    "--antd-switch-color": "#41398B",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      propertyInformationVisibility: {
+                        ...p.propertyInformationVisibility,
+                        unitSize: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <Input
+              name="unitSize"
+              value={form.unitSize}
+              onChange={handleInputChange}
+              placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+            />
+          </div>
 
+          <div className="flex flex-col w-full">
+            <div className="flex items-center justify-between">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Bedrooms" : "Phòng ngủ"}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.propertyInformationVisibility?.bedrooms}
+                  style={{
+                    "--antd-switch-handle-color": "#fff",
+                    "--antd-switch-color": "#41398B",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      propertyInformationVisibility: {
+                        ...p.propertyInformationVisibility,
+                        bedrooms: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <Input
+              name="bedrooms"
+              value={form.bedrooms}
+              onChange={handleInputChange}
+              placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+            />
+          </div>
+
+          <div className="flex flex-col w-full">
+            <div className="flex items-center justify-between">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Bathrooms" : "Phòng tắm"}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.propertyInformationVisibility?.bathrooms}
+                  style={{
+                    "--antd-switch-handle-color": "#fff",
+                    "--antd-switch-color": "#41398B",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      propertyInformationVisibility: {
+                        ...p.propertyInformationVisibility,
+                        bathrooms: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <Input
+              name="bathrooms"
+              value={form.bathrooms}
+              onChange={handleInputChange}
+              placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+            />
+          </div>
+
+
+          <div className="flex flex-col w-full gap-1">
+
+            {/* ✅ Top Row: Label + Switch */}
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Floor Range" : "Phạm vi tầng"}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.propertyInformationVisibility?.floorRange}
+                  style={{
+                    "--antd-switch-handle-color": "#fff",
+                    "--antd-switch-color": "#41398B",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      propertyInformationVisibility: {
+                        ...p.propertyInformationVisibility,
+                        floorRange: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+
+            {/* ✅ Floor Range Select Below */}
             <AntdSelect
               showSearch
               allowClear
@@ -802,14 +1030,13 @@ export default function CreatePropertyListStep1({
               onChange={(value, option) => {
                 const fr = dropdowns.floorRanges.find(
                   (item) =>
-                    (lang === "vi" ? item.name?.vi : item.name?.en) ===
-                    option.label
+                    (lang === "vi" ? item.name?.vi : item.name?.en) === option.label
                 );
 
                 if (fr) {
                   setForm((prev) => ({
                     ...prev,
-                    floorRangeId: fr._id, // ✅ store ID
+                    floorRangeId: fr._id,
                     floors: {
                       en: fr.name?.en || "",
                       vi: fr.name?.vi || "",
@@ -826,63 +1053,163 @@ export default function CreatePropertyListStep1({
             />
           </div>
 
-          <Select
-            label={lang === "en" ? "Furnishing" : "Trang bị nội thất"}
-            name="furnishing"
+          <div className="flex flex-col w-full">
+            <div className="flex items-center justify-between">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Furnishing" : "Trang bị nội thất"}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.propertyInformationVisibility?.furnishing}
+                  style={{
+                    "--antd-switch-handle-color": "#fff",
+                    "--antd-switch-color": "#41398B",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      propertyInformationVisibility: {
+                        ...p.propertyInformationVisibility,
+                        furnishing: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <Select
+              name="furnishing"
+              lang={lang}
+              options={dropdowns.furnishings}
+              value={form.furnishing}
+              onChange={handleInputChange}
+              placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+            />
+          </div>
+
+          <div className="flex flex-col w-full">
+            <div className="flex items-center justify-between">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "View" : "Hướng nhìn"}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <Switch
+                  checked={form.propertyInformationVisibility?.view}
+                  style={{
+                    "--antd-switch-handle-color": "#fff",
+                    "--antd-switch-color": "#41398B",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      propertyInformationVisibility: {
+                        ...p.propertyInformationVisibility,
+                        view: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <LocalizedInput
+              name="view"
+              lang={lang}
+              value={form.view?.[lang]}
+              onChange={handleLocalizedChange}
+              placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+            />
+          </div>
+        </div>
+        <div className="mt-8">
+          <LocalizedTextarea
+            label={lang === "en" ? "Property Title" : "Tiêu đề bất động sản"}
+            name="title"
             lang={lang}
-            options={dropdowns.furnishings}
-            value={form.furnishing}
-            onChange={handleInputChange}
-            placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+            value={form.title?.[lang]}
+            onChange={handleLocalizedChange}
           />
-          <LocalizedInput
-            label={lang === "en" ? "View" : "Hướng nhìn"}
-            name="view"
+        </div>
+
+        {/* === Description === */}
+        <div className="flex flex-col w-full mt-5">
+          <div className="flex items-center justify-between">
+            <label className="text-sm text-[#131517] font-semibold">
+              {lang === "en" ? "Description" : "Mô tả"}
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+              <Switch
+                checked={form.descriptionVisibility}
+                style={{
+                  "--antd-switch-handle-color": "#fff",
+                  "--antd-switch-color": "#41398B",
+                }}
+                onChange={(val) =>
+                  setForm((p) => ({
+                    ...p,
+                    descriptionVisibility: val,
+                  }))
+                }
+              />
+            </div>
+          </div>
+          <LocalizedTextarea
+            name="description"
             lang={lang}
-            value={form.view?.[lang]}
+            value={form.description?.[lang]}
             onChange={handleLocalizedChange}
             placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
           />
         </div>
 
-        <LocalizedTextarea
-          label={lang === "en" ? "Property Title" : "Tiêu đề bất động sản"}
-          name="title"
-          lang={lang}
-          value={form.title?.[lang]}
-          onChange={handleLocalizedChange}
-        />
-
-        {/* === Description === */}
-        <LocalizedTextarea
-          label={lang === "en" ? "Description" : "Mô tả"}
-          name="description"
-          lang={lang}
-          value={form.description?.[lang]}
-          onChange={handleLocalizedChange}
-          placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-        />
 
         {/* === Property Utility === */}
-        <div className="flex justify-between mt-8 mb-4">
-          <h2 className="text-lg font-semibold">{t.propertyUtility}</h2>
-          <button
-            onClick={addUtility}
-            className="flex items-center g text-[#131517] font-semibold hover:text-black mt-2 cursor-pointer"
-          >
-            <CirclePlus size={22} />
-          </button>
+        {/* ✅ Header Row: Title + Add + {lang === "en" ? "Hide Public" : "Ẩn công khai"} Switch */}
+        <div className="flex items-center justify-between mt-8 mb-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold">{t.propertyUtility}</h2>
+            <button
+              onClick={addUtility}
+              className="flex items-center text-[#131517] font-semibold hover:text-black cursor-pointer"
+            >
+              <CirclePlus size={22} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+            <Switch
+              checked={form.propertyUtilityVisibility}
+              style={{
+                "--antd-switch-handle-color": "#fff",
+                "--antd-switch-color": "#41398B",
+              }}
+              onChange={(val) =>
+                setForm((p) => ({
+                  ...p,
+                  propertyUtilityVisibility: val,
+                }))
+              }
+            />
+          </div>
         </div>
+
+
+        {/* ✅ Utility Items List */}
         {form.utilities.map((u, i) => (
           <div
             key={i}
-            className="grid grid-cols-3 gap-8 mb-4 items-baseline pb-3"
+            className="grid grid-cols-12 gap-6 mb-4 items-center pb-3"
           >
-            {/* Utility Name (Language Controlled) */}
-            <div className="col-span-1">
+            {/* ✅ Utility Name */}
+            <div className="col-span-5">
               <label className="block text-sm text-[#131517] font-semibold mb-2">
                 {lang === "en" ? "Utility Name" : "Tên tiện ích"}
               </label>
+
               <input
                 type="text"
                 value={u.name?.[lang] || ""}
@@ -896,18 +1223,16 @@ export default function CreatePropertyListStep1({
                     return { ...prev, utilities: updated };
                   })
                 }
-                placeholder={
-                  lang === "en"
-                    ? "Enter English name"
-                    : "Nhập tên tiện ích tiếng Việt"
-                }
+                placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
                 className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
               />
             </div>
 
-            <div className="col-span-1">
-              <label className="block text-sm text-[#131517] font-semibold mb-2 -mt-16.5">
-                {lang === "en" ? "Select Icon" : "Chọn Biểu Tượng"}
+
+            {/* ✅ Select Icon */}
+            <div className="col-span-5">
+              <label className="block text-sm text-[#131517] font-semibold mb-2">
+                {lang === "en" ? "Select Icon" : "Chọn biểu tượng"}
               </label>
 
               <AntdSelect
@@ -923,36 +1248,23 @@ export default function CreatePropertyListStep1({
                   handleUtilityChange(i, "icon", option?.icon)
                 }
                 className="w-full custom-select"
-                onSearch={(val) => setSearchValue(val)}
                 filterOption={false}
                 popupClassName="custom-dropdown"
-                optionLabelProp="label"
-                dropdownRender={(menu) => (
-                  <div className="max-h-60 overflow-auto">{menu}</div>
-                )}
               >
                 {filteredIcons.map((item) => (
                   <Option
                     key={item.value}
-                    value={item.icon} // ✅ store image URL
+                    value={item.icon}
                     icon={item.icon}
                     label={
                       <div className="flex items-center gap-2">
-                        <img
-                          src={item.icon}
-                          alt={item.name[lang]}
-                          className="w-5 h-5 object-contain"
-                        />
+                        <img src={item.icon} alt={item.name[lang]} className="w-5 h-5" />
                         <span>{item.name[lang]}</span>
                       </div>
                     }
                   >
                     <div className="flex items-center gap-2">
-                      <img
-                        src={item.icon}
-                        alt={item.name[lang]}
-                        className="w-5 h-5 object-contain"
-                      />
+                      <img src={item.icon} alt={item.name[lang]} className="w-5 h-5" />
                       <span>{item.name[lang]}</span>
                     </div>
                   </Option>
@@ -960,8 +1272,8 @@ export default function CreatePropertyListStep1({
               </AntdSelect>
             </div>
 
-            {/* Delete Button */}
-            <div className="col-span-1">
+            {/* ✅ Delete Button */}
+            <div className="col-span-2 flex justify-start mt-7">
               {i > 0 && (
                 <button
                   onClick={() => removeUtility(i)}
@@ -973,6 +1285,7 @@ export default function CreatePropertyListStep1({
             </div>
           </div>
         ))}
+
 
         {/* Next */}
         <div className="text-end flex justify-end">

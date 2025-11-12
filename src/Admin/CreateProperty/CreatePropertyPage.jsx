@@ -32,6 +32,7 @@ import {
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
+import CreatePropertyListStep4SEO from "./CreatePropertyListStep4SEO";
 
 /* =========================================================
    🧰 Safe Object Sanitizer
@@ -62,7 +63,7 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch {}
+    } catch { }
   }
   return result;
 }
@@ -132,6 +133,21 @@ export default function CreatePropertyPage({
     return t.createProperty;
   };
 
+  // ✅ Auto-generate propertyId based on selected Transaction Type
+  useEffect(() => {
+    if (!propertyData.transactionType) return;
+
+    getNextPropertyId(propertyData.transactionType)
+      .then((res) => {
+        setPropertyData((prev) => ({
+          ...prev,
+          propertyId: res.data.nextId,  // ✅ Save ID
+        }));
+      })
+      .catch((err) => console.error("Property ID Error:", err));
+  }, [propertyData.transactionType]);
+
+
   useEffect(() => {
     async function loadStep3Data() {
       try {
@@ -156,17 +172,6 @@ export default function CreatePropertyPage({
     loadStep3Data();
   }, []);
 
-  useEffect(() => {
-    async function loadNextId() {
-      try {
-        const res = await getNextPropertyId();
-        setPropertyData((prev) => ({ ...prev, propertyId: res.data.nextId }));
-      } catch (err) {
-        console.error("next id error", err);
-      }
-    }
-    if (!isEditMode) loadNextId();
-  }, []);
 
   /* =========================================================
      🔽 Fetch dropdown data first
@@ -466,6 +471,26 @@ export default function CreatePropertyPage({
       }
     };
 
+    // ✅ Ensure SEO object always exists & sanitized
+    const seo = normalized.seoInformation || {
+      metaTitle: { en: "", vi: "" },
+      metaDescription: { en: "", vi: "" },
+      metaKeywords: { en: [], vi: [] },
+      slugUrl: { en: "", vi: "" },
+      canonicalUrl: { en: "", vi: "" },
+      schemaType: { en: "", vi: "" },
+      ogTitle: { en: "", vi: "" },
+      ogDescription: { en: "", vi: "" },
+      ogImages: [],
+      allowIndexing: true,
+    };
+
+    // ✅ Helper for simple localized fields
+    const wrapLocalized = (obj) => ({
+      en: obj?.en ?? "",
+      vi: obj?.vi ?? "",
+    });
+
     const payload = {
       listingInformation: {
         listingInformationPropertyId: normalized.propertyId || "",
@@ -602,6 +627,38 @@ export default function CreatePropertyPage({
       descriptionVisibility: normalized.descriptionVisibility || false,
       propertyUtilityVisibility: normalized.propertyUtilityVisibility || false,
 
+      videoVisibility: normalized.videoVisibility ?? false,
+      floorImageVisibility: normalized.floorImageVisibility ?? false,
+
+      financialVisibility: {
+        contractLength: normalized.financialVisibility?.contractLength ?? false,
+        deposit: normalized.financialVisibility?.deposit ?? false,
+        paymentTerm: normalized.financialVisibility?.paymentTerm ?? false,
+        feeTaxes: normalized.financialVisibility?.feeTaxes ?? false,
+        legalDocs: normalized.financialVisibility?.legalDocs ?? false,
+        agentFee: normalized.financialVisibility?.agentFee ?? false,
+        checkIn: normalized.financialVisibility?.checkIn ?? false,
+        checkOut: normalized.financialVisibility?.checkOut ?? false,
+        maintenanceFeeMonthly:
+          normalized.financialVisibility?.maintenanceFeeMonthly ?? false,
+        depositPaymentTerms:
+          normalized.financialVisibility?.depositPaymentTerms ?? false,
+      },
+
+
+      // SEO
+      seoInformation: {
+        metaTitle: seo.metaTitle,
+        metaDescription: seo.metaDescription,
+        metaKeywords: seo.metaKeywords,
+        slugUrl: seo.slugUrl,
+        canonicalUrl: seo.canonicalUrl,
+        schemaType: seo.schemaType,
+        ogTitle: seo.ogTitle,
+        ogDescription: seo.ogDescription,
+        ogImages: seo.ogImages || [],
+        allowIndexing: seo.allowIndexing,
+      },
       status: normalized.status || "Draft",
     };
 
@@ -772,9 +829,8 @@ export default function CreatePropertyPage({
       await updatePropertyListing(savedId, { status });
       CommonToaster(
         language === "vi"
-          ? `Bất động sản đã được đăng và đánh dấu là ${
-              status === "Published" ? "Đã đăng" : "Bản nháp"
-            }!`
+          ? `Bất động sản đã được đăng và đánh dấu là ${status === "Published" ? "Đã đăng" : "Bản nháp"
+          }!`
           : `Property Posted and marked as ${status}!`,
         "success"
       );
@@ -798,6 +854,7 @@ export default function CreatePropertyPage({
     { title: getStepTitle(), label: t.step1Label },
     { title: getStepTitle(), label: t.step2Label },
     { title: getStepTitle(), label: t.step3Label },
+    { title: getStepTitle(), label: "SEO Information" },
     { title: getStepTitle(), label: t.step4Label },
   ];
 
@@ -839,10 +896,20 @@ export default function CreatePropertyPage({
         );
       case 4:
         return (
-          <CreatePropertyListStep4
+          <CreatePropertyListStep4SEO
+            onNext={() => handleSaveDraft({ seoInformation: propertyData.seoInformation }).then(() => setStep(5))}
+            onPrev={() => setStep(3)}
+            onChange={handleStepChange}
+            initialData={propertyData}
+          />
+        );
+
+      case 5:
+        return (
+          <CreatePropertyListStep4        // ✅ Your old Step 4
             savedId={savedId}
             onPublish={handleSubmitStatus}
-            onPrev={() => setStep(3)} // ✅ add this line
+            onPrev={() => setStep(4)}
           />
         );
       default:

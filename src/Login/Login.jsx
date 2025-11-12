@@ -21,14 +21,16 @@ export default function Login() {
     try {
       const res = await loginUser(formData);
       if (res.data.success) {
+        const user = res.data.user;
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userName", user?.name || "");
         CommonToaster("Login Successfully!", "success");
         navigate("/dashboard");
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Login failed. Please check your credentials."
+        "Login failed. Please check your credentials."
       );
     } finally {
       setLoading(false);

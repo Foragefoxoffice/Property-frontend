@@ -7,6 +7,7 @@ import {
   Key,
   BedDouble,
   ChevronDown,
+  Trash,
 } from "lucide-react";
 
 import PropertyMaster from "../MasterList/PropertyMaster";
@@ -35,13 +36,14 @@ import BlockPage from "../MasterList/MasterListPage/BlockPage";
 import FeeTaxPage from "../MasterList/MasterListPage/FeeTaxPage";
 import LegalDocumentPage from "../MasterList/MasterListPage/LegalDocumentPage";
 import FloorRange from "../MasterList/MasterListPage/FloorRangePage";
+import TrashPage from "../Trash/TrashPage";
 
 const DashboardLayout = () => {
   const [activePage, setActivePage] = useState("Lease");
   const [subPage, setSubPage] = useState(null);
   const [subSubPage, setSubSubPage] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState(null);
-  const [propertiesOpen, setPropertiesOpen] = useState(true); // dropdown state
+  const [propertiesOpen, setPropertiesOpen] = useState(true);
 
   const { language } = useLanguage();
   const t = translations[language];
@@ -53,6 +55,7 @@ const DashboardLayout = () => {
     { key: "Landlords", label: t.owners, icon: <Users className="w-4 h-4" /> },
     { key: "Staffs", label: t.staffs, icon: <UserCog className="w-4 h-4" /> },
     { key: "Masters", label: t.masters, icon: <LayoutGrid className="w-4 h-4" /> },
+    { key: "Trash", label: "Trash", icon: <Trash className="w-4 h-4" /> },
   ];
 
   const renderPage = () => {
@@ -94,9 +97,7 @@ const DashboardLayout = () => {
             openZoneSubAreaPage={() => setSubSubPage("ZoneSubAreaPage")}
             openBlockPage={() => setSubSubPage("BlockPage")}
             openPropertyTypePage={() => setSubSubPage("PropertyTypePage")}
-            openAvailabilityStatusPage={() =>
-              setSubSubPage("AvailabilityStatusPage")
-            }
+            openAvailabilityStatusPage={() => setSubSubPage("AvailabilityStatusPage")}
             openUnitPage={() => setSubSubPage("UnitPage")}
             openFurnishingPage={() => setSubSubPage("FurnishingPage")}
             openParkingPage={() => setSubSubPage("ParkingPage")}
@@ -123,10 +124,7 @@ const DashboardLayout = () => {
     }
 
     if (["Lease", "Sale", "Home Stay"].includes(activePage)) {
-      if (
-        subPage?.startsWith("CreateProperty") ||
-        subPage === "EditProperty"
-      ) {
+      if (subPage?.startsWith("CreateProperty") || subPage === "EditProperty") {
         let transactionType = activePage;
 
         if (subPage?.startsWith("CreateProperty-")) {
@@ -164,12 +162,7 @@ const DashboardLayout = () => {
 
     if (activePage === "Landlords") {
       if (subPage === "ViewOwner") {
-        return (
-          <OwnerView
-            ownerId={selectedProperty}
-            goBack={() => setSubPage(null)}
-          />
-        );
+        return <OwnerView ownerId={selectedProperty} goBack={() => setSubPage(null)} />;
       }
 
       return (
@@ -186,12 +179,7 @@ const DashboardLayout = () => {
 
     if (activePage === "Staffs") {
       if (subPage === "ViewStaff") {
-        return (
-          <StaffView
-            staffId={selectedProperty}
-            goBack={() => setSubPage(null)}
-          />
-        );
+        return <StaffView staffId={selectedProperty} goBack={() => setSubPage(null)} />;
       }
 
       return (
@@ -205,7 +193,13 @@ const DashboardLayout = () => {
         </div>
       );
     }
+
+    // ✅ ✅ FINAL TRASH PAGE — Correct Placement
+    if (activePage === "Trash") {
+      return <TrashPage />;
+    }
   };
+
 
   return (
     <>

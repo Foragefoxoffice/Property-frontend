@@ -127,6 +127,8 @@ export const getAllPetPolicies = (params) => API.get("/petpolicy", { params });
 export const createPetPolicy = (data) => API.post("/petpolicy", data);
 export const updatePetPolicy = (id, data) => API.put(`/petpolicy/${id}`, data);
 export const deletePetPolicy = (id) => API.delete(`/petpolicy/${id}`);
+export const permanentlyDeleteProperty = (id) =>
+  API.delete(`/create-property/permanent-delete/${id}`);
 
 //
 
@@ -217,7 +219,10 @@ export const updatePropertyListing = (id, data) =>
   API.put(`/create-property/${id}`, data);
 export const deletePropertyListing = (id) =>
   API.delete(`/create-property/${id}`);
-export const getNextPropertyId = () => API.get("/create-property/next-id");
+export const getNextPropertyId = (transactionType) =>
+  API.get(`/create-property/next-id`, {
+    params: { transactionType },
+  });
 
 /* =========================================================
    ✨ EXPORT DEFAULT

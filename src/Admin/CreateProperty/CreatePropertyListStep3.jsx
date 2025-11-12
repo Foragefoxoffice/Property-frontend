@@ -59,12 +59,9 @@ export default function CreatePropertyListStep3({
   const [lang, setLang] = useState("en");
 
   const [selectedOwner, setSelectedOwner] = useState(null);
-  const [selectedConsultant, setSelectedConsultant] = useState(null);
   const [selectedConnect, setSelectedConnect] = useState(null);
 
   const [showOwnerView, setShowOwnerView] = useState(false);
-  const [showConsultantView, setShowConsultantView] = useState(false);
-  const [showConnectView, setShowConnectView] = useState(false);
   const [showAddOwnerModal, setShowAddOwnerModal] = useState(false);
 
   const [form, setForm] = useState({
@@ -72,9 +69,9 @@ export default function CreatePropertyListStep3({
     ownerNotes: initialData.ownerNotes || { en: "", vi: "" },
     consultant: initialData.consultant ||
       initialData.contactManagement?.contactManagementConsultant || {
-        en: "",
-        vi: "",
-      },
+      en: "",
+      vi: "",
+    },
     connectingPoint: initialData.connectingPoint || "",
     connectingPointNotes: initialData.connectingPointNotes || {
       en: "",
@@ -178,11 +175,10 @@ export default function CreatePropertyListStep3({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
                 ? "border-b-2 border-[#41398B] text-black"
                 : "text-gray-500 hover:text-black"
-            }`}
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -226,9 +222,9 @@ export default function CreatePropertyListStep3({
                         ...prev,
                         owner: selected
                           ? {
-                              en: selected.ownerName?.en || "",
-                              vi: selected.ownerName?.vi || "",
-                            }
+                            en: selected.ownerName?.en || "",
+                            vi: selected.ownerName?.vi || "",
+                          }
                           : { en: "", vi: "" },
                       }));
                     }}

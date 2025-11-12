@@ -11,6 +11,7 @@ import {
 import {
   getAllPropertyListings,
   deletePropertyListing,
+  permanentlyDeleteProperty,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -24,6 +25,7 @@ export default function ManageProperty({
   openEditProperty,
   onViewProperty,
   filterByTransactionType,
+  trashMode = false,
 }) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +55,10 @@ export default function ManageProperty({
   // ✅ Filter properties
   const filteredProperties = useMemo(() => {
     return properties.filter((p) => {
+      // ✅ If trashMode → only show Archived
+      if (trashMode && p.status !== "Archived") return false;
+      // ✅ If NOT trash mode → hide Archived
+      if (!trashMode && p.status === "Archived") return false;
       const info = p.listingInformation || {};
       const type =
         info.listingInformationTransactionType?.en?.toLowerCase() || "";
@@ -98,14 +104,30 @@ export default function ManageProperty({
   // ✅ Delete property
   const handleDelete = async () => {
     try {
-      await deletePropertyListing(deleteConfirm.id);
+      if (trashMode) {
+        // 🔥 Permanent delete
+        await permanentlyDeleteProperty(deleteConfirm.id);
+
+        CommonToaster(
+          language === "vi"
+            ? "Đã xóa vĩnh viễn bất động sản"
+            : "Property permanently deleted",
+          "success"
+        );
+      } else {
+        // 🗑️ Move to trash
+        await deletePropertyListing(deleteConfirm.id);
+
+        CommonToaster(
+          language === "vi"
+            ? "Đã chuyển vào thùng rác"
+            : "Moved to trash",
+          "success"
+        );
+      }
+
+      // ✅ Remove from UI
       setProperties((prev) => prev.filter((p) => p._id !== deleteConfirm.id));
-      CommonToaster(
-        language === "vi"
-          ? "Xóa bất động sản thành công"
-          : "Property deleted successfully",
-        "success"
-      );
     } catch (err) {
       console.error("Error deleting property:", err);
       CommonToaster(
@@ -118,6 +140,7 @@ export default function ManageProperty({
       setDeleteConfirm({ show: false, id: null });
     }
   };
+
 
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
 
@@ -370,19 +393,33 @@ export default function ManageProperty({
       {/* ✅ Delete Confirmation Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
+
+            {/* ✅ Title */}
             <div className="flex items-center mb-4">
-              <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-800">
-                {language === "vi" ? "Xác nhận xóa" : "Confirm Deletion"}
+              <h3 className="text-lg font-semibold text-black-800">
+                {trashMode
+                  ? (language === "vi" ? "Bạn có chắc chắn tuyệt đối không?" : "Are you absolutely sure?")
+                  : (language === "vi" ? "Chuyển vào thùng rác?" : "Move to Trash?")}
               </h3>
             </div>
+
+            {/* ✅ Description */}
             <p className="text-gray-600 text-sm mb-6">
-              {language === "vi"
-                ? "Bạn có chắc chắn muốn xóa bất động sản này? Hành động này không thể hoàn tác."
-                : "Are you sure you want to delete this property? This action cannot be undone."}
+              {trashMode
+                ? (
+                  language === "vi"
+                    ? "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn tài khoản của bạn và xóa dữ liệu khỏi máy chủ của chúng tôi."
+                    : "This action cannot be undone. This will permanently delete your account and remove your data from our servers."
+                )
+                : (
+                  language === "vi"
+                    ? "Bất động sản sẽ được chuyển vào thùng rác và có thể khôi phục lại sau này."
+                    : "This property will be moved to trash and can be restored later."
+                )}
             </p>
 
+            {/* ✅ Buttons */}
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
@@ -390,11 +427,15 @@ export default function ManageProperty({
               >
                 {language === "vi" ? "Hủy" : "Cancel"}
               </button>
+
               <button
                 onClick={handleDelete}
-                className="px-6 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
+                className={`px-6 py-2 rounded-full text-white 
+            ${trashMode ? "bg-red-600 hover:bg-red-700" : "bg-red-600 hover:bg-red-700"}`}
               >
-                {language === "vi" ? "Xóa" : "Delete"}
+                {trashMode
+                  ? (language === "vi" ? "Xóa vĩnh viễn" : "Delete Permanently")
+                  : (language === "vi" ? "Chuyển vào thùng rác" : "Move to Trash")}
               </button>
             </div>
           </div>
