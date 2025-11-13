@@ -428,9 +428,8 @@ export default function ManageProperty({
                         trigger={["click"]}
                         menu={{
                           items: [
-                            { key: "1", label: "Dummy Option 1" },
-                            { key: "2", label: "Dummy Option 2" },
-                            { key: "3", label: "Dummy Option 3" },
+                            { key: "1", label: "Copy to Sale" },
+                            { key: "2", label: "Copy to Home Stay" },
                           ],
                         }}
                         placement="bottomRight"
