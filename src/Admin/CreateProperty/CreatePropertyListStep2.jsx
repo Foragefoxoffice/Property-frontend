@@ -133,17 +133,16 @@ export default function CreatePropertyListStep2({
     },
     videoVisibility: initialData.videoVisibility || false,
     floorImageVisibility: initialData.floorImageVisibility || false,
-    financialVisibility:
-      initialData.financialVisibility || {
-        contractLength: false,
-        deposit: false,
-        paymentTerm: false,
-        feeTaxes: false,
-        legalDocs: false,
-        agentFee: false,
-        checkIn: false,
-        checkOut: false,
-      },
+    financialVisibility: initialData.financialVisibility || {
+      contractLength: false,
+      deposit: false,
+      paymentTerm: false,
+      feeTaxes: false,
+      legalDocs: false,
+      agentFee: false,
+      checkIn: false,
+      checkOut: false,
+    },
   });
 
   const [images, setImages] = useState(initialData.propertyImages || []);
@@ -184,20 +183,19 @@ export default function CreatePropertyListStep2({
     // Skip if user already has a currency (edit mode)
     if (form.currency?.symbol) return;
 
-    const def = currencies.find(c => c.isDefault);
+    const def = currencies.find((c) => c.isDefault);
 
     if (def) {
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
         currency: {
           symbol: def.currencySymbol?.en || def.currencySymbol?.vi || "",
           code: def.currencyCode?.en || def.currencyCode?.vi || "",
-          name: def.currencyName?.en || def.currencyName?.vi || ""
-        }
+          name: def.currencyName?.en || def.currencyName?.vi || "",
+        },
       }));
     }
   }, [currencies]);
-
 
   /* =========================================================
    ✅ File Size Limits
@@ -389,10 +387,11 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -412,11 +411,9 @@ export default function CreatePropertyListStep2({
       />
 
       <div className="flex flex-col w-full gap-1">
-
         {/* ✅ Top Row: Label + Hide Public + Switch */}
         <div className="flex items-center justify-between mb-1">
-          <label className="text-sm text-[#131517] font-semibold">
-          </label>
+          <label className="text-sm text-[#131517] font-semibold"></label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
               {lang === "en" ? "Hide Public" : "Ẩn công khai"}
@@ -447,11 +444,9 @@ export default function CreatePropertyListStep2({
         />
       </div>
 
-
       <div className="flex flex-col w-full gap-1">
         <div className="flex items-center justify-between mb-1">
-          <label className="text-sm text-[#131517] font-semibold">
-          </label>
+          <label className="text-sm text-[#131517] font-semibold"></label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
               {lang === "en" ? "Hide Public" : "Ẩn công khai"}
@@ -541,8 +536,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -563,10 +559,31 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Deposit */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.depositPaymentTerms}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.depositPaymentTerms}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
+
+                <Switch
+                  checked={form.financialVisibility?.depositPaymentTerms}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      financialVisibility: {
+                        ...p.financialVisibility,
+                        depositPaymentTerms: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -577,11 +594,9 @@ export default function CreatePropertyListStep2({
               }
               value={form.depositPaymentTerms?.[lang] || undefined}
               onChange={(value) => {
-                // User selected an existing option
                 handleLocalizedChange(lang, "depositPaymentTerms", value);
               }}
               onSearch={(val) => {
-                // User typed a new value (same logic as Zone in Step 1)
                 if (val && val.trim() !== "") {
                   handleLocalizedChange(
                     lang,
@@ -665,7 +680,6 @@ export default function CreatePropertyListStep2({
             />
           </div>
 
-
           {/* Fees & Taxes */}
           <div className="flex flex-col w-full gap-1">
             <div className="flex items-center justify-between mb-1">
@@ -704,7 +718,11 @@ export default function CreatePropertyListStep2({
               }}
               onSearch={(val) => {
                 if (val.trim() !== "") {
-                  handleLocalizedChange(lang, "financialDetailsFeeTax", val.trim());
+                  handleLocalizedChange(
+                    lang,
+                    "financialDetailsFeeTax",
+                    val.trim()
+                  );
                 }
               }}
               filterOption={(input, option) =>
@@ -877,8 +895,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -900,7 +919,6 @@ export default function CreatePropertyListStep2({
 
           {/* Contract Length */}
           <div className="flex flex-col w-full gap-1">
-
             {/* ✅ Top Row: Label + Hide Public + Switch */}
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm text-[#131517] font-semibold">
@@ -974,7 +992,11 @@ export default function CreatePropertyListStep2({
               }}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
-                  handleLocalizedChange(lang, "depositPaymentTerms", val.trim());
+                  handleLocalizedChange(
+                    lang,
+                    "depositPaymentTerms",
+                    val.trim()
+                  );
                 }
               }}
               filterOption={(input, option) =>
@@ -1031,7 +1053,11 @@ export default function CreatePropertyListStep2({
               }}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
-                  handleLocalizedChange(lang, "maintenanceFeeMonthly", val.trim());
+                  handleLocalizedChange(
+                    lang,
+                    "maintenanceFeeMonthly",
+                    val.trim()
+                  );
                 }
               }}
               filterOption={(input, option) =>
@@ -1162,8 +1188,9 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
+                  c.currencySymbol?.en
+                })`,
                 value: c.currencySymbol?.en,
               }))}
             />

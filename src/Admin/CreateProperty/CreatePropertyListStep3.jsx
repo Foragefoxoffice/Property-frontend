@@ -69,9 +69,9 @@ export default function CreatePropertyListStep3({
     ownerNotes: initialData.ownerNotes || { en: "", vi: "" },
     consultant: initialData.consultant ||
       initialData.contactManagement?.contactManagementConsultant || {
-      en: "",
-      vi: "",
-    },
+        en: "",
+        vi: "",
+      },
     connectingPoint: initialData.connectingPoint || "",
     connectingPointNotes: initialData.connectingPointNotes || {
       en: "",
@@ -138,13 +138,13 @@ export default function CreatePropertyListStep3({
   const t = {
     en: {
       title: "Landlord Information",
-      owner: "Owner / Landlord",
-      ownerNotes: "Owner / Landlord Notes",
+      landlord: "Landlord",
+      ownerNotes: "Landlord Notes",
       consultant: "Created By",
       connectingPoint: "Connecting Point",
       connectingPointNotes: "Connecting Point Notes",
       internalNotes: "Internal Notes",
-      selectOwner: "Select Owner",
+      selectOwner: "Select landlord",
       selectConnect: "Select Connecting Point",
       next: "Next",
       typehere: "Type here",
@@ -152,13 +152,13 @@ export default function CreatePropertyListStep3({
     },
     vi: {
       title: "Thông tin chủ nhà",
-      owner: "Chủ Sở Hữu / Người Cho Thuê",
-      ownerNotes: "Ghi chú của Chủ sở hữu / Chủ nhà",
+      landlord: "chủ nhà",
+      ownerNotes: "Ghi chú của chủ nhà",
       consultant: "Được tạo bởi",
       connectingPoint: "Điểm Liên Hệ",
       connectingPointNotes: "Ghi chú về Điểm Liên Hệ",
       internalNotes: "Ghi chú nội bộ",
-      selectOwner: "Chọn Chủ Sở Hữu",
+      selectOwner: "Chọn chủ nhà",
       selectConnect: "Chọn Điểm Liên Hệ",
       typehere: "Nhập tại đây",
       next: "Tiếp",
@@ -177,10 +177,11 @@ export default function CreatePropertyListStep3({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -207,7 +208,7 @@ export default function CreatePropertyListStep3({
           <div className="flex flex-wrap gap-4 items-baseline">
             <div className="flex-1 min-w-[250px]">
               <label className="text-sm text-[#131517] font-semibold">
-                {t.owner}
+                {t.landlord}
               </label>
 
               <div className="flex items-center gap-2">
@@ -224,9 +225,9 @@ export default function CreatePropertyListStep3({
                         ...prev,
                         owner: selected
                           ? {
-                            en: selected.ownerName?.en || "",
-                            vi: selected.ownerName?.vi || "",
-                          }
+                              en: selected.ownerName?.en || "",
+                              vi: selected.ownerName?.vi || "",
+                            }
                           : { en: "", vi: "" },
                       }));
                     }}

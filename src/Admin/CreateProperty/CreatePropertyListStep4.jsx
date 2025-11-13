@@ -16,6 +16,7 @@ import {
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
+import { Select as AntdSelect } from "antd";
 
 /* 💜 Skeleton Loader Component */
 const SkeletonLoader = () => (
@@ -48,7 +49,6 @@ const formatDMY = (dateStr) => {
   const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 };
-
 
 /* === Media Preview Modal === */
 const MediaPreviewModal = ({ url, type, onClose }) => {
@@ -176,8 +176,8 @@ export default function CreatePropertyListStep4({
     contractTerms: { en: "Contract Terms", vi: "Điều khoản hợp đồng" },
 
     // Contact / Management
-    owner: { en: "Owner / Landlord", vi: "Chủ sở hữu / Chủ nhà" },
-    ownerNotes: { en: "Owner Notes", vi: "Ghi chú của chủ nhà" },
+    owner: { en: "Landlord", vi: "chủ nhà" },
+    ownerNotes: { en: "Landlord Notes", vi: "Ghi chú của chủ nhà" },
     consultant: { en: "Created By", vi: "Được tạo bởi" },
     connectingPoint: { en: "Connecting Point", vi: "Điểm liên hệ" },
     connectingNotes: { en: "Connecting Notes", vi: "Ghi chú liên hệ" },
@@ -276,7 +276,10 @@ export default function CreatePropertyListStep4({
               label={labels.transactionType[lang]}
               value={safe(li.listingInformationTransactionType)}
             />
-            <Field label={labels.propertyId[lang]} value={li.listingInformationPropertyId} />
+            <Field
+              label={labels.propertyId[lang]}
+              value={li.listingInformationPropertyId}
+            />
             <Field
               label={labels.project[lang]}
               value={safe(li.listingInformationProjectCommunity)}
@@ -302,7 +305,7 @@ export default function CreatePropertyListStep4({
               value={formatDMY(li.listingInformationDateListed)}
             />
             {safe(li.listingInformationTransactionType).toLowerCase() ===
-              "home stay" ? (
+            "home stay" ? (
               ""
             ) : (
               <>
@@ -420,89 +423,89 @@ export default function CreatePropertyListStep4({
             {/* ✅ SALE */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "sale" && (
-                <>
-                  <Field
-                    label={labels.price[lang]}
-                    value={fd.financialDetailsPrice}
-                  />
-                  <Field
-                    label={labels.deposit[lang]}
-                    value={safe(fd.financialDetailsDeposit)}
-                  />
-                  <Field
-                    label={labels.paymentTerms[lang]}
-                    value={safe(fd.financialDetailsMainFee)}
-                  />
-                  <Field
-                    label={labels.contractTerms[lang]}
-                    value={safe(fd.financialDetailsContractTerms)}
-                  />
-                  <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
-                  <Field
-                    label="Fee / Tax"
-                    value={safe(fd.financialDetailsFeeTax)}
-                  />
-                  <Field
-                    label="Legal Documents"
-                    value={safe(fd.financialDetailsLegalDoc)}
-                  />
-                </>
-              )}
+              <>
+                <Field
+                  label={labels.price[lang]}
+                  value={fd.financialDetailsPrice}
+                />
+                <Field
+                  label={labels.deposit[lang]}
+                  value={safe(fd.financialDetailsDeposit)}
+                />
+                <Field
+                  label={labels.paymentTerms[lang]}
+                  value={safe(fd.financialDetailsMainFee)}
+                />
+                <Field
+                  label={labels.contractTerms[lang]}
+                  value={safe(fd.financialDetailsContractTerms)}
+                />
+                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                <Field
+                  label="Fee / Tax"
+                  value={safe(fd.financialDetailsFeeTax)}
+                />
+                <Field
+                  label="Legal Documents"
+                  value={safe(fd.financialDetailsLegalDoc)}
+                />
+              </>
+            )}
 
             {/* ✅ LEASE */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "lease" && (
-                <>
-                  <Field
-                    label={labels.leasePrice[lang]}
-                    value={fd.financialDetailsLeasePrice}
-                  />
-                  <Field
-                    label={labels.contractLength[lang]}
-                    value={fd.financialDetailsContractLength}
-                  />
-                  <Field
-                    label={labels.deposit[lang]}
-                    value={safe(fd.financialDetailsDeposit)}
-                  />
-                  <Field
-                    label={labels.paymentTerms[lang]}
-                    value={safe(fd.financialDetailsMainFee)}
-                  />
-                  <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
-                  <Field
-                    label="Agent Payment Agenda"
-                    value={safe(fd.financialDetailsAgentPaymentAgenda)}
-                  />
-                </>
-              )}
+              <>
+                <Field
+                  label={labels.leasePrice[lang]}
+                  value={fd.financialDetailsLeasePrice}
+                />
+                <Field
+                  label={labels.contractLength[lang]}
+                  value={fd.financialDetailsContractLength}
+                />
+                <Field
+                  label={labels.deposit[lang]}
+                  value={safe(fd.financialDetailsDeposit)}
+                />
+                <Field
+                  label={labels.paymentTerms[lang]}
+                  value={safe(fd.financialDetailsMainFee)}
+                />
+                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                <Field
+                  label="Agent Payment Agenda"
+                  value={safe(fd.financialDetailsAgentPaymentAgenda)}
+                />
+              </>
+            )}
 
             {/* ✅ HOME STAY */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "home stay" && (
-                <>
-                  <Field
-                    label={labels.pricePerNight[lang]}
-                    value={fd.financialDetailsPricePerNight}
-                  />
-                  <Field
-                    label={labels.checkIn[lang]}
-                    value={fd.financialDetailsCheckIn}
-                  />
-                  <Field
-                    label={labels.checkOut[lang]}
-                    value={fd.financialDetailsCheckOut}
-                  />
-                  <Field
-                    label={labels.deposit[lang]}
-                    value={safe(fd.financialDetailsDeposit)}
-                  />
-                  <Field
-                    label={labels.paymentTerms[lang]}
-                    value={safe(fd.financialDetailsMainFee)}
-                  />
-                </>
-              )}
+              <>
+                <Field
+                  label={labels.pricePerNight[lang]}
+                  value={fd.financialDetailsPricePerNight}
+                />
+                <Field
+                  label={labels.checkIn[lang]}
+                  value={fd.financialDetailsCheckIn}
+                />
+                <Field
+                  label={labels.checkOut[lang]}
+                  value={fd.financialDetailsCheckOut}
+                />
+                <Field
+                  label={labels.deposit[lang]}
+                  value={safe(fd.financialDetailsDeposit)}
+                />
+                <Field
+                  label={labels.paymentTerms[lang]}
+                  value={safe(fd.financialDetailsMainFee)}
+                />
+              </>
+            )}
           </Grid3>
         </Section>
 
@@ -552,30 +555,21 @@ export default function CreatePropertyListStep4({
             <label className="block text-sm font-medium text-[#131517] mb-2">
               {labels.status[lang]} <span className="text-red-500">*</span>
             </label>
+
             <div className="relative">
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="appearance-none w-full h-12 border border-[#B2B2B3] rounded-lg px-3 pr-10 py-2 text-gray-700 text-sm bg-white focus:ring-2 focus:ring-[#41398B]/40 focus:border-[#41398B] outline-none transition"
-              >
-                <option value="">{labels.select[lang]}</option>
-                <option value="Draft">{labels.draft[lang]}</option>
-                <option value="Published">{labels.published[lang]}</option>
-              </select>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
+              <AntdSelect
+                showSearch
+                allowClear
+                placeholder={labels.select[lang]}
+                value={status || undefined}
+                onChange={(value) => setStatus(value || "")}
+                className="w-full custom-select"
+                popupClassName="custom-dropdown"
+                options={[
+                  { label: labels.draft[lang], value: "Draft" },
+                  { label: labels.published[lang], value: "Published" },
+                ]}
+              />
             </div>
           </div>
         </div>
@@ -651,7 +645,7 @@ const Field = ({ label, value }) => (
     <p className="text-sm text-[#131517] font-semibold mb-2 tracking-wide">
       {label}
     </p>
-    <div className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 flex items-center text-sm text-gray-700 bg-gray-50">
+    <div className="border border-[#B2B2B3] h-12 overflow-auto rounded-lg px-3 py-2 flex items-center text-sm text-gray-700 bg-gray-50">
       {value || "—"}
     </div>
   </div>
@@ -716,7 +710,6 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-8 relative animate-fade-in border border-gray-100">
-
         {/* Close */}
         <button
           onClick={onClose}
@@ -740,7 +733,6 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
 
         {/* Details Sections */}
         <div className="space-y-6 text-center">
-
           {/* Phone */}
           <div>
             <h4 className="text-md font-semibold text-gray-700 mb-1">
@@ -749,7 +741,10 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
             {data.phoneNumbers?.length ? (
               <div className="space-y-1">
                 {data.phoneNumbers.map((num, i) => (
-                  <div key={i} className="flex items-center gap-2 text-md text-gray-700 justify-center">
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 text-md text-gray-700 justify-center"
+                  >
                     <Phone size={16} className="text-gray-500" />
                     {num}
                   </div>
@@ -765,7 +760,10 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
             <h4 className="text-md font-semibold text-gray-700 mb-1">Email</h4>
             {data.emailAddresses?.length ? (
               data.emailAddresses.map((mail, i) => (
-                <div key={i} className="flex items-center gap-2 text-md text-gray-700 justify-center">
+                <div
+                  key={i}
+                  className="flex items-center gap-2 text-md text-gray-700 justify-center"
+                >
                   <Mail size={16} className="text-gray-500" />
                   {mail}
                 </div>
@@ -784,13 +782,20 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
             {social?.length ? (
               <div className="space-y-2">
                 {social.map((s, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm justify-center">
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 text-sm justify-center"
+                  >
                     <span className="px-2 py-1 bg-gray-200 rounded-full text-xs font-medium">
                       {s.icon || "—"}
                     </span>
                     {s.link ? (
                       <a
-                        href={s.link.startsWith("http") ? s.link : `https://${s.link}`}
+                        href={
+                          s.link.startsWith("http")
+                            ? s.link
+                            : `https://${s.link}`
+                        }
                         target="_blank"
                         className="text-[#41398B] font-medium hover:underline"
                       >

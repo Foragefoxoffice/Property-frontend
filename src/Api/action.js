@@ -225,6 +225,18 @@ export const getNextPropertyId = (transactionType) =>
   });
 
 /* =========================================================
+   📋 COPY PROPERTY APIs
+========================================================= */
+export const copyPropertyToSale = (id) =>
+  API.post(`/create-property/copy/sale/${id}`);
+
+export const copyPropertyToLease = (id) =>
+  API.post(`/create-property/copy/lease/${id}`);
+
+export const copyPropertyToHomeStay = (id) =>
+  API.post(`/create-property/copy/homestay/${id}`);
+
+/* =========================================================
    ✨ EXPORT DEFAULT
 ========================================================= */
 export default API;

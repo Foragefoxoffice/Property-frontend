@@ -10,7 +10,6 @@ body {
   font-family: "Manrope", sans-serif;
 }
 
-
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
@@ -48,6 +47,7 @@ body {
   border-radius: 10px !important;
   padding: 6px !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  z-index: 0;
 }
 
 /* --- Dropdown Items --- */

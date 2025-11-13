@@ -27,7 +27,8 @@ function SimpleSlider({ items, type = "image" }) {
   if (!safeItems.length) return null;
 
   const next = () => setIndex((i) => (i + 1) % safeItems.length);
-  const prev = () => setIndex((i) => (i - 1 + safeItems.length) % safeItems.length);
+  const prev = () =>
+    setIndex((i) => (i - 1 + safeItems.length) % safeItems.length);
 
   return (
     <div className="relative w-full">
@@ -96,89 +97,214 @@ export default function PropertyDetailsSection({ property }) {
   const floorplans = safeArray(p?.imagesVideos?.floorPlan);
   const utilities = safeArray(p?.propertyUtility);
 
+  const visList = p.listingInformationVisibility || {};
+  const visProp = p.propertyInformationVisibility || {};
+  const visFin = p.financialVisibility || {};
+  const visDec = p.descriptionVisibility || {};
+  const visVideo = p.videoVisibility || {};
+  const visFloor = p.floorImageVisibility || {};
+
+  const show = (flag) => flag === false || flag === undefined;
+
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr; // fallback if already formatted
+
+    const options = { day: "2-digit", month: "short", year: "numeric" };
+    return date.toLocaleDateString("en-GB", options).replace(/ /g, "-");
+  }
+
   return (
     <div className="bg-[#F8F7FC]">
       {/* -------------------------------------------------------
          Tabs (UI preserved exactly)
       ------------------------------------------------------- */}
       <div className="sticky top-0 bg-[#F8F7FC] pt-4 z-10 flex md:justify-center border-b border-gray-200 mb-6 overflow-x-auto">
-        {["Overview", "Property Utility", "Payment Overview", "Video", "Floor Plans"].map(
-          (tab) => (
-            <button
-              key={tab}
-              onClick={() => scrollTo(tab)}
-              className={`relative px-5 py-3 text-sm font-medium`}
-            >
-              {tab}
-            </button>
-          )
-        )}
+        {[
+          "Overview",
+          "Property Utility",
+          "Payment Overview",
+          "Video",
+          "Floor Plans",
+        ].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => scrollTo(tab)}
+            className={`relative px-5 py-3 text-sm font-medium`}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:px-8 px-4">
         {/* -------------------------------------------------------
            LEFT CONTENT (UI preserved)
         ------------------------------------------------------- */}
-        <div id="scrollContainer" className="lg:col-span-2 overflow-y-auto lg:h-[75vh] pr-2">
-
+        <div
+          id="scrollContainer"
+          className="lg:col-span-2 overflow-y-auto lg:h-[75vh] pr-2"
+        >
           {/* -------------------------------------------------------
              OVERVIEW
           ------------------------------------------------------- */}
-          <section ref={sectionRefs["Overview"]} className="bg-white p-6 rounded-2xl mb-12">
+          <section
+            ref={sectionRefs["Overview"]}
+            className="bg-white p-6 rounded-2xl mb-12"
+          >
             <h2 className="text-xl font-semibold mb-5">Overview</h2>
 
             <div className="grid grid-cols-2 ml-3 md:grid-cols-4 gap-8">
-              <OverviewCard icon={<House />} label="Property ID" value={safeVal(list?.listingInformationPropertyId)} />
-              <OverviewCard icon={<SlidersHorizontal />} label="Type" value={safeVal(list?.listingInformationPropertyType)} />
-              <OverviewCard icon={<Bed />} label="Bedrooms" value={`${safeVal(info?.informationBedrooms)} Rooms`} />
-              <OverviewCard icon={<Bath />} label="Bathrooms" value={`${safeVal(info?.informationBathrooms)} Rooms`} />
-              <OverviewCard icon={<Armchair />} label="Furnishing" value={safeVal(info?.informationFurnishing)} />
-              <OverviewCard icon={<Ruler />} label="Size" value={`${safeVal(info?.informationUnitSize)} m²`} />
-              <OverviewCard icon={<Layers />} label="Floors" value={safeVal(info?.informationFloors)} />
-              <OverviewCard icon={<Eye />} label="View" value={safeVal(info?.informationView)} />
+              {show(p.listingInformationVisibility?.propertyId) && (
+                <OverviewCard
+                  icon={<House />}
+                  label="Property ID:"
+                  value={safeVal(list?.listingInformationPropertyId)}
+                />
+              )}
+              {show(visList.transactionType) && (
+                <OverviewCard
+                  icon={<SlidersHorizontal />}
+                  label="Property Type:"
+                  value={safeVal(list?.listingInformationPropertyType)}
+                />
+              )}
+              {show(visProp.bedrooms) && (
+                <OverviewCard
+                  icon={<Bed />}
+                  label="Bedrooms:"
+                  value={`${safeVal(info?.informationBedrooms)} Rooms`}
+                />
+              )}
+              {show(visProp.bathrooms) && (
+                <OverviewCard
+                  icon={<Bath />}
+                  label="Bathrooms:"
+                  value={`${safeVal(info?.informationBathrooms)} Rooms`}
+                />
+              )}
+              {show(visProp.furnishing) && (
+                <OverviewCard
+                  icon={<Armchair />}
+                  label="Furnishing:"
+                  value={safeVal(info?.informationFurnishing)}
+                />
+              )}
+              {show(visProp.unit) && (
+                <OverviewCard
+                  icon={<Ruler />}
+                  label="Size:"
+                  value={`${safeVal(info?.informationUnitSize)} m²`}
+                />
+              )}
+              {show(visProp.floorRange) && (
+                <OverviewCard
+                  icon={<Layers />}
+                  label="Floor Range:"
+                  value={safeVal(info?.informationFloors)}
+                />
+              )}
+              {show(visProp.view) && (
+                <OverviewCard
+                  icon={<Eye />}
+                  label="View:"
+                  value={safeVal(info?.informationView)}
+                />
+              )}
             </div>
           </section>
+
+          {/* Check in check out */}
+          {type === "Home Stay" && (
+            <section className="bg-white p-6 rounded-2xl mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {show(visFin.checkIn) && (
+                  <InfoItem
+                    label="Check In:"
+                    value={safeVal(fin?.financialDetailsCheckIn)}
+                  />
+                )}
+                {show(visFin.checkOut) && (
+                  <InfoItem
+                    label="Check Out:"
+                    value={safeVal(fin?.financialDetailsCheckOut)}
+                  />
+                )}
+              </div>
+            </section>
+          )}
+          {/*  */}
 
           {/* -------------------------------------------------------
              ECOPARK SECTION (UI preserved)
           ------------------------------------------------------- */}
           <section className="bg-white p-6 rounded-2xl mb-12">
-            <h2 className="text-xl font-semibold mb-5">Ecopark</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <EcoparkItem label="Area / Zone" value={safeVal(list?.listingInformationZoneSubArea)} />
-              <EcoparkItem label="Block" value={safeVal(list?.listingInformationBlockName)} />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <EcoparkItem
-                label="Available From"
-                value={
-                  list?.listingInformationAvailableFrom
-                    ? list?.listingInformationAvailableFrom.substring(0, 10)
-                    : ""
-                }
+                label="Project / Community:"
+                value={safeVal(list?.listingInformationProjectCommunity)}
               />
+
+              {show(visList.areaZone) && (
+                <EcoparkItem
+                  label="Area / Zone:"
+                  value={safeVal(list?.listingInformationZoneSubArea)}
+                />
+              )}
+
+              {show(visList.blockName) && (
+                <EcoparkItem
+                  label="Block:"
+                  value={safeVal(list?.listingInformationBlockName)}
+                />
+              )}
+              {(type === "Sale" || type === "Lease") &&
+                show(visList.availableFrom) && (
+                  <EcoparkItem
+                    label="Available From:"
+                    value={formatDate(list?.listingInformationAvailableFrom)}
+                  />
+                )}
             </div>
           </section>
 
           {/* -------------------------------------------------------
              DESCRIPTION (UI preserved)
           ------------------------------------------------------- */}
-          <section className="bg-white p-6 rounded-2xl mb-12">
-            <h2 className="text-xl font-semibold mb-5">Description</h2>
-            <p className="text-gray-700 leading-6">
-              {safeVal(what?.whatNearbyDescription) || "No description available"}
-            </p>
-          </section>
+          {show(visDec.descriptionVisibility) && (
+            <section className="bg-white p-6 rounded-2xl mb-12">
+              <h2 className="text-xl font-semibold mb-5">Description</h2>
+              <p className="text-gray-700 leading-6">
+                {safeVal(what?.whatNearbyDescription) ||
+                  "No description available"}
+              </p>
+            </section>
+          )}
 
           {/* -------------------------------------------------------
              PROPERTY UTILITY (UI preserved)
           ------------------------------------------------------- */}
-          <section ref={sectionRefs["Property Utility"]} className="bg-white p-6 rounded-2xl mb-12">
+          <section
+            ref={sectionRefs["Property Utility"]}
+            className="bg-white p-6 rounded-2xl mb-12"
+          >
             <h2 className="text-xl font-semibold mb-5">Property Utility</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
               {utilities.map((item, index) => (
-                <div key={index} className="flex items-center gap-3 border-b py-3 last:border-b-0">
-                  <img src={item?.propertyUtilityIcon} className="w-6 h-6 object-contain" />
-                  <span className="font-medium">{safeVal(item?.propertyUtilityUnitName)}</span>
+                <div
+                  key={index}
+                  className="flex items-center gap-3 border-b py-3 last:border-b-0"
+                >
+                  <img
+                    src={item?.propertyUtilityIcon}
+                    className="w-6 h-6 object-contain"
+                  />
+                  <span className="font-medium">
+                    {safeVal(item?.propertyUtilityUnitName)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -187,30 +313,24 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              PAYMENT OVERVIEW (UI preserved)
           ------------------------------------------------------- */}
-          <section ref={sectionRefs["Payment Overview"]} className="bg-white p-6 rounded-2xl mb-16">
+          <section
+            ref={sectionRefs["Payment Overview"]}
+            className="bg-white p-6 rounded-2xl mb-16"
+          >
             <h2 className="text-xl font-semibold mb-4">Payment Overview</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {type === "Sale" && (
-                <>
-                  <InfoItem label="Selling Price" value={`₫ ${formatNumber(fin?.financialDetailsPrice)}`} />
-                  <InfoItem label="Deposit" value={safeVal(fin?.financialDetailsDeposit)} />
-                </>
+              {show(visFin.deposit) && (
+                <InfoItem
+                  label="Deposit:"
+                  value={safeVal(fin?.financialDetailsDeposit)}
+                />
               )}
-
-              {type === "Lease" && (
-                <>
-                  <InfoItem label="Monthly Rent" value={`₫ ${formatNumber(fin?.financialDetailsLeasePrice)}`} />
-                  <InfoItem label="Contract Length" value={safeVal(fin?.financialDetailsContractLength)} />
-                </>
-              )}
-
-              {type === "Home Stay" && (
-                <>
-                  <InfoItem label="Price Per Night" value={`₫ ${formatNumber(fin?.financialDetailsPricePerNight)}`} />
-                  <InfoItem label="Check In" value={safeVal(fin?.financialDetailsCheckIn)} />
-                  <InfoItem label="Check Out" value={safeVal(fin?.financialDetailsCheckOut)} />
-                </>
+              {show(visFin.paymentTerm) && (
+                <InfoItem
+                  label="Payment Terms:"
+                  value={safeVal(fin?.financialDetailsMainFee)}
+                />
               )}
             </div>
           </section>
@@ -218,18 +338,28 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              VIDEO (UI preserved)
           ------------------------------------------------------- */}
-          <section ref={sectionRefs["Video"]} className="bg-white p-6 rounded-2xl mb-16">
-            <h2 className="text-xl font-semibold mb-5">Video</h2>
-            <SimpleSlider items={videos} type="video" />
-          </section>
+          {show(visVideo.videoVisibility) && (
+            <section
+              ref={sectionRefs["Video"]}
+              className="bg-white p-6 rounded-2xl mb-16"
+            >
+              <h2 className="text-xl font-semibold mb-5">Video</h2>
+              <SimpleSlider items={videos} type="video" />
+            </section>
+          )}
 
           {/* -------------------------------------------------------
              FLOOR PLANS (UI preserved)
           ------------------------------------------------------- */}
-          <section ref={sectionRefs["Floor Plans"]} className="bg-white p-6 rounded-2xl">
-            <h2 className="text-xl font-semibold mb-5">Floor Plans</h2>
-            <SimpleSlider items={floorplans} type="image" />
-          </section>
+          {show(visFloor.floorImageVisibility) && (
+            <section
+              ref={sectionRefs["Floor Plans"]}
+              className="bg-white p-6 rounded-2xl"
+            >
+              <h2 className="text-xl font-semibold mb-5">Floor Plans</h2>
+              <SimpleSlider items={floorplans} type="image" />
+            </section>
+          )}
         </div>
 
         {/* -------------------------------------------------------
@@ -250,7 +380,9 @@ export default function PropertyDetailsSection({ property }) {
 
           <div className="flex items-center gap-2 text-gray-700 mb-5">
             <Phone className="w-4 h-4" />
-            <span>{safeVal(p?.contactManagement?.contactManagementConnectingPoint)}</span>
+            <span>
+              {safeVal(p?.contactManagement?.contactManagementConnectingPoint)}
+            </span>
           </div>
 
           <button className="w-full bg-black text-white py-2 rounded-full mb-3">
@@ -310,5 +442,3 @@ function UtilityLine({ icon, label }) {
     </div>
   );
 }
-
-

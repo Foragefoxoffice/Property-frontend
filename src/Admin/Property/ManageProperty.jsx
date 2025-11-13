@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Search,
   Plus,
@@ -12,6 +12,9 @@ import {
   getAllPropertyListings,
   deletePropertyListing,
   permanentlyDeleteProperty,
+  copyPropertyToSale,
+  copyPropertyToLease,
+  copyPropertyToHomeStay,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -39,9 +42,13 @@ export default function ManageProperty({
   const t = translations[language];
   const [showFilterPopup, setShowFilterPopup] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(null);
-
+  const fetchRef = useRef(false);
+  const [copyFullLoading, setCopyFullLoading] = useState(false);
   // ✅ Fetch properties
   useEffect(() => {
+    if (fetchRef.current) return;
+    fetchRef.current = true;
+
     async function fetchProperties() {
       try {
         const res = await getAllPropertyListings();
@@ -52,6 +59,7 @@ export default function ManageProperty({
         setLoading(false);
       }
     }
+
     fetchProperties();
   }, []);
 
@@ -65,16 +73,17 @@ export default function ManageProperty({
           p.listingInformation?.listingInformationTransactionType?.en ||
           "";
 
-        return type.toLowerCase().trim() === filterByTransactionType.toLowerCase().trim();
+        return (
+          type.toLowerCase().trim() ===
+          filterByTransactionType.toLowerCase().trim()
+        );
       });
     }
 
     if (appliedFilters) {
-
       const f = appliedFilters;
 
       list = list.filter((property) => {
-
         const info = property.listingInformation || {};
         const pi = property.propertyInformation || {};
 
@@ -87,11 +96,6 @@ export default function ManageProperty({
           const filterName = filterObj.name.toLowerCase();
 
           return apiEn.includes(filterName) || apiVi.includes(filterName);
-        };
-
-        const matchNumber = (apiValue, filterValue) => {
-          if (!filterValue) return true;
-          return Number(apiValue) === Number(filterValue);
         };
 
         // PROJECT
@@ -114,21 +118,25 @@ export default function ManageProperty({
         if (
           f.propertyNumber &&
           !(
-            info.listingInformationPropertyNo?.en?.toLowerCase().includes(f.propertyNumber.toLowerCase()) ||
-            info.listingInformationPropertyNo?.vi?.toLowerCase().includes(f.propertyNumber.toLowerCase())
+            info.listingInformationPropertyNo?.en
+              ?.toLowerCase()
+              .includes(f.propertyNumber.toLowerCase()) ||
+            info.listingInformationPropertyNo?.vi
+              ?.toLowerCase()
+              .includes(f.propertyNumber.toLowerCase())
           )
         )
           return false;
 
         // FLOOR RANGE
-        if (!matchTextObj(pi.informationFloors, f.floorRange))
-          return false;
+        if (!matchTextObj(pi.informationFloors, f.floorRange)) return false;
 
         // CURRENCY
         if (
           f.currency &&
           f.currency.name &&
-          info.financialDetailsCurrency?.toLowerCase() !== f.currency.name.toLowerCase()
+          info.financialDetailsCurrency?.toLowerCase() !==
+            f.currency.name.toLowerCase()
         )
           return false;
 
@@ -181,11 +189,14 @@ export default function ManageProperty({
       );
     });
 
-
     return list;
-  }, [properties, appliedFilters, searchTerm, language, filterByTransactionType]);
-
-
+  }, [
+    properties,
+    appliedFilters,
+    searchTerm,
+    language,
+    filterByTransactionType,
+  ]);
 
   // ✅ Pagination logic
   const totalRows = filteredProperties.length;
@@ -221,9 +232,7 @@ export default function ManageProperty({
         await deletePropertyListing(deleteConfirm.id);
 
         CommonToaster(
-          language === "vi"
-            ? "Đã chuyển vào thùng rác"
-            : "Moved to trash",
+          language === "vi" ? "Đã chuyển vào thùng rác" : "Moved to trash",
           "success"
         );
       }
@@ -243,8 +252,78 @@ export default function ManageProperty({
     }
   };
 
-
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
+
+  const getCopyMenuItems = (p) => {
+    if (!p) return [];
+
+    if (filterByTransactionType === "Sale") {
+      return [
+        {
+          key: "copy_lease",
+          label: "Copy to Lease",
+          onClick: () => handleCopy(p._id, "Lease"),
+        },
+        {
+          key: "copy_home",
+          label: "Copy to Home Stay",
+          onClick: () => handleCopy(p._id, "Home Stay"),
+        },
+      ];
+    }
+
+    if (filterByTransactionType === "Lease") {
+      return [
+        {
+          key: "copy_sale",
+          label: "Copy to Sale",
+          onClick: () => handleCopy(p._id, "Sale"),
+        },
+        {
+          key: "copy_home",
+          label: "Copy to Home Stay",
+          onClick: () => handleCopy(p._id, "Home Stay"),
+        },
+      ];
+    }
+
+    if (filterByTransactionType === "Home Stay") {
+      return [
+        {
+          key: "copy_sale",
+          label: "Copy to Sale",
+          onClick: () => handleCopy(p._id, "Sale"),
+        },
+        {
+          key: "copy_lease",
+          label: "Copy to Lease",
+          onClick: () => handleCopy(p._id, "Lease"),
+        },
+      ];
+    }
+  };
+
+  const handleCopy = async (id, target) => {
+    try {
+      setCopyFullLoading(true);
+
+      let res;
+
+      if (target === "Sale") res = await copyPropertyToSale(id);
+      if (target === "Lease") res = await copyPropertyToLease(id);
+      if (target === "Home Stay") res = await copyPropertyToHomeStay(id);
+
+      if (res?.data?.success) {
+        CommonToaster("Property copied successfully", "success");
+        setProperties((prev) => [...prev, res.data.data]);
+      }
+    } catch (err) {
+      console.error(err);
+      CommonToaster("Copy failed", "error");
+    } finally {
+      setCopyFullLoading(null);
+    }
+  };
 
   return (
     <div className="min-h-screen px-2 py-2">
@@ -254,10 +333,10 @@ export default function ManageProperty({
           {filterByTransactionType === "Lease"
             ? t.propertyTitleLease
             : filterByTransactionType === "Sale"
-              ? t.propertyTitleSale
-              : filterByTransactionType === "Home Stay"
-                ? t.propertyTitleHomeStay
-                : ""}
+            ? t.propertyTitleSale
+            : filterByTransactionType === "Home Stay"
+            ? t.propertyTitleHomeStay
+            : ""}
         </h1>
         <div className="flex items-center gap-4">
           <button
@@ -296,7 +375,6 @@ export default function ManageProperty({
       {/* ACTIVE FILTER BADGES + CLEAR BUTTON */}
       {appliedFilters && (
         <div className="flex flex-wrap items-center gap-3 mb-4">
-
           {/* BADGES */}
           {Object.entries(appliedFilters).map(([key, val]) =>
             val && (typeof val === "string" ? val : val?.name) ? (
@@ -305,7 +383,6 @@ export default function ManageProperty({
                 className="bg-[#41398B] text-white px-3 py-1 rounded-full text-sm flex items-center gap-2"
               >
                 {key}: {typeof val === "string" ? val : val?.name}
-
                 <button
                   onClick={() =>
                     setAppliedFilters((prev) => ({ ...prev, [key]: "" }))
@@ -327,7 +404,6 @@ export default function ManageProperty({
           </button>
         </div>
       )}
-
 
       {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -379,8 +455,9 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100 transition`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition`}
                   >
                     {/* 🏠 Property Image + Info */}
                     <td className="px-6 py-4">
@@ -404,22 +481,23 @@ export default function ManageProperty({
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
-                            ? "bg-green-100 text-green-700"
-                            : p.status === "Draft"
+                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${
+                            p.status === "Published"
+                              ? "bg-green-100 text-green-700"
+                              : p.status === "Draft"
                               ? "bg-[#FFF3DE] text-[#FFA600]"
                               : "bg-gray-200 text-gray-700"
-                            }`}
+                          }`}
                         >
                           {p.status === "Published"
                             ? language === "vi"
                               ? "Đã đăng"
                               : "Published"
                             : p.status === "Draft"
-                              ? language === "vi"
-                                ? "Bản nháp"
-                                : "Draft"
-                              : p.status || "—"}
+                            ? language === "vi"
+                              ? "Bản nháp"
+                              : "Draft"
+                            : p.status || "—"}
                         </span>
                       </div>
                     </td>
@@ -429,7 +507,9 @@ export default function ManageProperty({
                       <button
                         style={{ justifyItems: "anchor-center" }}
                         onClick={() =>
-                          navigate(`/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`)
+                          navigate(
+                            `/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`
+                          )
                         }
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
@@ -441,7 +521,10 @@ export default function ManageProperty({
                         style={{ justifyItems: "anchor-center" }}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
-                        <Pencil color="#1d47ffff" className="w-4 h-4 text-gray-600" />
+                        <Pencil
+                          color="#1d47ffff"
+                          className="w-4 h-4 text-gray-600"
+                        />
                       </button>
                       <button
                         style={{ justifyItems: "anchor-center" }}
@@ -452,21 +535,13 @@ export default function ManageProperty({
                       </button>
                       <Dropdown
                         trigger={["click"]}
-                        menu={{
-                          items: [
-                            { key: "1", label: "Copy to Sale" },
-                            { key: "2", label: "Copy to Home Stay" },
-                          ],
-                        }}
+                        menu={{ items: getCopyMenuItems(p) }}
                         placement="bottomRight"
                       >
-                        <button
-                          className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex items-center justify-center"
-                        >
-                          <MoreVertical className="w-4 h-4 text-gray-600" />
+                        <button className="p-2 rounded-full hover:bg-gray-200 transition border h-10 w-10">
+                          <MoreVertical />
                         </button>
                       </Dropdown>
-
                     </td>
                   </tr>
                 );
@@ -512,20 +587,22 @@ export default function ManageProperty({
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`p-1 px-2 rounded ${currentPage === 1
-                ? "text-gray-400 cursor-not-allowed"
-                : "hover:bg-gray-100 text-gray-600"
-                }`}
+              className={`p-1 px-2 rounded ${
+                currentPage === 1
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "hover:bg-gray-100 text-gray-600"
+              }`}
             >
               &lt;
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`p-1 px-2 rounded ${currentPage === totalPages
-                ? "text-gray-400 cursor-not-allowed"
-                : "hover:bg-gray-100 text-gray-600"
-                }`}
+              className={`p-1 px-2 rounded ${
+                currentPage === totalPages
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "hover:bg-gray-100 text-gray-600"
+              }`}
             >
               &gt;
             </button>
@@ -537,29 +614,28 @@ export default function ManageProperty({
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
-
             {/* ✅ Title */}
             <div className="flex items-center mb-4">
               <h3 className="text-lg font-semibold text-black-800">
                 {trashMode
-                  ? (language === "vi" ? "Bạn có chắc chắn tuyệt đối không?" : "Are you absolutely sure?")
-                  : (language === "vi" ? "Chuyển vào thùng rác?" : "Move to Trash?")}
+                  ? language === "vi"
+                    ? "Bạn có chắc chắn tuyệt đối không?"
+                    : "Are you absolutely sure?"
+                  : language === "vi"
+                  ? "Chuyển vào thùng rác?"
+                  : "Move to Trash?"}
               </h3>
             </div>
 
             {/* ✅ Description */}
             <p className="text-gray-600 text-sm mb-6">
               {trashMode
-                ? (
-                  language === "vi"
-                    ? "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn tài khoản của bạn và xóa dữ liệu khỏi máy chủ của chúng tôi."
-                    : "This action cannot be undone. This will permanently delete your account and remove your data from our servers."
-                )
-                : (
-                  language === "vi"
-                    ? "Bất động sản sẽ được chuyển vào thùng rác và có thể khôi phục lại sau này."
-                    : "This property will be moved to trash and can be restored later."
-                )}
+                ? language === "vi"
+                  ? "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn tài khoản của bạn và xóa dữ liệu khỏi máy chủ của chúng tôi."
+                  : "This action cannot be undone. This will permanently delete your account and remove your data from our servers."
+                : language === "vi"
+                ? "Bất động sản sẽ được chuyển vào thùng rác và có thể khôi phục lại sau này."
+                : "This property will be moved to trash and can be restored later."}
             </p>
 
             {/* ✅ Buttons */}
@@ -574,11 +650,19 @@ export default function ManageProperty({
               <button
                 onClick={handleDelete}
                 className={`px-6 py-2 rounded-full text-white 
-            ${trashMode ? "bg-red-600 hover:bg-red-700" : "bg-red-600 hover:bg-red-700"}`}
+            ${
+              trashMode
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-red-600 hover:bg-red-700"
+            }`}
               >
                 {trashMode
-                  ? (language === "vi" ? "Xóa vĩnh viễn" : "Delete Permanently")
-                  : (language === "vi" ? "Chuyển vào thùng rác" : "Move to Trash")}
+                  ? language === "vi"
+                    ? "Xóa vĩnh viễn"
+                    : "Delete Permanently"
+                  : language === "vi"
+                  ? "Chuyển vào thùng rác"
+                  : "Move to Trash"}
               </button>
             </div>
           </div>
@@ -588,7 +672,6 @@ export default function ManageProperty({
       {showFilterPopup && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-5xl p-6 overflow-y-auto max-h-[90vh]">
-
             {/* CLOSE BUTTON */}
             <div className="flex justify-end">
               <button
@@ -610,7 +693,16 @@ export default function ManageProperty({
           </div>
         </div>
       )}
-
+      {copyFullLoading && (
+        <div className="fixed inset-0 bg-black/40 z-[9999] flex justify-center items-center">
+          <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center gap-4">
+            <div className="animate-spin w-12 h-12 border-4 border-[#41398B] border-t-transparent rounded-full"></div>
+            <p className="text-gray-700 text-lg font-medium">
+              Copying Property...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
