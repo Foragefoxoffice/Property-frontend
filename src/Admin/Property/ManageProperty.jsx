@@ -65,7 +65,7 @@ export default function ManageProperty({
         p.listingInformation?.listingInformationTransactionType?.en ||
         "";
 
-      return type.toLowerCase().trim() === filterByTransactionType.toLowerCase().trim();
+      return type.toLowerCase().trim() === (filterByTransactionType || "").toLowerCase().trim();
     });
 
     if (appliedFilters) {
