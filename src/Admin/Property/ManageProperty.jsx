@@ -58,14 +58,16 @@ export default function ManageProperty({
   // ✅ Filter properties
   const filteredProperties = useMemo(() => {
     let list = properties;
-    list = list.filter((p) => {
-      const type =
-        p.listingInformation?.listingInformationTransactionType?.[language] ||
-        p.listingInformation?.listingInformationTransactionType?.en ||
-        "";
+    if (!trashMode && filterByTransactionType) {
+      list = list.filter((p) => {
+        const type =
+          p.listingInformation?.listingInformationTransactionType?.[language] ||
+          p.listingInformation?.listingInformationTransactionType?.en ||
+          "";
 
-      return type.toLowerCase().trim() === (filterByTransactionType || "").toLowerCase().trim();
-    });
+        return type.toLowerCase().trim() === filterByTransactionType.toLowerCase().trim();
+      });
+    }
 
     if (appliedFilters) {
 
