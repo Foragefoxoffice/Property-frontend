@@ -43,8 +43,6 @@ export default function UnitPage({ goBack }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [form, setForm] = useState({
-    code_en: "",
-    code_vi: "",
     name_en: "",
     name_vi: "",
     symbol_en: "",
@@ -92,8 +90,6 @@ export default function UnitPage({ goBack }) {
     const { code_en, code_vi, name_en, name_vi, symbol_en, symbol_vi } = form;
 
     if (
-      !code_en ||
-      !code_vi ||
       !name_en ||
       !name_vi ||
       !symbol_en ||
@@ -137,8 +133,6 @@ export default function UnitPage({ goBack }) {
   const handleEdit = (unit) => {
     setEditingUnit(unit);
     setForm({
-      code_en: unit.code.en,
-      code_vi: unit.code.vi,
       name_en: unit.name.en,
       name_vi: unit.name.vi,
       symbol_en: unit.symbol.en,
@@ -538,19 +532,6 @@ export default function UnitPage({ goBack }) {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Code<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="code_en"
-                      placeholder="Type here"
-                      value={form.code_en}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Unit Name<span className="text-red-500">*</span>
                     </label>
                     <input
@@ -578,19 +559,6 @@ export default function UnitPage({ goBack }) {
                 </>
               ) : (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mã<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="code_vi"
-                      placeholder="Nhập tại đây"
-                      value={form.code_vi}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Tên đơn vị<span className="text-red-500">*</span>

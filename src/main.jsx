@@ -12,6 +12,7 @@ import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { LanguageProvider } from "./Language/LanguageContext.jsx";
 import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage";
+import PropertyFilterPopup from "./Admin/Filters/Filter";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -43,6 +44,7 @@ createRoot(document.getElementById("root")).render(
           }
         />
         <Route path="/manage-property" element={<ManageProperty />} />
+        <Route path="/filters" element={<PropertyFilterPopup />} />
         <Route
           path="/property-showcase/:id"
           element={<PropertyShowcasePage />}

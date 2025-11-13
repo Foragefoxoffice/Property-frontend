@@ -107,7 +107,7 @@ export default function AvailabilityStatusPage({ goBack }) {
 
   // ✅ Submit Add/Edit
   const handleSubmit = async () => {
-    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+    if (!form.name_en || !form.name_vi) {
       CommonToaster("Please fill all English and Vietnamese fields", "error");
       return;
     }
@@ -185,9 +185,8 @@ export default function AvailabilityStatusPage({ goBack }) {
 
       {/* Table */}
       <div
-        className={`transition-opacity ${
-          loading ? "opacity-50" : "opacity-100"
-        }`}
+        className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"
+          }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
@@ -220,9 +219,8 @@ export default function AvailabilityStatusPage({ goBack }) {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 transition`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -234,11 +232,10 @@ export default function AvailabilityStatusPage({ goBack }) {
                     {/* ✅ Status Badge */}
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
-                          row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
-                        }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
+                          }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -285,8 +282,8 @@ export default function AvailabilityStatusPage({ goBack }) {
                                 ? "Đánh dấu là không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                              ? "Đánh dấu là hoạt động"
-                              : "Mark as Active"}
+                                ? "Đánh dấu là hoạt động"
+                                : "Mark as Active"}
                           </button>
 
                           <button
@@ -333,9 +330,8 @@ export default function AvailabilityStatusPage({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${
-                  isVI ? "trên" : "of"
-                } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
+              } ${totalRows}`}
           </span>
           <div className="flex items-center gap-1">
             <button onClick={goToFirst} disabled={currentPage === 1}>
@@ -405,8 +401,8 @@ export default function AvailabilityStatusPage({ goBack }) {
                     ? "Edit Availability Status"
                     : "Chỉnh sửa trạng thái khả dụng"
                   : activeLang === "EN"
-                  ? "New Availability Status"
-                  : "Thêm trạng thái khả dụng mới"}
+                    ? "New Availability Status"
+                    : "Thêm trạng thái khả dụng mới"}
               </h2>
               <button
                 onClick={() => {
@@ -423,21 +419,19 @@ export default function AvailabilityStatusPage({ goBack }) {
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
-                }`}
+                className={`py-3 font-medium transition-all ${activeLang === "EN"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
+                  }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
-                }`}
+                className={`py-3 font-medium transition-all ${activeLang === "VI"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
+                  }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -447,7 +441,7 @@ export default function AvailabilityStatusPage({ goBack }) {
             <div className="p-6 space-y-5">
               {activeLang === "EN" ? (
                 <>
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Code<span className="text-red-500">*</span>
                     </label>
@@ -459,7 +453,7 @@ export default function AvailabilityStatusPage({ goBack }) {
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -477,7 +471,7 @@ export default function AvailabilityStatusPage({ goBack }) {
                 </>
               ) : (
                 <>
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Mã<span className="text-red-500">*</span>
                     </label>
@@ -489,7 +483,7 @@ export default function AvailabilityStatusPage({ goBack }) {
                       onChange={handleChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -528,8 +522,8 @@ export default function AvailabilityStatusPage({ goBack }) {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                  ? "Add"
-                  : "Thêm"}
+                    ? "Add"
+                    : "Thêm"}
               </button>
             </div>
           </div>

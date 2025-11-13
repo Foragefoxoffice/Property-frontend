@@ -40,8 +40,6 @@ export default function FloorRange({ goBack }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [form, setForm] = useState({
-    code_en: "",
-    code_vi: "",
     name_en: "",
     name_vi: "",
     status: "Active",
@@ -85,7 +83,7 @@ export default function FloorRange({ goBack }) {
 
   // ✅ Add / Edit
   const handleSubmit = async () => {
-    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+    if (!form.name_en || !form.name_vi) {
       CommonToaster(
         isVI
           ? "Vui lòng điền đầy đủ tất cả các trường tiếng Anh và tiếng Việt."
@@ -133,8 +131,6 @@ export default function FloorRange({ goBack }) {
   const handleEdit = (item) => {
     setEditingItem(item);
     setForm({
-      code_en: item.code.en,
-      code_vi: item.code.vi,
       name_en: item.name.en,
       name_vi: item.name.vi,
       status: item.status,
@@ -255,8 +251,8 @@ export default function FloorRange({ goBack }) {
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -437,8 +433,8 @@ export default function FloorRange({ goBack }) {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -446,8 +442,8 @@ export default function FloorRange({ goBack }) {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)
@@ -458,19 +454,6 @@ export default function FloorRange({ goBack }) {
             <div className="p-6 space-y-5">
               {activeLang === "EN" ? (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Code<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="code_en"
-                      placeholder="Type here"
-                      value={form.code_en}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Floor Range Name<span className="text-red-500">*</span>
@@ -487,19 +470,6 @@ export default function FloorRange({ goBack }) {
                 </>
               ) : (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mã<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="code_vi"
-                      placeholder="Nhập tại đây"
-                      value={form.code_vi}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Tên khoảng tầng<span className="text-red-500">*</span>

@@ -49,13 +49,13 @@ const DashboardLayout = () => {
   const t = translations[language];
 
   const menuItems = [
-    { key: "Lease", label: "Lease", icon: <Key className="w-4 h-4" /> },
-    { key: "Sale", label: "Sale", icon: <Home className="w-4 h-4" /> },
-    { key: "Home Stay", label: "Home Stay", icon: <BedDouble className="w-4 h-4" /> },
+    { key: "Lease", label: t.lease, icon: <Key className="w-4 h-4" /> },
+    { key: "Sale", label: t.sale, icon: <Home className="w-4 h-4" /> },
+    { key: "Home Stay", label: t.homeStay, icon: <BedDouble className="w-4 h-4" /> },
     { key: "Landlords", label: t.owners, icon: <Users className="w-4 h-4" /> },
     { key: "Staffs", label: t.staffs, icon: <UserCog className="w-4 h-4" /> },
     { key: "Masters", label: t.masters, icon: <LayoutGrid className="w-4 h-4" /> },
-    { key: "Trash", label: "Trash", icon: <Trash className="w-4 h-4" /> },
+    { key: "Trash", label: t.trash, icon: <Trash className="w-4 h-4" /> },
   ];
 
   const renderPage = () => {

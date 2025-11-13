@@ -2,11 +2,11 @@ import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Plus,
-  Share2,
   Eye,
   Trash2,
   Pencil,
-  AlertTriangle,
+  Share2,
+  X,
 } from "lucide-react";
 import {
   getAllPropertyListings,
@@ -19,6 +19,7 @@ import { translations } from "../../Language/translations";
 import { useNavigate } from "react-router-dom";
 import { Dropdown, Menu } from "antd";
 import { MoreVertical } from "lucide-react";
+import FiltersPage from "../Filters/Filter";
 
 export default function ManageProperty({
   openCreateProperty,
@@ -36,6 +37,8 @@ export default function ManageProperty({
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
+  const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState(null);
 
   // ✅ Fetch properties
   useEffect(() => {
@@ -54,36 +57,109 @@ export default function ManageProperty({
 
   // ✅ Filter properties
   const filteredProperties = useMemo(() => {
-    return properties.filter((p) => {
-      // ✅ If trashMode → only show Archived
-      if (trashMode && p.status !== "Archived") return false;
-      // ✅ If NOT trash mode → hide Archived
-      if (!trashMode && p.status === "Archived") return false;
-      const info = p.listingInformation || {};
+    let list = properties;
+    // ⭐ Filter by selected tab (Lease / Sale / Home Stay)
+    list = list.filter((p) => {
       const type =
-        info.listingInformationTransactionType?.en?.toLowerCase() || "";
+        p.listingInformation?.listingInformationTransactionType?.[language] ||
+        p.listingInformation?.listingInformationTransactionType?.en ||
+        "";
 
-      // ✅ Filter by transaction type if provided
-      if (
-        filterByTransactionType &&
-        type !== filterByTransactionType.toLowerCase()
-      ) {
-        return false;
-      }
+      return type.toLowerCase().trim() === filterByTransactionType.toLowerCase().trim();
+    });
+
+    if (appliedFilters) {
+
+      const f = appliedFilters;
+
+      list = list.filter((property) => {
+
+        const info = property.listingInformation || {};
+        const pi = property.propertyInformation || {};
+
+        // Helper -> match any EN/VI text object
+        const matchTextObj = (apiObj, filterObj) => {
+          if (!filterObj || !filterObj.name) return true;
+          if (!apiObj) return false;
+
+          const apiEn = apiObj.en?.toLowerCase() || "";
+          const apiVi = apiObj.vi?.toLowerCase() || "";
+          const filterName = filterObj.name.toLowerCase();
+
+          return apiEn.includes(filterName) || apiVi.includes(filterName);
+        };
+
+        // Helper -> match numeric ranges
+        const matchNumber = (apiValue, filterValue) => {
+          if (!filterValue) return true;
+          return Number(apiValue) === Number(filterValue);
+        };
+
+        // PROJECT
+        if (!matchTextObj(info.listingInformationProjectCommunity, f.projectId))
+          return false;
+
+        // ZONE
+        if (!matchTextObj(info.listingInformationZoneSubArea, f.zoneId))
+          return false;
+
+        // BLOCK
+        if (!matchTextObj(info.listingInformationBlockName, f.blockId))
+          return false;
+
+        // PROPERTY TYPE
+        if (!matchTextObj(info.listingInformationPropertyType, f.propertyType))
+          return false;
+
+        // PROPERTY NUMBER (simple text)
+        if (
+          f.propertyNumber &&
+          !(
+            info.listingInformationPropertyNo?.en?.toLowerCase().includes(f.propertyNumber.toLowerCase()) ||
+            info.listingInformationPropertyNo?.vi?.toLowerCase().includes(f.propertyNumber.toLowerCase())
+          )
+        )
+          return false;
+
+        // FLOOR RANGE
+        if (!matchTextObj(pi.informationFloors, f.floorRange))
+          return false;
+
+        // CURRENCY
+        if (
+          f.currency &&
+          f.currency.name &&
+          info.financialDetailsCurrency?.toLowerCase() !== f.currency.name.toLowerCase()
+        )
+          return false;
+
+        // PRICE RANGE
+        const price = Number(info.financialDetailsPrice) || 0;
+
+        if (f.priceFrom && price < Number(f.priceFrom)) return false;
+        if (f.priceTo && price > Number(f.priceTo)) return false;
+
+        return true;
+      });
+    }
+
+    // Trash + Search
+    list = list.filter((p) => {
+      if (trashMode && p.status !== "Archived") return false;
+      if (!trashMode && p.status === "Archived") return false;
 
       const title =
-        info.listingInformationPropertyTitle?.[language] ||
-        info.listingInformationPropertyTitle?.en ||
+        p.listingInformation?.listingInformationPropertyTitle?.[language] ||
+        p.listingInformation?.listingInformationPropertyTitle?.en ||
         "";
-      return (
-        title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        type.includes(searchTerm.toLowerCase()) ||
-        (info.listingInformationPropertyId || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
-      );
+
+      return title.toLowerCase().includes(searchTerm.toLowerCase());
     });
-  }, [searchTerm, properties, language, filterByTransactionType]);
+
+    return list;
+  }, [properties, appliedFilters, searchTerm, language, filterByTransactionType]);
+
+
 
   // ✅ Pagination logic
   const totalRows = filteredProperties.length;
@@ -159,6 +235,14 @@ export default function ManageProperty({
         </h1>
         <div className="flex items-center gap-4">
           <button
+            onClick={() => setShowFilterPopup(true)}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
+          >
+            <Share2 className="w-4 h-4" />
+            {t.filter}
+          </button>
+
+          <button
             onClick={openCreateProperty}
             className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
           >
@@ -182,6 +266,42 @@ export default function ManageProperty({
           className="w-full pl-10 pr-4 py-3 rounded-full focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
         />
       </div>
+
+      {/* ACTIVE FILTER BADGES + CLEAR BUTTON */}
+      {appliedFilters && (
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+
+          {/* BADGES */}
+          {Object.entries(appliedFilters).map(([key, val]) =>
+            val && (typeof val === "string" ? val : val?.name) ? (
+              <span
+                key={key}
+                className="bg-[#41398B] text-white px-3 py-1 rounded-full text-sm flex items-center gap-2"
+              >
+                {key}: {typeof val === "string" ? val : val?.name}
+
+                <button
+                  onClick={() =>
+                    setAppliedFilters((prev) => ({ ...prev, [key]: "" }))
+                  }
+                  className="text-white ml-1 cursor-pointer"
+                >
+                  <X size={13} />
+                </button>
+              </span>
+            ) : null
+          )}
+
+          {/* CLEAR ALL */}
+          <button
+            onClick={() => setAppliedFilters(null)}
+            className="ml-2 text-sm underline text-red-600 cursor-pointer"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      )}
+
 
       {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -283,9 +403,7 @@ export default function ManageProperty({
                       <button
                         style={{ justifyItems: "anchor-center" }}
                         onClick={() =>
-                          navigate(
-                            `/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`
-                          )
+                          navigate(`/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`)
                         }
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
@@ -441,6 +559,33 @@ export default function ManageProperty({
           </div>
         </div>
       )}
+
+      {showFilterPopup && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-5xl p-6 overflow-y-auto max-h-[90vh]">
+
+            {/* CLOSE BUTTON */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowFilterPopup(false)}
+                className="px-4 py-1 rounded-full cursor-pointer"
+              >
+                <X />
+              </button>
+            </div>
+
+            <FiltersPage
+              defaultFilters={appliedFilters}
+              onApply={(data) => {
+                setAppliedFilters(data);
+                setShowFilterPopup(false);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

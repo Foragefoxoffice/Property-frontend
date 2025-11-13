@@ -42,8 +42,6 @@ export default function LegalDocumentPage({ goBack }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [form, setForm] = useState({
-    code_en: "",
-    code_vi: "",
     name_en: "",
     name_vi: "",
     status: "Active",
@@ -87,7 +85,7 @@ export default function LegalDocumentPage({ goBack }) {
 
   // ✅ Add / Edit Submit
   const handleSubmit = async () => {
-    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+    if (!form.name_en || !form.name_vi) {
       CommonToaster(
         isVI ? "Vui lòng điền tất cả các trường." : "Please fill all required fields.",
         "error"
@@ -135,8 +133,6 @@ export default function LegalDocumentPage({ goBack }) {
   const handleEdit = (record) => {
     setEditingRecord(record);
     setForm({
-      code_en: record.code.en,
-      code_vi: record.code.vi,
       name_en: record.name.en,
       name_vi: record.name.vi,
       status: record.status,
@@ -449,8 +445,8 @@ export default function LegalDocumentPage({ goBack }) {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium ${activeLang === "EN"
-                    ? "border-b-2 border-[#41398B] text-black"
-                    : "text-gray-500 hover:text-black"
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -459,8 +455,8 @@ export default function LegalDocumentPage({ goBack }) {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium ${activeLang === "VI"
-                    ? "border-b-2 border-[#41398B] text-black"
-                    : "text-gray-500 hover:text-black"
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)
@@ -471,19 +467,6 @@ export default function LegalDocumentPage({ goBack }) {
             <div className="p-6 space-y-5">
               {activeLang === "EN" ? (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Code <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="code_en"
-                      value={form.code_en}
-                      onChange={handleChange}
-                      placeholder="Type here"
-                      className="w-full px-4 py-2 border rounded-lg"
-                    />
-                  </div>
-
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Legal Document <span className="text-red-500">*</span>
@@ -499,19 +482,6 @@ export default function LegalDocumentPage({ goBack }) {
                 </>
               ) : (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Mã <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="code_vi"
-                      value={form.code_vi}
-                      onChange={handleChange}
-                      placeholder="Nhập tại đây"
-                      className="w-full px-4 py-2 border rounded-lg"
-                    />
-                  </div>
-
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Tài liệu pháp lý <span className="text-red-500">*</span>

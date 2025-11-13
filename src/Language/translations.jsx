@@ -25,9 +25,18 @@ export const translations = {
     propertyTitleLease: "Lease Properties",
     propertyTitleSale: "Sale Properties",
     propertyTitleHomeStay: "Home Stay Properties",
+    filter: "Filter",
+    lease: "Lease",
+    sale: "Sale",
+    homeStay: "Home Stay",
+    trash: "Trash"
   },
 
   vi: {
+    trash: "Rác",
+    homeStay: "Ở nhà",
+    sale: "Doanh thu",
+    lease: "Cho thuê",
     properties: "Bất động sản",
     owners: "Chủ nhà",
     staffs: "Nhân viên",
@@ -53,5 +62,6 @@ export const translations = {
     propertyTitleLease: "Thuê Bất động sản",
     propertyTitleSale: "Bán Bất động sản",
     propertyTitleHomeStay: "Home Stay Bất động sản",
+    filter: "Lọc"
   },
 };

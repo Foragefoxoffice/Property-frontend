@@ -60,7 +60,7 @@ export const createProperty = (data) => API.post("/property", data);
 export const updateProperty = (id, data) => API.put(`/property/${id}`, data);
 export const deleteProperty = (id) => API.delete(`/property/${id}`);
 export const getSingleListingByPropertyID = (id) =>
-  API.get(`/propertyListing/pid/${id}`);
+  API.get(`/create-property/pid/${id}`);
 
 /* =========================================================
    🗺️ ZONE / SUB-AREA APIs

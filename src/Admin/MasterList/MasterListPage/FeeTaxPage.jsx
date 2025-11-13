@@ -42,8 +42,6 @@ export default function FeeTaxPage({ goBack }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [form, setForm] = useState({
-    code_en: "",
-    code_vi: "",
     name_en: "",
     name_vi: "",
     status: "Active",
@@ -87,7 +85,7 @@ export default function FeeTaxPage({ goBack }) {
 
   // ✅ Add / Edit
   const handleSubmit = async () => {
-    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+    if (!form.name_en || !form.name_vi) {
       CommonToaster(
         isVI
           ? "Vui lòng điền đầy đủ trường tiếng Anh & tiếng Việt."
@@ -135,8 +133,6 @@ export default function FeeTaxPage({ goBack }) {
   const handleEdit = (record) => {
     setEditingRecord(record);
     setForm({
-      code_en: record.code.en,
-      code_vi: record.code.vi,
       name_en: record.name.en,
       name_vi: record.name.vi,
       status: record.status,
@@ -469,19 +465,6 @@ export default function FeeTaxPage({ goBack }) {
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Code <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="code_en"
-                      value={form.code_en}
-                      onChange={handleChange}
-                      placeholder="Type here"
-                      className="w-full px-4 py-2 border rounded-lg"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
                       Fees & taxes <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -495,19 +478,6 @@ export default function FeeTaxPage({ goBack }) {
                 </>
               ) : (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Mã <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      name="code_vi"
-                      value={form.code_vi}
-                      onChange={handleChange}
-                      placeholder="Nhập tại đây"
-                      className="w-full px-4 py-2 border rounded-lg"
-                    />
-                  </div>
-
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Phí và thuế <span className="text-red-500">*</span>

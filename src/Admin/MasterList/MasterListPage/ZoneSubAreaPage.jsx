@@ -93,8 +93,6 @@ export default function ZoneSubAreaPage({ goBack }) {
   const openAddModal = () => {
     setEditingZone(null);
     setForm({
-      code_en: "",
-      code_vi: "",
       name_en: "",
       name_vi: "",
       status: "Active",
@@ -107,12 +105,10 @@ export default function ZoneSubAreaPage({ goBack }) {
     setEditingZone(zone);
 
     setForm({
-      code_en: zone.code.en,
-      code_vi: zone.code.vi,
       name_en: zone.name.en,
       name_vi: zone.name.vi,
       status: zone.status,
-      property: zone.property?._id || "", // ✅ FIX ADDED
+      property: zone.property?._id || "",
     });
 
     setActiveLang(language === "vi" ? "VI" : "EN");
@@ -121,7 +117,7 @@ export default function ZoneSubAreaPage({ goBack }) {
 
   // ✅ Save
   const handleSubmit = async () => {
-    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+    if (!form.name_en || !form.name_vi) {
       CommonToaster("Please fill all English and Vietnamese fields", "error");
       return;
     }
@@ -164,9 +160,8 @@ export default function ZoneSubAreaPage({ goBack }) {
       await updateZoneSubArea(zone._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${
-              newStatus === "Active" ? "hoạt động" : "không hoạt động"
-            }`
+          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
+          }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -208,9 +203,8 @@ export default function ZoneSubAreaPage({ goBack }) {
 
       {/* Table */}
       <div
-        className={`transition-opacity ${
-          loading ? "opacity-50" : "opacity-100"
-        }`}
+        className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"
+          }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
@@ -246,9 +240,8 @@ export default function ZoneSubAreaPage({ goBack }) {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -263,11 +256,10 @@ export default function ZoneSubAreaPage({ goBack }) {
                     {/* ✅ Translated Status */}
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
-                          row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
-                        }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
+                          }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -313,8 +305,8 @@ export default function ZoneSubAreaPage({ goBack }) {
                                 ? "Đánh dấu là không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                              ? "Đánh dấu là hoạt động"
-                              : "Mark as Active"}
+                                ? "Đánh dấu là hoạt động"
+                                : "Mark as Active"}
                           </button>
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
@@ -360,9 +352,8 @@ export default function ZoneSubAreaPage({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${
-                  isVI ? "trên" : "of"
-                } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
+              } ${totalRows}`}
           </span>
           <div className="flex items-center gap-1">
             <button onClick={goToFirst} disabled={currentPage === 1}>
@@ -432,8 +423,8 @@ export default function ZoneSubAreaPage({ goBack }) {
                     ? "Edit Zone / Sub-area"
                     : "Chỉnh sửa khu vực / tiểu khu"
                   : activeLang === "EN"
-                  ? "New Zone / Sub-area"
-                  : "Thêm khu vực / tiểu khu mới"}
+                    ? "New Zone / Sub-area"
+                    : "Thêm khu vực / tiểu khu mới"}
               </h2>
               <button
                 onClick={() => {
@@ -450,21 +441,19 @@ export default function ZoneSubAreaPage({ goBack }) {
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
-                }`}
+                className={`py-3 font-medium transition-all ${activeLang === "EN"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
+                  }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
-                }`}
+                className={`py-3 font-medium transition-all ${activeLang === "VI"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
+                  }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -474,19 +463,6 @@ export default function ZoneSubAreaPage({ goBack }) {
             <div className="p-6 space-y-5">
               {activeLang === "EN" ? (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Code<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="code_en"
-                      placeholder="Type here"
-                      value={form.code_en}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
                   <div>
                     <label>Project / Community</label>
                     <AntdSelect
@@ -530,32 +506,6 @@ export default function ZoneSubAreaPage({ goBack }) {
               ) : (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mã<span className="text-red-500"></span>
-                    </label>
-                    <input
-                      type="text"
-                      name="code_vi"
-                      placeholder="Nhập tại đây"
-                      value={form.code_vi}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Khu vực / Tiểu khu<span className="text-red-500"></span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name_vi"
-                      placeholder="Nhập tại đây"
-                      value={form.name_vi}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
-                  <div>
                     <label>Dự án / Cộng đồng</label>
                     <AntdSelect
                       key={activeLang}
@@ -582,6 +532,19 @@ export default function ZoneSubAreaPage({ goBack }) {
                       ))}
                     </AntdSelect>
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Khu vực / Tiểu khu<span className="text-red-500"></span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name_vi"
+                      placeholder="Nhập tại đây"
+                      value={form.name_vi}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                    />
+                  </div>
                 </>
               )}
             </div>
@@ -605,8 +568,8 @@ export default function ZoneSubAreaPage({ goBack }) {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                  ? "Add"
-                  : "Thêm"}
+                    ? "Add"
+                    : "Thêm"}
               </button>
             </div>
           </div>
