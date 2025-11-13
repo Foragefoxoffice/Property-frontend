@@ -209,14 +209,14 @@ export default function CreatePropertyListStep4SEO({
                     {seo.metaKeywords[activeLang].map((kw, i) => (
                         <div
                             key={i}
-                            className="bg-gray-200 px-2 py-1 rounded flex items-center gap-1"
+                            className="bg-[#41398B] px-2 py-1 h-full text-white rounded flex items-center gap-1"
                         >
                             {kw}
                             <button
-                                className="text-red-500 font-bold"
+                                className="text-red-500 cursor-pointer font-bold"
                                 onClick={() => removeKeyword(activeLang, i)}
                             >
-                                ×
+                                <X size={15} />
                             </button>
                         </div>
                     ))}

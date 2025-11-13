@@ -99,6 +99,8 @@ export default function CreatePropertyListStep3({
         cm.contactManagementConnectingPointNotes || { en: "", vi: "" },
       internalNotes: initialData.internalNotes ||
         cm.contactManagementInternalNotes || { en: "", vi: "" },
+      source: initialData.source ||
+        cm.contactManagementSource || { en: "", vi: "" },
     };
 
     setForm((prev) => ({ ...prev, ...updatedForm }));
@@ -176,8 +178,8 @@ export default function CreatePropertyListStep3({
           <button
             key={lng}
             className={`px-6 py-2 text-sm font-medium ${lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
               }`}
             onClick={() => setLang(lng)}
           >

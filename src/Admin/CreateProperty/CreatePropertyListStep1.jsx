@@ -281,22 +281,73 @@ export default function CreatePropertyListStep1({
       setForm((prev) => ({
         ...prev,
         ...initialData,
-        blockName: initialData.blockName ||
-          prev.blockName || { en: "", vi: "" },
+        blockName: initialData.blockName || prev.blockName || { en: "", vi: "" },
         title: initialData.title || prev.title || { en: "", vi: "" },
         address: initialData.address || prev.address || { en: "", vi: "" },
-        description: initialData.description ||
-          prev.description || { en: "", vi: "" },
+        description: initialData.description || prev.description || { en: "", vi: "" },
         view: initialData.view || prev.view || { en: "", vi: "" },
-        whatsNearby: initialData.whatsNearby ||
-          prev.whatsNearby || { en: "", vi: "" },
+        whatsNearby: initialData.whatsNearby || prev.whatsNearby || { en: "", vi: "" },
         utilities:
           initialData.utilities && initialData.utilities.length
             ? initialData.utilities
             : prev.utilities,
       }));
+
+      /* --------------------------------------------------------------------
+         ⭐⭐ RESTORE ZONE + BLOCK + PROJECT (FULL RESTORE SYSTEM)
+      -------------------------------------------------------------------- */
+
+      // 1) Restore Project
+      if (initialData.projectId) {
+        const project = dropdowns.properties.find(
+          (p) => p._id === initialData.projectId
+        );
+
+        setForm((p) => ({
+          ...p,
+          projectId: initialData.projectId,
+          projectName: project
+            ? (lang === "vi" ? project.name.vi : project.name.en)
+            : "",
+        }));
+      }
+
+      // 2) Restore Zone
+      if (initialData.zoneId) {
+        const zone = dropdowns.zones.find((z) => z._id === initialData.zoneId);
+
+        setForm((p) => ({
+          ...p,
+          zoneId: initialData.zoneId,
+          zoneName: zone
+            ? (lang === "vi" ? zone.name.vi : zone.name.en)
+            : "",
+          zone: {
+            en: zone?.name?.en || "",
+            vi: zone?.name?.vi || "",
+          },
+        }));
+      }
+
+      // 3) Restore Block
+      if (initialData.blockId) {
+        const block = dropdowns.blocks.find((b) => b._id === initialData.blockId);
+
+        setForm((p) => ({
+          ...p,
+          blockId: initialData.blockId,
+          blockNameText: block
+            ? (lang === "vi" ? block.name.vi : block.name.en)
+            : "",
+          blockName: {
+            en: block?.name?.en || "",
+            vi: block?.name?.vi || "",
+          },
+        }));
+      }
     }
-  }, [initialData]);
+  }, [initialData, dropdowns, lang]);
+
 
   /* Handlers */
   const handleInputChange = useCallback(
@@ -735,7 +786,7 @@ export default function CreatePropertyListStep1({
           </div>
 
 
-          <div className="flex flex-col gap-1 w-full">
+          <div className="flex flex-col w-full">
             {/* Top row: Label + Switch */}
             <div className="flex items-center justify-between w-full">
               <label className="text-sm font-medium">

@@ -5,8 +5,8 @@ import {
   Eye,
   Trash2,
   Pencil,
-  Share2,
   X,
+  SlidersHorizontal,
 } from "lucide-react";
 import {
   getAllPropertyListings,
@@ -58,7 +58,6 @@ export default function ManageProperty({
   // ✅ Filter properties
   const filteredProperties = useMemo(() => {
     let list = properties;
-    // ⭐ Filter by selected tab (Lease / Sale / Home Stay)
     list = list.filter((p) => {
       const type =
         p.listingInformation?.listingInformationTransactionType?.[language] ||
@@ -77,7 +76,6 @@ export default function ManageProperty({
         const info = property.listingInformation || {};
         const pi = property.propertyInformation || {};
 
-        // Helper -> match any EN/VI text object
         const matchTextObj = (apiObj, filterObj) => {
           if (!filterObj || !filterObj.name) return true;
           if (!apiObj) return false;
@@ -89,7 +87,6 @@ export default function ManageProperty({
           return apiEn.includes(filterName) || apiVi.includes(filterName);
         };
 
-        // Helper -> match numeric ranges
         const matchNumber = (apiValue, filterValue) => {
           if (!filterValue) return true;
           return Number(apiValue) === Number(filterValue);
@@ -143,18 +140,45 @@ export default function ManageProperty({
       });
     }
 
-    // Trash + Search
+    // Trash filter + Search
     list = list.filter((p) => {
       if (trashMode && p.status !== "Archived") return false;
       if (!trashMode && p.status === "Archived") return false;
 
-      const title =
-        p.listingInformation?.listingInformationPropertyTitle?.[language] ||
-        p.listingInformation?.listingInformationPropertyTitle?.en ||
+      const search = searchTerm.toLowerCase();
+      if (!search) return true;
+
+      const info = p.listingInformation || {};
+
+      const propertyId =
+        info.listingInformationPropertyId?.toString().toLowerCase() || "";
+
+      const propertyNo =
+        info.listingInformationPropertyNo?.[language]?.toLowerCase() ||
+        info.listingInformationPropertyNo?.en?.toLowerCase() ||
         "";
 
-      return title.toLowerCase().includes(searchTerm.toLowerCase());
+      const propertyType =
+        info.listingInformationPropertyType?.[language]?.toLowerCase() ||
+        info.listingInformationPropertyType?.en?.toLowerCase() ||
+        "";
+
+      const blockName =
+        info.listingInformationBlockName?.[language]?.toLowerCase() ||
+        info.listingInformationBlockName?.en?.toLowerCase() ||
+        "";
+
+      const status = p.status?.toLowerCase() || "";
+
+      return (
+        propertyId.includes(search) ||
+        propertyNo.includes(search) ||
+        propertyType.includes(search) ||
+        blockName.includes(search) ||
+        status.includes(search)
+      );
     });
+
 
     return list;
   }, [properties, appliedFilters, searchTerm, language, filterByTransactionType]);
@@ -238,7 +262,7 @@ export default function ManageProperty({
             onClick={() => setShowFilterPopup(true)}
             className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
           >
-            <Share2 className="w-4 h-4" />
+            <SlidersHorizontal className="w-4 h-4" />
             {t.filter}
           </button>
 

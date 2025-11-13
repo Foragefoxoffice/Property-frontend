@@ -276,14 +276,35 @@ export default function CreatePropertyPage({
           dropdowns.zones,
           editData.listingInformation?.listingInformationZoneSubArea
         ),
+
+        zoneName:
+          editData.listingInformation?.listingInformationZoneSubArea?.en ||
+          editData.listingInformation?.listingInformationZoneSubArea?.vi ||
+          "",
+
+        zoneNameText:
+          editData.listingInformation?.listingInformationZoneSubArea?.en ||
+          editData.listingInformation?.listingInformationZoneSubArea?.vi ||
+          "",
         title: editData.listingInformation?.listingInformationPropertyTitle || {
           en: "",
           vi: "",
         },
+        // BLOCK
+        blockId: findIdFromLocalized(
+          dropdowns.blocks,
+          editData.listingInformation?.listingInformationBlockName
+        ),
+
         blockName: editData.listingInformation?.listingInformationBlockName || {
           en: "",
           vi: "",
         },
+
+        blockNameText:
+          editData.listingInformation?.listingInformationBlockName?.en ||
+          editData.listingInformation?.listingInformationBlockName?.vi ||
+          "",
         propertyType: findIdFromLocalized(
           dropdowns.types,
           editData.listingInformation?.listingInformationPropertyType
@@ -421,6 +442,21 @@ export default function CreatePropertyPage({
             ?.contactManagementSource || { en: "", vi: "" },
           contactManagementAgentFee:
             editData.contactManagement?.contactManagementAgentFee || 0,
+        },
+        seoInformation: {
+          metaTitle: editData.seoInformation?.metaTitle || { en: "", vi: "" },
+          metaDescription: editData.seoInformation?.metaDescription || { en: "", vi: "" },
+          metaKeywords: editData.seoInformation?.metaKeywords || { en: [], vi: [] },
+          slugUrl: editData.seoInformation?.slugUrl || { en: "", vi: "" },
+          canonicalUrl: editData.seoInformation?.canonicalUrl || { en: "", vi: "" },
+          schemaType: editData.seoInformation?.schemaType || { en: "", vi: "" },
+          ogTitle: editData.seoInformation?.ogTitle || { en: "", vi: "" },
+          ogDescription: editData.seoInformation?.ogDescription || { en: "", vi: "" },
+          ogImages: editData.seoInformation?.ogImages || [],
+          allowIndexing:
+            editData.seoInformation?.allowIndexing !== undefined
+              ? editData.seoInformation.allowIndexing
+              : true,
         },
 
         status: editData.status || "Draft",

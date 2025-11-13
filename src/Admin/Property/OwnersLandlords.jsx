@@ -260,66 +260,70 @@ const OwnersLandlords = ({ openOwnerView }) => {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
-            <tr>
-              <th className="px-6 py-3 text-left">Name</th>
-              <th className="px-6 py-3 text-left">Gender</th>
-              <th className="px-6 py-3 text-left">Phone</th>
-              <th className="px-6 py-3 text-left">Email</th>
-              <th className="px-6 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody className="text-sm">
-            {filteredOwners.map((item) => (
-              <tr key={item._id} className="hover:bg-gray-100 transition">
-                <td className="px-6 py-4">{item.ownerName?.[language]}</td>
-                <td className="px-6 py-4">{item.gender}</td>
-                <td className="px-6 py-4">{firstPhone(item)}</td>
-                <td className="px-6 py-4">{firstEmail(item)}</td>
-
-                {/* ACTIONS */}
-                <td className="px-6 py-4 text-center">
-                  <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() => openOwnerView(item)}
-                      className="p-2 border rounded-full hover:bg-gray-200"
-                    >
-                      <Eye size={18} />
-                    </button>
-
-                    <button
-                      onClick={() => openEditModal(item)}
-                      className="p-2 border rounded-full hover:bg-gray-200"
-                    >
-                      <Edit2 size={18} className="text-blue-500" />
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        setDeleteConfirm({ show: true, id: item._id })
-                      }
-                      className="p-2 border rounded-full hover:bg-gray-200"
-                    >
-                      <Trash2 size={18} className="text-red-500" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-
-            {!filteredOwners.length && (
+      {loading ? (
+        <OwnersSkeleton />
+      ) : (
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
               <tr>
-                <td colSpan={5} className="text-center py-6 text-gray-500">
-                  No results found.
-                </td>
+                <th className="px-6 py-3 text-left">Name</th>
+                <th className="px-6 py-3 text-left">Gender</th>
+                <th className="px-6 py-3 text-left">Phone</th>
+                <th className="px-6 py-3 text-left">Email</th>
+                <th className="px-6 py-3 text-center">Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+
+            <tbody className="text-sm">
+              {filteredOwners.map((item) => (
+                <tr key={item._id} className="hover:bg-gray-100 transition">
+                  <td className="px-6 py-4">{item.ownerName?.[language]}</td>
+                  <td className="px-6 py-4">{item.gender}</td>
+                  <td className="px-6 py-4">{firstPhone(item)}</td>
+                  <td className="px-6 py-4">{firstEmail(item)}</td>
+
+                  {/* ACTIONS */}
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => openOwnerView(item)}
+                        className="p-2 border rounded-full hover:bg-gray-200"
+                      >
+                        <Eye size={18} />
+                      </button>
+
+                      <button
+                        onClick={() => openEditModal(item)}
+                        className="p-2 border rounded-full hover:bg-gray-200"
+                      >
+                        <Edit2 size={18} className="text-blue-500" />
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          setDeleteConfirm({ show: true, id: item._id })
+                        }
+                        className="p-2 border rounded-full hover:bg-gray-200"
+                      >
+                        <Trash2 size={18} className="text-red-500" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+              {!filteredOwners.length && (
+                <tr>
+                  <td colSpan={5} className="text-center py-6 text-gray-500">
+                    No results found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* DELETE MODAL */}
       {deleteConfirm.show && (
@@ -355,6 +359,52 @@ const OwnersLandlords = ({ openOwnerView }) => {
     </div>
   );
 };
+
+/* ==========================================================
+   ✅ SKELETON LOADER FOR OWNERS TABLE
+========================================================== */
+const OwnersSkeleton = () => {
+  return (
+    <div className="bg-white rounded-lg shadow overflow-hidden animate-pulse">
+      <table className="w-full">
+        <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
+          <tr>
+            <th className="px-6 py-3 text-left">Name</th>
+            <th className="px-6 py-3 text-left">Gender</th>
+            <th className="px-6 py-3 text-left">Phone</th>
+            <th className="px-6 py-3 text-left">Email</th>
+            <th className="px-6 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <tr key={idx} className="border-b">
+              <td className="px-6 py-4">
+                <div className="h-4 bg-gray-200 rounded w-32"></div>
+              </td>
+              <td className="px-6 py-4">
+                <div className="h-4 bg-gray-200 rounded w-20"></div>
+              </td>
+              <td className="px-6 py-4">
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
+              </td>
+              <td className="px-6 py-4">
+                <div className="h-4 bg-gray-200 rounded w-28"></div>
+              </td>
+              <td className="px-6 py-4 flex justify-center gap-3">
+                <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+                <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+                <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 
 /* ==========================================================
    ✅ DELETE MODAL
