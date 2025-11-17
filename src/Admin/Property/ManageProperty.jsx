@@ -25,9 +25,6 @@ import { MoreVertical } from "lucide-react";
 import FiltersPage from "../Filters/Filter";
 
 export default function ManageProperty({
-  openCreateProperty,
-  openEditProperty,
-  onViewProperty,
   filterByTransactionType,
   trashMode = false,
 }) {
@@ -324,6 +321,10 @@ export default function ManageProperty({
       setCopyFullLoading(null);
     }
   };
+  const transactionRoute = filterByTransactionType
+  ?.toLowerCase()
+  ?.replace(" ", "");
+
 
   return (
     <div className="min-h-screen px-2 py-2">
@@ -348,7 +349,7 @@ export default function ManageProperty({
           </button>
 
           <button
-            onClick={openCreateProperty}
+            onClick={() => navigate(`/dashboard/${transactionRoute}/create`)}
             className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
           >
             <Plus className="w-4 h-4" />
@@ -517,7 +518,9 @@ export default function ManageProperty({
                       </button>
 
                       <button
-                        onClick={() => openEditProperty(p)}
+                        onClick={() =>
+  navigate(`/dashboard/${transactionRoute}/edit/${p._id}`)
+}
                         style={{ justifyItems: "anchor-center" }}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >

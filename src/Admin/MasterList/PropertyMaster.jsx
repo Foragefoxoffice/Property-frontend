@@ -1,133 +1,114 @@
 import React from "react";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 
-export default function PropertyMaster({
-  goBack,
-  openPropertyPage,
-  openZoneSubAreaPage,
-  openPropertyTypePage,
-  openAvailabilityStatusPage,
-  openUnitPage,
-  openFurnishingPage,
-  // openParkingPage,
-  // openPetPolicyPage,
-  openDepositPage,
-  openPaymentPage,
-  openBlockPage,
-  openFeeTaxPage,
-  openLegalDocumentPage,
-  openFloorRangePage
-}) {
+export default function PropertyMaster() {
   const { language } = useLanguage();
+  const navigate = useNavigate();
+
+  const t = translations[language];
+
+  const goBack = () => navigate("/dashboard/masters");
 
   const propertyData = [
     {
       name: language === "vi" ? "Dự án / Khu dân cư" : "Project / Community",
       description:
         language === "vi"
-          ? "Tên của dự án hoặc khu dân cư (nhà ở hoặc thương mại) nơi bất động sản tọa lạc."
-          : "The name of the residential or commercial project or community where the property is located.",
-      onClick: openPropertyPage,
+          ? "Tên của dự án hoặc khu dân cư nơi bất động sản tọa lạc."
+          : "The name of the project or community where the property is located.",
+      path: "/dashboard/masters/property",
     },
     {
       name: language === "vi" ? "Khu vực / Tiểu khu" : "Zone / Sub-area",
       description:
         language === "vi"
-          ? "Khu vực, khối hoặc tiểu khu cụ thể trong dự án hoặc quận — dùng để xác định vị trí nội bộ hoặc lọc."
-          : "The specific section, block, or zone within a project or district — used for internal location mapping or filtering.",
-      onClick: openZoneSubAreaPage,
+          ? "Khu vực, khối hoặc tiểu khu trong dự án."
+          : "Specific section or zone inside a project.",
+      path: "/dashboard/masters/zone-sub-area",
     },
     {
       name: language === "vi" ? "Tên khối" : "Block Name",
       description:
         language === "vi"
-          ? "Tên của block hoặc tòa nhà trong dự án."
-          : "Name of the block or tower under the selected area.",
-      onClick: openBlockPage,
+          ? "Tên block hoặc tòa nhà."
+          : "Name of the block or tower.",
+      path: "/dashboard/masters/block",
     },
     {
       name: language === "vi" ? "Loại bất động sản" : "Property Type",
       description:
         language === "vi"
-          ? "Xác định danh mục hoặc loại bất động sản."
-          : "Defines the category or kind of property.",
-      onClick: openPropertyTypePage,
+          ? "Định nghĩa loại bất động sản."
+          : "Defines the category of property.",
+      path: "/dashboard/masters/property-type",
     },
     {
       name: language === "vi" ? "Trạng thái khả dụng" : "Availability Status",
       description:
         language === "vi"
-          ? "Chỉ ra tình trạng của bất động sản — đang trống, đã được thuê, hoặc đang được niêm yết."
-          : "Indicates whether the property is available or occupied, and its current listing state.",
-      onClick: openAvailabilityStatusPage,
+          ? "Tình trạng hiện tại của bất động sản."
+          : "Shows whether the property is available or occupied.",
+      path: "/dashboard/masters/availability-status",
     },
     {
       name: language === "vi" ? "Đơn vị đo lường" : "Unit",
       description:
         language === "vi"
-          ? "Định nghĩa đơn vị đo được sử dụng cho diện tích bất động sản — xác định cách hiển thị kích thước và giá theo diện tích."
-          : "Defines the measurement unit used for the property's area (size) — determines how the property's dimensions and price per area are displayed.",
-      onClick: openUnitPage,
+          ? "Đơn vị đo diện tích."
+          : "Defines area measurement units.",
+      path: "/dashboard/masters/unit",
     },
     {
       name: language === "vi" ? "Phạm vi sàn" : "Floor Range",
       description:
         language === "vi"
-          ? "Chỉ định phạm vi tầng được bao phủ, chẳng hạn như 1–5 hoặc 6–10, để xác định vị trí theo chiều dọc của bất động sản trong tòa nhà."
-          : "Specifies the range of floors covered, such as 1–5 or 6–10, to define the property’s vertical location within a building.",
-      onClick: openFloorRangePage,
+          ? "Phạm vi tầng trong tòa nhà."
+          : "Floor range of the building.",
+      path: "/dashboard/masters/floor-range",
     },
     {
       name: language === "vi" ? "Tình trạng nội thất" : "Furnishing",
       description:
         language === "vi"
-          ? "Mô tả tình trạng hoặc mức độ đầy đủ của nội thất và thiết bị trong bất động sản."
-          : "Describes the furniture and appliance condition or level of furnishing.",
-      onClick: openFurnishingPage,
+          ? "Tình trạng nội thất."
+          : "Furnishing level of the property.",
+      path: "/dashboard/masters/furnishing",
     },
     {
       name: language === "vi" ? "Tiền đặt cọc" : "Deposit",
       description:
         language === "vi"
-          ? "Chỉ định số tiền hoặc phần trăm đặt cọc cần thiết khi thuê hoặc mua bất động sản."
-          : "Specifies the required deposit amount or percentage for booking or leasing the property.",
-      onClick: openDepositPage,
+          ? "Khoản tiền đặt cọc."
+          : "Deposit amount for booking or leasing.",
+      path: "/dashboard/masters/deposit",
     },
     {
-      name: language === "vi" ? "Điều khoản thanh toán" : "Payment terms",
+      name: language === "vi" ? "Điều khoản thanh toán" : "Payment Terms",
       description:
         language === "vi"
-          ? "Chi tiết lịch trình thanh toán và các điều kiện liên quan."
-          : "Details the payment schedule and conditions.",
-      onClick: openPaymentPage,
+          ? "Lịch trình và điều kiện thanh toán."
+          : "Payment terms and conditions.",
+      path: "/dashboard/masters/payment",
     },
     {
-      name: language === "vi" ? "Phí và thuế" : "Fees & taxes",
+      name: language === "vi" ? "Phí và thuế" : "Fees & Taxes",
       description:
         language === "vi"
-          ? "Chỉ định các loại phí, thuế hoặc khoản phí bổ sung liên quan đến bất động sản."
-          : "Specifies applicable fees, taxes, or additional charges related to the property.",
-      onClick: openFeeTaxPage,
+          ? "Các loại phí và thuế áp dụng."
+          : "Additional fees, charges, and taxes.",
+      path: "/dashboard/masters/fee-tax",
     },
     {
-      name: language === "vi" ? "Văn bản pháp luật" : "Legal document",
+      name: language === "vi" ? "Văn bản pháp luật" : "Legal Document",
       description:
         language === "vi"
-          ? "Chỉ giấy tờ chính thức hoặc hợp đồng cần thiết cho giao dịch bất động sản."
-          : "Refers to official paperwork or contracts required for the property transaction.",
-      onClick: openLegalDocumentPage,
+          ? "Giấy tờ hoặc hợp đồng pháp lý."
+          : "Official paperwork or legal documents.",
+      path: "/dashboard/masters/legal-document",
     },
-    // Optional future items:
-    // {
-    //   name: language === "vi" ? "Chính sách thú cưng" : "Pet Policy",
-    //   description:
-    //     language === "vi"
-    //       ? "Cho biết liệu thú cưng có được phép trong bất động sản hoặc tòa nhà không."
-    //       : "States whether pets are allowed in the property or building.",
-    //   onClick: openPetPolicyPage,
-    // },
   ];
 
   return (
@@ -147,7 +128,7 @@ export default function PropertyMaster({
         </h2>
       </div>
 
-      {/* Table Container */}
+      {/* Table */}
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
         <div className="grid grid-cols-[2fr_4fr_auto] bg-gray-50 font-medium text-gray-800 px-6 py-3 border-b border-gray-200">
           <div>{language === "vi" ? "Danh mục" : "Property Masters"}</div>
@@ -158,9 +139,10 @@ export default function PropertyMaster({
         {propertyData.map((item, index) => (
           <div
             key={index}
-            onClick={item.onClick}
-            className={`grid grid-cols-[2fr_4fr_auto] items-center px-6 py-4 text-sm text-gray-700 cursor-pointer ${index % 2 === 1 ? "bg-gray-50" : "bg-white"
-              } hover:bg-gray-100 transition-colors`}
+            onClick={() => navigate(item.path)}
+            className={`grid grid-cols-[2fr_4fr_auto] items-center px-6 py-4 text-sm text-gray-700 cursor-pointer ${
+              index % 2 === 1 ? "bg-gray-50" : "bg-white"
+            } hover:bg-gray-100 transition-colors`}
           >
             <div className="font-medium">{item.name}</div>
             <div className="text-gray-600 leading-snug">{item.description}</div>

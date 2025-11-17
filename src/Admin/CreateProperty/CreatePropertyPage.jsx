@@ -940,14 +940,15 @@ export default function CreatePropertyPage({
           />
         );
 
-      case 5:
-        return (
-          <CreatePropertyListStep4        // ✅ Your old Step 4
-            savedId={savedId}
-            onPublish={handleSubmitStatus}
-            onPrev={() => setStep(4)}
-          />
-        );
+case 5:
+  return (
+    <CreatePropertyListStep4
+      savedId={savedId}
+      onPublish={() => handleSubmitStatus("Published")}
+      onPrev={() => setStep(4)}
+    />
+  );
+
       default:
         return null;
     }
@@ -957,21 +958,23 @@ export default function CreatePropertyPage({
      Render
   ========================================================== */
   return (
-    <Steps
-      steps={steps}
-      currentStep={step}
-      onNext={() => step < steps.length && setStep(step + 1)}
-      onPrev={() => setStep((s) => Math.max(1, s - 1))}
-      onCancel={goBack}
-    >
-      <div className="relative">
-        {loading && (
-          <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-50">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent"></div>
-          </div>
-        )}
-        {renderStepContent()}
+<Steps
+  steps={steps}
+  currentStep={step}
+  onNext={() => step < steps.length && setStep(step + 1)}
+  onPrev={() => setStep((s) => Math.max(1, s - 1))}
+  onCancel={goBack}
+  onSubmit={() => handleSubmitStatus("Published")}   // ✅ NEW
+>
+  <div className="relative">
+    {loading && (
+      <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-50">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent"></div>
       </div>
-    </Steps>
+    )}
+    {renderStepContent()}
+  </div>
+</Steps>
+
   );
 }

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from "react";
 import { ArrowRight, CirclePlus, Trash2 } from "lucide-react";
-import {
-  getNextPropertyId,
-} from "../../Api/action";
+import { getNextPropertyId } from "../../Api/action";
 import { Select as AntdSelect, Switch } from "antd";
 import iconOptions from "../../data/iconOptions";
 import { Calendar } from "@/components/ui/calendar";
@@ -62,8 +60,8 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
                 ? opt.symbol?.vi || "—"
                 : opt.symbol?.en || "—"
               : lang === "vi"
-                ? opt.name?.vi || "Chưa đặt tên"
-                : opt.name?.en || "Unnamed";
+              ? opt.name?.vi || "Chưa đặt tên"
+              : opt.name?.en || "Unnamed";
 
           return (
             <Option key={opt._id} value={opt._id}>
@@ -147,8 +145,9 @@ const DatePicker = memo(({ label, name, value, onChange }) => {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={`w-full justify-between text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${!date && "text-muted-foreground"
-              }`}
+            className={`w-full justify-between text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${
+              !date && "text-muted-foreground"
+            }`}
           >
             {date ? format(date, "dd/MM/yyyy") : <span>Select date</span>}
             <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
@@ -249,7 +248,6 @@ export default function CreatePropertyListStep1({
     propertyUtilityVisibility: initialData.propertyUtilityVisibility || false,
   });
 
-
   // ✅ Auto-generate ID when transactionType changes
   useEffect(() => {
     if (!form.transactionType) return;
@@ -281,12 +279,15 @@ export default function CreatePropertyListStep1({
       setForm((prev) => ({
         ...prev,
         ...initialData,
-        blockName: initialData.blockName || prev.blockName || { en: "", vi: "" },
+        blockName: initialData.blockName ||
+          prev.blockName || { en: "", vi: "" },
         title: initialData.title || prev.title || { en: "", vi: "" },
         address: initialData.address || prev.address || { en: "", vi: "" },
-        description: initialData.description || prev.description || { en: "", vi: "" },
+        description: initialData.description ||
+          prev.description || { en: "", vi: "" },
         view: initialData.view || prev.view || { en: "", vi: "" },
-        whatsNearby: initialData.whatsNearby || prev.whatsNearby || { en: "", vi: "" },
+        whatsNearby: initialData.whatsNearby ||
+          prev.whatsNearby || { en: "", vi: "" },
         utilities:
           initialData.utilities && initialData.utilities.length
             ? initialData.utilities
@@ -307,7 +308,9 @@ export default function CreatePropertyListStep1({
           ...p,
           projectId: initialData.projectId,
           projectName: project
-            ? (lang === "vi" ? project.name.vi : project.name.en)
+            ? lang === "vi"
+              ? project.name.vi
+              : project.name.en
             : "",
         }));
       }
@@ -319,9 +322,7 @@ export default function CreatePropertyListStep1({
         setForm((p) => ({
           ...p,
           zoneId: initialData.zoneId,
-          zoneName: zone
-            ? (lang === "vi" ? zone.name.vi : zone.name.en)
-            : "",
+          zoneName: zone ? (lang === "vi" ? zone.name.vi : zone.name.en) : "",
           zone: {
             en: zone?.name?.en || "",
             vi: zone?.name?.vi || "",
@@ -331,13 +332,17 @@ export default function CreatePropertyListStep1({
 
       // 3) Restore Block
       if (initialData.blockId) {
-        const block = dropdowns.blocks.find((b) => b._id === initialData.blockId);
+        const block = dropdowns.blocks.find(
+          (b) => b._id === initialData.blockId
+        );
 
         setForm((p) => ({
           ...p,
           blockId: initialData.blockId,
           blockNameText: block
-            ? (lang === "vi" ? block.name.vi : block.name.en)
+            ? lang === "vi"
+              ? block.name.vi
+              : block.name.en
             : "",
           blockName: {
             en: block?.name?.en || "",
@@ -347,7 +352,6 @@ export default function CreatePropertyListStep1({
       }
     }
   }, [initialData, dropdowns, lang]);
-
 
   /* Handlers */
   const handleInputChange = useCallback(
@@ -569,10 +573,11 @@ export default function CreatePropertyListStep1({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
+            className={`px-6 py-2 text-sm font-medium ${
+              lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+            }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -585,19 +590,18 @@ export default function CreatePropertyListStep1({
         {/* === Listing Info === */}
         <h2 className="text-lg font-semibold mb-8">{t.listingInfo}</h2>
         <div className="grid grid-cols-3 gap-7">
-          <Select
-            label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
-            name="transactionType"
-            lang={lang}
-            value={form.transactionType}
-            onChange={handleInputChange}
-            options={[
-              { _id: "Sale", name: { en: "Sale", vi: "Bán" } },
-              { _id: "Lease", name: { en: "Lease", vi: "Cho thuê" } },
-              { _id: "Home Stay", name: { en: "Home Stay", vi: "Nhà nghỉ" } },
-            ]}
-            disabled={!!defaultTransactionType}
-          />
+          <div style={{ pointerEvents: "none" }}>
+            <Input
+              label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
+              name="transactionType"
+              value={form.transactionType}
+              onChange={handleInputChange}
+              placeholder={
+                lang === "en" ? "Enter Transaction Type" : "Nhập loại giao dịch"
+              }
+              disabled={!!defaultTransactionType}
+            />
+          </div>
 
           <div style={{ pointerEvents: "none" }}>
             <Input
@@ -647,12 +651,14 @@ export default function CreatePropertyListStep1({
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.listingInformationVisibility?.areaZone}
                   style={{
-                    '--antd-switch-handle-color': '#fff',
-                    '--antd-switch-color': '#41398B',
+                    "--antd-switch-handle-color": "#fff",
+                    "--antd-switch-color": "#41398B",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -716,16 +722,16 @@ export default function CreatePropertyListStep1({
             />
           </div>
 
-
           <div className="flex flex-col w-full gap-1">
-
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm font-semibold">
                 {lang === "en" ? "Block Name" : "Tên khối"}
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.listingInformationVisibility?.blockName}
                   onChange={(val) =>
@@ -785,7 +791,6 @@ export default function CreatePropertyListStep1({
             </AntdSelect>
           </div>
 
-
           <div className="flex flex-col w-full">
             {/* Top row: Label + Switch */}
             <div className="flex items-center justify-between w-full">
@@ -794,7 +799,9 @@ export default function CreatePropertyListStep1({
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.listingInformationVisibility?.propertyNo}
                   onChange={(val) =>
@@ -847,7 +854,9 @@ export default function CreatePropertyListStep1({
                   </label>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                    <span className="text-sm text-gray-600">
+                      {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                    </span>
                     <Switch
                       checked={form.listingInformationVisibility?.availableFrom}
                       style={{
@@ -869,15 +878,12 @@ export default function CreatePropertyListStep1({
                 {/* ✅ DatePicker Below */}
                 <DatePicker
                   name="availableFrom"
-                  placeholder={
-                    lang === "en" ? "Available From" : "Có sẵn từ"
-                  }
+                  placeholder={lang === "en" ? "Available From" : "Có sẵn từ"}
                   value={form.availableFrom}
                   onChange={handleInputChange}
                   className="w-full"
                 />
               </div>
-
 
               <Select
                 label={
@@ -903,7 +909,9 @@ export default function CreatePropertyListStep1({
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.unit}
                   style={{
@@ -932,14 +940,15 @@ export default function CreatePropertyListStep1({
           </div>
 
           <div className="flex flex-col w-full">
-
             <div className="flex items-center justify-between">
               <label className="text-sm text-[#131517] font-semibold">
                 {lang === "en" ? "Unit Size" : "Diện tích"}
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.unitSize}
                   style={{
@@ -973,7 +982,9 @@ export default function CreatePropertyListStep1({
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.bedrooms}
                   style={{
@@ -1007,7 +1018,9 @@ export default function CreatePropertyListStep1({
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.bathrooms}
                   style={{
@@ -1034,9 +1047,7 @@ export default function CreatePropertyListStep1({
             />
           </div>
 
-
           <div className="flex flex-col w-full gap-1">
-
             {/* ✅ Top Row: Label + Switch */}
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm text-[#131517] font-semibold">
@@ -1044,7 +1055,9 @@ export default function CreatePropertyListStep1({
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.floorRange}
                   style={{
@@ -1081,7 +1094,8 @@ export default function CreatePropertyListStep1({
               onChange={(value, option) => {
                 const fr = dropdowns.floorRanges.find(
                   (item) =>
-                    (lang === "vi" ? item.name?.vi : item.name?.en) === option.label
+                    (lang === "vi" ? item.name?.vi : item.name?.en) ===
+                    option.label
                 );
 
                 if (fr) {
@@ -1111,7 +1125,9 @@ export default function CreatePropertyListStep1({
               </label>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.furnishing}
                   style={{
@@ -1146,7 +1162,9 @@ export default function CreatePropertyListStep1({
                 {lang === "en" ? "View" : "Hướng nhìn"}
               </label>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.view}
                   style={{
@@ -1191,7 +1209,9 @@ export default function CreatePropertyListStep1({
               {lang === "en" ? "Description" : "Mô tả"}
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+              <span className="text-sm text-gray-600">
+                {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+              </span>
               <Switch
                 checked={form.descriptionVisibility}
                 style={{
@@ -1216,7 +1236,6 @@ export default function CreatePropertyListStep1({
           />
         </div>
 
-
         {/* === Property Utility === */}
         {/* ✅ Header Row: Title + Add + {lang === "en" ? "Hide Public" : "Ẩn công khai"} Switch */}
         <div className="flex items-center justify-between mt-8 mb-4">
@@ -1231,7 +1250,9 @@ export default function CreatePropertyListStep1({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">{lang === "en" ? "Hide Public" : "Ẩn công khai"}</span>
+            <span className="text-sm text-gray-600">
+              {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+            </span>
             <Switch
               checked={form.propertyUtilityVisibility}
               style={{
@@ -1247,7 +1268,6 @@ export default function CreatePropertyListStep1({
             />
           </div>
         </div>
-
 
         {/* ✅ Utility Items List */}
         {form.utilities.map((u, i) => (
@@ -1279,7 +1299,6 @@ export default function CreatePropertyListStep1({
               />
             </div>
 
-
             {/* ✅ Select Icon */}
             <div className="col-span-5">
               <label className="block text-sm text-[#131517] font-semibold mb-2">
@@ -1309,13 +1328,21 @@ export default function CreatePropertyListStep1({
                     icon={item.icon}
                     label={
                       <div className="flex items-center gap-2">
-                        <img src={item.icon} alt={item.name[lang]} className="w-5 h-5" />
+                        <img
+                          src={item.icon}
+                          alt={item.name[lang]}
+                          className="w-5 h-5"
+                        />
                         <span>{item.name[lang]}</span>
                       </div>
                     }
                   >
                     <div className="flex items-center gap-2">
-                      <img src={item.icon} alt={item.name[lang]} className="w-5 h-5" />
+                      <img
+                        src={item.icon}
+                        alt={item.name[lang]}
+                        className="w-5 h-5"
+                      />
                       <span>{item.name[lang]}</span>
                     </div>
                   </Option>
@@ -1336,7 +1363,6 @@ export default function CreatePropertyListStep1({
             </div>
           </div>
         ))}
-
 
         {/* Next */}
         <div className="text-end flex justify-end">
