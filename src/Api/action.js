@@ -235,6 +235,8 @@ export const copyPropertyToLease = (id) =>
 
 export const copyPropertyToHomeStay = (id) =>
   API.post(`/create-property/copy/homestay/${id}`);
+export const restoreProperty = (id) =>
+  API.put(`/create-property/restore/${id}`);
 
 /* =========================================================
    ✨ EXPORT DEFAULT

@@ -33,7 +33,7 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import CreatePropertyListStep4SEO from "./CreatePropertyListStep4SEO";
-
+import { useNavigate } from "react-router-dom";
 /* =========================================================
    🧰 Safe Object Sanitizer
 ========================================================= */
@@ -63,7 +63,7 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch { }
+    } catch {}
   }
   return result;
 }
@@ -72,7 +72,6 @@ function sanitizeObject(input, seen = new WeakSet()) {
    🧱 Main Component
 ========================================================= */
 export default function CreatePropertyPage({
-  goBack,
   editData = null,
   isEditMode = false,
   defaultTransactionType = null, // ✅ add this line
@@ -89,6 +88,8 @@ export default function CreatePropertyPage({
     me: null,
     loading: true,
   });
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
   const t = {
     en: {
       createProperty: "Create Property",
@@ -141,12 +142,11 @@ export default function CreatePropertyPage({
       .then((res) => {
         setPropertyData((prev) => ({
           ...prev,
-          propertyId: res.data.nextId,  // ✅ Save ID
+          propertyId: res.data.nextId, // ✅ Save ID
         }));
       })
       .catch((err) => console.error("Property ID Error:", err));
   }, [propertyData.transactionType]);
-
 
   useEffect(() => {
     async function loadStep3Data() {
@@ -171,7 +171,6 @@ export default function CreatePropertyPage({
 
     loadStep3Data();
   }, []);
-
 
   /* =========================================================
      🔽 Fetch dropdown data first
@@ -445,13 +444,25 @@ export default function CreatePropertyPage({
         },
         seoInformation: {
           metaTitle: editData.seoInformation?.metaTitle || { en: "", vi: "" },
-          metaDescription: editData.seoInformation?.metaDescription || { en: "", vi: "" },
-          metaKeywords: editData.seoInformation?.metaKeywords || { en: [], vi: [] },
+          metaDescription: editData.seoInformation?.metaDescription || {
+            en: "",
+            vi: "",
+          },
+          metaKeywords: editData.seoInformation?.metaKeywords || {
+            en: [],
+            vi: [],
+          },
           slugUrl: editData.seoInformation?.slugUrl || { en: "", vi: "" },
-          canonicalUrl: editData.seoInformation?.canonicalUrl || { en: "", vi: "" },
+          canonicalUrl: editData.seoInformation?.canonicalUrl || {
+            en: "",
+            vi: "",
+          },
           schemaType: editData.seoInformation?.schemaType || { en: "", vi: "" },
           ogTitle: editData.seoInformation?.ogTitle || { en: "", vi: "" },
-          ogDescription: editData.seoInformation?.ogDescription || { en: "", vi: "" },
+          ogDescription: editData.seoInformation?.ogDescription || {
+            en: "",
+            vi: "",
+          },
           ogImages: editData.seoInformation?.ogImages || [],
           allowIndexing:
             editData.seoInformation?.allowIndexing !== undefined
@@ -681,7 +692,6 @@ export default function CreatePropertyPage({
           normalized.financialVisibility?.depositPaymentTerms ?? false,
       },
 
-
       // SEO
       seoInformation: {
         metaTitle: seo.metaTitle,
@@ -865,8 +875,9 @@ export default function CreatePropertyPage({
       await updatePropertyListing(savedId, { status });
       CommonToaster(
         language === "vi"
-          ? `Bất động sản đã được đăng và đánh dấu là ${status === "Published" ? "Đã đăng" : "Bản nháp"
-          }!`
+          ? `Bất động sản đã được đăng và đánh dấu là ${
+              status === "Published" ? "Đã đăng" : "Bản nháp"
+            }!`
           : `Property Posted and marked as ${status}!`,
         "success"
       );
@@ -933,21 +944,25 @@ export default function CreatePropertyPage({
       case 4:
         return (
           <CreatePropertyListStep4SEO
-            onNext={() => handleSaveDraft({ seoInformation: propertyData.seoInformation }).then(() => setStep(5))}
+            onNext={() =>
+              handleSaveDraft({
+                seoInformation: propertyData.seoInformation,
+              }).then(() => setStep(5))
+            }
             onPrev={() => setStep(3)}
             onChange={handleStepChange}
             initialData={propertyData}
           />
         );
 
-case 5:
-  return (
-    <CreatePropertyListStep4
-      savedId={savedId}
-      onPublish={() => handleSubmitStatus("Published")}
-      onPrev={() => setStep(4)}
-    />
-  );
+      case 5:
+        return (
+          <CreatePropertyListStep4
+            savedId={savedId}
+            onPublish={() => handleSubmitStatus("Published")}
+            onPrev={() => setStep(4)}
+          />
+        );
 
       default:
         return null;
@@ -958,23 +973,22 @@ case 5:
      Render
   ========================================================== */
   return (
-<Steps
-  steps={steps}
-  currentStep={step}
-  onNext={() => step < steps.length && setStep(step + 1)}
-  onPrev={() => setStep((s) => Math.max(1, s - 1))}
-  onCancel={goBack}
-  onSubmit={() => handleSubmitStatus("Published")}   // ✅ NEW
->
-  <div className="relative">
-    {loading && (
-      <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-50">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent"></div>
+    <Steps
+      steps={steps}
+      currentStep={step}
+      onNext={() => step < steps.length && setStep(step + 1)}
+      onPrev={() => setStep((s) => Math.max(1, s - 1))}
+      onCancel={goBack}
+      onSubmit={() => handleSubmitStatus("Published")} // ✅ NEW
+    >
+      <div className="relative">
+        {loading && (
+          <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-50">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent"></div>
+          </div>
+        )}
+        {renderStepContent()}
       </div>
-    )}
-    {renderStepContent()}
-  </div>
-</Steps>
-
+    </Steps>
   );
 }

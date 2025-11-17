@@ -22,8 +22,10 @@ import {
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
-
-export default function FurnishingPage({ goBack }) {
+import { useNavigate } from "react-router-dom";
+export default function FurnishingPage() {
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
   const { language } = useLanguage();
   const isVI = language === "vi";
 
@@ -144,8 +146,9 @@ export default function FurnishingPage({ goBack }) {
       await updateFurnishing(item._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
-          }`
+          ? `Đã chuyển sang ${
+              newStatus === "Active" ? "hoạt động" : "không hoạt động"
+            }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -168,9 +171,9 @@ export default function FurnishingPage({ goBack }) {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 cursor-pointer h-8 flex items-center justify-center rounded-full bg-[#41398B] text-white hover:bg-[#41398be3]"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft className="w-4 h-4" />
           </button>
           <h2 className="text-2xl font-semibold text-gray-900">
             {isVI ? "Nội thất" : "Furnishing"}
@@ -191,8 +194,9 @@ export default function FurnishingPage({ goBack }) {
 
       {/* Table */}
       <div
-        className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"
-          }`}
+        className={`transition-opacity ${
+          loading ? "opacity-50" : "opacity-100"
+        }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
@@ -221,8 +225,9 @@ export default function FurnishingPage({ goBack }) {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100 transition`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -232,10 +237,11 @@ export default function FurnishingPage({ goBack }) {
                     </td>
                     <td className="px-6 py-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${row.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-600"
-                          }`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          row.status === "Active"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-600"
+                        }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -281,8 +287,8 @@ export default function FurnishingPage({ goBack }) {
                                 ? "Đánh dấu là không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                                ? "Đánh dấu là hoạt động"
-                                : "Mark as Active"}
+                              ? "Đánh dấu là hoạt động"
+                              : "Mark as Active"}
                           </button>
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -329,8 +335,9 @@ export default function FurnishingPage({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
-              } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
 
           <div className="flex items-center gap-1">
@@ -400,8 +407,8 @@ export default function FurnishingPage({ goBack }) {
                     ? "Edit Furnishing"
                     : "Chỉnh sửa nội thất"
                   : activeLang === "EN"
-                    ? "New Furnishing"
-                    : "Thêm nội thất mới"}
+                  ? "New Furnishing"
+                  : "Thêm nội thất mới"}
               </h2>
               <button
                 onClick={() => {
@@ -418,19 +425,21 @@ export default function FurnishingPage({ goBack }) {
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${activeLang === "EN"
-                  ? "text-black border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "EN"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${activeLang === "VI"
-                  ? "text-black border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "VI"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -492,8 +501,8 @@ export default function FurnishingPage({ goBack }) {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                    ? "Add"
-                    : "Thêm"}
+                  ? "Add"
+                  : "Thêm"}
               </button>
             </div>
           </div>

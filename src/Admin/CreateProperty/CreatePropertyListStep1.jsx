@@ -353,6 +353,30 @@ export default function CreatePropertyListStep1({
     }
   }, [initialData, dropdowns, lang]);
 
+  // ✅ Auto-select default UNIT
+  useEffect(() => {
+    if (!dropdowns?.units?.length) return;
+
+    // Skip if user already has selected a unit (edit mode)
+    if (form.unit) return;
+
+    const defUnit = dropdowns.units.find((u) => u.isDefault);
+
+    if (defUnit) {
+      setForm((prev) => ({
+        ...prev,
+        unit: defUnit._id, // store selected unit ID
+      }));
+
+      // also pass update to parent if needed
+      onChange &&
+        onChange({
+          ...form,
+          unit: defUnit._id,
+        });
+    }
+  }, [dropdowns?.units]);
+
   /* Handlers */
   const handleInputChange = useCallback(
     (e) => {

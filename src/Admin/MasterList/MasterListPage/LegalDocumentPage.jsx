@@ -24,8 +24,11 @@ import {
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
-export default function LegalDocumentPage({ goBack }) {
+export default function LegalDocumentPage() {
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
   const { language } = useLanguage();
   const isVI = language === "vi";
 
@@ -55,7 +58,9 @@ export default function LegalDocumentPage({ goBack }) {
       setRecords(res.data.data || []);
     } catch {
       CommonToaster(
-        isVI ? "Không thể tải tài liệu pháp lý." : "Failed to load legal documents.",
+        isVI
+          ? "Không thể tải tài liệu pháp lý."
+          : "Failed to load legal documents.",
         "error"
       );
     } finally {
@@ -87,7 +92,9 @@ export default function LegalDocumentPage({ goBack }) {
   const handleSubmit = async () => {
     if (!form.name_en || !form.name_vi) {
       CommonToaster(
-        isVI ? "Vui lòng điền tất cả các trường." : "Please fill all required fields.",
+        isVI
+          ? "Vui lòng điền tất cả các trường."
+          : "Please fill all required fields.",
         "error"
       );
       return;
@@ -123,7 +130,7 @@ export default function LegalDocumentPage({ goBack }) {
     } catch (err) {
       CommonToaster(
         err?.response?.data?.error ||
-        (isVI ? "Không thể lưu dữ liệu." : "Failed to save data."),
+          (isVI ? "Không thể lưu dữ liệu." : "Failed to save data."),
         "error"
       );
     }
@@ -142,8 +149,7 @@ export default function LegalDocumentPage({ goBack }) {
   };
 
   // ✅ Delete
-  const confirmDelete = (id) =>
-    setDeleteConfirm({ show: true, id });
+  const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
 
   const handleDelete = async () => {
     try {
@@ -152,10 +158,7 @@ export default function LegalDocumentPage({ goBack }) {
       setDeleteConfirm({ show: false, id: null });
       fetchRecords();
     } catch {
-      CommonToaster(
-        isVI ? "Không thể xóa." : "Failed to delete.",
-        "error"
-      );
+      CommonToaster(isVI ? "Không thể xóa." : "Failed to delete.", "error");
     }
   };
 
@@ -186,7 +189,6 @@ export default function LegalDocumentPage({ goBack }) {
 
   return (
     <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
-
       {/* ✅ Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -216,7 +218,11 @@ export default function LegalDocumentPage({ goBack }) {
       </div>
 
       {/* ✅ TABLE */}
-      <div className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
+      <div
+        className={`transition-opacity ${
+          loading ? "opacity-50" : "opacity-100"
+        }`}
+      >
         {loading ? (
           <CommonSkeleton rows={6} />
         ) : (
@@ -224,9 +230,15 @@ export default function LegalDocumentPage({ goBack }) {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left">{isVI ? "Mã" : "Code"}</th>
-                <th className="px-6 py-3 text-left">{isVI ? "Tên tài liệu" : "Legal Document"}</th>
-                <th className="px-6 py-3 text-left">{isVI ? "Trạng thái" : "Status"}</th>
-                <th className="px-6 py-3 text-right">{isVI ? "Hành động" : "Actions"}</th>
+                <th className="px-6 py-3 text-left">
+                  {isVI ? "Tên tài liệu" : "Legal Document"}
+                </th>
+                <th className="px-6 py-3 text-left">
+                  {isVI ? "Trạng thái" : "Status"}
+                </th>
+                <th className="px-6 py-3 text-right">
+                  {isVI ? "Hành động" : "Actions"}
+                </th>
               </tr>
             </thead>
 
@@ -241,17 +253,24 @@ export default function LegalDocumentPage({ goBack }) {
                 visibleRows.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100`}
                   >
-                    <td className="px-6 py-3">{isVI ? row.code.vi : row.code.en}</td>
-                    <td className="px-6 py-3">{isVI ? row.name.vi : row.name.en}</td>
+                    <td className="px-6 py-3">
+                      {isVI ? row.code.vi : row.code.en}
+                    </td>
+                    <td className="px-6 py-3">
+                      {isVI ? row.name.vi : row.name.en}
+                    </td>
 
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium 
-                          ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
+                          ${
+                            row.status === "Active"
+                              ? "bg-[#E8FFF0] text-[#12B76A]"
+                              : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -275,7 +294,6 @@ export default function LegalDocumentPage({ goBack }) {
 
                       {openMenuIndex === i && (
                         <div className="absolute right-8 top-10 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-44 py-2">
-
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-50"
                             onClick={() => {
@@ -300,8 +318,8 @@ export default function LegalDocumentPage({ goBack }) {
                                 ? "Đánh dấu không hoạt động"
                                 : "Đánh dấu hoạt động"
                               : row.status === "Active"
-                                ? "Mark as Inactive"
-                                : "Mark as Active"}
+                              ? "Mark as Inactive"
+                              : "Mark as Active"}
                           </button>
 
                           <button
@@ -328,7 +346,6 @@ export default function LegalDocumentPage({ goBack }) {
       {/* ✅ Pagination */}
       <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4">
         <div className="flex items-center gap-6">
-
           <div className="flex items-center gap-2">
             <span>{isVI ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
             <select
@@ -350,7 +367,9 @@ export default function LegalDocumentPage({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
 
           <div className="flex items-center gap-1">
@@ -416,7 +435,6 @@ export default function LegalDocumentPage({ goBack }) {
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
-
             {/* Header */}
             <div className="flex justify-between items-center px-6 py-4">
               <h2 className="text-lg font-medium">
@@ -425,8 +443,8 @@ export default function LegalDocumentPage({ goBack }) {
                     ? "Edit Legal Document"
                     : "Chỉnh sửa Tài liệu pháp lý"
                   : activeLang === "EN"
-                    ? "New Legal Document"
-                    : "Thêm Tài liệu pháp lý"}
+                  ? "New Legal Document"
+                  : "Thêm Tài liệu pháp lý"}
               </h2>
 
               <button
@@ -444,20 +462,22 @@ export default function LegalDocumentPage({ goBack }) {
             <div className="flex gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium ${activeLang === "EN"
-                  ? "border-b-2 border-[#41398B] text-black"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium ${
+                  activeLang === "EN"
+                    ? "border-b-2 border-[#41398B] text-black"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 English (EN)
               </button>
 
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium ${activeLang === "VI"
-                  ? "border-b-2 border-[#41398B] text-black"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium ${
+                  activeLang === "VI"
+                    ? "border-b-2 border-[#41398B] text-black"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -519,15 +539,13 @@ export default function LegalDocumentPage({ goBack }) {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                    ? "Add"
-                    : "Thêm"}
+                  ? "Add"
+                  : "Thêm"}
               </button>
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }

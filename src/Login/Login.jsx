@@ -25,12 +25,12 @@ export default function Login() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userName", user?.name || "");
         CommonToaster("Login Successfully!", "success");
-        navigate("/dashboard");
+        navigate("/dashboard/lease  ");
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
-        "Login failed. Please check your credentials."
+          "Login failed. Please check your credentials."
       );
     } finally {
       setLoading(false);

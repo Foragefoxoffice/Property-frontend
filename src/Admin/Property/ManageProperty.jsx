@@ -7,6 +7,7 @@ import {
   Pencil,
   X,
   SlidersHorizontal,
+  RotateCcw,
 } from "lucide-react";
 import {
   getAllPropertyListings,
@@ -15,6 +16,7 @@ import {
   copyPropertyToSale,
   copyPropertyToLease,
   copyPropertyToHomeStay,
+  restoreProperty,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -195,6 +197,18 @@ export default function ManageProperty({
     filterByTransactionType,
   ]);
 
+  const handleRestore = async (id) => {
+    try {
+      await restoreProperty(id);
+      CommonToaster("Property restored", "success");
+
+      // Remove from UI
+      setProperties((prev) => prev.filter((p) => p._id !== id));
+    } catch (err) {
+      CommonToaster("Failed to restore property", "error");
+    }
+  };
+
   // ✅ Pagination logic
   const totalRows = filteredProperties.length;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
@@ -322,9 +336,8 @@ export default function ManageProperty({
     }
   };
   const transactionRoute = filterByTransactionType
-  ?.toLowerCase()
-  ?.replace(" ", "");
-
+    ?.toLowerCase()
+    ?.replace(" ", "");
 
   return (
     <div className="min-h-screen px-2 py-2">
@@ -519,8 +532,10 @@ export default function ManageProperty({
 
                       <button
                         onClick={() =>
-  navigate(`/dashboard/${transactionRoute}/edit/${p._id}`)
-}
+                          navigate(
+                            `/dashboard/${transactionRoute}/edit/${p._id}`
+                          )
+                        }
                         style={{ justifyItems: "anchor-center" }}
                         className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                       >
@@ -529,13 +544,22 @@ export default function ManageProperty({
                           className="w-4 h-4 text-gray-600"
                         />
                       </button>
-                      <button
-                        style={{ justifyItems: "anchor-center" }}
-                        onClick={() => confirmDelete(p._id)}
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </button>
+                      {trashMode ? (
+                        <button
+                          onClick={() => handleRestore(p._id)}
+                          className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
+                        >
+                          <RotateCcw className="w-4 h-4 text-green-600" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => confirmDelete(p._id)}
+                          className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </button>
+                      )}
+
                       <Dropdown
                         trigger={["click"]}
                         menu={{ items: getCopyMenuItems(p) }}

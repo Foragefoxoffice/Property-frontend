@@ -22,8 +22,11 @@ import {
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
-export default function FloorRange({ goBack }) {
+export default function FloorRange() {
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
   const { language } = useLanguage();
   const isVI = language === "vi";
 
@@ -53,7 +56,9 @@ export default function FloorRange({ goBack }) {
       setFloorRanges(res.data.data || []);
     } catch {
       CommonToaster(
-        isVI ? "Không thể tải danh sách khoảng tầng." : "Failed to load floor ranges.",
+        isVI
+          ? "Không thể tải danh sách khoảng tầng."
+          : "Failed to load floor ranges.",
         "error"
       );
     } finally {
@@ -97,13 +102,17 @@ export default function FloorRange({ goBack }) {
       if (editingItem) {
         await updateFloorRange(editingItem._id, form);
         CommonToaster(
-          isVI ? "Cập nhật khoảng tầng thành công!" : "Floor range updated successfully!",
+          isVI
+            ? "Cập nhật khoảng tầng thành công!"
+            : "Floor range updated successfully!",
           "success"
         );
       } else {
         await createFloorRange(form);
         CommonToaster(
-          isVI ? "Thêm khoảng tầng thành công!" : "Floor range added successfully!",
+          isVI
+            ? "Thêm khoảng tầng thành công!"
+            : "Floor range added successfully!",
           "success"
         );
       }
@@ -144,7 +153,10 @@ export default function FloorRange({ goBack }) {
   const handleDelete = async () => {
     try {
       await deleteFloorRange(deleteConfirm.id);
-      CommonToaster(isVI ? "Xóa thành công!" : "Deleted successfully!", "success");
+      CommonToaster(
+        isVI ? "Xóa thành công!" : "Deleted successfully!",
+        "success"
+      );
       setDeleteConfirm({ show: false, id: null });
       fetchFloorRanges();
     } catch {
@@ -162,8 +174,9 @@ export default function FloorRange({ goBack }) {
       await updateFloorRange(item._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
-          }`
+          ? `Đã chuyển sang ${
+              newStatus === "Active" ? "hoạt động" : "không hoạt động"
+            }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -183,7 +196,7 @@ export default function FloorRange({ goBack }) {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 cursor-pointer h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -207,7 +220,9 @@ export default function FloorRange({ goBack }) {
 
       {/* Table */}
       <div
-        className={`transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"}`}
+        className={`transition-opacity duration-300 ${
+          loading ? "opacity-50" : "opacity-100"
+        }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
@@ -240,7 +255,9 @@ export default function FloorRange({ goBack }) {
                 visibleData.map((row, i) => (
                   <tr
                     key={row._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -250,10 +267,11 @@ export default function FloorRange({ goBack }) {
                     </td>
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                          ? "bg-[#E8FFF0] text-[#12B76A]"
-                          : "bg-[#FFE8E8] text-[#F04438]"
-                          }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
+                          row.status === "Active"
+                            ? "bg-[#E8FFF0] text-[#12B76A]"
+                            : "bg-[#FFE8E8] text-[#F04438]"
+                        }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -297,8 +315,8 @@ export default function FloorRange({ goBack }) {
                                 ? "Đánh dấu là không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                                ? "Đánh dấu là hoạt động"
-                                : "Mark as Active"}
+                              ? "Đánh dấu là hoạt động"
+                              : "Mark as Active"}
                           </button>
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
@@ -344,7 +362,9 @@ export default function FloorRange({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
           <div className="flex items-center gap-1">
             <button onClick={goToFirst} disabled={currentPage === 1}>
@@ -414,8 +434,8 @@ export default function FloorRange({ goBack }) {
                     ? "Edit Floor Range"
                     : "Chỉnh sửa khoảng tầng"
                   : activeLang === "EN"
-                    ? "New Floor Range"
-                    : "Thêm khoảng tầng mới"}
+                  ? "New Floor Range"
+                  : "Thêm khoảng tầng mới"}
               </h2>
               <button
                 onClick={() => {
@@ -432,19 +452,21 @@ export default function FloorRange({ goBack }) {
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${activeLang === "EN"
-                  ? "text-black border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "EN"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${activeLang === "VI"
-                  ? "text-black border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium transition-all ${
+                  activeLang === "VI"
+                    ? "text-black border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -507,8 +529,8 @@ export default function FloorRange({ goBack }) {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                    ? "Add"
-                    : "Thêm"}
+                  ? "Add"
+                  : "Thêm"}
               </button>
             </div>
           </div>

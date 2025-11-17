@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import App from "./App.jsx";
 import "./index.css";
-
 import Login from "./Login/Login.jsx";
 import ForgotPassword from "./Login/ForgotPassword.jsx";
 import ResetPassword from "./Login/ResetPassword.jsx";
@@ -15,7 +14,6 @@ import { LanguageProvider } from "./Language/LanguageContext.jsx";
 
 import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage.jsx";
-import PropertyFilterPopup from "./Admin/Filters/Filter.jsx";
 
 import { ToastContainer } from "react-toastify";
 
@@ -47,6 +45,7 @@ import Staffs from "./Admin/Property/Staffs";
 import StaffView from "./Admin/AddMembers/StaffView";
 
 import TrashPage from "./Admin/Trash/TrashPage";
+import FiltersPage from "./Admin/Filters/Filter.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -80,18 +79,45 @@ createRoot(document.getElementById("root")).render(
           }
         >
           {/* ---------- PROPERTY LIST PAGES ---------- */}
-          <Route path="lease" element={<PropertyManager propertyTypeFilter="Lease" />} />
-          <Route path="sale" element={<PropertyManager propertyTypeFilter="Sale" />} />
-          <Route path="homestay" element={<PropertyManager propertyTypeFilter="Home Stay" />} />
+          <Route
+            path="lease"
+            element={<PropertyManager propertyTypeFilter="Lease" />}
+          />
+          <Route
+            path="sale"
+            element={<PropertyManager propertyTypeFilter="Sale" />}
+          />
+          <Route
+            path="homestay"
+            element={<PropertyManager propertyTypeFilter="Home Stay" />}
+          />
 
           {/* CREATE / EDIT PROPERTY */}
-          <Route path="lease/create" element={<CreatePropertyPage defaultTransactionType="Lease" />} />
-          <Route path="sale/create" element={<CreatePropertyPage defaultTransactionType="Sale" />} />
-          <Route path="homestay/create" element={<CreatePropertyPage defaultTransactionType="Home Stay" />} />
+          <Route
+            path="lease/create"
+            element={<CreatePropertyPage defaultTransactionType="Lease" />}
+          />
+          <Route
+            path="sale/create"
+            element={<CreatePropertyPage defaultTransactionType="Sale" />}
+          />
+          <Route
+            path="homestay/create"
+            element={<CreatePropertyPage defaultTransactionType="Home Stay" />}
+          />
 
-          <Route path="lease/edit/:id" element={<CreatePropertyPage isEditMode />} />
-          <Route path="sale/edit/:id" element={<CreatePropertyPage isEditMode />} />
-          <Route path="homestay/edit/:id" element={<CreatePropertyPage isEditMode />} />
+          <Route
+            path="lease/edit/:id"
+            element={<CreatePropertyPage isEditMode />}
+          />
+          <Route
+            path="sale/edit/:id"
+            element={<CreatePropertyPage isEditMode />}
+          />
+          <Route
+            path="homestay/edit/:id"
+            element={<CreatePropertyPage isEditMode />}
+          />
 
           {/* ---------- MASTER ROUTES ---------- */}
           <Route path="masters" element={<Masters />} />
@@ -100,7 +126,10 @@ createRoot(document.getElementById("root")).render(
           <Route path="masters/zone-sub-area" element={<ZoneSubAreaPage />} />
           <Route path="masters/block" element={<BlockPage />} />
           <Route path="masters/property-type" element={<PropertTypePage />} />
-          <Route path="masters/availability-status" element={<AvailabilityStatusPage />} />
+          <Route
+            path="masters/availability-status"
+            element={<AvailabilityStatusPage />}
+          />
           <Route path="masters/unit" element={<UnitPage />} />
           <Route path="masters/furnishing" element={<FurnishingPage />} />
           <Route path="masters/parking" element={<ParkingPage />} />
@@ -108,7 +137,10 @@ createRoot(document.getElementById("root")).render(
           <Route path="masters/deposit" element={<DepositPage />} />
           <Route path="masters/payment" element={<PaymentPage />} />
           <Route path="masters/fee-tax" element={<FeeTaxPage />} />
-          <Route path="masters/legal-document" element={<LegalDocumentPage />} />
+          <Route
+            path="masters/legal-document"
+            element={<LegalDocumentPage />}
+          />
           <Route path="masters/floor-range" element={<FloorRange />} />
           <Route path="masters/currency" element={<Currency />} />
 
@@ -126,8 +158,11 @@ createRoot(document.getElementById("root")).render(
 
         {/* OTHER NON-DASHBOARD PAGES */}
         <Route path="/manage-property" element={<ManageProperty />} />
-        <Route path="/filters" element={<PropertyFilterPopup />} />
-        <Route path="/property-showcase/:id" element={<PropertyShowcasePage />} />
+        <Route path="/filters" element={<FiltersPage />} />
+        <Route
+          path="/property-showcase/:id"
+          element={<PropertyShowcasePage />}
+        />
       </Routes>
     </StrictMode>
   </BrowserRouter>

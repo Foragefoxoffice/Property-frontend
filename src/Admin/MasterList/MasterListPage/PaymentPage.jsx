@@ -22,8 +22,10 @@ import {
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
-
-export default function PaymentPage({ goBack }) {
+import { useNavigate } from "react-router-dom";
+export default function PaymentPage() {
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
   const { language } = useLanguage();
   const isVI = language === "vi";
 
@@ -40,8 +42,6 @@ export default function PaymentPage({ goBack }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const [form, setForm] = useState({
-    code_en: "",
-    code_vi: "",
     name_en: "",
     name_vi: "",
     status: "Active",
@@ -86,7 +86,7 @@ export default function PaymentPage({ goBack }) {
 
   // Add / Edit
   const handleSubmit = async () => {
-    if (!form.code_en || !form.code_vi || !form.name_en || !form.name_vi) {
+    if (!form.name_en || !form.name_vi) {
       CommonToaster("Please fill all English and Vietnamese fields", "error");
       return;
     }
@@ -169,9 +169,9 @@ export default function PaymentPage({ goBack }) {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 cursor-pointer h-8 flex items-center justify-center rounded-full bg-[#41398B] text-white hover:bg-[#41398be3]"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft className="w-4 h-4" />
           </button>
           <h2 className="text-2xl font-semibold text-gray-900">
             {isVI ? "Thanh toán" : "Payment"}
@@ -449,19 +449,6 @@ export default function PaymentPage({ goBack }) {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Code<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="code_en"
-                      placeholder="Type here"
-                      value={form.code_en}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Payment Name<span className="text-red-500">*</span>
                     </label>
                     <input
@@ -476,19 +463,6 @@ export default function PaymentPage({ goBack }) {
                 </>
               ) : (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mã<span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="code_vi"
-                      placeholder="Nhập tại đây"
-                      value={form.code_vi}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
-                    />
-                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Tên phương thức thanh toán

@@ -24,8 +24,11 @@ import {
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
-export default function FeeTaxPage({ goBack }) {
+export default function FeeTaxPage() {
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
   const { language } = useLanguage();
   const isVI = language === "vi";
 
@@ -55,7 +58,9 @@ export default function FeeTaxPage({ goBack }) {
       setRecords(res.data.data || []);
     } catch {
       CommonToaster(
-        isVI ? "Không thể tải danh sách phí / thuế." : "Failed to load Fee/Tax list.",
+        isVI
+          ? "Không thể tải danh sách phí / thuế."
+          : "Failed to load Fee/Tax list.",
         "error"
       );
     } finally {
@@ -154,10 +159,7 @@ export default function FeeTaxPage({ goBack }) {
       setDeleteConfirm({ show: false, id: null });
       fetchRecords();
     } catch {
-      CommonToaster(
-        isVI ? "Không thể xóa." : "Failed to delete.",
-        "error"
-      );
+      CommonToaster(isVI ? "Không thể xóa." : "Failed to delete.", "error");
     }
   };
 
@@ -188,13 +190,12 @@ export default function FeeTaxPage({ goBack }) {
 
   return (
     <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
-
       {/* ✅ Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -217,7 +218,11 @@ export default function FeeTaxPage({ goBack }) {
       </div>
 
       {/* ✅ TABLE */}
-      <div className={`transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"}`}>
+      <div
+        className={`transition-opacity duration-300 ${
+          loading ? "opacity-50" : "opacity-100"
+        }`}
+      >
         {loading ? (
           <CommonSkeleton rows={6} />
         ) : (
@@ -226,8 +231,12 @@ export default function FeeTaxPage({ goBack }) {
               <tr>
                 <th className="px-6 py-3 text-left">{isVI ? "Mã" : "Code"}</th>
                 <th className="px-6 py-3 text-left">{isVI ? "Tên" : "Name"}</th>
-                <th className="px-6 py-3 text-left">{isVI ? "Trạng thái" : "Status"}</th>
-                <th className="px-6 py-3 text-right">{isVI ? "Hành động" : "Actions"}</th>
+                <th className="px-6 py-3 text-left">
+                  {isVI ? "Trạng thái" : "Status"}
+                </th>
+                <th className="px-6 py-3 text-right">
+                  {isVI ? "Hành động" : "Actions"}
+                </th>
               </tr>
             </thead>
 
@@ -242,15 +251,25 @@ export default function FeeTaxPage({ goBack }) {
                 visibleRows.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100`}
                   >
-                    <td className="px-6 py-3">{isVI ? row.code.vi : row.code.en}</td>
-                    <td className="px-6 py-3">{isVI ? row.name.vi : row.name.en}</td>
+                    <td className="px-6 py-3">
+                      {isVI ? row.code.vi : row.code.en}
+                    </td>
+                    <td className="px-6 py-3">
+                      {isVI ? row.name.vi : row.name.en}
+                    </td>
 
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium 
-                          ${row.status === "Active" ? "bg-[#E8FFF0] text-[#12B76A]" : "bg-[#FFE8E8] text-[#F04438]"}`}
+                          ${
+                            row.status === "Active"
+                              ? "bg-[#E8FFF0] text-[#12B76A]"
+                              : "bg-[#FFE8E8] text-[#F04438]"
+                          }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -297,8 +316,8 @@ export default function FeeTaxPage({ goBack }) {
                                 ? "Đánh dấu không hoạt động"
                                 : "Đánh dấu hoạt động"
                               : row.status === "Active"
-                                ? "Mark as Inactive"
-                                : "Mark as Active"}
+                              ? "Mark as Inactive"
+                              : "Mark as Active"}
                           </button>
 
                           <button
@@ -346,7 +365,9 @@ export default function FeeTaxPage({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
 
           <div className="flex items-center gap-1">
@@ -412,7 +433,6 @@ export default function FeeTaxPage({ goBack }) {
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
-
             {/* Header */}
             <div className="flex justify-between items-center px-6 py-4">
               <h2 className="text-lg font-medium">
@@ -421,8 +441,8 @@ export default function FeeTaxPage({ goBack }) {
                     ? "Edit Fees & taxes"
                     : "Chỉnh sửa Phí và thuế"
                   : activeLang === "EN"
-                    ? "New Fees & taxes"
-                    : "Thêm Phí và thuế"}
+                  ? "New Fees & taxes"
+                  : "Thêm Phí và thuế"}
               </h2>
 
               <button
@@ -440,20 +460,22 @@ export default function FeeTaxPage({ goBack }) {
             <div className="flex gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium ${activeLang === "EN"
-                  ? "border-b-2 border-[#41398B] text-black"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium ${
+                  activeLang === "EN"
+                    ? "border-b-2 border-[#41398B] text-black"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 English (EN)
               </button>
 
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium ${activeLang === "VI"
-                  ? "border-b-2 border-[#41398B] text-black"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium ${
+                  activeLang === "VI"
+                    ? "border-b-2 border-[#41398B] text-black"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -515,14 +537,13 @@ export default function FeeTaxPage({ goBack }) {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                    ? "Add"
-                    : "Thêm"}
+                  ? "Add"
+                  : "Thêm"}
               </button>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

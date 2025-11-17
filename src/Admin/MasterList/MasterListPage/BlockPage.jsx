@@ -26,8 +26,11 @@ import { Select as AntdSelect } from "antd";
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
-export default function BlockPage({ goBack }) {
+export default function BlockPage() {
+  const navigate = useNavigate();
+  const goBack = () => navigate(-1);
   const { language } = useLanguage();
   const isVI = language === "vi";
 
@@ -201,8 +204,9 @@ export default function BlockPage({ goBack }) {
       await updateBlock(block._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
-          }`
+          ? `Đã chuyển sang ${
+              newStatus === "Active" ? "hoạt động" : "không hoạt động"
+            }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -222,10 +226,9 @@ export default function BlockPage({ goBack }) {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 flex items-center justify-center cursor-pointer
-            rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft className="w-4 h-4" />
           </button>
 
           <h2 className="text-2xl font-semibold text-gray-900">
@@ -287,8 +290,9 @@ export default function BlockPage({ goBack }) {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100`}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -304,10 +308,11 @@ export default function BlockPage({ goBack }) {
                     </td>
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                          ? "bg-[#E8FFF0] text-[#12B76A]"
-                          : "bg-[#FFE8E8] text-[#F04438]"
-                          }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
+                          row.status === "Active"
+                            ? "bg-[#E8FFF0] text-[#12B76A]"
+                            : "bg-[#FFE8E8] text-[#F04438]"
+                        }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -358,8 +363,8 @@ export default function BlockPage({ goBack }) {
                                 ? "Đánh dấu không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                                ? "Đánh dấu hoạt động"
-                                : "Mark as Active"}
+                              ? "Đánh dấu hoạt động"
+                              : "Mark as Active"}
                           </button>
 
                           <button
@@ -409,8 +414,9 @@ export default function BlockPage({ goBack }) {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
-              } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${
+                  isVI ? "trên" : "of"
+                } ${totalRows}`}
           </span>
 
           {/* Pagination Buttons */}
@@ -482,8 +488,8 @@ export default function BlockPage({ goBack }) {
                     ? "Edit Block"
                     : "Chỉnh sửa khối"
                   : activeLang === "EN"
-                    ? "New Block"
-                    : "Thêm khối mới"}
+                  ? "New Block"
+                  : "Thêm khối mới"}
               </h2>
 
               <button
@@ -502,20 +508,22 @@ export default function BlockPage({ goBack }) {
             <div className="flex gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium ${activeLang === "EN"
-                  ? "border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium ${
+                  activeLang === "EN"
+                    ? "border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 English (EN)
               </button>
 
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium ${activeLang === "VI"
-                  ? "border-b-2 border-[#41398B]"
-                  : "text-gray-500 hover:text-black"
-                  }`}
+                className={`py-3 font-medium ${
+                  activeLang === "VI"
+                    ? "border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-black"
+                }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -663,8 +671,8 @@ export default function BlockPage({ goBack }) {
                     ? "Cập nhật"
                     : "Update"
                   : isVI
-                    ? "Thêm"
-                    : "Add"}
+                  ? "Thêm"
+                  : "Add"}
               </button>
             </div>
           </div>
