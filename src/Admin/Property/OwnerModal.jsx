@@ -122,7 +122,7 @@ export default function OwnerModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-start justify-center z-50 overflow-y-auto py-12 px-4">
+    <div className="fixed inset-0 bg-black/40 flex items-start justify-center z-99991 overflow-y-auto py-12 px-4">
       <div className="bg-white rounded-2xl w-full max-w-2xl p-8 shadow-xl relative">
         {/* Close Button */}
         <button

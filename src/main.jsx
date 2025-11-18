@@ -108,15 +108,24 @@ createRoot(document.getElementById("root")).render(
 
           <Route
             path="lease/edit/:id"
-            element={<CreatePropertyPage isEditMode />}
+            element={
+              <CreatePropertyPage isEditMode defaultTransactionType="Lease" />
+            }
           />
           <Route
             path="sale/edit/:id"
-            element={<CreatePropertyPage isEditMode />}
+            element={
+              <CreatePropertyPage isEditMode defaultTransactionType="Sale" />
+            }
           />
           <Route
             path="homestay/edit/:id"
-            element={<CreatePropertyPage isEditMode />}
+            element={
+              <CreatePropertyPage
+                isEditMode
+                defaultTransactionType="Home Stay"
+              />
+            }
           />
 
           {/* ---------- MASTER ROUTES ---------- */}

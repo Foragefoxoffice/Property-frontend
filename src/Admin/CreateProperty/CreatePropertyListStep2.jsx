@@ -411,12 +411,12 @@ export default function CreatePropertyListStep2({
       />
 
       <div className="flex flex-col w-full gap-1">
-        {/* ✅ Top Row: Label + Hide Public + Switch */}
+        {/* ✅ Top Row: Label + Public + Switch */}
         <div className="flex items-center justify-between mb-1">
           <label className="text-sm text-[#131517] font-semibold"></label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
-              {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+              {lang === "en" ? "Public" : "Công cộng"}
             </span>
             <Switch
               checked={form.videoVisibility}
@@ -449,7 +449,7 @@ export default function CreatePropertyListStep2({
           <label className="text-sm text-[#131517] font-semibold"></label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
-              {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+              {lang === "en" ? "Public" : "Công cộng"}
             </span>
             <Switch
               checked={form.floorImageVisibility}
@@ -567,7 +567,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
 
                 <Switch
@@ -628,7 +628,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}
@@ -688,7 +688,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.feeTaxes}
@@ -749,7 +749,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.legalDocs}
@@ -807,25 +807,6 @@ export default function CreatePropertyListStep2({
               <label className="text-sm text-[#131517] font-semibold">
                 {t.agentFee}
               </label>
-
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
-                </span>
-
-                <Switch
-                  checked={form.financialVisibility?.agentFee}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
-                      financialVisibility: {
-                        ...p.financialVisibility,
-                        agentFee: val,
-                      },
-                    }))
-                  }
-                />
-              </div>
             </div>
             <input
               type="number"
@@ -919,7 +900,7 @@ export default function CreatePropertyListStep2({
 
           {/* Contract Length */}
           <div className="flex flex-col w-full gap-1">
-            {/* ✅ Top Row: Label + Hide Public + Switch */}
+            {/* ✅ Top Row: Label + Public + Switch */}
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm text-[#131517] font-semibold">
                 {t.contractLength}
@@ -927,7 +908,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.contractLength}
@@ -962,7 +943,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.deposit}
@@ -1023,7 +1004,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}
@@ -1081,24 +1062,6 @@ export default function CreatePropertyListStep2({
               <label className="text-sm text-[#131517] font-semibold">
                 {t.agentFee}
               </label>
-
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
-                </span>
-                <Switch
-                  checked={form.financialVisibility?.agentFee}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
-                      financialVisibility: {
-                        ...p.financialVisibility,
-                        agentFee: val,
-                      },
-                    }))
-                  }
-                />
-              </div>
             </div>
             <input
               type="number"
@@ -1218,7 +1181,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.checkIn}
@@ -1251,7 +1214,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.checkOut}
@@ -1285,7 +1248,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
 
                 <Switch
@@ -1346,7 +1309,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide Public" : "Ẩn công khai"}
+                  {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.maintenanceFeeMonthly}
