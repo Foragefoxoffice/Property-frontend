@@ -122,7 +122,7 @@ export default function OwnerModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-start justify-center z-99991 overflow-y-auto py-12 px-4">
+    <div className="fixed inset-0 bg-black/40 flex items-start justify-center z-99 overflow-y-auto py-12 px-4">
       <div className="bg-white rounded-2xl w-full max-w-2xl p-8 shadow-xl relative">
         {/* Close Button */}
         <button
@@ -143,11 +143,10 @@ export default function OwnerModal({ onClose }) {
             <button
               key={lang}
               onClick={() => setActiveLang(lang)}
-              className={`px-5 py-2 text-sm font-semibold cursor-pointer ${
-                activeLang === lang
+              className={`px-5 py-2 text-sm font-semibold cursor-pointer ${activeLang === lang
                   ? "border-b-2 border-[#41398B] text-black"
                   : "text-gray-500"
-              }`}
+                }`}
             >
               {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
             </button>
