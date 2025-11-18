@@ -135,7 +135,7 @@ export default function ManageProperty({
           f.currency &&
           f.currency.name &&
           info.financialDetailsCurrency?.toLowerCase() !==
-            f.currency.name.toLowerCase()
+          f.currency.name.toLowerCase()
         )
           return false;
 
@@ -347,10 +347,10 @@ export default function ManageProperty({
           {filterByTransactionType === "Lease"
             ? t.propertyTitleLease
             : filterByTransactionType === "Sale"
-            ? t.propertyTitleSale
-            : filterByTransactionType === "Home Stay"
-            ? t.propertyTitleHomeStay
-            : ""}
+              ? t.propertyTitleSale
+              : filterByTransactionType === "Home Stay"
+                ? t.propertyTitleHomeStay
+                : ""}
         </h1>
         <div className="flex items-center gap-4">
           <button
@@ -469,9 +469,8 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 transition`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100 transition`}
                   >
                     {/* 🏠 Property Image + Info */}
                     <td className="px-6 py-4">
@@ -495,23 +494,22 @@ export default function ManageProperty({
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${
-                            p.status === "Published"
+                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
                               ? "bg-green-100 text-green-700"
                               : p.status === "Draft"
-                              ? "bg-[#FFF3DE] text-[#FFA600]"
-                              : "bg-gray-200 text-gray-700"
-                          }`}
+                                ? "bg-[#FFF3DE] text-[#FFA600]"
+                                : "bg-gray-200 text-gray-700"
+                            }`}
                         >
                           {p.status === "Published"
                             ? language === "vi"
                               ? "Đã đăng"
                               : "Published"
                             : p.status === "Draft"
-                            ? language === "vi"
-                              ? "Bản nháp"
-                              : "Draft"
-                            : p.status || "—"}
+                              ? language === "vi"
+                                ? "Bản nháp"
+                                : "Draft"
+                              : p.status || "—"}
                         </span>
                       </div>
                     </td>
@@ -546,6 +544,7 @@ export default function ManageProperty({
                       </button>
                       {trashMode ? (
                         <button
+                          style={{ justifyItems: "anchor-center" }}
                           onClick={() => handleRestore(p._id)}
                           className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                         >
@@ -553,6 +552,7 @@ export default function ManageProperty({
                         </button>
                       ) : (
                         <button
+                          style={{ justifyItems: "anchor-center" }}
                           onClick={() => confirmDelete(p._id)}
                           className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
                         >
@@ -614,22 +614,20 @@ export default function ManageProperty({
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className={`p-1 px-2 rounded ${
-                currentPage === 1
+              className={`p-1 px-2 rounded ${currentPage === 1
                   ? "text-gray-400 cursor-not-allowed"
                   : "hover:bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               &lt;
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className={`p-1 px-2 rounded ${
-                currentPage === totalPages
+              className={`p-1 px-2 rounded ${currentPage === totalPages
                   ? "text-gray-400 cursor-not-allowed"
                   : "hover:bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               &gt;
             </button>
@@ -649,8 +647,8 @@ export default function ManageProperty({
                     ? "Bạn có chắc chắn tuyệt đối không?"
                     : "Are you absolutely sure?"
                   : language === "vi"
-                  ? "Chuyển vào thùng rác?"
-                  : "Move to Trash?"}
+                    ? "Chuyển vào thùng rác?"
+                    : "Move to Trash?"}
               </h3>
             </div>
 
@@ -661,8 +659,8 @@ export default function ManageProperty({
                   ? "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn tài khoản của bạn và xóa dữ liệu khỏi máy chủ của chúng tôi."
                   : "This action cannot be undone. This will permanently delete your account and remove your data from our servers."
                 : language === "vi"
-                ? "Bất động sản sẽ được chuyển vào thùng rác và có thể khôi phục lại sau này."
-                : "This property will be moved to trash and can be restored later."}
+                  ? "Bất động sản sẽ được chuyển vào thùng rác và có thể khôi phục lại sau này."
+                  : "This property will be moved to trash and can be restored later."}
             </p>
 
             {/* ✅ Buttons */}
@@ -677,19 +675,18 @@ export default function ManageProperty({
               <button
                 onClick={handleDelete}
                 className={`px-6 py-2 rounded-full text-white 
-            ${
-              trashMode
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-red-600 hover:bg-red-700"
-            }`}
+            ${trashMode
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-red-600 hover:bg-red-700"
+                  }`}
               >
                 {trashMode
                   ? language === "vi"
                     ? "Xóa vĩnh viễn"
                     : "Delete Permanently"
                   : language === "vi"
-                  ? "Chuyển vào thùng rác"
-                  : "Move to Trash"}
+                    ? "Chuyển vào thùng rác"
+                    : "Move to Trash"}
               </button>
             </div>
           </div>

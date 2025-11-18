@@ -63,7 +63,7 @@ function sanitizeObject(input, seen = new WeakSet()) {
       if (key.startsWith("__react") || key.startsWith("_owner")) continue;
       const val = sanitizeObject(input[key], seen);
       if (val !== undefined) result[key] = val;
-    } catch {}
+    } catch { }
   }
   return result;
 }
@@ -875,9 +875,8 @@ export default function CreatePropertyPage({
       await updatePropertyListing(savedId, { status });
       CommonToaster(
         language === "vi"
-          ? `Bất động sản đã được đăng và đánh dấu là ${
-              status === "Published" ? "Đã đăng" : "Bản nháp"
-            }!`
+          ? `Bất động sản đã được đăng và đánh dấu là ${status === "Published" ? "Đã đăng" : "Bản nháp"
+          }!`
           : `Property Posted and marked as ${status}!`,
         "success"
       );
