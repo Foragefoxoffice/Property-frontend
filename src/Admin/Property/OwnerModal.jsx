@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Upload, X, CirclePlus } from "lucide-react";
+import { X, CirclePlus } from "lucide-react";
 import { useLanguage } from "../../Language/LanguageContext";
-import { translations } from "../../Language/translations";
 import { createOwner } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { Select } from "antd";
 
+/* ======================================================
+   UI TEXT
+====================================================== */
 const uiText = {
   EN: {
     modalTitle: "New Landlord",
@@ -24,7 +26,7 @@ const uiText = {
     submit: "Add Landlord",
   },
   VI: {
-    modalTitle: "chủ nhà mới",
+    modalTitle: "Chủ nhà mới",
     ownerName: "Tên chủ nhà",
     placeholderOwnerName: "Nhập tên chủ nhà",
     gender: "Giới tính",
@@ -41,33 +43,28 @@ const uiText = {
   },
 };
 
-const CustomSelect = ({ label, value, onChange, options, lang }) => {
-  const { Option } = Select;
+/* ======================================================
+   SIMPLE SELECT COMPONENT
+====================================================== */
+const SimpleSelect = ({ label, value, onChange, options, lang }) => (
+  <div className="flex flex-col">
+    <label className="block text-sm font-medium mb-1 text-gray-700">
+      {label}
+    </label>
 
-  return (
-    <div className="flex flex-col">
-      <label className="block text-sm font-medium mb-1 text-gray-700">
-        {label}
-      </label>
-      <Select
-        allowClear
-        showSearch
-        value={value || undefined}
-        onChange={onChange}
-        className="w-full h-11 custom-select"
-        popupClassName="custom-dropdown"
-        placeholder={lang === "VI" ? "Chọn" : "Select"}
-      >
-        {options.map((opt) => (
-          <Option key={opt.value} value={opt.value}>
-            {opt.label}
-          </Option>
-        ))}
-      </Select>
-    </div>
-  );
-};
+    <Select
+      placeholder={lang === "VI" ? "Chọn" : "Select"}
+      className="w-full h-11"
+      value={value || undefined}
+      onChange={onChange}
+      options={options}
+    />
+  </div>
+);
 
+/* ======================================================
+   MAIN COMPONENT
+====================================================== */
 export default function OwnerModal({ onClose }) {
   const { language } = useLanguage();
 
@@ -88,6 +85,9 @@ export default function OwnerModal({ onClose }) {
     { iconName: "", link_en: "", link_vi: "" },
   ]);
 
+  /* ======================================================
+     SUBMIT
+  ======================================================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -108,7 +108,7 @@ export default function OwnerModal({ onClose }) {
 
     try {
       await createOwner(payload);
-      CommonToaster("New Landlord created successfully", "success");
+      CommonToaster("New Landlord created", "success");
       onClose();
     } catch {
       CommonToaster("Failed to create Landlord", "error");
@@ -121,49 +121,49 @@ export default function OwnerModal({ onClose }) {
     setSocialMedia(next);
   };
 
+  /* ======================================================
+     UI
+  ======================================================= */
   return (
     <div className="fixed inset-0 bg-black/40 flex items-start justify-center z-999 overflow-y-auto py-12 px-4">
       <div className="bg-white rounded-2xl w-full max-w-2xl p-8 shadow-xl relative">
-        {/* Close Button */}
+        {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-white bg-[#41398B] p-2 rounded-full cursor-pointer"
+          className="absolute top-3 right-3 text-white bg-[#41398B] p-2 rounded-full"
         >
           <X size={20} />
         </button>
 
-        {/* Title */}
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">
-          {text.modalTitle}
-        </h2>
+        <h2 className="text-xl font-semibold mb-6">{text.modalTitle}</h2>
 
-        {/* EN/VI Tabs */}
+        {/* Tabs */}
         <div className="flex border-b mb-6">
           {["EN", "VI"].map((lang) => (
             <button
               key={lang}
               onClick={() => setActiveLang(lang)}
-              className={`px-5 py-2 text-sm font-semibold cursor-pointer ${activeLang === lang
+              className={`px-5 py-2 text-sm font-semibold ${
+                activeLang === lang
                   ? "border-b-2 border-[#41398B] text-black"
                   : "text-gray-500"
-                }`}
+              }`}
             >
               {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
             </button>
           ))}
         </div>
 
-        {/* FORM */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          {/* Landlord Name */}
+          {/* Owner Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               {text.ownerName}
             </label>
             <input
               type="text"
-              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm"
               placeholder={text.placeholderOwnerName}
+              className="border border-gray-300 rounded-lg px-3 py-3 w-full"
               value={form[`ownerName_${activeLang.toLowerCase()}`]}
               onChange={(e) =>
                 setForm((p) => ({
@@ -175,7 +175,7 @@ export default function OwnerModal({ onClose }) {
           </div>
 
           {/* Gender */}
-          <CustomSelect
+          <SimpleSelect
             label={text.gender}
             lang={activeLang}
             value={form.gender}
@@ -189,16 +189,16 @@ export default function OwnerModal({ onClose }) {
 
           {/* Phone Numbers */}
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               {text.phone}
             </label>
 
             {phoneRows.map((row, idx) => (
-              <div key={idx} className="flex items-center gap-3 mt-2">
+              <div key={idx} className="flex gap-3 mt-2">
                 <input
                   type="text"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm"
                   placeholder={text.placeholderPhone}
+                  className="border border-gray-300 rounded-lg px-3 py-3 flex-1"
                   value={row.number}
                   onChange={(e) => {
                     const next = [...phoneRows];
@@ -226,18 +226,18 @@ export default function OwnerModal({ onClose }) {
             ))}
           </div>
 
-          {/* Email Addresses */}
+          {/* Email */}
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               {text.email}
             </label>
 
             {emailRows.map((row, idx) => (
-              <div key={idx} className="flex items-center gap-3 mt-2">
+              <div key={idx} className="flex gap-3 mt-2">
                 <input
                   type="email"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm"
                   placeholder={text.placeholderEmail}
+                  className="border border-gray-300 rounded-lg px-3 py-3 flex-1"
                   value={row.email}
                   onChange={(e) => {
                     const next = [...emailRows];
@@ -267,7 +267,7 @@ export default function OwnerModal({ onClose }) {
 
           {/* Social Media */}
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               {text.social}
             </label>
 
@@ -276,16 +276,17 @@ export default function OwnerModal({ onClose }) {
                 <input
                   type="text"
                   placeholder={text.iconPlaceholder}
+                  className="border border-gray-300 rounded-lg px-3 py-3 w-1/2"
                   value={row.iconName}
                   onChange={(e) =>
                     updateSocialRow(idx, "iconName", e.target.value)
                   }
-                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-1/2"
                 />
 
                 <input
                   type="text"
                   placeholder={text.linkPlaceholder}
+                  className="border border-gray-300 rounded-lg px-3 py-3 w-1/2"
                   value={activeLang === "EN" ? row.link_en : row.link_vi}
                   onChange={(e) =>
                     updateSocialRow(
@@ -294,7 +295,6 @@ export default function OwnerModal({ onClose }) {
                       e.target.value
                     )
                   }
-                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-1/2"
                 />
 
                 {idx === socialMedia.length - 1 ? (
@@ -323,12 +323,12 @@ export default function OwnerModal({ onClose }) {
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">
               {text.notes}
             </label>
             <textarea
-              rows="2"
-              className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full resize-none"
+              rows={2}
+              className="border border-gray-300 rounded-lg px-3 py-3 w-full resize-none"
               placeholder={text.placeholderNotes}
               value={form[`ownerNotes_${activeLang.toLowerCase()}`]}
               onChange={(e) =>
@@ -337,7 +337,7 @@ export default function OwnerModal({ onClose }) {
                   [`ownerNotes_${activeLang.toLowerCase()}`]: e.target.value,
                 }))
               }
-            ></textarea>
+            />
           </div>
 
           {/* Submit */}

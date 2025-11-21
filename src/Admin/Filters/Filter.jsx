@@ -155,38 +155,46 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   ======================================================= */
   useEffect(() => {
     const load = async () => {
-      try {
-        const [pRes, zRes, bRes, tRes, fRes, cRes] = await Promise.all([
-          getAllProperties(),
-          getAllZoneSubAreas(),
-          getAllBlocks(),
-          getAllPropertyTypes(),
-          getAllFloorRanges(),
-          getAllCurrencies(),
-        ]);
+  try {
+    const [pRes, zRes, bRes, tRes, fRes, cRes] = await Promise.all([
+      getAllProperties(),
+      getAllZoneSubAreas(),
+      getAllBlocks(),
+      getAllPropertyTypes(),
+      getAllFloorRanges(),
+      getAllCurrencies(),
+    ]);
 
-        const pList = pRes.data?.data || [];
-        const zList = zRes.data?.data || [];
-        const bList = bRes.data?.data || [];
-        const tList = tRes.data?.data || [];
-        const fList = fRes.data?.data || [];
-        const cList = cRes.data?.data || [];
+    const pList = pRes.data?.data || [];
+    const zList = zRes.data?.data || [];
+    const bList = bRes.data?.data || [];
+    const tList = tRes.data?.data || [];
+    const fList = fRes.data?.data || [];
+    const cList = cRes.data?.data || [];
 
-        // store masters
-        setProjectsAll(pList);
-        setZonesAll(zList);
-        setBlocksAll(bList);
+    // master lists
+    setProjectsAll(pList);
+    setZonesAll(zList);
+    setBlocksAll(bList);
+    setPropertyTypes(tList);
+    setFloorRanges(fList);
 
-        setPropertyTypes(tList);
-        setFloorRanges(fList);
-        setCurrencies(cList);
+    // FIXED: currency now matches Select component format
+    setCurrencies(
+      cList.map((c) => ({
+        id: c._id,
+        name: c.currencyName, 
+        code: c.currencyCode,
+        symbol: c.currencySymbol,
+      }))
+    );
 
-        // initial visible projects
-        setProjects(pList);
-      } catch (err) {
-        console.error("Filter dropdown load error:", err);
-      }
-    };
+    setProjects(pList);
+  } catch (err) {
+    console.error("Filter dropdown load error:", err);
+  }
+};
+
 
     load();
   }, []);

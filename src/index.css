@@ -276,3 +276,7 @@ body {
     opacity: 1;
   }
 }
+
+.custom-select, .ant-select-selector {
+  pointer-events: auto !important;
+}
