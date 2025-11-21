@@ -475,29 +475,53 @@ export default function ZoneSubAreaPage() {
                 <>
                   <div>
                     <label>Project / Community</label>
-                    <AntdSelect
-                      style={{ marginTop: 7 }}
-                      showSearch
-                      allowClear
-                      placeholder={
-                        isVI
-                          ? "Chọn dự án / cộng đồng"
-                          : "Select Project / Community"
-                      }
-                      value={form.property || undefined}
-                      onChange={(value) =>
-                        setForm({ ...form, property: value })
-                      }
-                      optionFilterProp="children"
-                      className="w-full custom-select focus:ring-2 focus:ring-gray-300"
-                      popupClassName="custom-dropdown"
-                    >
-                      {properties.map((p) => (
-                        <AntdSelect.Option key={p._id} value={p._id}>
-                          {isVI ? p.name?.vi : p.name?.en}
-                        </AntdSelect.Option>
-                      ))}
-                    </AntdSelect>
+                  {/* PROJECT SELECT (Parent) */}
+<AntdSelect
+  showSearch
+  allowClear
+  labelInValue
+  placeholder={
+    isVI ? "Chọn dự án / cộng đồng" : "Select Project / Community"
+  }
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
+
+  /* EDIT MODE: match by NAME not ID */
+  value={
+    form.property
+      ? {
+          value: JSON.stringify(form.property),
+          label: form.property[language] || "",
+        }
+      : undefined
+  }
+
+  onChange={(opt) => {
+    const obj = JSON.parse(opt.value); // {en,vi}
+
+    // find full property to get ID
+    const selectedProject = properties.find(
+      (p) => p.name.en === obj.en
+    );
+
+    setForm((prev) => ({
+      ...prev,
+      property: obj,
+      propertyId: selectedProject?._id || "",
+    }));
+  }}
+>
+  {properties.map((p) => (
+    <AntdSelect.Option
+      key={p._id}
+      value={JSON.stringify({ en: p.name.en, vi: p.name.vi })}
+      label={p.name[language]}
+    >
+      {p.name[language]}
+    </AntdSelect.Option>
+  ))}
+</AntdSelect>
+
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">

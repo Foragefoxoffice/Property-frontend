@@ -249,6 +249,7 @@ useEffect(() => {
       setLoadingSingle(true);
       const res = await getSingleProperty(id);
       const full = res.data.data;
+      console.log("full data",full)
       setPropertyData(mapApiToForm(full));
     } catch (err) {
       console.log("❌ Single property load error:", err);

@@ -49,6 +49,7 @@ export default function ManageProperty({
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
+  
 
   // Helper: fetch page from backend
   const fetchProperties = async () => {

@@ -79,16 +79,19 @@ export default function BlockPage() {
     fetchBlocks();
   }, []);
 
-  const handlePropertySelect = async (propertyId) => {
-    setForm({ ...form, property: propertyId, zone: "" });
+ const handlePropertySelect = (propertyId) => {
+  const selectedProperty = properties.find(p => p._id === propertyId);
 
-    try {
-      const zoneRes = await getAllZoneSubAreas({ property: propertyId });
-      setZones(zoneRes.data.data || []);
-    } catch (error) {
-      console.log("Zone fetch error:", error);
-    }
-  };
+  setForm({
+    ...form,
+    property: propertyId,
+    zone: ""
+  });
+
+  // ⬇️ Set zones from property.zones
+  setZones(selectedProperty?.zones || []);
+};
+
 
   // ✅ Pagination Calculations
   const totalRows = blocks.length;
@@ -154,31 +157,27 @@ export default function BlockPage() {
     }
   };
 
-  const handleEdit = async (block) => {
-    setEditingBlock(block);
+ const handleEdit = async (block) => {
+  setEditingBlock(block);
 
-    // 1️⃣ Fetch zones first
-    let zoneOptions = [];
-    if (block.property?._id) {
-      const zoneRes = await getAllZoneSubAreas({
-        property: block.property._id,
-      });
-      zoneOptions = zoneRes?.data?.data || [];
-      setZones(zoneOptions);
-    }
+  const selectedProperty = properties.find(
+    p => p._id === block.property?._id
+  );
 
-    // 2️⃣ Now safely set form values
-    setForm({
-      name_en: block.name.en,
-      name_vi: block.name.vi,
-      status: block.status,
-      property: block.property?._id || "",
-      zone: block.zone?._id || "", // ✅ zone will exist now because zones are loaded
-    });
+  // ⬇️ load zones from property.zones
+  setZones(selectedProperty?.zones || []);
 
-    setActiveLang(language === "vi" ? "VI" : "EN");
-    setShowModal(true);
-  };
+  setForm({
+    name_en: block.name.en,
+    name_vi: block.name.vi,
+    status: block.status,
+    property: block.property?._id || "",
+    zone: block.zone?._id || "",
+  });
+
+  setActiveLang(language === "vi" ? "VI" : "EN");
+  setShowModal(true);
+};
 
   // ✅ Delete
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
@@ -535,43 +534,45 @@ export default function BlockPage() {
                 <>
                   <div>
                     <label>Project / Community</label>
-                    <AntdSelect
-                      style={{ marginTop: 7 }}
-                      showSearch
-                      allowClear
-                      placeholder={isVI ? "Chọn dự án" : "Select Project"}
-                      value={form.property || undefined}
-                      onChange={(value) => handlePropertySelect(value)}
-                      className="w-full custom-select"
-                      popupClassName="custom-dropdown"
-                      optionFilterProp="children"
-                    >
-                      {properties.map((p) => (
-                        <AntdSelect.Option key={p._id} value={p._id}>
-                          {isVI ? p.name?.vi : p.name?.en}
-                        </AntdSelect.Option>
-                      ))}
-                    </AntdSelect>
+                  <AntdSelect
+  style={{ marginTop: 7 }}
+  showSearch
+  allowClear
+  placeholder={isVI ? "Chọn dự án" : "Select Project"}
+  value={form.property || undefined}
+  onChange={(value) => handlePropertySelect(value)}
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
+  optionFilterProp="children"
+>
+  {properties.map((p) => (
+    <AntdSelect.Option key={p._id} value={p._id}>
+      {isVI ? p.name?.vi : p.name?.en}
+    </AntdSelect.Option>
+  ))}
+</AntdSelect>
+
                   </div>
                   <div>
                     <label>Area / Zones</label>
-                    <AntdSelect
-                      style={{ marginTop: 7 }}
-                      showSearch
-                      allowClear
-                      placeholder={isVI ? "Chọn khu vực" : "Select Zone"}
-                      value={form.zone || null}
-                      onChange={(value) => setForm({ ...form, zone: value })}
-                      className="w-full custom-select focus:ring-2 focus:ring-gray-300"
-                      popupClassName="custom-dropdown"
-                      optionFilterProp="children"
-                    >
-                      {zones.map((z) => (
-                        <AntdSelect.Option key={z._id} value={z._id}>
-                          {isVI ? z.name?.vi : z.name?.en}
-                        </AntdSelect.Option>
-                      ))}
-                    </AntdSelect>
+                  <AntdSelect
+  style={{ marginTop: 7 }}
+  showSearch
+  allowClear
+  placeholder={isVI ? "Chọn khu vực" : "Select Zone"}
+  value={form.zone || null}
+  onChange={(value) => setForm({ ...form, zone: value })}
+  className="w-full custom-select focus:ring-2 focus:ring-gray-300"
+  popupClassName="custom-dropdown"
+  optionFilterProp="children"
+>
+  {zones.map((z) => (
+    <AntdSelect.Option key={z._id} value={z._id}>
+      {isVI ? z.name?.vi : z.name?.en}
+    </AntdSelect.Option>
+  ))}
+</AntdSelect>
+
                   </div>
 
                   <div>

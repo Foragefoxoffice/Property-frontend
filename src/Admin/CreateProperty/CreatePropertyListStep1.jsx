@@ -393,28 +393,32 @@ export default function CreatePropertyListStep1({
   }, [initialData, dropdowns, lang]);
 
   // ✅ Auto-select default UNIT
-  useEffect(() => {
-    if (!dropdowns?.units?.length) return;
+// Auto-select default UNIT (localized object)
+useEffect(() => {
+  if (!dropdowns?.units?.length) return;
 
-    // Skip if user already has selected a unit (edit mode)
-    if (form.unit) return;
+  // Skip if unit already set (edit mode)
+  if (form.unit && typeof form.unit === "object") return;
 
-    const defUnit = dropdowns.units.find((u) => u.isDefault);
+  const defUnit = dropdowns.units.find((u) => u.isDefault);
+  if (!defUnit) return;
 
-    if (defUnit) {
-      setForm((prev) => ({
-        ...prev,
-        unit: defUnit._id, // store selected unit ID
-      }));
+  const fullObj = {
+    en: defUnit.symbol?.en || "",
+    vi: defUnit.symbol?.vi || "",
+  };
 
-      // also pass update to parent if needed
-      onChange &&
-        onChange({
-          ...form,
-          unit: defUnit._id,
-        });
-    }
-  }, [dropdowns?.units]);
+  setForm((prev) => ({
+    ...prev,
+    unit: fullObj,          // store localized object
+  }));
+
+  onChange &&
+    onChange({
+      ...form,
+      unit: fullObj,
+    });
+}, [dropdowns?.units]);
 
   /* Handlers */
   const handleInputChange = useCallback(
@@ -709,48 +713,69 @@ export default function CreatePropertyListStep1({
   <label className="text-sm text-[#131517] font-semibold mb-2">
     {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
   </label>
+{/* ========================= PROJECT SELECT ========================= */}
 <AntdSelect
   showSearch
   allowClear
   labelInValue
-  placeholder={lang === "en" ? "Search and Select" : "Tìm kiếm và chọn"}
+  placeholder={lang === "en" ? "Select Project" : "Chọn dự án"}
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
 
-  /* ✔️ Selected value (string only) */
   value={
     form.projectName
       ? {
-          value: JSON.stringify(form.projectName),   // store string
-          label: form.projectName[lang] || "",       // visible text
+          value: JSON.stringify(form.projectName),
+          label: form.projectName[lang],
         }
       : undefined
   }
 
-  /* ✔️ When user selects */
-  onChange={(option) => {
-    const obj = JSON.parse(option.value); // restore full {en,vi}
+  onChange={(opt) => {
+    const obj = JSON.parse(opt.value);
+
+    const selectedProject = dropdowns.properties.find(
+      (p) => p.name.en === obj.en
+    );
+
+    const zones = dropdowns.zones.filter(
+      (z) => z.property?._id === selectedProject?._id
+    );
+
+    const firstZone = zones[0] || null;
+
+    const blocks = firstZone
+      ? dropdowns.blocks.filter((b) => b.zone?._id === firstZone._id)
+      : [];
+
+    const firstBlock = blocks[0] || null;
 
     setForm((p) => ({
       ...p,
-      projectName: obj,                 // store full object
+      projectName: obj,
+
+      zoneName: firstZone
+        ? { en: firstZone.name.en, vi: firstZone.name.vi }
+        : null,
+      zoneId: firstZone?._id || "",
+
+      blockName: firstBlock
+        ? { en: firstBlock.name.en, vi: firstBlock.name.vi }
+        : null,
+      blockId: firstBlock?._id || "",
     }));
   }}
-
-  filterOption={(input, option) =>
-    (option?.label ?? "")
-      .toLowerCase()
-      .includes(input.toLowerCase())
-  }
-
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
-
-  /* ✔️ Options list */
-  options={dropdowns.properties.map((p) => ({
-    value: JSON.stringify({ en: p.name.en, vi: p.name.vi }),  // STRING ONLY
-    label: p.name[lang],                                      // TEXT ONLY
-    children: p.name[lang],                                   // TEXT ONLY
-  }))}
-/>
+>
+  {dropdowns.properties.map((p) => (
+    <AntdSelect.Option
+      key={p._id}
+      value={JSON.stringify(p.name)}
+      label={p.name[lang]}
+    >
+      {p.name[lang]}
+    </AntdSelect.Option>
+  ))}
+</AntdSelect>
 
 
 
@@ -789,56 +814,62 @@ export default function CreatePropertyListStep1({
             </div>
 
             {/* ✅ Select dropdown below */}
-       <AntdSelect
+       {/* ========================= ZONE SELECT ========================= */}
+<AntdSelect
   showSearch
   allowClear
   labelInValue
-  placeholder={
-    lang === "en"
-      ? "Type or Select Area / Zone"
-      : "Nhập hoặc chọn khu vực / vùng"
-  }
+  placeholder={lang === "en" ? "Select Zone" : "Chọn khu vực"}
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
+
   value={
-    form.zone
+    form.zoneName
       ? {
-          value: JSON.stringify(form.zone),     // full object stored safely
-          label: form.zone[lang]                // display label
+          value: JSON.stringify(form.zoneName),
+          label: form.zoneName[lang],
         }
       : undefined
   }
-  onChange={(option) => {
-    const obj = JSON.parse(option.value); // restore {en,vi}
+
+  onChange={(opt) => {
+    const obj = JSON.parse(opt.value);
+
+    const selectedZone = dropdowns.zones.find(
+      (z) => z.name.en === obj.en
+    );
+
+    const blocks = dropdowns.blocks.filter(
+      (b) => b.zone?._id === selectedZone?._id
+    );
+
+    const firstBlock = blocks[0] || null;
 
     setForm((p) => ({
       ...p,
-      zone: obj,            // full object
-      zoneName: obj,        // full object
-      zoneId: obj._id || "", // keep id if available
-    }));
-
-    onChange({
-      ...form,
-      zone: obj,
       zoneName: obj,
-      zoneId: obj._id || "",
-    });
+      zoneId: selectedZone?._id || "",
+
+      blockName: firstBlock
+        ? { en: firstBlock.name.en, vi: firstBlock.name.vi }
+        : null,
+      blockId: firstBlock?._id || "",
+    }));
   }}
-  filterOption={(input, option) =>
-    (option?.label ?? "")
-      .toLowerCase()
-      .includes(input.toLowerCase())
-  }
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
-  options={dropdowns.zones.map((z) => ({
-    label: z.name[lang],
-    value: JSON.stringify({
-      _id: z._id,
-      en: z.name.en,
-      vi: z.name.vi,
-    }), // safe string
-  }))}
-/>
+>
+  {dropdowns.zones
+    .filter((z) => z.property?.name?.en === form.projectName?.en)
+    .map((z) => (
+      <AntdSelect.Option
+        key={z._id}
+        value={JSON.stringify(z.name)}
+        label={z.name[lang]}
+      >
+        {z.name[lang]}
+      </AntdSelect.Option>
+    ))}
+</AntdSelect>
+
 
 
           </div>
@@ -868,62 +899,50 @@ export default function CreatePropertyListStep1({
               </div>
             </div>
 
-         <AntdSelect
+      {/* ========================= BLOCK SELECT ========================= */}
+<AntdSelect
   showSearch
   allowClear
   labelInValue
-  placeholder={lang === "en" ? "Select Block" : "Chọn Khối"}
+  placeholder={lang === "en" ? "Select Block" : "Chọn khối"}
   className="w-full custom-select"
   popupClassName="custom-dropdown"
 
-  /* SELECTED VALUE */
   value={
-    form.block
+    form.blockName
       ? {
-          value: JSON.stringify(form.block),        // must be string
-          label: form.block[lang],                  // string label
+          value: JSON.stringify(form.blockName),
+          label: form.blockName[lang],
         }
       : undefined
   }
 
-  /* ON CHANGE */
-  onChange={(option) => {
-    const obj = JSON.parse(option.value); // { en,vi,_id }
+  onChange={(opt) => {
+    const obj = JSON.parse(opt.value);
+
+    const selectedBlock = dropdowns.blocks.find(
+      (b) => b.name.en === obj.en
+    );
 
     setForm((p) => ({
       ...p,
-      blockId: obj._id,
-      block: obj,
-      blockName: { en: obj.en, vi: obj.vi },
-      blockNameText: obj[lang],
+      blockName: obj,
+      blockId: selectedBlock?._id || "",
     }));
-
-    onChange &&
-      onChange({
-        ...form,
-        blockId: obj._id,
-        block: obj,
-        blockName: { en: obj.en, vi: obj.vi },
-      });
   }}
-
-  /* SEARCH */
-  filterOption={(input, option) =>
-    option?.label?.toLowerCase().includes(input.toLowerCase())
-  }
-
-  /* OPTIONS */
-  options={dropdowns.blocks
-    .filter((b) => !form.zoneId || b.zone?._id === form.zoneId) // <-- FIXED
-    .map((b) => ({
-      value: JSON.stringify({
-        _id: b._id,
-        en: b.name.en,
-        vi: b.name.vi,
-      }),
-      label: b.name[lang],   // must be string (NO {en,vi})
-    }))}
-/>
+>
+  {dropdowns.blocks
+    .filter((b) => b.zone?.name?.en === form.zoneName?.en)
+    .map((b) => (
+      <AntdSelect.Option
+        key={b._id}
+        value={JSON.stringify(b.name)}
+        label={b.name[lang]}
+      >
+        {b.name[lang]}
+      </AntdSelect.Option>
+    ))}
+</AntdSelect>
 
           </div>
 

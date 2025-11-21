@@ -174,7 +174,7 @@ export default function CreatePropertyListStep4SEO({
           {labels.metaTitle[activeLang]}
         </label>
         <input
-          placeholder="Auto Generated"
+          placeholder="Type Here"
           className={inputClass}
           value={seo.metaTitle[activeLang]}
           onChange={(e) =>
@@ -234,7 +234,7 @@ export default function CreatePropertyListStep4SEO({
           {labels.slugUrl[activeLang]}
         </label>
         <input
-          placeholder="Auto Generated and Edit"
+          placeholder="Type Here and Edit"
           className={inputClass}
           value={seo.slugUrl[activeLang]}
           onChange={(e) => handleChange("slugUrl", activeLang, e.target.value)}
@@ -247,7 +247,7 @@ export default function CreatePropertyListStep4SEO({
           {labels.canonicalUrl[activeLang]}
         </label>
         <input
-          placeholder="Auto Generated and Edit"
+          placeholder="Type Here and Edit"
           className={inputClass}
           value={seo.canonicalUrl[activeLang]}
           onChange={(e) =>
@@ -310,7 +310,7 @@ export default function CreatePropertyListStep4SEO({
           {labels.ogTitle[activeLang]}
         </label>
         <input
-          placeholder="Auto Generated"
+          placeholder="Type Here"
           className={inputClass}
           value={seo.ogTitle[activeLang]}
           onChange={(e) => handleChange("ogTitle", activeLang, e.target.value)}

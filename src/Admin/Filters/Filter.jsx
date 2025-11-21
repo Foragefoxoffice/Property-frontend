@@ -164,31 +164,61 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   /* ======================================================
        LOAD ALL DROPDOWNS
     ======================================================= */
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        const [p, z, b, t, f, c] = await Promise.all([
-          getAllProperties(),
-          getAllZoneSubAreas(),
-          getAllBlocks(),
-          getAllPropertyTypes(),
-          getAllFloorRanges(),
-          getAllCurrencies(),
-        ]);
+  if (!filters.projectId) {
+    setZones([]);
+    setBlocks([]);
+    update("zoneId", null);
+    update("blockId", null);
+    return;
+  }
 
-        setProjects(p.data?.data || []);
-        setZones(z.data?.data || []);
-        setBlocks(b.data?.data || []);
-        setPropertyTypes(t.data?.data || []);
-        setFloorRanges(f.data?.data || []);
-        setCurrencies(c.data?.data || []);
-      } catch (err) {
-        console.error("Filter dropdown load error:", err);
-      }
-    };
+  const selectedProject = projects.find(p => p._id === filters.projectId.id);
 
-    load();
-  }, []);
+  setZones(selectedProject?.zones || []);
+  setBlocks([]); // reset blocks
+
+  update("zoneId", null);
+  update("blockId", null);
+}, [filters.projectId]);
+
+useEffect(() => {
+  if (!filters.zoneId) {
+    setBlocks([]);
+    update("blockId", null);
+    return;
+  }
+
+  const selectedZone = zones.find(z => z._id === filters.zoneId.id);
+
+  setBlocks(selectedZone?.blocks || []);
+  update("blockId", null);
+}, [filters.zoneId]);
+
+
+useEffect(() => {
+  const load = async () => {
+    try {
+      const [p, t, f, c] = await Promise.all([
+        getAllProperties(),
+        getAllPropertyTypes(),
+        getAllFloorRanges(),
+        getAllCurrencies(),
+      ]);
+
+      setProjects(p.data?.data || []);
+      setPropertyTypes(t.data?.data || []);
+      setFloorRanges(f.data?.data || []);
+      setCurrencies(c.data?.data || []);
+    } catch (err) {
+      console.error("Filter dropdown load error:", err);
+    }
+  };
+
+  load();
+}, []);
+
 
   /* ======================================================
        RENDER
@@ -217,29 +247,31 @@ export default function FiltersPage({ onApply, defaultFilters }) {
 
       <div className="grid grid-cols-3 gap-7">
         <Select
-          label={t[lang].project}
-          name="projectId"
-          value={filters.projectId}
-          onChange={update}
-          options={projects}
-          lang={lang}
-        />
-        <Select
-          label={t[lang].zone}
-          name="zoneId"
-          value={filters.zoneId}
-          onChange={update}
-          options={zones}
-          lang={lang}
-        />
-        <Select
-          label={t[lang].block}
-          name="blockId"
-          value={filters.blockId}
-          onChange={update}
-          options={blocks}
-          lang={lang}
-        />
+  label={t[lang].project}
+  name="projectId"
+  value={filters.projectId}
+  onChange={update}
+  options={projects}
+  lang={lang}
+/>
+
+<Select
+  label={t[lang].zone}
+  name="zoneId"
+  value={filters.zoneId}
+  onChange={update}
+  options={zones}
+  lang={lang}
+/>
+
+<Select
+  label={t[lang].block}
+  name="blockId"
+  value={filters.blockId}
+  onChange={update}
+  options={blocks}
+  lang={lang}
+/>
 
         <Select
           label={t[lang].propertyType}
