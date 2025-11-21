@@ -26,33 +26,27 @@ const Input = ({ label, value, onChange, name, placeholder }) => (
 );
 
 /* ======================================================
-   SELECT WITH EN/VI SUPPORT
+   SELECT WITH EN/VI SUPPORT (Stores {id, name})
+   - value expects { id, name } (or null)
+   - onChange(name, { id, name })
 ====================================================== */
-const Select = ({
-  label,
-  name,
-  value,
-  onChange,
-  options = [],
-  placeholder,
-  lang,
-}) => {
+const Select = ({ label, name, value, onChange, options = [], placeholder, lang }) => {
   const { Option } = AntdSelect;
 
   const getOptionLabel = (opt) => {
+    if (!opt) return "";
+    // opt may be full object from API (has name.en/name.vi) or already a { label, value } object
     if (opt.name) {
-      return lang === "vi"
-        ? opt.name.vi || opt.name.en
-        : opt.name.en || opt.name.vi;
+      return lang === "vi" ? opt.name.vi || opt.name.en : opt.name.en || opt.name.vi;
     }
-    return opt.label || opt.value || "";
+    if (opt.label) return opt.label;
+    if (opt.value) return opt.value;
+    return "";
   };
 
   return (
     <div className="flex flex-col">
-      <label className="text-sm text-[#131517] font-semibold mb-2">
-        {label}
-      </label>
+      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
 
       <AntdSelect
         showSearch
@@ -60,21 +54,19 @@ const Select = ({
         placeholder={placeholder || "Select"}
         value={value?.id || undefined}
         onChange={(val, option) =>
-          onChange(name, { id: val, name: option?.label })
+          onChange(name, { id: val, name: option?.label || "" })
         }
         optionFilterProp="children"
         className="w-full h-12 custom-select"
         popupClassName="custom-dropdown"
       >
         {options.map((opt) => {
-          const label = getOptionLabel(opt);
+          const labelText = getOptionLabel(opt);
+          const key = opt._id || opt.id || labelText || Math.random();
+          const valueId = opt._id || opt.id || opt.value || labelText;
           return (
-            <Option
-              key={opt._id || opt.id}
-              value={opt._id || opt.id}
-              label={label}
-            >
-              {label}
+            <Option key={key} value={valueId} label={labelText}>
+              {labelText}
             </Option>
           );
         })}
@@ -84,7 +76,7 @@ const Select = ({
 };
 
 /* ======================================================
-   LABEL SET
+   LABELS
 ====================================================== */
 const t = {
   en: {
@@ -127,15 +119,20 @@ const t = {
 export default function FiltersPage({ onApply, defaultFilters }) {
   const [lang, setLang] = useState("en");
 
-  // All dropdown datasets
-  const [projects, setProjects] = useState([]);
-  const [zones, setZones] = useState([]);
-  const [blocks, setBlocks] = useState([]);
+  // master lists (full objects)
+  const [projectsAll, setProjectsAll] = useState([]);
+  const [zonesAll, setZonesAll] = useState([]);
+  const [blocksAll, setBlocksAll] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [floorRanges, setFloorRanges] = useState([]);
   const [currencies, setCurrencies] = useState([]);
 
-  // Filter state
+  // visible options (filtered by parent selection)
+  const [projects, setProjects] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [blocks, setBlocks] = useState([]);
+
+  // Filter state (stores { id, name } for selects)
   const [filters, setFilters] = useState({
     projectId: null,
     zoneId: null,
@@ -148,92 +145,193 @@ export default function FiltersPage({ onApply, defaultFilters }) {
     priceTo: "",
   });
 
+  // Generic updater used by Select and Input
   const update = (name, value) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
   /* ======================================================
-       APPLY DEFAULT FILTER VALUES
-    ======================================================= */
+     Load all master dropdowns on mount
+  ======================================================= */
   useEffect(() => {
-    if (defaultFilters) {
-      setFilters(defaultFilters);
-    }
+    const load = async () => {
+      try {
+        const [pRes, zRes, bRes, tRes, fRes, cRes] = await Promise.all([
+          getAllProperties(),
+          getAllZoneSubAreas(),
+          getAllBlocks(),
+          getAllPropertyTypes(),
+          getAllFloorRanges(),
+          getAllCurrencies(),
+        ]);
+
+        const pList = pRes.data?.data || [];
+        const zList = zRes.data?.data || [];
+        const bList = bRes.data?.data || [];
+        const tList = tRes.data?.data || [];
+        const fList = fRes.data?.data || [];
+        const cList = cRes.data?.data || [];
+
+        // store masters
+        setProjectsAll(pList);
+        setZonesAll(zList);
+        setBlocksAll(bList);
+
+        setPropertyTypes(tList);
+        setFloorRanges(fList);
+        setCurrencies(cList);
+
+        // initial visible projects
+        setProjects(pList);
+      } catch (err) {
+        console.error("Filter dropdown load error:", err);
+      }
+    };
+
+    load();
+  }, []);
+
+  /* ======================================================
+     Apply defaultFilters if provided (normalize to {id,name})
+  ======================================================= */
+  useEffect(() => {
+    if (!defaultFilters) return;
+
+    // helper to normalize incoming id or object
+    const normalizeSelect = (key, value) => {
+      if (!value) return null;
+      // if already object with id
+      if (typeof value === "object" && (value.id || value._id)) {
+        return { id: value.id || value._id, name: value.name || "" };
+      }
+      // if string id, try to find name from master lists (after masters loaded)
+      return { id: value, name: "" };
+    };
+
+    setFilters((prev) => ({
+      ...prev,
+      projectId: normalizeSelect("projectId", defaultFilters.projectId),
+      zoneId: normalizeSelect("zoneId", defaultFilters.zoneId),
+      blockId: normalizeSelect("blockId", defaultFilters.blockId),
+      propertyType: normalizeSelect("propertyType", defaultFilters.propertyType),
+      floorRange: normalizeSelect("floorRange", defaultFilters.floorRange),
+      currency: normalizeSelect("currency", defaultFilters.currency),
+      propertyNumber: defaultFilters.propertyNumber || "",
+      priceFrom: defaultFilters.priceFrom || "",
+      priceTo: defaultFilters.priceTo || "",
+    }));
   }, [defaultFilters]);
 
   /* ======================================================
-       LOAD ALL DROPDOWNS
-    ======================================================= */
-
+     Whenever project changes -> update visible zones (no auto-select)
+  ======================================================= */
   useEffect(() => {
-  if (!filters.projectId) {
-    setZones([]);
-    setBlocks([]);
-    update("zoneId", null);
-    update("blockId", null);
-    return;
-  }
-
-  const selectedProject = projects.find(p => p._id === filters.projectId.id);
-
-  setZones(selectedProject?.zones || []);
-  setBlocks([]); // reset blocks
-
-  update("zoneId", null);
-  update("blockId", null);
-}, [filters.projectId]);
-
-useEffect(() => {
-  if (!filters.zoneId) {
-    setBlocks([]);
-    update("blockId", null);
-    return;
-  }
-
-  const selectedZone = zones.find(z => z._id === filters.zoneId.id);
-
-  setBlocks(selectedZone?.blocks || []);
-  update("blockId", null);
-}, [filters.zoneId]);
-
-
-useEffect(() => {
-  const load = async () => {
-    try {
-      const [p, t, f, c] = await Promise.all([
-        getAllProperties(),
-        getAllPropertyTypes(),
-        getAllFloorRanges(),
-        getAllCurrencies(),
-      ]);
-
-      setProjects(p.data?.data || []);
-      setPropertyTypes(t.data?.data || []);
-      setFloorRanges(f.data?.data || []);
-      setCurrencies(c.data?.data || []);
-    } catch (err) {
-      console.error("Filter dropdown load error:", err);
+    const projectId = filters.projectId?.id || null;
+    if (!projectId) {
+      setZones([]);
+      setBlocks([]);
+      // clear dependent selects
+      setFilters((prev) => ({ ...prev, zoneId: null, blockId: null }));
+      return;
     }
-  };
 
-  load();
-}, []);
+    // zones filtered by property reference - note: some zone objects store property as id or object
+    const filteredZones = zonesAll.filter((z) => {
+      // z.property might be id or object
+      if (!z) return false;
+      if (typeof z.property === "string") return z.property === projectId;
+      if (z.property && z.property._id) return z.property._id === projectId;
+      return false;
+    });
 
+    setZones(filteredZones);
+
+    // clear block list when project changes
+    setBlocks([]);
+    setFilters((prev) => ({ ...prev, zoneId: null, blockId: null }));
+  }, [filters.projectId, zonesAll]);
 
   /* ======================================================
-       RENDER
-    ======================================================= */
+     Whenever zone changes -> update visible blocks (no auto-select)
+  ======================================================= */
+  useEffect(() => {
+    const zoneId = filters.zoneId?.id || null;
+    if (!zoneId) {
+      setBlocks([]);
+      setFilters((prev) => ({ ...prev, blockId: null }));
+      return;
+    }
+
+    // filter blocks by block.zone._id or block.zone (string)
+    const filteredBlocks = blocksAll.filter((b) => {
+      if (!b) return false;
+      if (!b.zone) return false;
+      if (typeof b.zone === "string") return b.zone === zoneId;
+      if (b.zone && b.zone._id) return b.zone._id === zoneId;
+      return false;
+    });
+
+    setBlocks(filteredBlocks);
+
+    // clear selected block (no auto-selection)
+    setFilters((prev) => ({ ...prev, blockId: null }));
+  }, [filters.zoneId, blocksAll]);
+
+  /* ======================================================
+     If masters load and defaultFilters were ids only,
+     try to resolve their display names (best-effort)
+  ======================================================= */
+  useEffect(() => {
+    // resolve names when we have masters
+    const resolveName = (selectValue, allList, getNameFn) => {
+      if (!selectValue || !selectValue.id) return selectValue;
+      const found = allList.find((x) => x._id === selectValue.id || x.id === selectValue.id);
+      if (!found) return selectValue;
+      return { id: selectValue.id, name: getNameFn(found) || selectValue.name || "" };
+    };
+
+    setFilters((prev) => {
+      const resolvedProject = resolveName(prev.projectId, projectsAll, (p) => p.name?.[lang] || "");
+      const resolvedZone = resolveName(prev.zoneId, zonesAll, (z) => z.name?.[lang] || "");
+      const resolvedBlock = resolveName(prev.blockId, blocksAll, (b) => b.name?.[lang] || "");
+      return { ...prev, projectId: resolvedProject, zoneId: resolvedZone, blockId: resolvedBlock };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectsAll, zonesAll, blocksAll, lang]);
+
+  /* ======================================================
+     Clear button handler
+  ======================================================= */
+  const handleClear = () => {
+    setFilters({
+      projectId: null,
+      zoneId: null,
+      blockId: null,
+      propertyType: null,
+      propertyNumber: "",
+      floorRange: null,
+      currency: null,
+      priceFrom: "",
+      priceTo: "",
+    });
+    // reset visible lists to initial
+    setProjects(projectsAll);
+    setZones([]);
+    setBlocks([]);
+  };
+
+  /* ======================================================
+     Render
+  ======================================================= */
   return (
     <div className="min-h-screen rounded-2xl p-10">
-      {/* === Language Switch === */}
+      {/* language toggle */}
       <div className="flex mb-6 border-b border-gray-200">
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
             className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
+              lang === lng ? "border-b-2 border-[#41398B] text-black" : "text-gray-500 hover:text-black"
             }`}
             onClick={() => setLang(lng)}
           >
@@ -242,36 +340,35 @@ useEffect(() => {
         ))}
       </div>
 
-      {/* === Property Information === */}
       <h3 className="text-lg font-semibold mb-5">{t[lang].propertyInfo}</h3>
 
       <div className="grid grid-cols-3 gap-7">
         <Select
-  label={t[lang].project}
-  name="projectId"
-  value={filters.projectId}
-  onChange={update}
-  options={projects}
-  lang={lang}
-/>
+          label={t[lang].project}
+          name="projectId"
+          value={filters.projectId}
+          onChange={update}
+          options={projects}
+          lang={lang}
+        />
 
-<Select
-  label={t[lang].zone}
-  name="zoneId"
-  value={filters.zoneId}
-  onChange={update}
-  options={zones}
-  lang={lang}
-/>
+        <Select
+          label={t[lang].zone}
+          name="zoneId"
+          value={filters.zoneId}
+          onChange={update}
+          options={zones}
+          lang={lang}
+        />
 
-<Select
-  label={t[lang].block}
-  name="blockId"
-  value={filters.blockId}
-  onChange={update}
-  options={blocks}
-  lang={lang}
-/>
+        <Select
+          label={t[lang].block}
+          name="blockId"
+          value={filters.blockId}
+          onChange={update}
+          options={blocks}
+          lang={lang}
+        />
 
         <Select
           label={t[lang].propertyType}
@@ -300,7 +397,6 @@ useEffect(() => {
         />
       </div>
 
-      {/* === Price Range === */}
       <h3 className="text-lg font-semibold mt-8 mb-5">{t[lang].priceRange}</h3>
 
       <div className="grid grid-cols-3 gap-7">
@@ -329,31 +425,16 @@ useEffect(() => {
         />
       </div>
 
-      {/* === Buttons === */}
       <div className="flex justify-end gap-4 mt-10">
-        {/* CLEAR FILTERS */}
         <button
-          onClick={() =>
-            setFilters({
-              projectId: null,
-              zoneId: null,
-              blockId: null,
-              propertyType: null,
-              propertyNumber: "",
-              floorRange: null,
-              currency: null,
-              priceFrom: "",
-              priceTo: "",
-            })
-          }
+          onClick={handleClear}
           className="px-6 py-2 rounded-full cursor-pointer border border-gray-400 text-gray-700"
         >
           {t[lang].clear}
         </button>
 
-        {/* APPLY FILTERS */}
         <button
-          onClick={() => onApply(filters)}
+          onClick={() => onApply && onApply(filters)}
           className="px-6 py-2 bg-[#41398B] flex items-center gap-1 hover:bg-[#41398Be3] text-white rounded-full cursor-pointer"
         >
           {t[lang].apply}

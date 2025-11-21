@@ -714,70 +714,52 @@ useEffect(() => {
     {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
   </label>
 {/* ========================= PROJECT SELECT ========================= */}
-<AntdSelect
-  showSearch
-  allowClear
-  labelInValue
-  placeholder={lang === "en" ? "Select Project" : "Chọn dự án"}
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
+ <AntdSelect
+    showSearch
+    allowClear
+    labelInValue
+    placeholder={lang === "en" ? "Select Project" : "Chọn dự án"}
+    className="w-full custom-select"
+    popupClassName="custom-dropdown"
+    optionFilterProp="label"
+    value={
+      form.projectName
+        ? {
+            value: JSON.stringify(form.projectName),
+            label: form.projectName[lang],
+          }
+        : undefined
+    }
+    onChange={(opt) => {
+      const obj = JSON.parse(opt?.value || "{}");
 
-  value={
-    form.projectName
-      ? {
-          value: JSON.stringify(form.projectName),
-          label: form.projectName[lang],
-        }
-      : undefined
-  }
+      const project = dropdowns.properties.find(
+        (p) => p.name.en === obj.en
+      );
 
-  onChange={(opt) => {
-    const obj = JSON.parse(opt.value);
+      setForm((p) => ({
+        ...p,
+        projectName: obj,
+        projectId: project?._id || "",
 
-    const selectedProject = dropdowns.properties.find(
-      (p) => p.name.en === obj.en
-    );
-
-    const zones = dropdowns.zones.filter(
-      (z) => z.property?._id === selectedProject?._id
-    );
-
-    const firstZone = zones[0] || null;
-
-    const blocks = firstZone
-      ? dropdowns.blocks.filter((b) => b.zone?._id === firstZone._id)
-      : [];
-
-    const firstBlock = blocks[0] || null;
-
-    setForm((p) => ({
-      ...p,
-      projectName: obj,
-
-      zoneName: firstZone
-        ? { en: firstZone.name.en, vi: firstZone.name.vi }
-        : null,
-      zoneId: firstZone?._id || "",
-
-      blockName: firstBlock
-        ? { en: firstBlock.name.en, vi: firstBlock.name.vi }
-        : null,
-      blockId: firstBlock?._id || "",
-    }));
-  }}
->
-  {dropdowns.properties.map((p) => (
-    <AntdSelect.Option
-      key={p._id}
-      value={JSON.stringify(p.name)}
-      label={p.name[lang]}
-    >
-      {p.name[lang]}
-    </AntdSelect.Option>
-  ))}
-</AntdSelect>
-
-
+        // ❌ reset zone & block
+        zoneName: null,
+        zoneId: "",
+        blockName: null,
+        blockId: "",
+      }));
+    }}
+  >
+    {dropdowns.properties.map((p) => (
+      <AntdSelect.Option
+        key={p._id}
+        value={JSON.stringify(p.name)}
+        label={p.name[lang]}
+      >
+        {p.name[lang]}
+      </AntdSelect.Option>
+    ))}
+  </AntdSelect>
 
 
 </div>
@@ -815,60 +797,51 @@ useEffect(() => {
 
             {/* ✅ Select dropdown below */}
        {/* ========================= ZONE SELECT ========================= */}
-<AntdSelect
-  showSearch
-  allowClear
-  labelInValue
-  placeholder={lang === "en" ? "Select Zone" : "Chọn khu vực"}
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
+  <AntdSelect
+    showSearch
+    allowClear
+    labelInValue
+    placeholder={lang === "en" ? "Select Zone" : "Chọn khu vực"}
+    className="w-full custom-select"
+    popupClassName="custom-dropdown"
+    optionFilterProp="label"
+    value={
+      form.zoneName
+        ? {
+            value: JSON.stringify(form.zoneName),
+            label: form.zoneName[lang],
+          }
+        : undefined
+    }
+    onChange={(opt) => {
+      const obj = JSON.parse(opt?.value || "{}");
 
-  value={
-    form.zoneName
-      ? {
-          value: JSON.stringify(form.zoneName),
-          label: form.zoneName[lang],
-        }
-      : undefined
-  }
+      const zone = dropdowns.zones.find((z) => z.name.en === obj.en);
 
-  onChange={(opt) => {
-    const obj = JSON.parse(opt.value);
+      setForm((p) => ({
+        ...p,
+        zoneName: obj,
+        zoneId: zone?._id || "",
 
-    const selectedZone = dropdowns.zones.find(
-      (z) => z.name.en === obj.en
-    );
+        // ❌ reset block
+        blockName: null,
+        blockId: "",
+      }));
+    }}
+  >
+    {dropdowns.zones
+      .filter((z) => z.property?._id === form.projectId)
+      .map((z) => (
+        <AntdSelect.Option
+          key={z._id}
+          value={JSON.stringify(z.name)}
+          label={z.name[lang]}
+        >
+          {z.name[lang]}
+        </AntdSelect.Option>
+      ))}
+  </AntdSelect>
 
-    const blocks = dropdowns.blocks.filter(
-      (b) => b.zone?._id === selectedZone?._id
-    );
-
-    const firstBlock = blocks[0] || null;
-
-    setForm((p) => ({
-      ...p,
-      zoneName: obj,
-      zoneId: selectedZone?._id || "",
-
-      blockName: firstBlock
-        ? { en: firstBlock.name.en, vi: firstBlock.name.vi }
-        : null,
-      blockId: firstBlock?._id || "",
-    }));
-  }}
->
-  {dropdowns.zones
-    .filter((z) => z.property?.name?.en === form.projectName?.en)
-    .map((z) => (
-      <AntdSelect.Option
-        key={z._id}
-        value={JSON.stringify(z.name)}
-        label={z.name[lang]}
-      >
-        {z.name[lang]}
-      </AntdSelect.Option>
-    ))}
-</AntdSelect>
 
 
 
@@ -901,48 +874,45 @@ useEffect(() => {
 
       {/* ========================= BLOCK SELECT ========================= */}
 <AntdSelect
-  showSearch
-  allowClear
-  labelInValue
-  placeholder={lang === "en" ? "Select Block" : "Chọn khối"}
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
+    showSearch
+    allowClear
+    labelInValue
+    placeholder={lang === "en" ? "Select Block" : "Chọn khối"}
+    className="w-full custom-select"
+    popupClassName="custom-dropdown"
+    optionFilterProp="label"
+    value={
+      form.blockName
+        ? {
+            value: JSON.stringify(form.blockName),
+            label: form.blockName[lang],
+          }
+        : undefined
+    }
+    onChange={(opt) => {
+      const obj = JSON.parse(opt?.value || "{}");
 
-  value={
-    form.blockName
-      ? {
-          value: JSON.stringify(form.blockName),
-          label: form.blockName[lang],
-        }
-      : undefined
-  }
+      const block = dropdowns.blocks.find((b) => b.name.en === obj.en);
 
-  onChange={(opt) => {
-    const obj = JSON.parse(opt.value);
-
-    const selectedBlock = dropdowns.blocks.find(
-      (b) => b.name.en === obj.en
-    );
-
-    setForm((p) => ({
-      ...p,
-      blockName: obj,
-      blockId: selectedBlock?._id || "",
-    }));
-  }}
->
-  {dropdowns.blocks
-    .filter((b) => b.zone?.name?.en === form.zoneName?.en)
-    .map((b) => (
-      <AntdSelect.Option
-        key={b._id}
-        value={JSON.stringify(b.name)}
-        label={b.name[lang]}
-      >
-        {b.name[lang]}
-      </AntdSelect.Option>
-    ))}
-</AntdSelect>
+      setForm((p) => ({
+        ...p,
+        blockName: obj,
+        blockId: block?._id || "",
+      }));
+    }}
+  >
+    {dropdowns.blocks
+      .filter((b) => b.zone?._id === form.zoneId)
+      .map((b) => (
+        <AntdSelect.Option
+          key={b._id}
+          value={JSON.stringify(b.name)}
+          label={b.name[lang]}
+        >
+          {b.name[lang]}
+        </AntdSelect.Option>
+      ))}
+  </AntdSelect>
 
           </div>
 
