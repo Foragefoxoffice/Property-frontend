@@ -45,6 +45,7 @@ import Staffs from "./Admin/Property/Staffs";
 import StaffView from "./Admin/AddMembers/StaffView";
 
 import TrashPage from "./Admin/Trash/TrashPage";
+import ManageTrashProperty from "./Admin/Property/ManageTrashProperty.jsx"
 import FiltersPage from "./Admin/Filters/Filter.jsx";
 
 createRoot(document.getElementById("root")).render(
@@ -162,7 +163,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="staffs/:id" element={<StaffView />} />
 
           {/* ---------- TRASH ---------- */}
-          <Route path="trash" element={<TrashPage />} />
+          <Route path="trash" element={<ManageTrashProperty />} />
         </Route>
 
         {/* OTHER NON-DASHBOARD PAGES */}

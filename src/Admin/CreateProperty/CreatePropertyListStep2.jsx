@@ -37,6 +37,9 @@ export default function CreatePropertyListStep2({
   dropdownLoading,
   dropdowns = {},
 }) {
+    useEffect(() => {
+      console.log("initialData:", initialData);
+    }, [initialData]);
   const [lang, setLang] = useState("en");
   const {
     currencies = [],
@@ -102,7 +105,7 @@ export default function CreatePropertyListStep2({
     },
   }[lang];
 
-  const transactionType = initialData.transactionType || "Sale";
+  const transactionType = initialData.transactionType?.en || "Sale";
 
   const [form, setForm] = useState({
     currency: initialData.currency || { symbol: "", code: "", name: "" },
@@ -550,10 +553,10 @@ export default function CreatePropertyListStep2({
               {t.price}
             </label>
             <input
-              type="number"
-              placeholder={t.typehere}
-              value={form.price}
-              onChange={(e) => handleChange("price", e.target.value)}
+  type="number"
+  value={form.price}
+  onChange={(e) => handleChange("price", e.target.value)}
+
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -1373,17 +1376,22 @@ export default function CreatePropertyListStep2({
           {lang === "en" ? "Previous" : "Trước"}
         </button>
 
-        <button
-          onClick={() => {
-            onChange &&
-              onChange({
-                ...form,
-                propertyImages: images,
-                propertyVideos: videos,
-                floorPlans,
-              });
-            onNext(form);
-          }}
+      <button
+  onClick={() => {
+    const fullForm = {
+      ...form,
+      price: form.price,                        // <== ENSURE PRICE INCLUDED
+      currency: form.currency,                 // <== ENSURE currency INCLUDED
+      propertyImages: images,
+      propertyVideos: videos,
+      floorPlans: floorPlans,
+    };
+
+    onChange && onChange(fullForm);
+    onNext(fullForm);
+  }}
+
+
           className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full cursor-pointer flex gap-1.5 items-center"
         >
           {lang === "en" ? "Next" : "Tiếp theo"} <ArrowRight size={18} />

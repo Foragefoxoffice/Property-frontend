@@ -425,12 +425,16 @@ export default function CreatePropertyListStep4SEO({
           <ArrowLeft size={18} /> {labels.back[activeLang]}
         </button>
 
-        <button
-          onClick={() => onNext(seo)}
-          className="px-6 py-2 bg-[#41398B] cursor-pointer hover:bg-[#322e7e] text-white rounded-full flex items-center gap-2"
-        >
-          {labels.next[activeLang]} <ArrowRight size={18} />
-        </button>
+       <button
+  onClick={() => {
+    onChange({ seoInformation: seo });  // keep SEO data
+    onNext();  // go to preview
+  }}
+  className="px-6 py-2 bg-[#41398B] cursor-pointer hover:bg-[#322e7e] text-white rounded-full flex items-center gap-2"
+>
+  {labels.next[activeLang]} <ArrowRight size={18} />
+</button>
+
       </div>
     </div>
   );

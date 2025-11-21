@@ -84,13 +84,18 @@ const MediaPreviewModal = ({ url, type, onClose }) => {
   );
 };
 
-export default function CreatePropertyListStep4({
+export default function CreatePropertyPreview({
   savedId,
+  propertyData,     // 🔥 coming from previous steps
+  dropdowns,
   onPublish,
   onPrev,
 }) {
-  const [property, setProperty] = useState(null);
-  const [status, setStatus] = useState("Draft");
+  const [property, setProperty] = useState(propertyData || {});
+  const [status, setStatus] = useState(propertyData?.status || "Draft");
+
+  console.log("💾 PREVIEW RECEIVED DATA:", propertyData);
+
   const { language: lang } = useLanguage();
   const [loading, setLoading] = useState(false);
 
@@ -184,34 +189,6 @@ export default function CreatePropertyListStep4({
     internalNotes: { en: "Internal Notes", vi: "Ghi chú nội bộ" },
   };
 
-  useEffect(() => {
-    async function load() {
-      if (!savedId) return;
-      setLoading(true);
-      try {
-        const [propRes, ownerRes, staffRes] = await Promise.all([
-          getAllPropertyListings(),
-          getAllOwners(),
-          getAllStaffs(),
-        ]);
-
-        const found = propRes.data.data.find((p) => p._id === savedId);
-        if (found) {
-          setProperty(found);
-          setStatus(found.status || "Draft");
-        }
-
-        setOwners(ownerRes.data.data || []);
-        setStaffs(staffRes.data.data || []);
-      } catch (err) {
-        console.error(err);
-        CommonToaster("Failed to load property data", "error");
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, [savedId]);
 
   /* Loader */
   if (loading) return <SkeletonLoader />;
@@ -581,12 +558,13 @@ export default function CreatePropertyListStep4({
           >
             <ArrowLeft size={18} /> {labels.previous[lang]}
           </button>
-          <button
-            onClick={() => onPublish(status)}
-            className="px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer"
-          >
-            {labels.completed[lang]}
-          </button>
+       <button
+  onClick={() => onPublish(status)}   // parent handles final update API
+  className="px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer"
+>
+  {labels.completed[lang]}
+</button>
+
         </div>
       </div>
 

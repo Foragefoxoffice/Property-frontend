@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -57,6 +57,10 @@ export default function CreatePropertyListStep3({
   loading = false,
 }) {
   const [lang, setLang] = useState("en");
+const initialized = useRef(false);
+useEffect(() => {
+  console.log("📌 Owners list:", owners);
+}, [owners]);
 
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [selectedConnect, setSelectedConnect] = useState(null);
@@ -81,50 +85,52 @@ export default function CreatePropertyListStep3({
   });
 
   /* ✅ Sync existing edit data once dropdowns (owners/staffs) arrive */
-  useEffect(() => {
-    if (!initialData) return;
+ useEffect(() => {
+  // Wait until owners OR staffs arrive
+  if (!owners.length && !staffs.length) return;
 
-    const cm = initialData.contactManagement || {};
+  // Prevent looping
+  if (initialized.current) return;
 
-    const updatedForm = {
-      owner: initialData.owner ||
-        cm.contactManagementOwner || { en: "", vi: "" },
-      ownerNotes: initialData.ownerNotes ||
-        cm.contactManagementOwnerNotes || { en: "", vi: "" },
-      consultant: initialData.consultant ||
-        cm.contactManagementConsultant || { en: "", vi: "" },
-      connectingPoint: initialData.connectingPoint ||
-        cm.contactManagementConnectingPoint || { en: "", vi: "" },
-      connectingPointNotes: initialData.connectingPointNotes ||
-        cm.contactManagementConnectingPointNotes || { en: "", vi: "" },
-      internalNotes: initialData.internalNotes ||
-        cm.contactManagementInternalNotes || { en: "", vi: "" },
-      source: initialData.source ||
-        cm.contactManagementSource || { en: "", vi: "" },
-    };
+  initialized.current = true;
 
-    setForm((prev) => ({ ...prev, ...updatedForm }));
+  const cm = initialData.contactManagement || {};
 
-    /* ✅ Auto-select owner if editing */
-    if (owners.length > 0 && updatedForm.owner?.en) {
-      const matchOwner = owners.find(
-        (o) =>
-          o.ownerName?.en === updatedForm.owner.en ||
-          o.ownerName?.vi === updatedForm.owner.vi
-      );
-      if (matchOwner) setSelectedOwner(matchOwner);
-    }
+  const updatedForm = {
+    owner: cm.contactManagementOwner || { en: "", vi: "" },
+    ownerNotes: cm.contactManagementOwnerNotes || { en: "", vi: "" },
+    consultant: cm.contactManagementConsultant || { en: "", vi: "" },
+    connectingPoint: cm.contactManagementConnectingPoint || { en: "", vi: "" },
+    connectingPointNotes: cm.contactManagementConnectingPointNotes || {
+      en: "",
+      vi: "",
+    },
+    internalNotes: cm.contactManagementInternalNotes || { en: "", vi: "" },
+    source: cm.contactManagementSource || { en: "", vi: "" },
+  };
 
-    /* ✅ Auto-select connecting point */
-    if (staffs.length > 0 && updatedForm.connectingPoint?.en) {
-      const matchStaff = staffs.find(
-        (s) =>
-          s.staffsName?.en === updatedForm.connectingPoint.en ||
-          s.staffsName?.vi === updatedForm.connectingPoint.vi
-      );
-      if (matchStaff) setSelectedConnect(matchStaff);
-    }
-  }, [initialData, owners, staffs]);
+  setForm((prev) => ({ ...prev, ...updatedForm }));
+
+  // Pre-select owner 
+  if (updatedForm.owner?.en) {
+    const matchOwner = owners.find(
+      (o) =>
+        o.ownerName?.en === updatedForm.owner.en ||
+        o.ownerName?.vi === updatedForm.owner.vi
+    );
+    setSelectedOwner(matchOwner || null);
+  }
+
+  // Pre-select connecting point 
+  if (updatedForm.connectingPoint?.en) {
+    const matchStaff = staffs.find(
+      (s) =>
+        s.staffsName?.en === updatedForm.connectingPoint.en ||
+        s.staffsName?.vi === updatedForm.connectingPoint.vi
+    );
+    setSelectedConnect(matchStaff || null);
+  }
+}, [owners, staffs, initialData]);
 
   /* ✅ Localized setter */
   const handleLocalizedChange = (lng, field, value) => {
@@ -377,8 +383,9 @@ export default function CreatePropertyListStep3({
               },
             };
 
-            onChange && onChange(payload);
-            onSave && onSave(payload);
+         onChange && onChange(payload);
+onNext && onNext();   // <-- THIS WILL MOVE THE USER TO STEP 4
+
           }}
           className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full items-center flex gap-1 cursor-pointer"
         >

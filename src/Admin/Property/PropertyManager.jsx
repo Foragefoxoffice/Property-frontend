@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ManageProperty from "./ManageProperty";
-import CreatePropertyListStep4 from "../CreateProperty/CreatePropertyListStep4";
+import CreatePropertyPreview from "../CreateProperty/CreatePropertyPreview";
 import CreatePropertyListStep1 from "../CreateProperty/CreatePropertyListStep1";
 
 export default function PropertyManager({
@@ -33,7 +33,7 @@ export default function PropertyManager({
       )}
 
       {activeStep === "view" && (
-        <CreatePropertyListStep4
+        <CreatePropertyPreview
           savedId={selectedPropertyId}
           onPrev={handleBackToList}
           onPublish={() => handleBackToList()}

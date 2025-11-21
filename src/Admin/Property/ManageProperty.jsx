@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Plus,
@@ -10,19 +10,19 @@ import {
   RotateCcw,
 } from "lucide-react";
 import {
-  getAllPropertyListings,
   deletePropertyListing,
   permanentlyDeleteProperty,
   copyPropertyToSale,
   copyPropertyToLease,
   copyPropertyToHomeStay,
+  getPropertiesByTransactionType,
   restoreProperty,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { useNavigate } from "react-router-dom";
-import { Dropdown, Menu } from "antd";
+import { Dropdown } from "antd";
 import { MoreVertical } from "lucide-react";
 import FiltersPage from "../Filters/Filter";
 
@@ -30,41 +30,77 @@ export default function ManageProperty({
   filterByTransactionType,
   trashMode = false,
 }) {
-  const [properties, setProperties] = useState([]);
+  // core states
+  const [properties, setProperties] = useState([]); // current page items from backend
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // backend pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+  const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState(null);
+  const [copyFullLoading, setCopyFullLoading] = useState(false);
+
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
-  const [showFilterPopup, setShowFilterPopup] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState(null);
-  const fetchRef = useRef(false);
-  const [copyFullLoading, setCopyFullLoading] = useState(false);
-  // ✅ Fetch properties
-  useEffect(() => {
-    if (fetchRef.current) return;
-    fetchRef.current = true;
 
-    async function fetchProperties() {
-      try {
-        const res = await getAllPropertyListings();
-        if (res?.data?.success) setProperties(res.data.data || []);
-      } catch (err) {
-        console.error("Error fetching properties:", err);
-      } finally {
-        setLoading(false);
-      }
+  // Helper: fetch page from backend
+  const fetchProperties = async () => {
+    // if no transaction type provided, nothing to fetch (component expects a type)
+    if (!filterByTransactionType) {
+      setProperties([]);
+      setTotalRows(0);
+      setTotalPages(1);
+      setLoading(false);
+      return;
     }
 
-    fetchProperties();
-  }, []);
+    setLoading(true);
+    try {
+      const res = await getPropertiesByTransactionType({
+        type: filterByTransactionType,
+        page: currentPage,
+        limit: rowsPerPage,
+      });
 
-  // ✅ Filter properties
+      if (res?.data?.success) {
+        setProperties(res.data.data || []);
+        setTotalRows(res.data.total || 0);
+        setTotalPages(res.data.totalPages || 1);
+      } else {
+        setProperties([]);
+        setTotalRows(0);
+        setTotalPages(1);
+      }
+    } catch (err) {
+      console.error("Error fetching properties:", err);
+      setProperties([]);
+      setTotalRows(0);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // main effect: re-fetch when transaction type, page, or page size changes
+  useEffect(() => {
+    // reset to first page when transaction type changes
+    setCurrentPage((prev) => (prev === 1 ? 1 : prev)); // keep page unless changed elsewhere
+    fetchProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterByTransactionType, currentPage, rowsPerPage]);
+
+  // client-side filtering / search applied to the current page
   const filteredProperties = useMemo(() => {
-    let list = properties;
+    let list = properties || [];
+
+    // extra guard: if transaction type present, ensure items match (backend should already)
     if (!trashMode && filterByTransactionType) {
       list = list.filter((p) => {
         const type =
@@ -97,23 +133,15 @@ export default function ManageProperty({
           return apiEn.includes(filterName) || apiVi.includes(filterName);
         };
 
-        // PROJECT
         if (!matchTextObj(info.listingInformationProjectCommunity, f.projectId))
           return false;
-
-        // ZONE
         if (!matchTextObj(info.listingInformationZoneSubArea, f.zoneId))
           return false;
-
-        // BLOCK
         if (!matchTextObj(info.listingInformationBlockName, f.blockId))
           return false;
-
-        // PROPERTY TYPE
         if (!matchTextObj(info.listingInformationPropertyType, f.propertyType))
           return false;
 
-        // PROPERTY NUMBER (simple text)
         if (
           f.propertyNumber &&
           !(
@@ -127,21 +155,17 @@ export default function ManageProperty({
         )
           return false;
 
-        // FLOOR RANGE
         if (!matchTextObj(pi.informationFloors, f.floorRange)) return false;
 
-        // CURRENCY
         if (
           f.currency &&
           f.currency.name &&
           info.financialDetailsCurrency?.toLowerCase() !==
-          f.currency.name.toLowerCase()
+            f.currency.name.toLowerCase()
         )
           return false;
 
-        // PRICE RANGE
         const price = Number(info.financialDetailsPrice) || 0;
-
         if (f.priceFrom && price < Number(f.priceFrom)) return false;
         if (f.priceTo && price > Number(f.priceTo)) return false;
 
@@ -149,7 +173,7 @@ export default function ManageProperty({
       });
     }
 
-    // Trash filter + Search
+    // Trash filter + Search (search is applied on current page)
     list = list.filter((p) => {
       if (trashMode && p.status !== "Archived") return false;
       if (!trashMode && p.status === "Archived") return false;
@@ -189,49 +213,46 @@ export default function ManageProperty({
     });
 
     return list;
-  }, [
-    properties,
-    appliedFilters,
-    searchTerm,
-    language,
-    filterByTransactionType,
-  ]);
+  }, [properties, searchTerm, appliedFilters, language, trashMode, filterByTransactionType]);
 
-  const handleRestore = async (id) => {
-    try {
-      await restoreProperty(id);
-      CommonToaster("Property restored", "success");
+  // currentRows = filtered (already representing the backend page after client-side filtering)
+  const currentRows = filteredProperties;
 
-      // Remove from UI
-      setProperties((prev) => prev.filter((p) => p._id !== id));
-    } catch (err) {
-      CommonToaster("Failed to restore property", "error");
-    }
-  };
-
-  // ✅ Pagination logic
-  const totalRows = filteredProperties.length;
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const currentRows = filteredProperties.slice(startIndex, endIndex);
+  // pagination helpers for display
+  const startIndex = totalRows === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
+  const endIndex =
+    totalRows === 0 ? 0 : Math.min((currentPage - 1) * rowsPerPage + currentRows.length, totalRows);
 
   const handleRowsPerPageChange = (e) => {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
 
-  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNextPage = () =>
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
 
-  // ✅ Delete property
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handleRestore = async (id) => {
+    try {
+      await restoreProperty(id);
+      CommonToaster("Property restored", "success");
+      // remove from UI
+      setProperties((prev) => prev.filter((p) => p._id !== id));
+      // optionally adjust totalRows
+      setTotalRows((prev) => Math.max(prev - 1, 0));
+    } catch (err) {
+      CommonToaster("Failed to restore property", "error");
+    }
+  };
+
   const handleDelete = async () => {
     try {
       if (trashMode) {
-        // 🔥 Permanent delete
         await permanentlyDeleteProperty(deleteConfirm.id);
-
         CommonToaster(
           language === "vi"
             ? "Đã xóa vĩnh viễn bất động sản"
@@ -239,23 +260,19 @@ export default function ManageProperty({
           "success"
         );
       } else {
-        // 🗑️ Move to trash
         await deletePropertyListing(deleteConfirm.id);
-
         CommonToaster(
           language === "vi" ? "Đã chuyển vào thùng rác" : "Moved to trash",
           "success"
         );
       }
 
-      // ✅ Remove from UI
       setProperties((prev) => prev.filter((p) => p._id !== deleteConfirm.id));
+      setTotalRows((prev) => Math.max(prev - 1, 0));
     } catch (err) {
       console.error("Error deleting property:", err);
       CommonToaster(
-        language === "vi"
-          ? "Xóa bất động sản thất bại"
-          : "Failed to delete property",
+        language === "vi" ? "Xóa bất động sản thất bại" : "Failed to delete property",
         "error"
       );
     } finally {
@@ -312,6 +329,8 @@ export default function ManageProperty({
         },
       ];
     }
+
+    return [];
   };
 
   const handleCopy = async (id, target) => {
@@ -319,25 +338,25 @@ export default function ManageProperty({
       setCopyFullLoading(true);
 
       let res;
-
       if (target === "Sale") res = await copyPropertyToSale(id);
       if (target === "Lease") res = await copyPropertyToLease(id);
       if (target === "Home Stay") res = await copyPropertyToHomeStay(id);
 
       if (res?.data?.success) {
         CommonToaster("Property copied successfully", "success");
-        setProperties((prev) => [...prev, res.data.data]);
+        // add new item into current page (or you may want to refetch)
+        setProperties((prev) => [res.data.data, ...prev]);
+        setTotalRows((prev) => prev + 1);
       }
     } catch (err) {
       console.error(err);
       CommonToaster("Copy failed", "error");
     } finally {
-      setCopyFullLoading(null);
+      setCopyFullLoading(false);
     }
   };
-  const transactionRoute = filterByTransactionType
-    ?.toLowerCase()
-    ?.replace(" ", "");
+
+  const transactionRoute = filterByTransactionType?.toLowerCase()?.replace(" ", "");
 
   return (
     <div className="min-h-screen px-2 py-2">
@@ -347,11 +366,12 @@ export default function ManageProperty({
           {filterByTransactionType === "Lease"
             ? t.propertyTitleLease
             : filterByTransactionType === "Sale"
-              ? t.propertyTitleSale
-              : filterByTransactionType === "Home Stay"
-                ? t.propertyTitleHomeStay
-                : ""}
+            ? t.propertyTitleSale
+            : filterByTransactionType === "Home Stay"
+            ? t.propertyTitleHomeStay
+            : ""}
         </h1>
+
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowFilterPopup(true)}
@@ -361,13 +381,15 @@ export default function ManageProperty({
             {t.filter}
           </button>
 
-          <button
-            onClick={() => navigate(`/dashboard/${transactionRoute}/create`)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
-          >
-            <Plus className="w-4 h-4" />
-            {t.addProperty}
-          </button>
+          {trashMode ? null : (
+            <button
+              onClick={() => navigate(`/dashboard/${transactionRoute}/create`)}
+              className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
+            >
+              <Plus className="w-4 h-4" />
+              {t.addProperty}
+            </button>
+          )}
         </div>
       </div>
 
@@ -389,7 +411,6 @@ export default function ManageProperty({
       {/* ACTIVE FILTER BADGES + CLEAR BUTTON */}
       {appliedFilters && (
         <div className="flex flex-wrap items-center gap-3 mb-4">
-          {/* BADGES */}
           {Object.entries(appliedFilters).map(([key, val]) =>
             val && (typeof val === "string" ? val : val?.name) ? (
               <span
@@ -409,7 +430,6 @@ export default function ManageProperty({
             ) : null
           )}
 
-          {/* CLEAR ALL */}
           <button
             onClick={() => setAppliedFilters(null)}
             className="ml-2 text-sm underline text-red-600 cursor-pointer"
@@ -427,21 +447,11 @@ export default function ManageProperty({
           <table className="w-full text-sm text-gray-700">
             <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
               <tr>
-                <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.propertyId}
-                </th>
-                <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.propertyNo}
-                </th>
-                <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.propertyType}
-                </th>
-                <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.availabilitystatus}
-                </th>
-                <th className="px-6 py-3 font-medium text-[#111111]">
-                  {t.publishTheWebsite}
-                </th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.propertyId}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.propertyNo}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.propertyType}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.availabilitystatus}</th>
+                <th className="px-6 py-3 font-medium text-[#111111]">{t.publishTheWebsite}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] text-right"></th>
               </tr>
             </thead>
@@ -469,10 +479,8 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100 transition`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition`}
                   >
-                    {/* 🏠 Property Image + Info */}
                     <td className="px-6 py-4">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">
@@ -481,90 +489,66 @@ export default function ManageProperty({
                       </div>
                     </td>
 
-                    {/* 🔹 Transaction Type */}
                     <td className="px-6 py-6 capitalize">{propertyNo}</td>
 
-                    {/* 🔹 Property Type */}
                     <td className="px-6 py-4">{propertyType}</td>
 
-                    {/* 🔹 Block Name */}
                     <td className="px-6 py-4">{blockName}</td>
 
-                    {/* 🔹 Status */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
+                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${
+                            p.status === "Published"
                               ? "bg-green-100 text-green-700"
                               : p.status === "Draft"
-                                ? "bg-[#FFF3DE] text-[#FFA600]"
-                                : "bg-gray-200 text-gray-700"
-                            }`}
+                              ? "bg-[#FFF3DE] text-[#FFA600]"
+                              : "bg-gray-200 text-gray-700"
+                          }`}
                         >
                           {p.status === "Published"
                             ? language === "vi"
                               ? "Đã đăng"
                               : "Published"
                             : p.status === "Draft"
-                              ? language === "vi"
-                                ? "Bản nháp"
-                                : "Draft"
-                              : p.status || "—"}
+                            ? language === "vi"
+                              ? "Bản nháp"
+                              : "Draft"
+                            : p.status || "—"}
                         </span>
                       </div>
                     </td>
 
-                    {/* 🔹 Actions */}
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
                       <button
-                        style={{ justifyItems: "anchor-center" }}
                         onClick={() =>
                           navigate(
                             `/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`
                           )
                         }
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
+                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
                       >
                         <Eye className="w-4 h-4 text-gray-600" />
                       </button>
 
                       <button
-                        onClick={() =>
-                          navigate(
-                            `/dashboard/${transactionRoute}/edit/${p._id}`
-                          )
-                        }
-                        style={{ justifyItems: "anchor-center" }}
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
+                        onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}`)}
+                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
                       >
-                        <Pencil
-                          color="#1d47ffff"
-                          className="w-4 h-4 text-gray-600"
-                        />
+                        <Pencil color="#1d47ffff" className="w-4 h-4 text-gray-600" />
                       </button>
+
                       {trashMode ? (
-                        <button
-                          style={{ justifyItems: "anchor-center" }}
-                          onClick={() => handleRestore(p._id)}
-                          className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
-                        >
+                        <button onClick={() => handleRestore(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
                           <RotateCcw className="w-4 h-4 text-green-600" />
                         </button>
                       ) : (
-                        <button
-                          style={{ justifyItems: "anchor-center" }}
-                          onClick={() => confirmDelete(p._id)}
-                          className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer"
-                        >
+                        <button onClick={() => confirmDelete(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
                           <Trash2 className="w-4 h-4 text-red-500" />
                         </button>
                       )}
 
-                      <Dropdown
-                        trigger={["click"]}
-                        menu={{ items: getCopyMenuItems(p) }}
-                        placement="bottomRight"
-                      >
+                      <Dropdown trigger={["click"]} menu={{ items: getCopyMenuItems(p) }} placement="bottomRight">
                         <button className="p-2 rounded-full hover:bg-gray-200 transition border h-10 w-10">
                           <MoreVertical />
                         </button>
@@ -577,9 +561,7 @@ export default function ManageProperty({
               {currentRows.length === 0 && (
                 <tr>
                   <td colSpan="6" className="text-center py-6 text-gray-500">
-                    {language === "vi"
-                      ? "Không tìm thấy bất động sản"
-                      : "No properties found"}
+                    {language === "vi" ? "Không tìm thấy bất động sản" : "No properties found"}
                   </td>
                 </tr>
               )}
@@ -588,16 +570,12 @@ export default function ManageProperty({
         )}
       </div>
 
-      {/* ✅ Pagination */}
+      {/* Pagination */}
       {!loading && totalRows > 0 && (
         <div className="flex justify-between items-center px-6 py-4 text-sm text-gray-600 border-t bg-gray-50 mt-4 rounded-b-2xl">
           <div className="flex items-center gap-2">
             <span>{t.rowsPerPage}:</span>
-            <select
-              value={rowsPerPage}
-              onChange={handleRowsPerPageChange}
-              className="border rounded-md text-gray-700 focus:outline-none px-2 py-1"
-            >
+            <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="border rounded-md text-gray-700 focus:outline-none px-2 py-1">
               {[5, 10, 20, 25, 50].map((num) => (
                 <option key={num} value={num}>
                   {num}
@@ -608,100 +586,56 @@ export default function ManageProperty({
 
           <div className="flex items-center gap-3">
             <p>
-              {startIndex + 1}-{Math.min(endIndex, totalRows)} {t.of}{" "}
-              {totalRows}
-            </p>
-            <button
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-              className={`p-1 px-2 rounded ${currentPage === 1
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100 text-gray-600"
-                }`}
-            >
+  {totalRows === 0
+    ? `0–0 ${t.of} 0`
+    : `${(currentPage - 1) * rowsPerPage + 1}–${
+        (currentPage - 1) * rowsPerPage + currentRows.length
+      } ${t.of} ${totalRows}`}
+</p>
+
+            <button onClick={handlePrevPage} disabled={currentPage === 1} className={`p-1 px-2 rounded ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}>
               &lt;
             </button>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className={`p-1 px-2 rounded ${currentPage === totalPages
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100 text-gray-600"
-                }`}
-            >
+            <button onClick={handleNextPage} disabled={currentPage === totalPages} className={`p-1 px-2 rounded ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}>
               &gt;
             </button>
           </div>
         </div>
       )}
 
-      {/* ✅ Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal */}
       {deleteConfirm.show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
-            {/* ✅ Title */}
             <div className="flex items-center mb-4">
               <h3 className="text-lg font-semibold text-black-800">
-                {trashMode
-                  ? language === "vi"
-                    ? "Bạn có chắc chắn tuyệt đối không?"
-                    : "Are you absolutely sure?"
-                  : language === "vi"
-                    ? "Chuyển vào thùng rác?"
-                    : "Move to Trash?"}
+                {trashMode ? (language === "vi" ? "Bạn có chắc chắn tuyệt đối không?" : "Are you absolutely sure?") : (language === "vi" ? "Chuyển vào thùng rác?" : "Move to Trash?")}
               </h3>
             </div>
 
-            {/* ✅ Description */}
             <p className="text-gray-600 text-sm mb-6">
-              {trashMode
-                ? language === "vi"
-                  ? "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn tài khoản của bạn và xóa dữ liệu khỏi máy chủ của chúng tôi."
-                  : "This action cannot be undone. This will permanently delete your account and remove your data from our servers."
-                : language === "vi"
-                  ? "Bất động sản sẽ được chuyển vào thùng rác và có thể khôi phục lại sau này."
-                  : "This property will be moved to trash and can be restored later."}
+              {trashMode ? (language === "vi" ? "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn tài khoản của bạn và xóa dữ liệu khỏi máy chủ của chúng tôi." : "This action cannot be undone. This will permanently delete your account and remove your data from our servers.") : (language === "vi" ? "Bất động sản sẽ được chuyển vào thùng rác và có thể khôi phục lại sau này." : "This property will be moved to trash and can be restored later.")}
             </p>
 
-            {/* ✅ Buttons */}
             <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirm({ show: false, id: null })}
-                className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
-              >
+              <button onClick={() => setDeleteConfirm({ show: false, id: null })} className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 cursor-pointer">
                 {language === "vi" ? "Hủy" : "Cancel"}
               </button>
 
-              <button
-                onClick={handleDelete}
-                className={`px-6 py-2 rounded-full text-white 
-            ${trashMode
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-red-600 hover:bg-red-700"
-                  }`}
-              >
-                {trashMode
-                  ? language === "vi"
-                    ? "Xóa vĩnh viễn"
-                    : "Delete Permanently"
-                  : language === "vi"
-                    ? "Chuyển vào thùng rác"
-                    : "Move to Trash"}
+              <button onClick={handleDelete} className={`px-6 py-2 rounded-full text-white  cursor-pointer ${trashMode ? "bg-red-600 hover:bg-red-700" : "bg-red-600 hover:bg-red-700"}`}>
+                {trashMode ? (language === "vi" ? "Xóa vĩnh viễn" : "Delete Permanently") : (language === "vi" ? "Chuyển vào thùng rác" : "Move to Trash")}
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Filters Modal */}
       {showFilterPopup && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-5xl p-6 overflow-y-auto max-h-[90vh]">
-            {/* CLOSE BUTTON */}
             <div className="flex justify-end">
-              <button
-                onClick={() => setShowFilterPopup(false)}
-                className="px-4 py-1 rounded-full cursor-pointer"
-              >
+              <button onClick={() => setShowFilterPopup(false)} className="px-4 py-1 rounded-full cursor-pointer">
                 <X />
               </button>
             </div>
@@ -717,13 +651,13 @@ export default function ManageProperty({
           </div>
         </div>
       )}
+
+      {/* Copy loading overlay */}
       {copyFullLoading && (
         <div className="fixed inset-0 bg-black/40 z-[9999] flex justify-center items-center">
           <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center gap-4">
             <div className="animate-spin w-12 h-12 border-4 border-[#41398B] border-t-transparent rounded-full"></div>
-            <p className="text-gray-700 text-lg font-medium">
-              Copying Property...
-            </p>
+            <p className="text-gray-700 text-lg font-medium">Copying Property...</p>
           </div>
         </div>
       )}
@@ -731,15 +665,12 @@ export default function ManageProperty({
   );
 }
 
-/* ✅ Skeleton Loader Component */
+/* Skeleton Loader */
 const SkeletonLoader = () => {
   return (
     <div className="animate-pulse divide-y divide-gray-100">
       {[...Array(6)].map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center justify-between px-6 py-4 bg-white"
-        >
+        <div key={i} className="flex items-center justify-between px-6 py-4 bg-white">
           <div className="flex items-center gap-4 w-1/3">
             <div className="w-18 h-14 bg-[#41398b29] rounded-lg" />
             <div className="flex flex-col gap-2 w-full">

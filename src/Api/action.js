@@ -3,7 +3,7 @@ import axios from "axios";
 // ✅ Create axios instance
 const API = axios.create({
   baseURL: (
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1"
+    import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1"
   ).replace(/\/$/, ""),
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
@@ -215,6 +215,8 @@ export const createPropertyListing = (data) => {
 };
 export const getAllPropertyListings = (params) =>
   API.get("/create-property", { params });
+export const getSingleProperty = (id) =>
+  API.get(`/create-property/${id}`);
 export const updatePropertyListing = (id, data) =>
   API.put(`/create-property/${id}`, data);
 export const deletePropertyListing = (id) =>
@@ -237,6 +239,16 @@ export const copyPropertyToHomeStay = (id) =>
   API.post(`/create-property/copy/homestay/${id}`);
 export const restoreProperty = (id) =>
   API.put(`/create-property/restore/${id}`);
+
+
+
+// NEW — Get by Transaction Type + Pagination
+export const getPropertiesByTransactionType = (params) =>
+  API.get("/create-property/transaction", { params });
+
+export const getTrashProperties = (params) =>
+  API.get("/create-property/trash", { params });
+
 
 /* =========================================================
    ✨ EXPORT DEFAULT

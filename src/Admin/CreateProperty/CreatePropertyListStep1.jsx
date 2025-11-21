@@ -33,39 +33,73 @@ const Input = memo(
     </div>
   )
 );
-
 const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
   const { Option } = AntdSelect;
 
+  // Get visible label for UI
+  const getLabel = (opt) => {
+    if (name === "unit") return opt.symbol?.[lang] || "";
+    return opt.name?.[lang] || "";
+  };
+
+  // Full localized object {en,vi}
+  const getValueObject = (opt) => {
+    if (name === "unit") {
+      return { en: opt.symbol?.en || "", vi: opt.symbol?.vi || "" };
+    }
+    return { en: opt.name?.en || "", vi: opt.name?.vi || "" };
+  };
+
   return (
     <div className="flex flex-col">
-      <label className="text-sm text-[#131517] font-semibold mb-2">
-        {label}
-      </label>
+      <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
 
       <AntdSelect
         showSearch
         allowClear
+        labelInValue
         placeholder={lang === "en" ? "Select" : "Chọn"}
-        optionFilterProp="children"
-        value={value || undefined}
-        onChange={(val) => onChange({ target: { name, value: val } })}
-        className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
+        className="w-full h-12 custom-select"
         popupClassName="custom-dropdown"
+
+        /* Selected value MUST be STRING */
+        value={
+          value
+            ? {
+                value: JSON.stringify(value),  // store string
+                label: value[lang] || "",      // visible text
+              }
+            : undefined
+        }
+
+        /* When user selects → restore object */
+        onChange={(option) => {
+          const obj = JSON.parse(option.value); // full {en,vi}
+
+          onChange({
+            target: {
+              name,
+              value: obj,       // store the localized object
+            },
+          });
+        }}
+
+        filterOption={(input, option) =>
+          option?.label?.toLowerCase().includes(input.toLowerCase())
+        }
       >
         {options.map((opt) => {
-          const displayValue =
-            name === "unit"
-              ? lang === "vi"
-                ? opt.symbol?.vi || "—"
-                : opt.symbol?.en || "—"
-              : lang === "vi"
-              ? opt.name?.vi || "Chưa đặt tên"
-              : opt.name?.en || "Unnamed";
+          const fullObj = getValueObject(opt); // {en,vi}
+          const label = getLabel(opt);         // string
 
           return (
-            <Option key={opt._id} value={opt._id}>
-              {displayValue}
+            <Option
+              key={`${name}-${label}`}
+              value={JSON.stringify(fullObj)}   // STRING ONLY
+              label={label}                     // STRING
+              children={label}                  // STRING
+            >
+              {label}
             </Option>
           );
         })}
@@ -200,6 +234,9 @@ export default function CreatePropertyListStep1({
   defaultTransactionType,
   dropdowns, // ✅ Correct
 }) {
+  useEffect(() => {
+    console.log("initialData:", initialData);
+  }, [initialData]);
   const [lang, setLang] = useState("en");
   const getToday = () => new Date().toISOString().split("T")[0];
   const [form, setForm] = useState({
@@ -247,6 +284,8 @@ export default function CreatePropertyListStep1({
     descriptionVisibility: initialData.descriptionVisibility || false,
     propertyUtilityVisibility: initialData.propertyUtilityVisibility || false,
   });
+
+  console.log("form", form)
 
   // ✅ Auto-generate ID when transactionType changes
   useEffect(() => {
@@ -615,16 +654,46 @@ export default function CreatePropertyListStep1({
         <h2 className="text-lg font-semibold mb-8">{t.listingInfo}</h2>
         <div className="grid grid-cols-3 gap-7">
           <div style={{ pointerEvents: "none" }}>
-            <Input
-              label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
-              name="transactionType"
-              value={form.transactionType}
-              onChange={handleInputChange}
-              placeholder={
-                lang === "en" ? "Enter Transaction Type" : "Nhập loại giao dịch"
-              }
-              disabled={!!defaultTransactionType}
-            />
+      <Input
+  label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
+  name="transactionType"
+  value={
+    typeof form.transactionType === "object"
+      ? form.transactionType?.[lang] || ""
+      : form.transactionType || ""
+  }
+  onChange={(e) => {
+    const val = e.target.value;
+
+    setForm((prev) => {
+      // If currently storing object { en, vi }
+      if (typeof prev.transactionType === "object") {
+        return {
+          ...prev,
+          transactionType: {
+            ...prev.transactionType,
+            [lang]: val,
+          },
+        };
+      }
+
+      // If currently storing a string → convert to object
+      return {
+        ...prev,
+        transactionType: {
+          en: lang === "en" ? val : prev.transactionType || "",
+          vi: lang === "vi" ? val : prev.transactionType || "",
+        },
+      };
+    });
+  }}
+  placeholder={
+    lang === "en" ? "Enter Transaction Type" : "Nhập loại giao dịch"
+  }
+  disabled={!!defaultTransactionType}
+/>
+
+
           </div>
 
           <div style={{ pointerEvents: "none" }}>
@@ -636,36 +705,58 @@ export default function CreatePropertyListStep1({
             />
           </div>
 
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
-            </label>
-            <AntdSelect
-              showSearch
-              allowClear
-              placeholder={
-                lang === "en" ? "Search and Select" : "Tìm kiếm và chọn"
-              }
-              optionFilterProp="children"
-              value={form.projectId || undefined}
-              onChange={(val, option) =>
-                syncLinkedFields("projectId", val, option?.children)
-              }
-              filterOption={(input, option) =>
-                (option?.children ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              className="w-full custom-select focus:ring-2 focus:ring-gray-300"
-              popupClassName="custom-dropdown"
-            >
-              {dropdowns.properties?.map((project) => (
-                <Option key={project._id} value={project._id}>
-                  {lang === "vi" ? project.name?.vi : project.name?.en}
-                </Option>
-              ))}
-            </AntdSelect>
-          </div>
+       <div className="flex flex-col">
+  <label className="text-sm text-[#131517] font-semibold mb-2">
+    {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
+  </label>
+<AntdSelect
+  showSearch
+  allowClear
+  labelInValue
+  placeholder={lang === "en" ? "Search and Select" : "Tìm kiếm và chọn"}
+
+  /* ✔️ Selected value (string only) */
+  value={
+    form.projectName
+      ? {
+          value: JSON.stringify(form.projectName),   // store string
+          label: form.projectName[lang] || "",       // visible text
+        }
+      : undefined
+  }
+
+  /* ✔️ When user selects */
+  onChange={(option) => {
+    const obj = JSON.parse(option.value); // restore full {en,vi}
+
+    setForm((p) => ({
+      ...p,
+      projectName: obj,                 // store full object
+    }));
+  }}
+
+  filterOption={(input, option) =>
+    (option?.label ?? "")
+      .toLowerCase()
+      .includes(input.toLowerCase())
+  }
+
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
+
+  /* ✔️ Options list */
+  options={dropdowns.properties.map((p) => ({
+    value: JSON.stringify({ en: p.name.en, vi: p.name.vi }),  // STRING ONLY
+    label: p.name[lang],                                      // TEXT ONLY
+    children: p.name[lang],                                   // TEXT ONLY
+  }))}
+/>
+
+
+
+
+</div>
+
 
           <div className="flex flex-col w-full gap-1">
             {/* ✅ Top Row: Label + Switch */}
@@ -698,52 +789,58 @@ export default function CreatePropertyListStep1({
             </div>
 
             {/* ✅ Select dropdown below */}
-            <AntdSelect
-              showSearch
-              allowClear
-              labelInValue
-              placeholder={
-                lang === "en"
-                  ? "Type or Select Area / Zone"
-                  : "Nhập hoặc chọn khu vực / vùng"
-              }
-              value={
-                form.zoneId
-                  ? { value: form.zoneId, label: form.zoneName || "" }
-                  : undefined
-              }
-              onChange={(val) => {
-                setForm((p) => ({
-                  ...p,
-                  zoneId: val.value,
-                  zoneName: val.label,
-                  zone: { en: val.label, vi: val.label },
-                }));
+       <AntdSelect
+  showSearch
+  allowClear
+  labelInValue
+  placeholder={
+    lang === "en"
+      ? "Type or Select Area / Zone"
+      : "Nhập hoặc chọn khu vực / vùng"
+  }
+  value={
+    form.zone
+      ? {
+          value: JSON.stringify(form.zone),     // full object stored safely
+          label: form.zone[lang]                // display label
+        }
+      : undefined
+  }
+  onChange={(option) => {
+    const obj = JSON.parse(option.value); // restore {en,vi}
 
-                // ✅ keep auto-sync logic
-                syncLinkedFields("zoneId", val.value, val.label);
-              }}
-              filterOption={(input, option) =>
-                option?.label?.toLowerCase().includes(input.toLowerCase())
-              }
-              className="w-full custom-select"
-              popupClassName="custom-dropdown"
-              options={dropdowns.zones
-                .filter(
-                  (z) => !form.projectId || z.property?._id === form.projectId
-                )
-                .map((zone) => ({
-                  label: lang === "vi" ? zone.name.vi : zone.name.en,
-                  value: zone._id,
-                }))}
-              onSearch={(input) =>
-                setForm((prev) => ({
-                  ...prev,
-                  zoneName: input,
-                  zone: { en: input, vi: input },
-                }))
-              }
-            />
+    setForm((p) => ({
+      ...p,
+      zone: obj,            // full object
+      zoneName: obj,        // full object
+      zoneId: obj._id || "", // keep id if available
+    }));
+
+    onChange({
+      ...form,
+      zone: obj,
+      zoneName: obj,
+      zoneId: obj._id || "",
+    });
+  }}
+  filterOption={(input, option) =>
+    (option?.label ?? "")
+      .toLowerCase()
+      .includes(input.toLowerCase())
+  }
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
+  options={dropdowns.zones.map((z) => ({
+    label: z.name[lang],
+    value: JSON.stringify({
+      _id: z._id,
+      en: z.name.en,
+      vi: z.name.vi,
+    }), // safe string
+  }))}
+/>
+
+
           </div>
 
           <div className="flex flex-col w-full gap-1">
@@ -771,48 +868,63 @@ export default function CreatePropertyListStep1({
               </div>
             </div>
 
-            {/* ✅ Drop-down Below */}
-            <AntdSelect
-              showSearch
-              allowClear
-              labelInValue
-              placeholder={lang === "en" ? "Select Block" : "Chọn Khối"}
-              value={
-                form.blockId
-                  ? { value: form.blockId, label: form.blockNameText || "" }
-                  : undefined
-              }
-              onChange={(val) => {
-                setForm((p) => ({
-                  ...p,
-                  blockId: val.value,
-                  blockNameText: val.label,
-                  blockName: { en: val.label, vi: val.label },
-                }));
-                syncLinkedFields("blockId", val.value, val.label);
-              }}
-              onSearch={(input) =>
-                setForm((prev) => ({
-                  ...prev,
-                  blockNameText: input,
-                  blockName: { en: input, vi: input },
-                }))
-              }
-              className="w-full custom-select"
-              popupClassName="custom-dropdown"
-            >
-              {dropdowns.blocks
-                .filter((b) => !form.zoneId || b.zone?._id === form.zoneId)
-                .map((block) => (
-                  <AntdSelect.Option
-                    key={block._id}
-                    value={block._id}
-                    label={lang === "vi" ? block.name.vi : block.name.en}
-                  >
-                    {lang === "vi" ? block.name.vi : block.name.en}
-                  </AntdSelect.Option>
-                ))}
-            </AntdSelect>
+         <AntdSelect
+  showSearch
+  allowClear
+  labelInValue
+  placeholder={lang === "en" ? "Select Block" : "Chọn Khối"}
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
+
+  /* SELECTED VALUE */
+  value={
+    form.block
+      ? {
+          value: JSON.stringify(form.block),        // must be string
+          label: form.block[lang],                  // string label
+        }
+      : undefined
+  }
+
+  /* ON CHANGE */
+  onChange={(option) => {
+    const obj = JSON.parse(option.value); // { en,vi,_id }
+
+    setForm((p) => ({
+      ...p,
+      blockId: obj._id,
+      block: obj,
+      blockName: { en: obj.en, vi: obj.vi },
+      blockNameText: obj[lang],
+    }));
+
+    onChange &&
+      onChange({
+        ...form,
+        blockId: obj._id,
+        block: obj,
+        blockName: { en: obj.en, vi: obj.vi },
+      });
+  }}
+
+  /* SEARCH */
+  filterOption={(input, option) =>
+    option?.label?.toLowerCase().includes(input.toLowerCase())
+  }
+
+  /* OPTIONS */
+  options={dropdowns.blocks
+    .filter((b) => !form.zoneId || b.zone?._id === form.zoneId) // <-- FIXED
+    .map((b) => ({
+      value: JSON.stringify({
+        _id: b._id,
+        en: b.name.en,
+        vi: b.name.vi,
+      }),
+      label: b.name[lang],   // must be string (NO {en,vi})
+    }))}
+/>
+
           </div>
 
           <div className="flex flex-col w-full">
@@ -1103,43 +1215,54 @@ export default function CreatePropertyListStep1({
 
             {/* ✅ Floor Range Select Below */}
             <AntdSelect
-              showSearch
-              allowClear
-              placeholder={
-                lang === "en" ? "Select Floor Range" : "Chọn phạm vi tầng"
-              }
-              value={
-                form.floors
-                  ? lang === "vi"
-                    ? form.floors.vi
-                    : form.floors.en
-                  : undefined
-              }
-              onChange={(value, option) => {
-                const fr = dropdowns.floorRanges.find(
-                  (item) =>
-                    (lang === "vi" ? item.name?.vi : item.name?.en) ===
-                    option.label
-                );
+  showSearch
+  allowClear
+  placeholder={
+    lang === "en" ? "Select Floor Range" : "Chọn phạm vi tầng"
+  }
 
-                if (fr) {
-                  setForm((prev) => ({
-                    ...prev,
-                    floorRangeId: fr._id,
-                    floors: {
-                      en: fr.name?.en || "",
-                      vi: fr.name?.vi || "",
-                    },
-                  }));
-                }
-              }}
-              className="w-full custom-select"
-              popupClassName="custom-dropdown"
-              options={dropdowns.floorRanges.map((fr) => ({
-                label: lang === "vi" ? fr.name?.vi : fr.name?.en,
-                value: lang === "vi" ? fr.name?.vi : fr.name?.en,
-              }))}
-            />
+  /* Selected value (must be string) */
+  value={
+    form.floors
+      ? JSON.stringify(form.floors) // store full {en,vi} as string
+      : undefined
+  }
+
+  /* On change → restore object */
+  onChange={(value) => {
+    const parsed = JSON.parse(value); // restore {en,vi}
+
+    const fr = dropdowns.floorRanges.find(
+      (item) =>
+        item.name.en === parsed.en || item.name.vi === parsed.vi
+    );
+
+    if (fr) {
+      setForm((prev) => ({
+        ...prev,
+        floorRangeId: fr._id,
+        floors: {
+          en: fr.name.en || "",
+          vi: fr.name.vi || "",
+        },
+      }));
+    }
+  }}
+
+  filterOption={(input, option) =>
+    option?.label?.toLowerCase().includes(input.toLowerCase())
+  }
+
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
+
+  /* Options (values must be string only) */
+  options={dropdowns.floorRanges.map((fr) => ({
+    label: lang === "vi" ? fr.name.vi : fr.name.en,
+    value: JSON.stringify({ en: fr.name.en, vi: fr.name.vi }), // safe string
+  }))}
+ />
+
           </div>
 
           <div className="flex flex-col w-full">
@@ -1329,49 +1452,60 @@ export default function CreatePropertyListStep1({
                 {lang === "en" ? "Select Icon" : "Chọn biểu tượng"}
               </label>
 
-              <AntdSelect
-                showSearch
-                allowClear
-                placeholder={
-                  lang === "en"
-                    ? "Search and Select Icon"
-                    : "Tìm và chọn biểu tượng"
-                }
-                value={u.icon || undefined}
-                onChange={(value, option) =>
-                  handleUtilityChange(i, "icon", option?.icon)
-                }
-                className="w-full custom-select"
-                filterOption={false}
-                popupClassName="custom-dropdown"
-              >
-                {filteredIcons.map((item) => (
-                  <Option
-                    key={item.value}
-                    value={item.icon}
-                    icon={item.icon}
-                    label={
-                      <div className="flex items-center gap-2">
-                        <img
-                          src={item.icon}
-                          alt={item.name[lang]}
-                          className="w-5 h-5"
-                        />
-                        <span>{item.name[lang]}</span>
-                      </div>
-                    }
-                  >
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={item.icon}
-                        alt={item.name[lang]}
-                        className="w-5 h-5"
-                      />
-                      <span>{item.name[lang]}</span>
-                    </div>
-                  </Option>
-                ))}
-              </AntdSelect>
+             <AntdSelect
+  showSearch
+  allowClear
+  placeholder={
+    lang === "en"
+      ? "Search and Select Icon"
+      : "Tìm và chọn biểu tượng"
+  }
+  labelInValue
+  className="w-full custom-select"
+  popupClassName="custom-dropdown"
+
+  /* Selected value */
+  value={
+    u.icon
+      ? {
+          value: JSON.stringify({ icon: u.icon, name: u.name }), // string
+          label: u.name?.[lang], // plain string
+        }
+      : undefined
+  }
+
+  /* When user selects */
+  onChange={(option) => {
+    const parsed = JSON.parse(option.value); // restore object
+
+    handleUtilityChange(i, "icon", parsed.icon);
+    handleUtilityChange(i, "name", parsed.name);
+  }}
+
+  filterOption={(input, option) =>
+    (option?.label ?? "")
+      .toLowerCase()
+      .includes(input.toLowerCase())
+  }
+>
+  {filteredIcons.map((item) => (
+    <AntdSelect.Option
+      key={item.value}
+      value={JSON.stringify({
+        icon: item.icon,
+        name: item.name, // full {en,vi}
+      })}          // must be string
+      label={item.name[lang]} // plain string label
+    >
+      {/* React children allowed because label is string */}
+      <div className="flex items-center gap-2">
+        <img src={item.icon} className="w-5 h-5" alt="" />
+        <span>{item.name[lang]}</span>
+      </div>
+    </AntdSelect.Option>
+  ))}
+</AntdSelect>
+
             </div>
 
             {/* ✅ Delete Button */}
@@ -1412,6 +1546,7 @@ export default function CreatePropertyListStep1({
               onChange && onChange(updatedForm);
               onNext({
                 ...updatedForm,
+                title: updatedForm.title,
                 listingInformationVisibility:
                   updatedForm.listingInformationVisibility,
                 propertyInformationVisibility:
