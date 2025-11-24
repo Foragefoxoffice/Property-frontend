@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -57,10 +57,10 @@ export default function CreatePropertyListStep3({
   loading = false,
 }) {
   const [lang, setLang] = useState("en");
-const initialized = useRef(false);
-useEffect(() => {
-  console.log("📌 Owners list:", owners);
-}, [owners]);
+  const initialized = useRef(false);
+  useEffect(() => {
+    console.log("📌 Owners list:", owners);
+  }, [owners]);
 
   const [selectedOwner, setSelectedOwner] = useState(null);
   const [selectedConnect, setSelectedConnect] = useState(null);
@@ -73,9 +73,9 @@ useEffect(() => {
     ownerNotes: initialData.ownerNotes || { en: "", vi: "" },
     consultant: initialData.consultant ||
       initialData.contactManagement?.contactManagementConsultant || {
-        en: "",
-        vi: "",
-      },
+      en: "",
+      vi: "",
+    },
     connectingPoint: initialData.connectingPoint || "",
     connectingPointNotes: initialData.connectingPointNotes || {
       en: "",
@@ -85,59 +85,85 @@ useEffect(() => {
   });
 
   /* ✅ Sync existing edit data once dropdowns (owners/staffs) arrive */
- useEffect(() => {
-  // Wait until owners OR staffs arrive
-  if (!owners.length && !staffs.length) return;
+  useEffect(() => {
+    // Wait until owners OR staffs arrive
+    if (!owners.length && !staffs.length) return;
 
-  // Prevent looping
-  if (initialized.current) return;
+    // Prevent looping
+    if (initialized.current) return;
 
-  initialized.current = true;
+    initialized.current = true;
 
-  const cm = initialData.contactManagement || {};
+    const cm = initialData.contactManagement || {};
 
-  const updatedForm = {
-    owner: cm.contactManagementOwner || { en: "", vi: "" },
-    ownerNotes: cm.contactManagementOwnerNotes || { en: "", vi: "" },
-    consultant: cm.contactManagementConsultant || { en: "", vi: "" },
-    connectingPoint: cm.contactManagementConnectingPoint || { en: "", vi: "" },
-    connectingPointNotes: cm.contactManagementConnectingPointNotes || {
-      en: "",
-      vi: "",
-    },
-    internalNotes: cm.contactManagementInternalNotes || { en: "", vi: "" },
-    source: cm.contactManagementSource || { en: "", vi: "" },
-  };
+    const updatedForm = {
+      owner: cm.contactManagementOwner || { en: "", vi: "" },
+      ownerNotes: cm.contactManagementOwnerNotes || { en: "", vi: "" },
+      consultant: cm.contactManagementConsultant || { en: "", vi: "" },
+      connectingPoint: cm.contactManagementConnectingPoint || { en: "", vi: "" },
+      connectingPointNotes: cm.contactManagementConnectingPointNotes || {
+        en: "",
+        vi: "",
+      },
+      internalNotes: cm.contactManagementInternalNotes || { en: "", vi: "" },
+      source: cm.contactManagementSource || { en: "", vi: "" },
+    };
 
-  setForm((prev) => ({ ...prev, ...updatedForm }));
+    setForm((prev) => ({ ...prev, ...updatedForm }));
 
-  // Pre-select owner 
-  if (updatedForm.owner?.en) {
-    const matchOwner = owners.find(
-      (o) =>
-        o.ownerName?.en === updatedForm.owner.en ||
-        o.ownerName?.vi === updatedForm.owner.vi
-    );
-    setSelectedOwner(matchOwner || null);
-  }
+    // Pre-select owner 
+    if (updatedForm.owner?.en) {
+      const matchOwner = owners.find(
+        (o) =>
+          o.ownerName?.en === updatedForm.owner.en ||
+          o.ownerName?.vi === updatedForm.owner.vi
+      );
+      setSelectedOwner(matchOwner || null);
+    }
 
-  // Pre-select connecting point 
-  if (updatedForm.connectingPoint?.en) {
-    const matchStaff = staffs.find(
-      (s) =>
-        s.staffsName?.en === updatedForm.connectingPoint.en ||
-        s.staffsName?.vi === updatedForm.connectingPoint.vi
-    );
-    setSelectedConnect(matchStaff || null);
-  }
-}, [owners, staffs, initialData]);
+    // Pre-select connecting point 
+    if (updatedForm.connectingPoint?.en) {
+      const matchStaff = staffs.find(
+        (s) =>
+          s.staffsName?.en === updatedForm.connectingPoint.en ||
+          s.staffsName?.vi === updatedForm.connectingPoint.vi
+      );
+      setSelectedConnect(matchStaff || null);
+    }
+  }, [owners, staffs, initialData]);
 
   /* ✅ Localized setter */
   const handleLocalizedChange = (lng, field, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: { ...(prev[field] || { en: "", vi: "" }), [lng]: value },
-    }));
+    const updated = {
+      ...form,
+      [field]: { ...(form[field] || { en: "", vi: "" }), [lng]: value },
+    };
+    setForm(updated);
+    onChange &&
+      onChange({
+        contactManagement: {
+          contactManagementOwner: updated.owner || { en: "", vi: "" },
+          contactManagementOwnerNotes: updated.ownerNotes || {
+            en: "",
+            vi: "",
+          },
+          contactManagementConsultant: updated.consultant || {
+            en: "",
+            vi: "",
+          },
+          contactManagementConnectingPoint: updated.connectingPoint || {
+            en: "",
+            vi: "",
+          },
+          contactManagementConnectingPointNotes:
+            updated.connectingPointNotes || { en: "", vi: "" },
+          contactManagementInternalNotes: updated.internalNotes || {
+            en: "",
+            vi: "",
+          },
+          contactManagementSource: updated.source || { en: "", vi: "" },
+        },
+      });
   };
 
   /* 🌐 Translations */
@@ -183,11 +209,10 @@ useEffect(() => {
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -227,15 +252,33 @@ useEffect(() => {
                     onChange={(ownerId) => {
                       const selected = owners.find((o) => o._id === ownerId);
                       setSelectedOwner(selected);
-                      setForm((prev) => ({
-                        ...prev,
-                        owner: selected
-                          ? {
-                              en: selected.ownerName?.en || "",
-                              vi: selected.ownerName?.vi || "",
-                            }
-                          : { en: "", vi: "" },
-                      }));
+                      const updatedOwner = selected
+                        ? {
+                          en: selected.ownerName?.en || "",
+                          vi: selected.ownerName?.vi || "",
+                        }
+                        : { en: "", vi: "" };
+
+                      const updated = {
+                        ...form,
+                        owner: updatedOwner,
+                      };
+                      setForm(updated);
+
+                      onChange &&
+                        onChange({
+                          contactManagement: {
+                            contactManagementOwner: updated.owner,
+                            contactManagementOwnerNotes: form.ownerNotes,
+                            contactManagementConsultant: form.consultant,
+                            contactManagementConnectingPoint:
+                              form.connectingPoint,
+                            contactManagementConnectingPointNotes:
+                              form.connectingPointNotes,
+                            contactManagementInternalNotes: form.internalNotes,
+                            contactManagementSource: form.source,
+                          },
+                        });
                     }}
                     filterOption={(input, option) =>
                       (option?.label ?? "")
@@ -383,8 +426,8 @@ useEffect(() => {
               },
             };
 
-         onChange && onChange(payload);
-onNext && onNext();   // <-- THIS WILL MOVE THE USER TO STEP 4
+            onChange && onChange(payload);
+            onNext && onNext();   // <-- THIS WILL MOVE THE USER TO STEP 4
 
           }}
           className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full items-center flex gap-1 cursor-pointer"

@@ -66,9 +66,9 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
         value={
           value
             ? {
-                value: JSON.stringify(value),  // store string
-                label: value[lang] || "",      // visible text
-              }
+              value: JSON.stringify(value),  // store string
+              label: value[lang] || "",      // visible text
+            }
             : undefined
         }
 
@@ -165,7 +165,7 @@ const DatePicker = memo(({ label, name, value, onChange }) => {
     onChange({
       target: {
         name,
-        value: selectedDate.toISOString().split("T")[0],
+        value: format(selectedDate, "yyyy-MM-dd"),
       },
     });
   };
@@ -179,9 +179,8 @@ const DatePicker = memo(({ label, name, value, onChange }) => {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={`w-full justify-between text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${
-              !date && "text-muted-foreground"
-            }`}
+            className={`w-full justify-between text-left font-normal h-12 border border-[#B2B2B3] rounded-lg px-3 py-2 ${!date && "text-muted-foreground"
+              }`}
           >
             {date ? format(date, "dd/MM/yyyy") : <span>Select date</span>}
             <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
@@ -346,11 +345,7 @@ export default function CreatePropertyListStep1({
         setForm((p) => ({
           ...p,
           projectId: initialData.projectId,
-          projectName: project
-            ? lang === "vi"
-              ? project.name.vi
-              : project.name.en
-            : "",
+          projectName: project ? project.name : { en: "", vi: "" },
         }));
       }
 
@@ -361,7 +356,7 @@ export default function CreatePropertyListStep1({
         setForm((p) => ({
           ...p,
           zoneId: initialData.zoneId,
-          zoneName: zone ? (lang === "vi" ? zone.name.vi : zone.name.en) : "",
+          zoneName: zone ? zone.name : { en: "", vi: "" },
           zone: {
             en: zone?.name?.en || "",
             vi: zone?.name?.vi || "",
@@ -383,42 +378,39 @@ export default function CreatePropertyListStep1({
               ? block.name.vi
               : block.name.en
             : "",
-          blockName: {
-            en: block?.name?.en || "",
-            vi: block?.name?.vi || "",
-          },
+          blockName: block ? block.name : { en: "", vi: "" },
         }));
       }
     }
   }, [initialData, dropdowns, lang]);
 
   // ✅ Auto-select default UNIT
-// Auto-select default UNIT (localized object)
-useEffect(() => {
-  if (!dropdowns?.units?.length) return;
+  // Auto-select default UNIT (localized object)
+  useEffect(() => {
+    if (!dropdowns?.units?.length) return;
 
-  // Skip if unit already set (edit mode)
-  if (form.unit && typeof form.unit === "object") return;
+    // Skip if unit already set (edit mode)
+    if (form.unit && typeof form.unit === "object") return;
 
-  const defUnit = dropdowns.units.find((u) => u.isDefault);
-  if (!defUnit) return;
+    const defUnit = dropdowns.units.find((u) => u.isDefault);
+    if (!defUnit) return;
 
-  const fullObj = {
-    en: defUnit.symbol?.en || "",
-    vi: defUnit.symbol?.vi || "",
-  };
+    const fullObj = {
+      en: defUnit.symbol?.en || "",
+      vi: defUnit.symbol?.vi || "",
+    };
 
-  setForm((prev) => ({
-    ...prev,
-    unit: fullObj,          // store localized object
-  }));
+    setForm((prev) => ({
+      ...prev,
+      unit: fullObj,          // store localized object
+    }));
 
-  onChange &&
-    onChange({
-      ...form,
-      unit: fullObj,
-    });
-}, [dropdowns?.units]);
+    onChange &&
+      onChange({
+        ...form,
+        unit: fullObj,
+      });
+  }, [dropdowns?.units]);
 
   /* Handlers */
   const handleInputChange = useCallback(
@@ -444,30 +436,39 @@ useEffect(() => {
   );
 
   const handleLocalizedChange = useCallback((langCode, field, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: { ...(prev[field] || { en: "", vi: "" }), [langCode]: value },
-    }));
-  }, []);
+    const updated = {
+      ...form,
+      [field]: { ...(form[field] || { en: "", vi: "" }), [langCode]: value },
+    };
+    setForm(updated);
+    onChange && onChange(updated);
+  }, [form, onChange]);
 
-  const handleUtilityChange = (i, f, v) =>
-    setForm((p) => {
-      const u = [...p.utilities];
-      u[i][f] = v;
-      return { ...p, utilities: u };
-    });
+  const handleUtilityChange = (i, f, v) => {
+    const u = [...form.utilities];
+    u[i][f] = v;
+    const updated = { ...form, utilities: u };
+    setForm(updated);
+    onChange && onChange(updated);
+  };
 
-  const addUtility = () =>
-    setForm((p) => ({
-      ...p,
-      utilities: [...p.utilities, { name: "", icon: "" }],
-    }));
+  const addUtility = () => {
+    const updated = {
+      ...form,
+      utilities: [...form.utilities, { name: "", icon: "" }],
+    };
+    setForm(updated);
+    onChange && onChange(updated);
+  };
 
-  const removeUtility = (i) =>
-    setForm((p) => ({
-      ...p,
-      utilities: p.utilities.filter((_, x) => x !== i),
-    }));
+  const removeUtility = (i) => {
+    const updated = {
+      ...form,
+      utilities: form.utilities.filter((_, x) => x !== i),
+    };
+    setForm(updated);
+    onChange && onChange(updated);
+  };
 
   const t = {
     listingInfo: lang === "en" ? "Listing Information" : "Thông Tin Niêm Yết",
@@ -640,11 +641,10 @@ useEffect(() => {
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -658,44 +658,44 @@ useEffect(() => {
         <h2 className="text-lg font-semibold mb-8">{t.listingInfo}</h2>
         <div className="grid grid-cols-3 gap-7">
           <div style={{ pointerEvents: "none" }}>
-      <Input
-  label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
-  name="transactionType"
-  value={
-    typeof form.transactionType === "object"
-      ? form.transactionType?.[lang] || ""
-      : form.transactionType || ""
-  }
-  onChange={(e) => {
-    const val = e.target.value;
+            <Input
+              label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
+              name="transactionType"
+              value={
+                typeof form.transactionType === "object"
+                  ? form.transactionType?.[lang] || ""
+                  : form.transactionType || ""
+              }
+              onChange={(e) => {
+                const val = e.target.value;
 
-    setForm((prev) => {
-      // If currently storing object { en, vi }
-      if (typeof prev.transactionType === "object") {
-        return {
-          ...prev,
-          transactionType: {
-            ...prev.transactionType,
-            [lang]: val,
-          },
-        };
-      }
+                setForm((prev) => {
+                  // If currently storing object { en, vi }
+                  if (typeof prev.transactionType === "object") {
+                    return {
+                      ...prev,
+                      transactionType: {
+                        ...prev.transactionType,
+                        [lang]: val,
+                      },
+                    };
+                  }
 
-      // If currently storing a string → convert to object
-      return {
-        ...prev,
-        transactionType: {
-          en: lang === "en" ? val : prev.transactionType || "",
-          vi: lang === "vi" ? val : prev.transactionType || "",
-        },
-      };
-    });
-  }}
-  placeholder={
-    lang === "en" ? "Enter Transaction Type" : "Nhập loại giao dịch"
-  }
-  disabled={!!defaultTransactionType}
-/>
+                  // If currently storing a string → convert to object
+                  return {
+                    ...prev,
+                    transactionType: {
+                      en: lang === "en" ? val : prev.transactionType || "",
+                      vi: lang === "vi" ? val : prev.transactionType || "",
+                    },
+                  };
+                });
+              }}
+              placeholder={
+                lang === "en" ? "Enter Transaction Type" : "Nhập loại giao dịch"
+              }
+              disabled={!!defaultTransactionType}
+            />
 
 
           </div>
@@ -709,60 +709,60 @@ useEffect(() => {
             />
           </div>
 
-       <div className="flex flex-col">
-  <label className="text-sm text-[#131517] font-semibold mb-2">
-    {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
-  </label>
-{/* ========================= PROJECT SELECT ========================= */}
- <AntdSelect
-    showSearch
-    allowClear
-    labelInValue
-    placeholder={lang === "en" ? "Select Project" : "Chọn dự án"}
-    className="w-full custom-select"
-    popupClassName="custom-dropdown"
-    optionFilterProp="label"
-    value={
-      form.projectName
-        ? {
-            value: JSON.stringify(form.projectName),
-            label: form.projectName[lang],
-          }
-        : undefined
-    }
-    onChange={(opt) => {
-      const obj = JSON.parse(opt?.value || "{}");
+          <div className="flex flex-col">
+            <label className="text-sm text-[#131517] font-semibold mb-2">
+              {lang === "en" ? "Project / Community" : "Dự án / Khu dân cư"}
+            </label>
+            {/* ========================= PROJECT SELECT ========================= */}
+            <AntdSelect
+              showSearch
+              allowClear
+              labelInValue
+              placeholder={lang === "en" ? "Select Project" : "Chọn dự án"}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              optionFilterProp="label"
+              value={
+                form.projectName
+                  ? {
+                    value: JSON.stringify(form.projectName),
+                    label: form.projectName[lang],
+                  }
+                  : undefined
+              }
+              onChange={(opt) => {
+                const obj = JSON.parse(opt?.value || "{}");
 
-      const project = dropdowns.properties.find(
-        (p) => p.name.en === obj.en
-      );
+                const project = dropdowns.properties.find(
+                  (p) => p.name.en === obj.en
+                );
 
-      setForm((p) => ({
-        ...p,
-        projectName: obj,
-        projectId: project?._id || "",
+                setForm((p) => ({
+                  ...p,
+                  projectName: obj,
+                  projectId: project?._id || "",
 
-        // ❌ reset zone & block
-        zoneName: null,
-        zoneId: "",
-        blockName: null,
-        blockId: "",
-      }));
-    }}
-  >
-    {dropdowns.properties.map((p) => (
-      <AntdSelect.Option
-        key={p._id}
-        value={JSON.stringify(p.name)}
-        label={p.name[lang]}
-      >
-        {p.name[lang]}
-      </AntdSelect.Option>
-    ))}
-  </AntdSelect>
+                  // ❌ reset zone & block
+                  zoneName: null,
+                  zoneId: "",
+                  blockName: null,
+                  blockId: "",
+                }));
+              }}
+            >
+              {dropdowns.properties.map((p) => (
+                <AntdSelect.Option
+                  key={p._id}
+                  value={JSON.stringify(p.name)}
+                  label={p.name[lang]}
+                >
+                  {p.name[lang]}
+                </AntdSelect.Option>
+              ))}
+            </AntdSelect>
 
 
-</div>
+          </div>
 
 
           <div className="flex flex-col w-full gap-1">
@@ -796,51 +796,51 @@ useEffect(() => {
             </div>
 
             {/* ✅ Select dropdown below */}
-       {/* ========================= ZONE SELECT ========================= */}
-  <AntdSelect
-    showSearch
-    allowClear
-    labelInValue
-    placeholder={lang === "en" ? "Select Zone" : "Chọn khu vực"}
-    className="w-full custom-select"
-    popupClassName="custom-dropdown"
-    optionFilterProp="label"
-    value={
-      form.zoneName
-        ? {
-            value: JSON.stringify(form.zoneName),
-            label: form.zoneName[lang],
-          }
-        : undefined
-    }
-    onChange={(opt) => {
-      const obj = JSON.parse(opt?.value || "{}");
+            {/* ========================= ZONE SELECT ========================= */}
+            <AntdSelect
+              showSearch
+              allowClear
+              labelInValue
+              placeholder={lang === "en" ? "Select Zone" : "Chọn khu vực"}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              optionFilterProp="label"
+              value={
+                form.zoneName
+                  ? {
+                    value: JSON.stringify(form.zoneName),
+                    label: form.zoneName[lang],
+                  }
+                  : undefined
+              }
+              onChange={(opt) => {
+                const obj = JSON.parse(opt?.value || "{}");
 
-      const zone = dropdowns.zones.find((z) => z.name.en === obj.en);
+                const zone = dropdowns.zones.find((z) => z.name.en === obj.en);
 
-      setForm((p) => ({
-        ...p,
-        zoneName: obj,
-        zoneId: zone?._id || "",
+                setForm((p) => ({
+                  ...p,
+                  zoneName: obj,
+                  zoneId: zone?._id || "",
 
-        // ❌ reset block
-        blockName: null,
-        blockId: "",
-      }));
-    }}
-  >
-    {dropdowns.zones
-      .filter((z) => z.property?._id === form.projectId)
-      .map((z) => (
-        <AntdSelect.Option
-          key={z._id}
-          value={JSON.stringify(z.name)}
-          label={z.name[lang]}
-        >
-          {z.name[lang]}
-        </AntdSelect.Option>
-      ))}
-  </AntdSelect>
+                  // ❌ reset block
+                  blockName: null,
+                  blockId: "",
+                }));
+              }}
+            >
+              {dropdowns.zones
+                .filter((z) => z.property?._id === form.projectId)
+                .map((z) => (
+                  <AntdSelect.Option
+                    key={z._id}
+                    value={JSON.stringify(z.name)}
+                    label={z.name[lang]}
+                  >
+                    {z.name[lang]}
+                  </AntdSelect.Option>
+                ))}
+            </AntdSelect>
 
 
 
@@ -872,47 +872,47 @@ useEffect(() => {
               </div>
             </div>
 
-      {/* ========================= BLOCK SELECT ========================= */}
-<AntdSelect
-    showSearch
-    allowClear
-    labelInValue
-    placeholder={lang === "en" ? "Select Block" : "Chọn khối"}
-    className="w-full custom-select"
-    popupClassName="custom-dropdown"
-    optionFilterProp="label"
-    value={
-      form.blockName
-        ? {
-            value: JSON.stringify(form.blockName),
-            label: form.blockName[lang],
-          }
-        : undefined
-    }
-    onChange={(opt) => {
-      const obj = JSON.parse(opt?.value || "{}");
+            {/* ========================= BLOCK SELECT ========================= */}
+            <AntdSelect
+              showSearch
+              allowClear
+              labelInValue
+              placeholder={lang === "en" ? "Select Block" : "Chọn khối"}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              optionFilterProp="label"
+              value={
+                form.blockName
+                  ? {
+                    value: JSON.stringify(form.blockName),
+                    label: form.blockName[lang],
+                  }
+                  : undefined
+              }
+              onChange={(opt) => {
+                const obj = JSON.parse(opt?.value || "{}");
 
-      const block = dropdowns.blocks.find((b) => b.name.en === obj.en);
+                const block = dropdowns.blocks.find((b) => b.name.en === obj.en);
 
-      setForm((p) => ({
-        ...p,
-        blockName: obj,
-        blockId: block?._id || "",
-      }));
-    }}
-  >
-    {dropdowns.blocks
-      .filter((b) => b.zone?._id === form.zoneId)
-      .map((b) => (
-        <AntdSelect.Option
-          key={b._id}
-          value={JSON.stringify(b.name)}
-          label={b.name[lang]}
-        >
-          {b.name[lang]}
-        </AntdSelect.Option>
-      ))}
-  </AntdSelect>
+                setForm((p) => ({
+                  ...p,
+                  blockName: obj,
+                  blockId: block?._id || "",
+                }));
+              }}
+            >
+              {dropdowns.blocks
+                .filter((b) => b.zone?._id === form.zoneId)
+                .map((b) => (
+                  <AntdSelect.Option
+                    key={b._id}
+                    value={JSON.stringify(b.name)}
+                    label={b.name[lang]}
+                  >
+                    {b.name[lang]}
+                  </AntdSelect.Option>
+                ))}
+            </AntdSelect>
 
           </div>
 
@@ -1204,53 +1204,53 @@ useEffect(() => {
 
             {/* ✅ Floor Range Select Below */}
             <AntdSelect
-  showSearch
-  allowClear
-  placeholder={
-    lang === "en" ? "Select Floor Range" : "Chọn phạm vi tầng"
-  }
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en" ? "Select Floor Range" : "Chọn phạm vi tầng"
+              }
 
-  /* Selected value (must be string) */
-  value={
-    form.floors
-      ? JSON.stringify(form.floors) // store full {en,vi} as string
-      : undefined
-  }
+              /* Selected value (must be string) */
+              value={
+                form.floors
+                  ? JSON.stringify(form.floors) // store full {en,vi} as string
+                  : undefined
+              }
 
-  /* On change → restore object */
-  onChange={(value) => {
-    const parsed = JSON.parse(value); // restore {en,vi}
+              /* On change → restore object */
+              onChange={(value) => {
+                const parsed = JSON.parse(value); // restore {en,vi}
 
-    const fr = dropdowns.floorRanges.find(
-      (item) =>
-        item.name.en === parsed.en || item.name.vi === parsed.vi
-    );
+                const fr = dropdowns.floorRanges.find(
+                  (item) =>
+                    item.name.en === parsed.en || item.name.vi === parsed.vi
+                );
 
-    if (fr) {
-      setForm((prev) => ({
-        ...prev,
-        floorRangeId: fr._id,
-        floors: {
-          en: fr.name.en || "",
-          vi: fr.name.vi || "",
-        },
-      }));
-    }
-  }}
+                if (fr) {
+                  setForm((prev) => ({
+                    ...prev,
+                    floorRangeId: fr._id,
+                    floors: {
+                      en: fr.name.en || "",
+                      vi: fr.name.vi || "",
+                    },
+                  }));
+                }
+              }}
 
-  filterOption={(input, option) =>
-    option?.label?.toLowerCase().includes(input.toLowerCase())
-  }
+              filterOption={(input, option) =>
+                option?.label?.toLowerCase().includes(input.toLowerCase())
+              }
 
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
 
-  /* Options (values must be string only) */
-  options={dropdowns.floorRanges.map((fr) => ({
-    label: lang === "vi" ? fr.name.vi : fr.name.en,
-    value: JSON.stringify({ en: fr.name.en, vi: fr.name.vi }), // safe string
-  }))}
- />
+              /* Options (values must be string only) */
+              options={dropdowns.floorRanges.map((fr) => ({
+                label: lang === "vi" ? fr.name.vi : fr.name.en,
+                value: JSON.stringify({ en: fr.name.en, vi: fr.name.vi }), // safe string
+              }))}
+            />
 
           </div>
 
@@ -1441,59 +1441,59 @@ useEffect(() => {
                 {lang === "en" ? "Select Icon" : "Chọn biểu tượng"}
               </label>
 
-             <AntdSelect
-  showSearch
-  allowClear
-  placeholder={
-    lang === "en"
-      ? "Search and Select Icon"
-      : "Tìm và chọn biểu tượng"
-  }
-  labelInValue
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
+              <AntdSelect
+                showSearch
+                allowClear
+                placeholder={
+                  lang === "en"
+                    ? "Search and Select Icon"
+                    : "Tìm và chọn biểu tượng"
+                }
+                labelInValue
+                className="w-full custom-select"
+                popupClassName="custom-dropdown"
 
-  /* Selected value */
-  value={
-    u.icon
-      ? {
-          value: JSON.stringify({ icon: u.icon, name: u.name }), // string
-          label: u.name?.[lang], // plain string
-        }
-      : undefined
-  }
+                /* Selected value */
+                value={
+                  u.icon
+                    ? {
+                      value: JSON.stringify({ icon: u.icon, name: u.name }), // string
+                      label: u.name?.[lang], // plain string
+                    }
+                    : undefined
+                }
 
-  /* When user selects */
-  onChange={(option) => {
-    const parsed = JSON.parse(option.value); // restore object
+                /* When user selects */
+                onChange={(option) => {
+                  const parsed = JSON.parse(option.value); // restore object
 
-    handleUtilityChange(i, "icon", parsed.icon);
-    handleUtilityChange(i, "name", parsed.name);
-  }}
+                  handleUtilityChange(i, "icon", parsed.icon);
+                  handleUtilityChange(i, "name", parsed.name);
+                }}
 
-  filterOption={(input, option) =>
-    (option?.label ?? "")
-      .toLowerCase()
-      .includes(input.toLowerCase())
-  }
->
-  {filteredIcons.map((item) => (
-    <AntdSelect.Option
-      key={item.value}
-      value={JSON.stringify({
-        icon: item.icon,
-        name: item.name, // full {en,vi}
-      })}          // must be string
-      label={item.name[lang]} // plain string label
-    >
-      {/* React children allowed because label is string */}
-      <div className="flex items-center gap-2">
-        <img src={item.icon} className="w-5 h-5" alt="" />
-        <span>{item.name[lang]}</span>
-      </div>
-    </AntdSelect.Option>
-  ))}
-</AntdSelect>
+                filterOption={(input, option) =>
+                  (option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              >
+                {filteredIcons.map((item) => (
+                  <AntdSelect.Option
+                    key={item.value}
+                    value={JSON.stringify({
+                      icon: item.icon,
+                      name: item.name, // full {en,vi}
+                    })}          // must be string
+                    label={item.name[lang]} // plain string label
+                  >
+                    {/* React children allowed because label is string */}
+                    <div className="flex items-center gap-2">
+                      <img src={item.icon} className="w-5 h-5" alt="" />
+                      <span>{item.name[lang]}</span>
+                    </div>
+                  </AntdSelect.Option>
+                ))}
+              </AntdSelect>
 
             </div>
 

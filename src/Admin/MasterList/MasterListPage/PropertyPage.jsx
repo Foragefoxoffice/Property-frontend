@@ -136,8 +136,11 @@ export default function PropertyPage() {
       CommonToaster("Deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchProperties();
-    } catch {
-      CommonToaster("Failed to delete property.", "error");
+    } catch (error) {
+      CommonToaster(
+        error.response?.data?.error || "Failed to delete property.",
+        "error"
+      );
     }
   };
 
@@ -148,9 +151,8 @@ export default function PropertyPage() {
       await updateProperty(property._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${
-              newStatus === "Active" ? "hoạt động" : "không hoạt động"
-            }`
+          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
+          }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -193,9 +195,8 @@ export default function PropertyPage() {
 
       {/* Table */}
       <div
-        className={`transition-opacity ${
-          loading ? "opacity-50" : "opacity-100"
-        }`}
+        className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"
+          }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
@@ -228,9 +229,8 @@ export default function PropertyPage() {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -242,11 +242,10 @@ export default function PropertyPage() {
                     {/* ✅ Styled & Translated Status Badge */}
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
-                          row.status === "Active"
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
                             ? "bg-[#E8FFF0] text-[#12B76A]"
                             : "bg-[#FFE8E8] text-[#F04438]"
-                        }`}
+                          }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -292,8 +291,8 @@ export default function PropertyPage() {
                                 ? "Đánh dấu là không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                              ? "Đánh dấu là hoạt động"
-                              : "Mark as Active"}
+                                ? "Đánh dấu là hoạt động"
+                                : "Mark as Active"}
                           </button>
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
@@ -339,9 +338,8 @@ export default function PropertyPage() {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${
-                  isVI ? "trên" : "of"
-                } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
+              } ${totalRows}`}
           </span>
           <div className="flex items-center gap-1">
             <button onClick={goToFirst} disabled={currentPage === 1}>
@@ -411,8 +409,8 @@ export default function PropertyPage() {
                     ? "Edit Project / Community"
                     : "Chỉnh sửa dự án / cộng đồng"
                   : activeLang === "EN"
-                  ? "New Project / Community"
-                  : "Thêm dự án / cộng đồng mới"}
+                    ? "New Project / Community"
+                    : "Thêm dự án / cộng đồng mới"}
               </h2>
               <button
                 onClick={() => {
@@ -429,21 +427,19 @@ export default function PropertyPage() {
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "EN"
+                className={`py-3 font-medium transition-all ${activeLang === "EN"
                     ? "text-black border-b-2 border-[#41398B]"
                     : "text-gray-500 hover:text-black"
-                }`}
+                  }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "VI"
+                className={`py-3 font-medium transition-all ${activeLang === "VI"
                     ? "text-black border-b-2 border-[#41398B]"
                     : "text-gray-500 hover:text-black"
-                }`}
+                  }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -507,8 +503,8 @@ export default function PropertyPage() {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                  ? "Add"
-                  : "Thêm"}
+                    ? "Add"
+                    : "Thêm"}
               </button>
             </div>
           </div>

@@ -151,8 +151,11 @@ export default function ZoneSubAreaPage() {
       CommonToaster("Deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchZones();
-    } catch {
-      CommonToaster("Failed to delete Zone/Sub-area.", "error");
+    } catch (error) {
+      CommonToaster(
+        error.response?.data?.error || "Failed to delete Zone/Sub-area.",
+        "error"
+      );
     }
   };
 
@@ -163,9 +166,8 @@ export default function ZoneSubAreaPage() {
       await updateZoneSubArea(zone._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${
-              newStatus === "Active" ? "hoạt động" : "không hoạt động"
-            }`
+          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
+          }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -207,9 +209,8 @@ export default function ZoneSubAreaPage() {
 
       {/* Table */}
       <div
-        className={`transition-opacity ${
-          loading ? "opacity-50" : "opacity-100"
-        }`}
+        className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"
+          }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
@@ -245,9 +246,8 @@ export default function ZoneSubAreaPage() {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -262,11 +262,10 @@ export default function ZoneSubAreaPage() {
                     {/* ✅ Translated Status */}
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
-                          row.status === "Active"
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
                             ? "bg-[#E8FFF0] text-[#12B76A]"
                             : "bg-[#FFE8E8] text-[#F04438]"
-                        }`}
+                          }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -312,8 +311,8 @@ export default function ZoneSubAreaPage() {
                                 ? "Đánh dấu là không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                              ? "Đánh dấu là hoạt động"
-                              : "Mark as Active"}
+                                ? "Đánh dấu là hoạt động"
+                                : "Mark as Active"}
                           </button>
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
@@ -359,9 +358,8 @@ export default function ZoneSubAreaPage() {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${
-                  isVI ? "trên" : "of"
-                } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
+              } ${totalRows}`}
           </span>
           <div className="flex items-center gap-1">
             <button onClick={goToFirst} disabled={currentPage === 1}>
@@ -431,8 +429,8 @@ export default function ZoneSubAreaPage() {
                     ? "Edit Zone / Sub-area"
                     : "Chỉnh sửa khu vực / tiểu khu"
                   : activeLang === "EN"
-                  ? "New Zone / Sub-area"
-                  : "Thêm khu vực / tiểu khu mới"}
+                    ? "New Zone / Sub-area"
+                    : "Thêm khu vực / tiểu khu mới"}
               </h2>
               <button
                 onClick={() => {
@@ -449,21 +447,19 @@ export default function ZoneSubAreaPage() {
             <div className="flex justify-start gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "EN"
+                className={`py-3 font-medium transition-all ${activeLang === "EN"
                     ? "text-black border-b-2 border-[#41398B]"
                     : "text-gray-500 hover:text-black"
-                }`}
+                  }`}
               >
                 English (EN)
               </button>
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium transition-all ${
-                  activeLang === "VI"
+                className={`py-3 font-medium transition-all ${activeLang === "VI"
                     ? "text-black border-b-2 border-[#41398B]"
                     : "text-gray-500 hover:text-black"
-                }`}
+                  }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -475,52 +471,52 @@ export default function ZoneSubAreaPage() {
                 <>
                   <div>
                     <label>Project / Community</label>
-                  {/* PROJECT SELECT (Parent) */}
-<AntdSelect
-  showSearch
-  allowClear
-  labelInValue
-  placeholder={
-    isVI ? "Chọn dự án / cộng đồng" : "Select Project / Community"
-  }
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
+                    {/* PROJECT SELECT (Parent) */}
+                    <AntdSelect
+                      showSearch
+                      allowClear
+                      labelInValue
+                      placeholder={
+                        isVI ? "Chọn dự án / cộng đồng" : "Select Project / Community"
+                      }
+                      className="w-full custom-select"
+                      popupClassName="custom-dropdown"
 
-  /* EDIT MODE: match by NAME not ID */
-  value={
-    form.property
-      ? {
-          value: JSON.stringify(form.property),
-          label: form.property[language] || "",
-        }
-      : undefined
-  }
+                      /* EDIT MODE: match by NAME not ID */
+                      value={
+                        form.property
+                          ? {
+                            value: JSON.stringify(form.property),
+                            label: form.property[language] || "",
+                          }
+                          : undefined
+                      }
 
-  onChange={(opt) => {
-    const obj = JSON.parse(opt.value); // {en,vi}
+                      onChange={(opt) => {
+                        const obj = JSON.parse(opt.value); // {en,vi}
 
-    // find full property to get ID
-    const selectedProject = properties.find(
-      (p) => p.name.en === obj.en
-    );
+                        // find full property to get ID
+                        const selectedProject = properties.find(
+                          (p) => p.name.en === obj.en
+                        );
 
-    setForm((prev) => ({
-      ...prev,
-      property: obj,
-      propertyId: selectedProject?._id || "",
-    }));
-  }}
->
-  {properties.map((p) => (
-    <AntdSelect.Option
-      key={p._id}
-      value={JSON.stringify({ en: p.name.en, vi: p.name.vi })}
-      label={p.name[language]}
-    >
-      {p.name[language]}
-    </AntdSelect.Option>
-  ))}
-</AntdSelect>
+                        setForm((prev) => ({
+                          ...prev,
+                          property: obj,
+                          propertyId: selectedProject?._id || "",
+                        }));
+                      }}
+                    >
+                      {properties.map((p) => (
+                        <AntdSelect.Option
+                          key={p._id}
+                          value={JSON.stringify({ en: p.name.en, vi: p.name.vi })}
+                          label={p.name[language]}
+                        >
+                          {p.name[language]}
+                        </AntdSelect.Option>
+                      ))}
+                    </AntdSelect>
 
                   </div>
                   <div>
@@ -602,8 +598,8 @@ export default function ZoneSubAreaPage() {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                  ? "Add"
-                  : "Thêm"}
+                    ? "Add"
+                    : "Thêm"}
               </button>
             </div>
           </div>

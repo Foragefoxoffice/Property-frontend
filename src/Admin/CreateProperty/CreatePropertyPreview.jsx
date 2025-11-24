@@ -96,7 +96,7 @@ export default function CreatePropertyPreview({
 
   console.log("💾 PREVIEW RECEIVED DATA:", propertyData);
 
-  const { language: lang } = useLanguage();
+  const [lang, setLang] = useState("en");
   const [loading, setLoading] = useState(false);
 
   // owners & staffs for popup lookup
@@ -246,6 +246,22 @@ export default function CreatePropertyPreview({
 
       {/* Main Container */}
       <div className="max-w-6xl mx-auto py-6 px-3 sm:px-1">
+        {/* 🌐 Language Tabs */}
+        <div className="flex mb-6 border-b border-gray-200">
+          {["en", "vi"].map((lng) => (
+            <button
+              key={lng}
+              className={`px-6 py-2 text-sm font-medium ${lang === lng
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
+                }`}
+              onClick={() => setLang(lng)}
+            >
+              {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
+            </button>
+          ))}
+        </div>
+
         {/* === Listing Information === */}
         <Section title={labels.listingInfo[lang]}>
           <Grid3>
@@ -282,7 +298,7 @@ export default function CreatePropertyPreview({
               value={formatDMY(li.listingInformationDateListed)}
             />
             {safe(li.listingInformationTransactionType).toLowerCase() ===
-            "home stay" ? (
+              "home stay" ? (
               ""
             ) : (
               <>
@@ -400,89 +416,89 @@ export default function CreatePropertyPreview({
             {/* ✅ SALE */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "sale" && (
-              <>
-                <Field
-                  label={labels.price[lang]}
-                  value={fd.financialDetailsPrice}
-                />
-                <Field
-                  label={labels.deposit[lang]}
-                  value={safe(fd.financialDetailsDeposit)}
-                />
-                <Field
-                  label={labels.paymentTerms[lang]}
-                  value={safe(fd.financialDetailsMainFee)}
-                />
-                <Field
-                  label={labels.contractTerms[lang]}
-                  value={safe(fd.financialDetailsContractTerms)}
-                />
-                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
-                <Field
-                  label="Fee / Tax"
-                  value={safe(fd.financialDetailsFeeTax)}
-                />
-                <Field
-                  label="Legal Documents"
-                  value={safe(fd.financialDetailsLegalDoc)}
-                />
-              </>
-            )}
+                <>
+                  <Field
+                    label={labels.price[lang]}
+                    value={fd.financialDetailsPrice}
+                  />
+                  <Field
+                    label={labels.deposit[lang]}
+                    value={safe(fd.financialDetailsDeposit)}
+                  />
+                  <Field
+                    label={labels.paymentTerms[lang]}
+                    value={safe(fd.financialDetailsMainFee)}
+                  />
+                  <Field
+                    label={labels.contractTerms[lang]}
+                    value={safe(fd.financialDetailsContractTerms)}
+                  />
+                  <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                  <Field
+                    label="Fee / Tax"
+                    value={safe(fd.financialDetailsFeeTax)}
+                  />
+                  <Field
+                    label="Legal Documents"
+                    value={safe(fd.financialDetailsLegalDoc)}
+                  />
+                </>
+              )}
 
             {/* ✅ LEASE */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "lease" && (
-              <>
-                <Field
-                  label={labels.leasePrice[lang]}
-                  value={fd.financialDetailsLeasePrice}
-                />
-                <Field
-                  label={labels.contractLength[lang]}
-                  value={fd.financialDetailsContractLength}
-                />
-                <Field
-                  label={labels.deposit[lang]}
-                  value={safe(fd.financialDetailsDeposit)}
-                />
-                <Field
-                  label={labels.paymentTerms[lang]}
-                  value={safe(fd.financialDetailsMainFee)}
-                />
-                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
-                <Field
-                  label="Agent Payment Agenda"
-                  value={safe(fd.financialDetailsAgentPaymentAgenda)}
-                />
-              </>
-            )}
+                <>
+                  <Field
+                    label={labels.leasePrice[lang]}
+                    value={fd.financialDetailsLeasePrice}
+                  />
+                  <Field
+                    label={labels.contractLength[lang]}
+                    value={fd.financialDetailsContractLength}
+                  />
+                  <Field
+                    label={labels.deposit[lang]}
+                    value={safe(fd.financialDetailsDeposit)}
+                  />
+                  <Field
+                    label={labels.paymentTerms[lang]}
+                    value={safe(fd.financialDetailsMainFee)}
+                  />
+                  <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                  <Field
+                    label="Agent Payment Agenda"
+                    value={safe(fd.financialDetailsAgentPaymentAgenda)}
+                  />
+                </>
+              )}
 
             {/* ✅ HOME STAY */}
             {safe(li.listingInformationTransactionType).toLowerCase() ===
               "home stay" && (
-              <>
-                <Field
-                  label={labels.pricePerNight[lang]}
-                  value={fd.financialDetailsPricePerNight}
-                />
-                <Field
-                  label={labels.checkIn[lang]}
-                  value={fd.financialDetailsCheckIn}
-                />
-                <Field
-                  label={labels.checkOut[lang]}
-                  value={fd.financialDetailsCheckOut}
-                />
-                <Field
-                  label={labels.deposit[lang]}
-                  value={safe(fd.financialDetailsDeposit)}
-                />
-                <Field
-                  label={labels.paymentTerms[lang]}
-                  value={safe(fd.financialDetailsMainFee)}
-                />
-              </>
-            )}
+                <>
+                  <Field
+                    label={labels.pricePerNight[lang]}
+                    value={fd.financialDetailsPricePerNight}
+                  />
+                  <Field
+                    label={labels.checkIn[lang]}
+                    value={fd.financialDetailsCheckIn}
+                  />
+                  <Field
+                    label={labels.checkOut[lang]}
+                    value={fd.financialDetailsCheckOut}
+                  />
+                  <Field
+                    label={labels.deposit[lang]}
+                    value={safe(fd.financialDetailsDeposit)}
+                  />
+                  <Field
+                    label={labels.paymentTerms[lang]}
+                    value={safe(fd.financialDetailsMainFee)}
+                  />
+                </>
+              )}
           </Grid3>
         </Section>
 
@@ -558,12 +574,12 @@ export default function CreatePropertyPreview({
           >
             <ArrowLeft size={18} /> {labels.previous[lang]}
           </button>
-       <button
-  onClick={() => onPublish(status)}   // parent handles final update API
-  className="px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer"
->
-  {labels.completed[lang]}
-</button>
+          <button
+            onClick={() => onPublish(status)}   // parent handles final update API
+            className="px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer"
+          >
+            {labels.completed[lang]}
+          </button>
 
         </div>
       </div>

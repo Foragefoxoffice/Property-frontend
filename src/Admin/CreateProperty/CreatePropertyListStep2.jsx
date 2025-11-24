@@ -37,9 +37,9 @@ export default function CreatePropertyListStep2({
   dropdownLoading,
   dropdowns = {},
 }) {
-    useEffect(() => {
-      console.log("initialData:", initialData);
-    }, [initialData]);
+  useEffect(() => {
+    console.log("initialData:", initialData);
+  }, [initialData]);
   const [lang, setLang] = useState("en");
   const {
     currencies = [],
@@ -242,26 +242,76 @@ export default function CreatePropertyListStep2({
     const base64 = await fileToBase64(file);
     const newFile = { file, url: base64 };
 
-    if (type === "image") setImages((p) => [...p, newFile]);
-    if (type === "video") setVideos((p) => [...p, newFile]);
-    if (type === "floor") setFloorPlans((p) => [...p, newFile]);
+    let newImages = images;
+    let newVideos = videos;
+    let newFloorPlans = floorPlans;
+
+    if (type === "image") {
+      newImages = [...images, newFile];
+      setImages(newImages);
+    }
+    if (type === "video") {
+      newVideos = [...videos, newFile];
+      setVideos(newVideos);
+    }
+    if (type === "floor") {
+      newFloorPlans = [...floorPlans, newFile];
+      setFloorPlans(newFloorPlans);
+    }
+
+    onChange &&
+      onChange({
+        ...form,
+        propertyImages: newImages,
+        propertyVideos: newVideos,
+        floorPlans: newFloorPlans,
+      });
   };
 
   const handleRemove = (type, i) => {
-    if (type === "image") setImages((p) => p.filter((_, x) => x !== i));
-    if (type === "video") setVideos((p) => p.filter((_, x) => x !== i));
-    if (type === "floor") setFloorPlans((p) => p.filter((_, x) => x !== i));
+    let newImages = images;
+    let newVideos = videos;
+    let newFloorPlans = floorPlans;
+
+    if (type === "image") {
+      newImages = images.filter((_, x) => x !== i);
+      setImages(newImages);
+    }
+    if (type === "video") {
+      newVideos = videos.filter((_, x) => x !== i);
+      setVideos(newVideos);
+    }
+    if (type === "floor") {
+      newFloorPlans = floorPlans.filter((_, x) => x !== i);
+      setFloorPlans(newFloorPlans);
+    }
+
+    onChange &&
+      onChange({
+        ...form,
+        propertyImages: newImages,
+        propertyVideos: newVideos,
+        floorPlans: newFloorPlans,
+      });
   };
 
   /* =========================================================
      🔧 Form Handlers
   ========================================================== */
-  const handleChange = (f, v) => setForm((p) => ({ ...p, [f]: v }));
-  const handleLocalizedChange = (lng, f, v) =>
-    setForm((p) => ({
-      ...p,
-      [f]: { ...(p[f] || { en: "", vi: "" }), [lng]: v },
-    }));
+  const handleChange = (f, v) => {
+    const updated = { ...form, [f]: v };
+    setForm(updated);
+    onChange && onChange(updated);
+  };
+
+  const handleLocalizedChange = (lng, f, v) => {
+    const updated = {
+      ...form,
+      [f]: { ...(form[f] || { en: "", vi: "" }), [lng]: v },
+    };
+    setForm(updated);
+    onChange && onChange(updated);
+  };
 
   /* =========================================================
      📦 Upload Box Component
@@ -390,11 +440,10 @@ export default function CreatePropertyListStep2({
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -539,9 +588,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -553,9 +601,9 @@ export default function CreatePropertyListStep2({
               {t.price}
             </label>
             <input
-  type="number"
-  value={form.price}
-  onChange={(e) => handleChange("price", e.target.value)}
+              type="number"
+              value={form.price}
+              onChange={(e) => handleChange("price", e.target.value)}
 
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
             />
@@ -597,7 +645,26 @@ export default function CreatePropertyListStep2({
               }
               value={form.depositPaymentTerms?.[lang] || undefined}
               onChange={(value) => {
-                handleLocalizedChange(lang, "depositPaymentTerms", value);
+                const selected = deposits.find((d) => d.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    depositPaymentTerms: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      depositPaymentTerms: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "depositPaymentTerms", value);
+                }
               }}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
@@ -657,7 +724,26 @@ export default function CreatePropertyListStep2({
               }
               value={form.maintenanceFeeMonthly?.[lang] || undefined}
               onChange={(value) => {
-                handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+                const selected = payments.find((p) => p.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    maintenanceFeeMonthly: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      maintenanceFeeMonthly: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+                }
               }}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
@@ -717,7 +803,26 @@ export default function CreatePropertyListStep2({
               }
               value={form.financialDetailsFeeTax?.[lang] || undefined}
               onChange={(value) => {
-                handleLocalizedChange(lang, "financialDetailsFeeTax", value);
+                const selected = feeTaxes.find((f) => f.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    financialDetailsFeeTax: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      financialDetailsFeeTax: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "financialDetailsFeeTax", value);
+                }
               }}
               onSearch={(val) => {
                 if (val.trim() !== "") {
@@ -778,7 +883,26 @@ export default function CreatePropertyListStep2({
               }
               value={form.financialDetailsLegalDoc?.[lang] || undefined}
               onChange={(value) => {
-                handleLocalizedChange(lang, "financialDetailsLegalDoc", value);
+                const selected = legalDocs.find((l) => l.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    financialDetailsLegalDoc: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      financialDetailsLegalDoc: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "financialDetailsLegalDoc", value);
+                }
               }}
               onSearch={(val) => {
                 if (val.trim() !== "") {
@@ -879,9 +1003,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -1154,9 +1277,8 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${
-                  c.currencySymbol?.en
-                })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
+                  })`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -1278,7 +1400,26 @@ export default function CreatePropertyListStep2({
               }
               value={form.depositPaymentTerms?.[lang] || undefined}
               onChange={(value) => {
-                handleLocalizedChange(lang, "depositPaymentTerms", value);
+                const selected = deposits.find((d) => d.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    depositPaymentTerms: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      depositPaymentTerms: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "depositPaymentTerms", value);
+                }
               }}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
@@ -1338,7 +1479,26 @@ export default function CreatePropertyListStep2({
               }
               value={form.maintenanceFeeMonthly?.[lang] || undefined}
               onChange={(value) => {
-                handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+                const selected = payments.find((p) => p.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    maintenanceFeeMonthly: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      maintenanceFeeMonthly: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+                }
               }}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
@@ -1376,20 +1536,20 @@ export default function CreatePropertyListStep2({
           {lang === "en" ? "Previous" : "Trước"}
         </button>
 
-      <button
-  onClick={() => {
-    const fullForm = {
-      ...form,
-      price: form.price,                        // <== ENSURE PRICE INCLUDED
-      currency: form.currency,                 // <== ENSURE currency INCLUDED
-      propertyImages: images,
-      propertyVideos: videos,
-      floorPlans: floorPlans,
-    };
+        <button
+          onClick={() => {
+            const fullForm = {
+              ...form,
+              price: form.price,                        // <== ENSURE PRICE INCLUDED
+              currency: form.currency,                 // <== ENSURE currency INCLUDED
+              propertyImages: images,
+              propertyVideos: videos,
+              floorPlans: floorPlans,
+            };
 
-    onChange && onChange(fullForm);
-    onNext(fullForm);
-  }}
+            onChange && onChange(fullForm);
+            onNext(fullForm);
+          }}
 
 
           className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full cursor-pointer flex gap-1.5 items-center"
