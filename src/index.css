@@ -280,5 +280,4 @@ body {
 .custom-select,
 .ant-select-selector {
   pointer-events: auto !important;
-  margin-top: 10px;
 }

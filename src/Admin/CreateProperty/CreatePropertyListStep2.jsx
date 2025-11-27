@@ -487,8 +487,9 @@ export default function CreatePropertyListStep2({
             <Switch
               checked={form.videoVisibility}
               style={{
-                "--antd-switch-handle-color": "#fff",
-                "--antd-switch-color": "#41398B",
+                backgroundColor: form.videoVisibility
+                  ? "#41398B"
+                  : "#d9d9d9",
               }}
               onChange={(val) =>
                 setForm((p) => ({
@@ -520,8 +521,9 @@ export default function CreatePropertyListStep2({
             <Switch
               checked={form.floorImageVisibility}
               style={{
-                "--antd-switch-handle-color": "#fff",
-                "--antd-switch-color": "#41398B",
+                backgroundColor: form.floorImageVisibility
+                  ? "#41398B"
+                  : "#d9d9d9",
               }}
               onChange={(val) =>
                 setForm((p) => ({
@@ -618,7 +620,7 @@ export default function CreatePropertyListStep2({
               type="number"
               value={form.price}
               onChange={(e) => handleChange("price", e.target.value)}
-
+              placeholder={t.typehere}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -637,6 +639,11 @@ export default function CreatePropertyListStep2({
 
                 <Switch
                   checked={form.financialVisibility?.depositPaymentTerms}
+                  style={{
+                    backgroundColor: form.financialVisibility?.depositPaymentTerms
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -716,6 +723,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}
+                  style={{
+                    backgroundColor: form.financialVisibility?.paymentTerm
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -795,6 +807,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.feeTaxes}
+                  style={{
+                    backgroundColor: form.financialVisibility?.feeTaxes
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -875,6 +892,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.legalDocs}
+                  style={{
+                    backgroundColor: form.financialVisibility?.legalDocs
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -1052,6 +1074,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.contractLength}
+                  style={{
+                    backgroundColor: form.financialVisibility?.contractLength
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -1087,6 +1114,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.deposit}
+                  style={{
+                    backgroundColor: form.financialVisibility?.deposit
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -1148,6 +1180,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}
+                  style={{
+                    backgroundColor: form.financialVisibility?.paymentTerm
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -1324,6 +1361,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.checkIn}
+                  style={{
+                    backgroundColor: form.financialVisibility?.checkIn
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -1357,6 +1399,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.checkOut}
+                  style={{
+                    backgroundColor: form.financialVisibility?.checkOut
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -1392,6 +1439,11 @@ export default function CreatePropertyListStep2({
 
                 <Switch
                   checked={form.financialVisibility?.depositPaymentTerms}
+                  style={{
+                    backgroundColor: form.financialVisibility?.depositPaymentTerms
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -1471,6 +1523,11 @@ export default function CreatePropertyListStep2({
                 </span>
                 <Switch
                   checked={form.financialVisibility?.maintenanceFeeMonthly}
+                  style={{
+                    backgroundColor: form.financialVisibility?.maintenanceFeeMonthly
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,

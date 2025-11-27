@@ -779,8 +779,9 @@ export default function CreatePropertyListStep1({
                 <Switch
                   checked={form.listingInformationVisibility?.areaZone}
                   style={{
-                    "--antd-switch-handle-color": "#fff",
-                    "--antd-switch-color": "#41398B",
+                    backgroundColor: form.listingInformationVisibility?.areaZone
+                      ? "#41398B"
+                      : "#d9d9d9",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -855,6 +856,11 @@ export default function CreatePropertyListStep1({
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.blockName}
+                  style={{
+                    backgroundColor: form.listingInformationVisibility?.blockName
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -925,6 +931,11 @@ export default function CreatePropertyListStep1({
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.propertyNo}
+                  style={{
+                    backgroundColor: form.listingInformationVisibility?.propertyNo
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
                   onChange={(val) =>
                     setForm((p) => ({
                       ...p,
@@ -981,8 +992,9 @@ export default function CreatePropertyListStep1({
                     <Switch
                       checked={form.listingInformationVisibility?.availableFrom}
                       style={{
-                        "--antd-switch-handle-color": "#fff",
-                        "--antd-switch-color": "#41398B",
+                        backgroundColor: form.listingInformationVisibility?.availableFrom
+                          ? "#41398B"
+                          : "#d9d9d9",
                       }}
                       onChange={(val) =>
                         setForm((p) => ({
@@ -1036,8 +1048,9 @@ export default function CreatePropertyListStep1({
                 <Switch
                   checked={form.propertyInformationVisibility?.unit}
                   style={{
-                    "--antd-switch-handle-color": "#fff",
-                    "--antd-switch-color": "#41398B",
+                    backgroundColor: form.propertyInformationVisibility?.unit
+                      ? "#41398B"
+                      : "#d9d9d9",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -1073,8 +1086,9 @@ export default function CreatePropertyListStep1({
                 <Switch
                   checked={form.propertyInformationVisibility?.unitSize}
                   style={{
-                    "--antd-switch-handle-color": "#fff",
-                    "--antd-switch-color": "#41398B",
+                    backgroundColor: form.propertyInformationVisibility?.unitSize
+                      ? "#41398B"
+                      : "#d9d9d9",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -1109,8 +1123,9 @@ export default function CreatePropertyListStep1({
                 <Switch
                   checked={form.propertyInformationVisibility?.bedrooms}
                   style={{
-                    "--antd-switch-handle-color": "#fff",
-                    "--antd-switch-color": "#41398B",
+                    backgroundColor: form.propertyInformationVisibility?.bedrooms
+                      ? "#41398B"
+                      : "#d9d9d9",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -1145,8 +1160,9 @@ export default function CreatePropertyListStep1({
                 <Switch
                   checked={form.propertyInformationVisibility?.bathrooms}
                   style={{
-                    "--antd-switch-handle-color": "#fff",
-                    "--antd-switch-color": "#41398B",
+                    backgroundColor: form.propertyInformationVisibility?.bathrooms
+                      ? "#41398B"
+                      : "#d9d9d9",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -1182,8 +1198,9 @@ export default function CreatePropertyListStep1({
                 <Switch
                   checked={form.propertyInformationVisibility?.floorRange}
                   style={{
-                    "--antd-switch-handle-color": "#fff",
-                    "--antd-switch-color": "#41398B",
+                    backgroundColor: form.propertyInformationVisibility?.floorRange
+                      ? "#41398B"
+                      : "#d9d9d9",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -1263,8 +1280,9 @@ export default function CreatePropertyListStep1({
                 <Switch
                   checked={form.propertyInformationVisibility?.furnishing}
                   style={{
-                    "--antd-switch-handle-color": "#fff",
-                    "--antd-switch-color": "#41398B",
+                    backgroundColor: form.propertyInformationVisibility?.furnishing
+                      ? "#41398B"
+                      : "#d9d9d9",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -1300,8 +1318,9 @@ export default function CreatePropertyListStep1({
                 <Switch
                   checked={form.propertyInformationVisibility?.view}
                   style={{
-                    "--antd-switch-handle-color": "#fff",
-                    "--antd-switch-color": "#41398B",
+                    backgroundColor: form.propertyInformationVisibility?.view
+                      ? "#41398B"
+                      : "#d9d9d9",
                   }}
                   onChange={(val) =>
                     setForm((p) => ({
@@ -1347,8 +1366,9 @@ export default function CreatePropertyListStep1({
               <Switch
                 checked={form.descriptionVisibility}
                 style={{
-                  "--antd-switch-handle-color": "#fff",
-                  "--antd-switch-color": "#41398B",
+                  backgroundColor: form.descriptionVisibility
+                    ? "#41398B"
+                    : "#d9d9d9",
                 }}
                 onChange={(val) =>
                   setForm((p) => ({
@@ -1388,8 +1408,9 @@ export default function CreatePropertyListStep1({
             <Switch
               checked={form.propertyUtilityVisibility}
               style={{
-                "--antd-switch-handle-color": "#fff",
-                "--antd-switch-color": "#41398B",
+                backgroundColor: form.propertyUtilityVisibility
+                  ? "#41398B"
+                  : "#d9d9d9",
               }}
               onChange={(val) =>
                 setForm((p) => ({

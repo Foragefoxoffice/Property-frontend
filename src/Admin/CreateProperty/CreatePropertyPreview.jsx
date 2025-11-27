@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  ArrowRight,
   Eye,
   Phone,
   Mail,
   UserCog,
   X,
 } from "lucide-react";
-import {
-  getAllPropertyListings,
-  updatePropertyListing,
-  getAllOwners,
-  getAllStaffs,
-} from "../../Api/action";
-import { CommonToaster } from "../../Common/CommonToaster";
-import { useLanguage } from "../../Language/LanguageContext";
 import { Select as AntdSelect } from "antd";
 
 /* 💜 Skeleton Loader Component */
@@ -93,6 +84,7 @@ export default function CreatePropertyPreview({
 }) {
   const [property, setProperty] = useState(propertyData || {});
   const [status, setStatus] = useState(propertyData?.status || "Draft");
+  const [publishing, setPublishing] = useState(false);
 
   console.log("💾 PREVIEW RECEIVED DATA:", propertyData);
 
@@ -252,8 +244,8 @@ export default function CreatePropertyPreview({
             <button
               key={lng}
               className={`px-6 py-2 text-sm font-medium ${lang === lng
-                  ? "border-b-2 border-[#41398B] text-black"
-                  : "text-gray-500 hover:text-black"
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
                 }`}
               onClick={() => setLang(lng)}
             >
@@ -575,12 +567,15 @@ export default function CreatePropertyPreview({
             <ArrowLeft size={18} /> {labels.previous[lang]}
           </button>
           <button
-            onClick={() => onPublish(status)}   // parent handles final update API
+            onClick={async () => {
+              setPublishing(true);
+              await onPublish(status);
+              setPublishing(false);
+            }}
             className="px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer"
           >
             {labels.completed[lang]}
           </button>
-
         </div>
       </div>
 
@@ -613,9 +608,22 @@ export default function CreatePropertyPreview({
           }}
         />
       )}
+
+      {publishing && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-14 h-14 border-4 border-white border-t-[#41398B] rounded-full animate-spin"></div>
+            <p className="text-white text-lg tracking-wide font-medium">
+              Publishing...
+            </p>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+
 
 /* === Reusable Components === */
 const Section = ({ title, children }) => (

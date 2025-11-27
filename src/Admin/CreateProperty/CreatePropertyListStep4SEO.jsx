@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Eye, X, Plus, ArrowRight, ArrowLeft } from "lucide-react";
-import { Select as AntdSelect } from "antd";
+import { Select as AntdSelect, Switch } from "antd";
 
 export default function CreatePropertyListStep4SEO({
   onNext,
@@ -168,8 +168,8 @@ export default function CreatePropertyListStep4SEO({
             key={lng}
             onClick={() => setActiveLang(lng)}
             className={`px-6 py-2 text-sm cursor-pointer font-medium ${activeLang === lng
-                ? "border-b-2 border-[#41398B] text-black"
-                : "text-gray-500 hover:text-black"
+              ? "border-b-2 border-[#41398B] text-black"
+              : "text-gray-500 hover:text-black"
               }`}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
@@ -297,13 +297,15 @@ export default function CreatePropertyListStep4SEO({
         <label className="text-md font-md mb-2 block">
           {labels.allowIndexing[activeLang]}
         </label>
-        <input
-          type="checkbox"
+        <Switch
           checked={seo.allowIndexing}
-          onChange={(e) => {
-            const updated = { ...seo, allowIndexing: e.target.checked };
+          onChange={(checked) => {
+            const updated = { ...seo, allowIndexing: checked };
             setSeo(updated);
             onChange({ seoInformation: updated });
+          }}
+          style={{
+            backgroundColor: seo.allowIndexing ? "#41398B" : "#d9d9d9",
           }}
         />
       </div>
