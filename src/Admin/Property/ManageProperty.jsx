@@ -49,7 +49,7 @@ export default function ManageProperty({
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
-  
+
 
   // Helper: fetch page from backend
   const fetchProperties = async () => {
@@ -162,7 +162,7 @@ export default function ManageProperty({
           f.currency &&
           f.currency.name &&
           info.financialDetailsCurrency?.toLowerCase() !==
-            f.currency.name.toLowerCase()
+          f.currency.name.toLowerCase()
         )
           return false;
 
@@ -367,10 +367,10 @@ export default function ManageProperty({
           {filterByTransactionType === "Lease"
             ? t.propertyTitleLease
             : filterByTransactionType === "Sale"
-            ? t.propertyTitleSale
-            : filterByTransactionType === "Home Stay"
-            ? t.propertyTitleHomeStay
-            : ""}
+              ? t.propertyTitleSale
+              : filterByTransactionType === "Home Stay"
+                ? t.propertyTitleHomeStay
+                : ""}
         </h1>
 
         <div className="flex items-center gap-4">
@@ -499,23 +499,22 @@ export default function ManageProperty({
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${
-                            p.status === "Published"
+                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
                               ? "bg-green-100 text-green-700"
                               : p.status === "Draft"
-                              ? "bg-[#FFF3DE] text-[#FFA600]"
-                              : "bg-gray-200 text-gray-700"
-                          }`}
+                                ? "bg-[#FFF3DE] text-[#FFA600]"
+                                : "bg-gray-200 text-gray-700"
+                            }`}
                         >
                           {p.status === "Published"
                             ? language === "vi"
                               ? "Đã đăng"
                               : "Published"
                             : p.status === "Draft"
-                            ? language === "vi"
-                              ? "Bản nháp"
-                              : "Draft"
-                            : p.status || "—"}
+                              ? language === "vi"
+                                ? "Bản nháp"
+                                : "Draft"
+                              : p.status || "—"}
                         </span>
                       </div>
                     </td>
@@ -587,12 +586,11 @@ export default function ManageProperty({
 
           <div className="flex items-center gap-3">
             <p>
-  {totalRows === 0
-    ? `0–0 ${t.of} 0`
-    : `${(currentPage - 1) * rowsPerPage + 1}–${
-        (currentPage - 1) * rowsPerPage + currentRows.length
-      } ${t.of} ${totalRows}`}
-</p>
+              {totalRows === 0
+                ? `0–0 ${t.of} 0`
+                : `${(currentPage - 1) * rowsPerPage + 1}–${(currentPage - 1) * rowsPerPage + currentRows.length
+                } ${t.of} ${totalRows}`}
+            </p>
 
             <button onClick={handlePrevPage} disabled={currentPage === 1} className={`p-1 px-2 rounded ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}>
               &lt;

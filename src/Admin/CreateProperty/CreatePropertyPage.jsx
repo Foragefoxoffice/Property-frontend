@@ -625,7 +625,17 @@ export default function CreatePropertyPage({
             owners={dropdowns.owners || []}
             staffs={dropdowns.staffs || []}
             me={dropdowns.me || null}
-
+            refreshOwners={async () => {
+              try {
+                const res = await getAllOwners();
+                setDropdowns((prev) => ({
+                  ...prev,
+                  owners: res.data.data,
+                }));
+              } catch (err) {
+                console.log("Failed to refresh owners:", err);
+              }
+            }}
           />
         );
 

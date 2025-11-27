@@ -79,18 +79,18 @@ export default function BlockPage() {
     fetchBlocks();
   }, []);
 
- const handlePropertySelect = (propertyId) => {
-  const selectedProperty = properties.find(p => p._id === propertyId);
+  const handlePropertySelect = (propertyId) => {
+    const selectedProperty = properties.find(p => p._id === propertyId);
 
-  setForm({
-    ...form,
-    property: propertyId,
-    zone: ""
-  });
+    setForm({
+      ...form,
+      property: propertyId,
+      zone: ""
+    });
 
-  // ⬇️ Set zones from property.zones
-  setZones(selectedProperty?.zones || []);
-};
+    // ⬇️ Set zones from property.zones
+    setZones(selectedProperty?.zones || []);
+  };
 
 
   // ✅ Pagination Calculations
@@ -157,27 +157,27 @@ export default function BlockPage() {
     }
   };
 
- const handleEdit = async (block) => {
-  setEditingBlock(block);
+  const handleEdit = async (block) => {
+    setEditingBlock(block);
 
-  const selectedProperty = properties.find(
-    p => p._id === block.property?._id
-  );
+    const selectedProperty = properties.find(
+      p => p._id === block.property?._id
+    );
 
-  // ⬇️ load zones from property.zones
-  setZones(selectedProperty?.zones || []);
+    // ⬇️ load zones from property.zones
+    setZones(selectedProperty?.zones || []);
 
-  setForm({
-    name_en: block.name.en,
-    name_vi: block.name.vi,
-    status: block.status,
-    property: block.property?._id || "",
-    zone: block.zone?._id || "",
-  });
+    setForm({
+      name_en: block.name.en,
+      name_vi: block.name.vi,
+      status: block.status,
+      property: block.property?._id || "",
+      zone: block.zone?._id || "",
+    });
 
-  setActiveLang(language === "vi" ? "VI" : "EN");
-  setShowModal(true);
-};
+    setActiveLang(language === "vi" ? "VI" : "EN");
+    setShowModal(true);
+  };
 
   // ✅ Delete
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
@@ -191,8 +191,12 @@ export default function BlockPage() {
       );
       setDeleteConfirm({ show: false, id: null });
       fetchBlocks();
-    } catch {
-      CommonToaster(isVI ? "Không thể xóa." : "Failed to delete.", "error");
+    } catch (error) {
+      CommonToaster(
+        error.response?.data?.error ||
+        (isVI ? "Không thể xóa khối." : "Failed to delete block."),
+        "error"
+      );
     }
   };
 
@@ -203,9 +207,8 @@ export default function BlockPage() {
       await updateBlock(block._id, { status: newStatus });
       CommonToaster(
         isVI
-          ? `Đã chuyển sang ${
-              newStatus === "Active" ? "hoạt động" : "không hoạt động"
-            }`
+          ? `Đã chuyển sang ${newStatus === "Active" ? "hoạt động" : "không hoạt động"
+          }`
           : `Marked as ${newStatus}`,
         "success"
       );
@@ -289,9 +292,8 @@ export default function BlockPage() {
                 visibleData.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -307,11 +309,10 @@ export default function BlockPage() {
                     </td>
                     <td className="px-6 py-3">
                       <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${
-                          row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
-                        }`}
+                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
+                          }`}
                       >
                         {isVI
                           ? row.status === "Active"
@@ -362,8 +363,8 @@ export default function BlockPage() {
                                 ? "Đánh dấu không hoạt động"
                                 : "Mark as Inactive"
                               : isVI
-                              ? "Đánh dấu hoạt động"
-                              : "Mark as Active"}
+                                ? "Đánh dấu hoạt động"
+                                : "Mark as Active"}
                           </button>
 
                           <button
@@ -413,9 +414,8 @@ export default function BlockPage() {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${
-                  isVI ? "trên" : "of"
-                } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
+              } ${totalRows}`}
           </span>
 
           {/* Pagination Buttons */}
@@ -487,8 +487,8 @@ export default function BlockPage() {
                     ? "Edit Block"
                     : "Chỉnh sửa khối"
                   : activeLang === "EN"
-                  ? "New Block"
-                  : "Thêm khối mới"}
+                    ? "New Block"
+                    : "Thêm khối mới"}
               </h2>
 
               <button
@@ -507,22 +507,20 @@ export default function BlockPage() {
             <div className="flex gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium ${
-                  activeLang === "EN"
-                    ? "border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
-                }`}
+                className={`py-3 font-medium ${activeLang === "EN"
+                  ? "border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
+                  }`}
               >
                 English (EN)
               </button>
 
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium ${
-                  activeLang === "VI"
-                    ? "border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
-                }`}
+                className={`py-3 font-medium ${activeLang === "VI"
+                  ? "border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
+                  }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -534,44 +532,44 @@ export default function BlockPage() {
                 <>
                   <div>
                     <label>Project / Community</label>
-                  <AntdSelect
-  style={{ marginTop: 7 }}
-  showSearch
-  allowClear
-  placeholder={isVI ? "Chọn dự án" : "Select Project"}
-  value={form.property || undefined}
-  onChange={(value) => handlePropertySelect(value)}
-  className="w-full custom-select"
-  popupClassName="custom-dropdown"
-  optionFilterProp="children"
->
-  {properties.map((p) => (
-    <AntdSelect.Option key={p._id} value={p._id}>
-      {isVI ? p.name?.vi : p.name?.en}
-    </AntdSelect.Option>
-  ))}
-</AntdSelect>
+                    <AntdSelect
+                      style={{ marginTop: 7 }}
+                      showSearch
+                      allowClear
+                      placeholder={isVI ? "Chọn dự án" : "Select Project"}
+                      value={form.property || undefined}
+                      onChange={(value) => handlePropertySelect(value)}
+                      className="w-full custom-select"
+                      popupClassName="custom-dropdown"
+                      optionFilterProp="children"
+                    >
+                      {properties.map((p) => (
+                        <AntdSelect.Option key={p._id} value={p._id}>
+                          {isVI ? p.name?.vi : p.name?.en}
+                        </AntdSelect.Option>
+                      ))}
+                    </AntdSelect>
 
                   </div>
                   <div>
                     <label>Area / Zones</label>
-                  <AntdSelect
-  style={{ marginTop: 7 }}
-  showSearch
-  allowClear
-  placeholder={isVI ? "Chọn khu vực" : "Select Zone"}
-  value={form.zone || null}
-  onChange={(value) => setForm({ ...form, zone: value })}
-  className="w-full custom-select focus:ring-2 focus:ring-gray-300"
-  popupClassName="custom-dropdown"
-  optionFilterProp="children"
->
-  {zones.map((z) => (
-    <AntdSelect.Option key={z._id} value={z._id}>
-      {isVI ? z.name?.vi : z.name?.en}
-    </AntdSelect.Option>
-  ))}
-</AntdSelect>
+                    <AntdSelect
+                      style={{ marginTop: 7 }}
+                      showSearch
+                      allowClear
+                      placeholder={isVI ? "Chọn khu vực" : "Select Zone"}
+                      value={form.zone || null}
+                      onChange={(value) => setForm({ ...form, zone: value })}
+                      className="w-full custom-select focus:ring-2 focus:ring-gray-300"
+                      popupClassName="custom-dropdown"
+                      optionFilterProp="children"
+                    >
+                      {zones.map((z) => (
+                        <AntdSelect.Option key={z._id} value={z._id}>
+                          {isVI ? z.name?.vi : z.name?.en}
+                        </AntdSelect.Option>
+                      ))}
+                    </AntdSelect>
 
                   </div>
 
@@ -672,8 +670,8 @@ export default function BlockPage() {
                     ? "Cập nhật"
                     : "Update"
                   : isVI
-                  ? "Thêm"
-                  : "Add"}
+                    ? "Thêm"
+                    : "Add"}
               </button>
             </div>
           </div>

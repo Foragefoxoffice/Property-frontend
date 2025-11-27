@@ -152,12 +152,27 @@ export default function ZoneSubAreaPage() {
       setDeleteConfirm({ show: false, id: null });
       fetchZones();
     } catch (error) {
-      CommonToaster(
-        error.response?.data?.error || "Failed to delete Zone/Sub-area.",
-        "error"
-      );
+      const errMsg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Unknown error";
+
+      if (errMsg.includes("Block")) {
+        CommonToaster(
+          isVI
+            ? "Không thể xóa Khu vực/Tiểu khu vì vẫn còn Khối. Vui lòng xóa các khối trước."
+            : "Cannot delete Zone/Sub-area because Blocks exist. Please delete them first.",
+          "error"
+        );
+      } else {
+        CommonToaster(
+          isVI ? "Không thể xóa Khu vực / Tiểu khu." : "Failed to delete Zone/Sub-area.",
+          "error"
+        );
+      }
     }
   };
+
 
   // ✅ Toggle status
   const handleToggleStatus = async (zone) => {
@@ -263,8 +278,8 @@ export default function ZoneSubAreaPage() {
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -448,8 +463,8 @@ export default function ZoneSubAreaPage() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -457,8 +472,8 @@ export default function ZoneSubAreaPage() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

@@ -841,10 +841,6 @@ export default function CreatePropertyListStep1({
                   </AntdSelect.Option>
                 ))}
             </AntdSelect>
-
-
-
-
           </div>
 
           <div className="flex flex-col w-full gap-1">

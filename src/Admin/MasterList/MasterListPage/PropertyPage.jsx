@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import {
   createProperty,
-  deleteProperty,
   updateProperty,
   getAllProperties,
+  deleteProjectCommunity,
 } from "../../../Api/action";
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
@@ -132,17 +132,39 @@ export default function PropertyPage() {
   const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
   const handleDelete = async () => {
     try {
-      await deleteProperty(deleteConfirm.id);
+      await deleteProjectCommunity(deleteConfirm.id);
       CommonToaster("Deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchProperties();
     } catch (error) {
-      CommonToaster(
-        error.response?.data?.error || "Failed to delete property.",
-        "error"
-      );
+      const errMsg =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Unknown error";
+
+      if (errMsg.includes("zones") || errMsg.includes("sub-areas")) {
+        CommonToaster(
+          isVI
+            ? "Không thể xóa dự án vì vẫn còn Khu vực / Tiểu khu. Vui lòng xóa chúng trước."
+            : "Cannot delete Project/Community because Zones/Sub-areas exist. Please delete them first.",
+          "error"
+        );
+      } else if (errMsg.includes("block")) {
+        CommonToaster(
+          isVI
+            ? "Không thể xóa dự án vì vẫn còn Khối. Vui lòng xóa chúng trước."
+            : "Cannot delete Project/Community because Blocks exist. Please delete them first.",
+          "error"
+        );
+      } else {
+        CommonToaster(
+          isVI ? "Không thể xóa dự án." : "Failed to delete project.",
+          "error"
+        );
+      }
     }
   };
+
 
   // ✅ Toggle Active / Inactive
   const handleToggleStatus = async (property) => {
@@ -243,8 +265,8 @@ export default function PropertyPage() {
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -428,8 +450,8 @@ export default function PropertyPage() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -437,8 +459,8 @@ export default function PropertyPage() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

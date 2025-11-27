@@ -58,7 +58,7 @@ export const deleteUser = (id) => API.delete(`/users/${id}`);
 export const getAllProperties = (params) => API.get("/property", { params });
 export const createProperty = (data) => API.post("/property", data);
 export const updateProperty = (id, data) => API.put(`/property/${id}`, data);
-export const deleteProperty = (id) => API.delete(`/property/${id}`);
+// export const deleteProperty = (id) => API.delete(`/property/${id}`);
 export const getSingleListingByPropertyID = (id) =>
   API.get(`/create-property/pid/${id}`);
 
@@ -248,6 +248,11 @@ export const getPropertiesByTransactionType = (params) =>
 
 export const getTrashProperties = (params) =>
   API.get("/create-property/trash", { params });
+
+
+export const deleteProjectCommunity = (id) =>
+  API.delete(`/property/${id}`);
+
 
 
 /* =========================================================

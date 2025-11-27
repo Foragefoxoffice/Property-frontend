@@ -65,7 +65,7 @@ const SimpleSelect = ({ label, value, onChange, options, lang }) => (
 /* ======================================================
    MAIN COMPONENT
 ====================================================== */
-export default function OwnerModal({ onClose }) {
+export default function OwnerModal({ onClose, onSuccess }) {
   const { language } = useLanguage();
 
   const [activeLang, setActiveLang] = useState("EN");
@@ -109,6 +109,7 @@ export default function OwnerModal({ onClose }) {
     try {
       await createOwner(payload);
       CommonToaster("New Landlord created", "success");
+      onSuccess && onSuccess();
       onClose();
     } catch {
       CommonToaster("Failed to create Landlord", "error");
@@ -143,11 +144,10 @@ export default function OwnerModal({ onClose }) {
             <button
               key={lang}
               onClick={() => setActiveLang(lang)}
-              className={`px-5 py-2 text-sm font-semibold ${
-                activeLang === lang
-                  ? "border-b-2 border-[#41398B] text-black"
-                  : "text-gray-500"
-              }`}
+              className={`px-5 py-2 text-sm font-semibold ${activeLang === lang
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500"
+                }`}
             >
               {lang === "EN" ? "English (EN)" : "Tiếng Việt (VI)"}
             </button>

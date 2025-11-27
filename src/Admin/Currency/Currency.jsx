@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Plus,
@@ -26,8 +27,18 @@ import CommonSkeleton from "../../Common/CommonSkeleton";
 import { useLanguage } from "../../Language/LanguageContext";
 
 export default function Currency({ goBack }) {
+  const navigate = useNavigate();
   const { language } = useLanguage();
   const isVI = language === "vi";
+
+  // Use provided goBack or navigate to masters page
+  const handleGoBack = () => {
+    if (goBack && typeof goBack === "function") {
+      goBack();
+    } else {
+      navigate("/dashboard/masters");
+    }
+  };
 
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
@@ -258,7 +269,7 @@ export default function Currency({ goBack }) {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           <button
-            onClick={goBack}
+            onClick={handleGoBack}
             className="w-8 h-8 flex items-center justify-center rounded-full bg-[#41398B] cursor-pointer hover:bg-[#41398be3] text-white"
           >
             <ArrowLeft size={16} />

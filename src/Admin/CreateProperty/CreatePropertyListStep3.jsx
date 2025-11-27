@@ -55,6 +55,7 @@ export default function CreatePropertyListStep3({
   staffs = [],
   me = null,
   loading = false,
+  refreshOwners,
 }) {
   const [lang, setLang] = useState("en");
   const initialized = useRef(false);
@@ -227,6 +228,7 @@ export default function CreatePropertyListStep3({
             onClose={() => {
               setShowAddOwnerModal(false);
             }}
+            onSuccess={refreshOwners}
           />
         </div>
       )}

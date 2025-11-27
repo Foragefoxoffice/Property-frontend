@@ -203,14 +203,14 @@ export default function CreatePropertyListStep2({
   /* =========================================================
    ✅ File Size Limits
    Images & floorplan: 2 MB
-   Videos: 10 MB
+   Videos: 50 MB
 ========================================================= */
   function validateFileSize(file, type) {
     const imageLimit = 2 * 1024 * 1024; // 2MB
-    const videoLimit = 10 * 1024 * 1024; // 10MB
+    const videoLimit = 50 * 1024 * 1024; // 50MB
 
     if (type === "video" && file.size > videoLimit) {
-      CommonToaster("Video size must be under 10MB", "error");
+      CommonToaster("Video size must be under 50MB", "error");
       return false;
     }
 
@@ -233,29 +233,39 @@ export default function CreatePropertyListStep2({
     });
 
   const handleFileUpload = async (e, type) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-    // ✅ Check size
-    if (!validateFileSize(file, type)) return;
+    // Process all files
+    const processedFiles = [];
 
-    const base64 = await fileToBase64(file);
-    const newFile = { file, url: base64 };
+    for (const file of files) {
+      // ✅ Check size for each file
+      if (!validateFileSize(file, type)) {
+        continue; // Skip files that don't meet size requirements
+      }
+
+      const base64 = await fileToBase64(file);
+      processedFiles.push({ file, url: base64 });
+    }
+
+    // If no files passed validation, return early
+    if (processedFiles.length === 0) return;
 
     let newImages = images;
     let newVideos = videos;
     let newFloorPlans = floorPlans;
 
     if (type === "image") {
-      newImages = [...images, newFile];
+      newImages = [...images, ...processedFiles];
       setImages(newImages);
     }
     if (type === "video") {
-      newVideos = [...videos, newFile];
+      newVideos = [...videos, ...processedFiles];
       setVideos(newVideos);
     }
     if (type === "floor") {
-      newFloorPlans = [...floorPlans, newFile];
+      newFloorPlans = [...floorPlans, ...processedFiles];
       setFloorPlans(newFloorPlans);
     }
 
@@ -266,6 +276,9 @@ export default function CreatePropertyListStep2({
         propertyVideos: newVideos,
         floorPlans: newFloorPlans,
       });
+
+    // Reset the input so the same files can be selected again if needed
+    e.target.value = '';
   };
 
   const handleRemove = (type, i) => {
@@ -385,6 +398,7 @@ export default function CreatePropertyListStep2({
             <input
               type="file"
               accept={accept}
+              multiple
               onChange={(e) => handleFileUpload(e, type)}
               className="hidden"
             />
