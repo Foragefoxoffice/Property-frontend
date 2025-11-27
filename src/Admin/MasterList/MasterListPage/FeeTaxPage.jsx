@@ -158,8 +158,13 @@ export default function FeeTaxPage() {
       );
       setDeleteConfirm({ show: false, id: null });
       fetchRecords();
-    } catch {
-      CommonToaster(isVI ? "Không thể xóa." : "Failed to delete.", "error");
+    } catch (error) {
+      CommonToaster(
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        (isVI ? "Không thể xóa." : "Failed to delete."),
+        "error"
+      );
     }
   };
 
@@ -219,9 +224,8 @@ export default function FeeTaxPage() {
 
       {/* ✅ TABLE */}
       <div
-        className={`transition-opacity duration-300 ${
-          loading ? "opacity-50" : "opacity-100"
-        }`}
+        className={`transition-opacity duration-300 ${loading ? "opacity-50" : "opacity-100"
+          }`}
       >
         {loading ? (
           <CommonSkeleton rows={6} />
@@ -251,9 +255,8 @@ export default function FeeTaxPage() {
                 visibleRows.map((row, i) => (
                   <tr
                     key={i}
-                    className={`${
-                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
                       {isVI ? row.code.vi : row.code.en}
@@ -265,10 +268,9 @@ export default function FeeTaxPage() {
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium 
-                          ${
-                            row.status === "Active"
-                              ? "bg-[#E8FFF0] text-[#12B76A]"
-                              : "bg-[#FFE8E8] text-[#F04438]"
+                          ${row.status === "Active"
+                            ? "bg-[#E8FFF0] text-[#12B76A]"
+                            : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -316,8 +318,8 @@ export default function FeeTaxPage() {
                                 ? "Đánh dấu không hoạt động"
                                 : "Đánh dấu hoạt động"
                               : row.status === "Active"
-                              ? "Mark as Inactive"
-                              : "Mark as Active"}
+                                ? "Mark as Inactive"
+                                : "Mark as Active"}
                           </button>
 
                           <button
@@ -365,9 +367,8 @@ export default function FeeTaxPage() {
           <span>
             {totalRows === 0
               ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${
-                  isVI ? "trên" : "of"
-                } ${totalRows}`}
+              : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"
+              } ${totalRows}`}
           </span>
 
           <div className="flex items-center gap-1">
@@ -441,8 +442,8 @@ export default function FeeTaxPage() {
                     ? "Edit Fees & taxes"
                     : "Chỉnh sửa Phí và thuế"
                   : activeLang === "EN"
-                  ? "New Fees & taxes"
-                  : "Thêm Phí và thuế"}
+                    ? "New Fees & taxes"
+                    : "Thêm Phí và thuế"}
               </h2>
 
               <button
@@ -460,22 +461,20 @@ export default function FeeTaxPage() {
             <div className="flex gap-8 px-6">
               <button
                 onClick={() => setActiveLang("EN")}
-                className={`py-3 font-medium ${
-                  activeLang === "EN"
+                className={`py-3 font-medium ${activeLang === "EN"
                     ? "border-b-2 border-[#41398B] text-black"
                     : "text-gray-500 hover:text-black"
-                }`}
+                  }`}
               >
                 English (EN)
               </button>
 
               <button
                 onClick={() => setActiveLang("VI")}
-                className={`py-3 font-medium ${
-                  activeLang === "VI"
+                className={`py-3 font-medium ${activeLang === "VI"
                     ? "border-b-2 border-[#41398B] text-black"
                     : "text-gray-500 hover:text-black"
-                }`}
+                  }`}
               >
                 Tiếng Việt (VI)
               </button>
@@ -537,8 +536,8 @@ export default function FeeTaxPage() {
                     ? "Update"
                     : "Cập nhật"
                   : activeLang === "EN"
-                  ? "Add"
-                  : "Thêm"}
+                    ? "Add"
+                    : "Thêm"}
               </button>
             </div>
           </div>

@@ -149,7 +149,22 @@ export default function BlockPage() {
       setZones([]);
       fetchBlocks();
       setCurrentPage(1);
-    } catch {
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unknown error";
+
+      if (msg.includes("Block with same name")) {
+        CommonToaster(
+          isVI
+            ? "Tên khối này đã tồn tại trong khu vực đã chọn."
+            : "This Block name already exists in the selected Zone.",
+          "error"
+        );
+        return;
+      }
+
       CommonToaster(
         isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
         "error"
@@ -193,6 +208,7 @@ export default function BlockPage() {
       fetchBlocks();
     } catch (error) {
       CommonToaster(
+        error.response?.data?.message ||
         error.response?.data?.error ||
         (isVI ? "Không thể xóa khối." : "Failed to delete block."),
         "error"

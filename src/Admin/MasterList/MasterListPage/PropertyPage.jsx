@@ -123,8 +123,26 @@ export default function PropertyPage() {
       setShowModal(false);
       fetchProperties();
       setEditingProperty(null);
-    } catch {
-      CommonToaster("Failed to save data.", "error");
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unknown error";
+
+      if (msg.includes("already exists")) {
+        CommonToaster(
+          isVI
+            ? "Tên dự án này đã tồn tại."
+            : "A Project with this name already exists.",
+          "error"
+        );
+        return;
+      }
+
+      CommonToaster(
+        isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
+        "error"
+      );
     }
   };
 
@@ -133,37 +151,30 @@ export default function PropertyPage() {
   const handleDelete = async () => {
     try {
       await deleteProjectCommunity(deleteConfirm.id);
-      CommonToaster("Deleted successfully!", "success");
+
+      CommonToaster(
+        isVI ? "Xóa dự án thành công!" : "Project deleted successfully!",
+        "success"
+      );
+
       setDeleteConfirm({ show: false, id: null });
       fetchProperties();
     } catch (error) {
-      const errMsg =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        "Unknown error";
+      const msg = error.response?.data?.error || "Unknown error";
 
-      if (errMsg.includes("zones") || errMsg.includes("sub-areas")) {
-        CommonToaster(
-          isVI
-            ? "Không thể xóa dự án vì vẫn còn Khu vực / Tiểu khu. Vui lòng xóa chúng trước."
-            : "Cannot delete Project/Community because Zones/Sub-areas exist. Please delete them first.",
-          "error"
-        );
-      } else if (errMsg.includes("block")) {
-        CommonToaster(
-          isVI
-            ? "Không thể xóa dự án vì vẫn còn Khối. Vui lòng xóa chúng trước."
-            : "Cannot delete Project/Community because Blocks exist. Please delete them first.",
-          "error"
-        );
-      } else {
-        CommonToaster(
-          isVI ? "Không thể xóa dự án." : "Failed to delete project.",
-          "error"
-        );
-      }
+      CommonToaster(
+        msg.includes("Zone") || msg.includes("Block")
+          ? (isVI
+            ? "Không thể xóa dự án vì còn khu vực hoặc khối."
+            : "Cannot delete project because Zone & Block exist.")
+          : (isVI
+            ? "Không thể xóa dự án."
+            : "Failed to delete project."),
+        "error"
+      );
     }
   };
+
 
 
   // ✅ Toggle Active / Inactive

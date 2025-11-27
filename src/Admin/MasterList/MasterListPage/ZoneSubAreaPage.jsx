@@ -138,8 +138,26 @@ export default function ZoneSubAreaPage() {
       setShowModal(false);
       fetchZones();
       setEditingZone(null);
-    } catch {
-      CommonToaster("Failed to save data.", "error");
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unknown error";
+
+      if (msg.includes("Zone/Sub-area with same name")) {
+        CommonToaster(
+          isVI
+            ? "Tên khu vực / tiểu khu đã tồn tại trong dự án này."
+            : "This Zone/Sub-area name already exists in this Project.",
+          "error"
+        );
+        return;
+      }
+
+      CommonToaster(
+        isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
+        "error"
+      );
     }
   };
 
@@ -490,48 +508,25 @@ export default function ZoneSubAreaPage() {
                     <AntdSelect
                       showSearch
                       allowClear
-                      labelInValue
-                      placeholder={
-                        isVI ? "Chọn dự án / cộng đồng" : "Select Project / Community"
-                      }
+                      placeholder={isVI ? "Chọn dự án / cộng đồng" : "Select Project / Community"}
                       className="w-full custom-select"
                       popupClassName="custom-dropdown"
-
-                      /* EDIT MODE: match by NAME not ID */
-                      value={
-                        form.property
-                          ? {
-                            value: JSON.stringify(form.property),
-                            label: form.property[language] || "",
-                          }
-                          : undefined
-                      }
-
-                      onChange={(opt) => {
-                        const obj = JSON.parse(opt.value); // {en,vi}
-
-                        // find full property to get ID
-                        const selectedProject = properties.find(
-                          (p) => p.name.en === obj.en
-                        );
-
+                      value={form.property || undefined}
+                      onChange={(value) =>
                         setForm((prev) => ({
                           ...prev,
-                          property: obj,
-                          propertyId: selectedProject?._id || "",
-                        }));
-                      }}
+                          property: value,
+                        }))
+                      }
+                      optionFilterProp="children"
                     >
                       {properties.map((p) => (
-                        <AntdSelect.Option
-                          key={p._id}
-                          value={JSON.stringify({ en: p.name.en, vi: p.name.vi })}
-                          label={p.name[language]}
-                        >
-                          {p.name[language]}
+                        <AntdSelect.Option key={p._id} value={p._id}>
+                          {language === "vi" ? p.name.vi : p.name.en}
                         </AntdSelect.Option>
                       ))}
                     </AntdSelect>
+
 
                   </div>
                   <div>
@@ -553,29 +548,27 @@ export default function ZoneSubAreaPage() {
                   <div>
                     <label>Dự án / Cộng đồng</label>
                     <AntdSelect
-                      key={activeLang}
-                      style={{ marginTop: 7 }}
                       showSearch
                       allowClear
-                      placeholder={
-                        isVI
-                          ? "Chọn dự án / cộng đồng"
-                          : "Select Project / Community"
-                      }
+                      placeholder={isVI ? "Chọn dự án / cộng đồng" : "Select Project / Community"}
+                      className="w-full custom-select"
+                      popupClassName="custom-dropdown"
                       value={form.property || undefined}
                       onChange={(value) =>
-                        setForm({ ...form, property: value })
+                        setForm((prev) => ({
+                          ...prev,
+                          property: value,
+                        }))
                       }
                       optionFilterProp="children"
-                      className="w-full custom-select focus:ring-2 focus:ring-gray-300"
-                      popupClassName="custom-dropdown"
                     >
                       {properties.map((p) => (
                         <AntdSelect.Option key={p._id} value={p._id}>
-                          {activeLang === "VI" ? p.name?.vi : p.name?.en}
+                          {activeLang === "VI" ? p.name.vi : p.name.en}
                         </AntdSelect.Option>
                       ))}
                     </AntdSelect>
+
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
