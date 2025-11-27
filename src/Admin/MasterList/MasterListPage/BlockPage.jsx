@@ -240,9 +240,18 @@ export default function BlockPage() {
 
         <button
           onClick={() => {
-            setShowModal(true);
             setEditingBlock(null);
+            setForm({
+              name_en: "",
+              name_vi: "",
+              status: "Active",
+              property: "",
+              zone: "",
+            });
+
+            setZones([]);
             setActiveLang(language === "vi" ? "VI" : "EN");
+            setShowModal(true);
           }}
           className="flex items-center gap-2 bg-[#41398B] cursor-pointer
           hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm"
