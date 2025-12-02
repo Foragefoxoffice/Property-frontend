@@ -117,22 +117,46 @@ export default function FeeTaxPage() {
 
       setShowModal(false);
       setEditingRecord(null);
+
       setForm({
-        code_en: "",
-        code_vi: "",
         name_en: "",
         name_vi: "",
         status: "Active",
       });
+
       fetchRecords();
       setCurrentPage(1);
-    } catch {
+
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unknown error";
+
+      // ✅ FIXED — EXACT MATCH TO BACKEND
+      if (
+        msg.toLowerCase().includes("fee/tax with this name already exists") ||
+        msg.toLowerCase().includes("fee tax with this name already exists") ||
+        msg.toLowerCase().includes("fee/tax already exists") ||
+        msg.toLowerCase().includes("fee tax already exists") ||
+        msg.toLowerCase().includes("same name")
+      ) {
+        CommonToaster(
+          isVI
+            ? "Tên phí / thuế này đã tồn tại."
+            : "This Fee/Tax name already exists.",
+          "error"
+        );
+        return;
+      }
+
       CommonToaster(
         isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
         "error"
       );
     }
   };
+
 
   // ✅ Edit
   const handleEdit = (record) => {
@@ -462,8 +486,8 @@ export default function FeeTaxPage() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium ${activeLang === "EN"
-                    ? "border-b-2 border-[#41398B] text-black"
-                    : "text-gray-500 hover:text-black"
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -472,8 +496,8 @@ export default function FeeTaxPage() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium ${activeLang === "VI"
-                    ? "border-b-2 border-[#41398B] text-black"
-                    : "text-gray-500 hover:text-black"
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

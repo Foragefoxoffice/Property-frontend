@@ -90,7 +90,7 @@ export default function UnitPage() {
 
   // ✅ Add/Edit
   const handleSubmit = async () => {
-    const { code_en, code_vi, name_en, name_vi, symbol_en, symbol_vi } = form;
+    const { name_en, name_vi, symbol_en, symbol_vi } = form;
 
     if (!name_en || !name_vi || !symbol_en || !symbol_vi) {
       CommonToaster(
@@ -116,10 +116,43 @@ export default function UnitPage() {
           "success"
         );
       }
+
       setShowModal(false);
       setEditingUnit(null);
+
+      // Reset form
+      setForm({
+        name_en: "",
+        name_vi: "",
+        symbol_en: "",
+        symbol_vi: "",
+        status: "Active",
+      });
+
       fetchUnits();
-    } catch {
+      setCurrentPage(1);
+
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unknown error";
+
+      // 🔥 SAME DUPLICATE NAME HANDLING like Availability, Deposits, Zones
+      if (
+        msg.toLowerCase().includes("unit with this name already exists") ||
+        msg.toLowerCase().includes("unit already exists") ||
+        msg.toLowerCase().includes("same name")
+      ) {
+        CommonToaster(
+          isVI
+            ? "Tên đơn vị này đã tồn tại."
+            : "This unit name already exists.",
+          "error"
+        );
+        return;
+      }
+
       CommonToaster(
         isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
         "error"
@@ -304,8 +337,8 @@ export default function UnitPage() {
                     <td className="px-6 py-3 flex items-center gap-2">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -512,8 +545,8 @@ export default function UnitPage() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -521,8 +554,8 @@ export default function UnitPage() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

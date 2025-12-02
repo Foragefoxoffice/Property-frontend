@@ -109,25 +109,62 @@ export default function AvailabilityStatusPage() {
   };
 
   // ✅ Submit Add/Edit
+  // ✅ Submit Add/Edit
   const handleSubmit = async () => {
     if (!form.name_en || !form.name_vi) {
-      CommonToaster("Please fill all English and Vietnamese fields", "error");
+      CommonToaster(
+        isVI
+          ? "Vui lòng nhập đầy đủ trường tiếng Anh và tiếng Việt."
+          : "Please fill all English and Vietnamese fields",
+        "error"
+      );
       return;
     }
 
     try {
       if (editingStatus) {
         await updateAvailabilityStatus(editingStatus._id, form);
-        CommonToaster("Availability Status updated successfully!", "success");
+        CommonToaster(
+          isVI
+            ? "Cập nhật trạng thái khả dụng thành công!"
+            : "Availability Status updated successfully!",
+          "success"
+        );
       } else {
         await createAvailabilityStatus(form);
-        CommonToaster("Availability Status added successfully!", "success");
+        CommonToaster(
+          isVI
+            ? "Thêm trạng thái khả dụng thành công!"
+            : "Availability Status added successfully!",
+          "success"
+        );
       }
+
       setShowModal(false);
       fetchStatuses();
       setEditingStatus(null);
-    } catch {
-      CommonToaster("Failed to save data.", "error");
+
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unknown error";
+
+      // 🔥 FIXED duplicate name detection
+      if (msg.toLowerCase().includes("availability status with this name")) {
+        CommonToaster(
+          isVI
+            ? "Tên trạng thái khả dụng đã tồn tại."
+            : "This Availability Status name already exists.",
+          "error"
+        );
+        return;
+      }
+
+      CommonToaster(
+        isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
+        "error"
+      );
     }
   };
 
@@ -241,8 +278,8 @@ export default function AvailabilityStatusPage() {
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -428,8 +465,8 @@ export default function AvailabilityStatusPage() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -437,8 +474,8 @@ export default function AvailabilityStatusPage() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

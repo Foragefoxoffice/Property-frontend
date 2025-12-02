@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, X, ArrowRight, ArrowLeft, Eye } from "lucide-react";
 import { Select as AntdSelect, Switch } from "antd";
 import { CommonToaster } from "@/Common/CommonToaster";
+import { compressImage, getBase64Size, formatBytes } from "@/utils/imageCompression";
 
 /* =========================================================
    💜 SKELETON LOADER (with bg-[#41398b29])
@@ -105,8 +106,6 @@ export default function CreatePropertyListStep2({
     },
   }[lang];
 
-  const transactionType = initialData.transactionType?.en || "Sale";
-
   const [form, setForm] = useState({
     currency: initialData.currency || { symbol: "", code: "", name: "" },
     price: initialData.price || "",
@@ -147,6 +146,13 @@ export default function CreatePropertyListStep2({
       checkOut: false,
     },
   });
+
+  const transactionType =
+    form.transactionType?.en ||
+    form.transactionType ||
+    initialData.transactionType?.en ||
+    "Sale";
+
 
   const [images, setImages] = useState(initialData.propertyImages || []);
   const [videos, setVideos] = useState(initialData.propertyVideos || []);
@@ -200,6 +206,14 @@ export default function CreatePropertyListStep2({
     }
   }, [currencies]);
 
+  const formatNumber = (value) => {
+    if (!value) return "";
+    const numeric = value.toString().replace(/,/g, "");
+    if (isNaN(numeric)) return "";
+    return Number(numeric).toLocaleString("en-US");
+  };
+
+
   /* =========================================================
    ✅ File Size Limits
    Images & floorplan: 2 MB
@@ -245,7 +259,30 @@ export default function CreatePropertyListStep2({
         continue; // Skip files that don't meet size requirements
       }
 
-      const base64 = await fileToBase64(file);
+      let base64;
+
+      // Compress images to reduce size
+      if (type === "image" || type === "floor") {
+        try {
+          console.log(`Original file size: ${formatBytes(file.size)}`);
+          base64 = await compressImage(file, 400); // Compress to max 400KB
+          const compressedSize = getBase64Size(base64);
+          console.log(`Compressed size: ${formatBytes(compressedSize)}`);
+
+          if (compressedSize > 500 * 1024) { // 500KB limit after compression
+            CommonToaster(`Image still too large after compression. Please use a smaller image.`, "error");
+            continue;
+          }
+        } catch (error) {
+          console.error("Compression error:", error);
+          CommonToaster("Failed to compress image", "error");
+          continue;
+        }
+      } else {
+        // For videos, use regular base64 conversion
+        base64 = await fileToBase64(file);
+      }
+
       processedFiles.push({ file, url: base64 });
     }
 
@@ -617,9 +654,14 @@ export default function CreatePropertyListStep2({
               {t.price}
             </label>
             <input
-              type="number"
-              value={form.price}
-              onChange={(e) => handleChange("price", e.target.value)}
+              type="text"
+              value={formatNumber(form.price)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                if (!isNaN(raw)) {
+                  handleChange("price", raw);
+                }
+              }}
               placeholder={t.typehere}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
             />
@@ -1052,10 +1094,15 @@ export default function CreatePropertyListStep2({
               {t.leasePrice}
             </label>
             <input
-              type="number"
-              value={form.leasePrice}
+              type="text"
+              value={formatNumber(form.leasePrice)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                if (!isNaN(raw)) {
+                  handleChange("leasePrice", raw);
+                }
+              }}
               placeholder={t.typehere}
-              onChange={(e) => handleChange("leasePrice", e.target.value)}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -1341,10 +1388,15 @@ export default function CreatePropertyListStep2({
               {t.pricePerNight}
             </label>
             <input
-              type="number"
-              placeholder="Type here"
-              value={form.pricePerNight}
-              onChange={(e) => handleChange("pricePerNight", e.target.value)}
+              type="text"
+              value={formatNumber(form.pricePerNight)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                if (!isNaN(raw)) {
+                  handleChange("pricePerNight", raw);
+                }
+              }}
+              placeholder={t.typehere}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>

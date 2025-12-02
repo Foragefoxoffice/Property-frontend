@@ -4,41 +4,41 @@ import { getAllOwners } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { useParams, useNavigate } from "react-router-dom";
 
-export default function OwnerView({ ownerId, goBack }) {
+export default function OwnerView() {
   const { language } = useLanguage();
   const t = translations[language];
   const [owner, setOwner] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   useEffect(() => {
     const fetchOwner = async () => {
       try {
         const res = await getAllOwners();
-        const foundOwner = res.data.data.find((o) => o._id === ownerId);
+        const foundOwner = res.data.data.find((o) => o._id === id);
         if (!foundOwner) {
-          CommonToaster(
-            language === "vi" ? "Không tìm thấy chủ sở hữu" : "Owner not found",
-            "error"
-          );
-          goBack();
+          CommonToaster(language === "vi" ? "Không tìm thấy chủ sở hữu" : "Owner not found", "error");
+          navigate(-1);
           return;
         }
         setOwner(foundOwner);
-      } catch (err) {
-        console.error(err);
-        CommonToaster(
-          language === "vi"
-            ? "Không thể tải chi tiết chủ sở hữu"
-            : "Failed to fetch owner details",
-          "error"
-        );
+      } catch {
+        CommonToaster(language === "vi" ? "Không thể tải chi tiết chủ sở hữu" : "Failed to fetch owner details", "error");
       } finally {
         setLoading(false);
       }
     };
-    if (ownerId) fetchOwner();
-  }, [ownerId, language]);
+
+    if (id) fetchOwner();
+  }, [id, language]);
+
 
   if (loading)
     return (
@@ -111,7 +111,7 @@ export default function OwnerView({ ownerId, goBack }) {
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <button
-            onClick={goBack}
+            onClick={handleBack}
             className="p-2 rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white cursor-pointer transition"
           >
             <ArrowLeft size={20} />
@@ -123,7 +123,6 @@ export default function OwnerView({ ownerId, goBack }) {
           </h1>
         </div>
 
-        {/* Card */}
         {/* Card */}
         <div className="relative bg-white rounded-2xl shadow-md px-6 py-8 border border-gray-100 flex gap-6">
 
@@ -203,10 +202,8 @@ export default function OwnerView({ ownerId, goBack }) {
                   </a>
                 );
               })}
-
           </div>
         </div>
-
       </div>
     </div>
   );

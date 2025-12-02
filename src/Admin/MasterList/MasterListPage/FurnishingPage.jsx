@@ -109,9 +109,37 @@ export default function FurnishingPage() {
         name_vi: "",
         status: "Active",
       });
-    } catch {
-      CommonToaster("Failed to save furnishing", "error");
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unknown error";
+
+      console.log("FURNISHING ERROR:", msg);
+
+      // 🔥 Duplicate name error detection
+      if (
+        msg.toLowerCase().includes("furnishing with this name already exists") ||
+        msg.toLowerCase().includes("furnishing already exists") ||
+        msg.toLowerCase().includes("furnishing name already exists") ||
+        (msg.toLowerCase().includes("exist") && msg.toLowerCase().includes("name")) ||
+        msg.toLowerCase().includes("duplicate")
+      ) {
+        CommonToaster(
+          isVI
+            ? "Tên nội thất này đã tồn tại."
+            : "This furnishing name already exists.",
+          "error"
+        );
+        return;
+      }
+
+      CommonToaster(
+        isVI ? "Không thể lưu nội thất." : "Failed to save furnishing.",
+        "error"
+      );
     }
+
   };
 
   // ✅ Edit
@@ -240,8 +268,8 @@ export default function FurnishingPage() {
                     <td className="px-6 py-3">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-600"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-600"
                           }`}
                       >
                         {isVI
@@ -426,8 +454,8 @@ export default function FurnishingPage() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -435,8 +463,8 @@ export default function FurnishingPage() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

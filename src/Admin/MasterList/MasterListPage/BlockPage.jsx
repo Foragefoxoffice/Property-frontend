@@ -155,11 +155,19 @@ export default function BlockPage() {
         error.response?.data?.error ||
         "Unknown error";
 
-      if (msg.includes("Block with same name")) {
+      console.log("BLOCK ERROR:", msg);
+
+      // 🔥 Duplicate detection (CREATE + UPDATE)
+      if (
+        msg.toLowerCase().includes("block with this name already exists") ||
+        msg.toLowerCase().includes("another block with this name already exists") ||
+        (msg.toLowerCase().includes("exists") && msg.toLowerCase().includes("block")) ||
+        msg.toLowerCase().includes("duplicate")
+      ) {
         CommonToaster(
           isVI
             ? "Tên khối này đã tồn tại trong khu vực đã chọn."
-            : "This Block name already exists in the selected Zone.",
+            : "This block name already exists in the selected Zone.",
           "error"
         );
         return;

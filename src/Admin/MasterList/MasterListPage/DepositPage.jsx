@@ -100,9 +100,7 @@ export default function DepositPage() {
       if (editingDeposit) {
         await updateDeposit(editingDeposit._id, form);
         CommonToaster(
-          isVI
-            ? "Cập nhật đặt cọc thành công!"
-            : "Deposit updated successfully!",
+          isVI ? "Cập nhật đặt cọc thành công!" : "Deposit updated successfully!",
           "success"
         );
       } else {
@@ -115,22 +113,48 @@ export default function DepositPage() {
 
       setShowModal(false);
       setEditingDeposit(null);
+
       setForm({
-        code_en: "",
-        code_vi: "",
         name_en: "",
         name_vi: "",
         status: "Active",
       });
+
       fetchDeposits();
       setCurrentPage(1);
-    } catch {
+
+    } catch (error) {
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Unknown error";
+
+      console.log("ERROR MESSAGE FROM BACKEND:", msg);
+
+      // ✅ FULL DUPLICATE NAME HANDLING
+      if (
+        msg.toLowerCase().includes("deposit with this name already exists") ||
+        msg.toLowerCase().includes("deposit already exists") ||
+        msg.toLowerCase().includes("deposit name already exists") ||
+        msg.toLowerCase().includes("same name")
+      ) {
+        CommonToaster(
+          isVI
+            ? "Tên đặt cọc này đã tồn tại."
+            : "This deposit name already exists.",
+          "error"
+        );
+        return;
+      }
+
       CommonToaster(
         isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
         "error"
       );
     }
   };
+
+
 
   // ✅ Edit
   const handleEdit = (deposit) => {
@@ -263,8 +287,8 @@ export default function DepositPage() {
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -446,8 +470,8 @@ export default function DepositPage() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -455,8 +479,8 @@ export default function DepositPage() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

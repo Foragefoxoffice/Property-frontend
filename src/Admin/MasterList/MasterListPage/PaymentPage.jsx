@@ -111,9 +111,37 @@ export default function PaymentPage() {
         status: "Active",
       });
       setCurrentPage(1);
-    } catch {
-      CommonToaster("Failed to save payment", "error");
+    } catch (error) {
+      const msg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "Unknown error";
+
+      console.log("PAYMENT ERROR:", msg);
+
+      // 🔥 Duplicate name match
+      if (
+        msg.toLowerCase().includes("payment with this name already exists") ||
+        msg.toLowerCase().includes("payment already exists") ||
+        msg.toLowerCase().includes("payment name already exists") ||
+        (msg.toLowerCase().includes("exist") && msg.toLowerCase().includes("name")) ||
+        msg.toLowerCase().includes("duplicate")
+      ) {
+        CommonToaster(
+          isVI
+            ? "Tên phương thức thanh toán này đã tồn tại."
+            : "This payment name already exists.",
+          "error"
+        );
+        return;
+      }
+
+      CommonToaster(
+        isVI ? "Không thể lưu phương thức thanh toán." : "Failed to save payment.",
+        "error"
+      );
     }
+
   };
 
   // Edit

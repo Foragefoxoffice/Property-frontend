@@ -19,6 +19,7 @@ import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { Select } from "antd";
+import { useNavigate } from "react-router-dom";
 
 /* ==========================================================
    ✅ Custom Select Component
@@ -76,6 +77,8 @@ const OwnersLandlords = ({ openOwnerView }) => {
     ownerNotes_vi: "",
     gender: "",
   });
+
+  const navigate = useNavigate();
 
   const [phoneRows, setPhoneRows] = useState([{ number: "" }]);
   const [emailRows, setEmailRows] = useState([{ email: "" }]);
@@ -287,7 +290,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
                   <td className="px-6 py-4 text-center">
                     <div className="flex justify-center gap-2">
                       <button
-                        onClick={() => openOwnerView(item)}
+                        onClick={() => navigate(`/dashboard/landlords/${item._id}`)}
                         className="p-2 border rounded-full hover:bg-gray-200"
                       >
                         <Eye size={18} />

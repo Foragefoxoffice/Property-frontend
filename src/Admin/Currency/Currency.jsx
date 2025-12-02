@@ -168,7 +168,43 @@ export default function Currency({ goBack }) {
       });
       fetchCurrencies();
       setCurrentPage(1);
-    } catch {
+    } catch (error) {
+      const msg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "Unknown error";
+
+      console.log("CURRENCY ERROR:", msg);
+
+      // 🔥 Duplicate currency code
+      if (
+        msg.toLowerCase().includes("currency code already exists") ||
+        (msg.toLowerCase().includes("exists") && msg.toLowerCase().includes("code"))
+      ) {
+        CommonToaster(
+          isVI
+            ? "Mã tiền tệ này đã tồn tại."
+            : "This currency code already exists.",
+          "error"
+        );
+        return;
+      }
+
+      // 🔥 Duplicate currency name
+      if (
+        msg.toLowerCase().includes("currency with this name already exists") ||
+        (msg.toLowerCase().includes("exists") && msg.toLowerCase().includes("name"))
+      ) {
+        CommonToaster(
+          isVI
+            ? "Tên tiền tệ này đã tồn tại."
+            : "This currency name already exists.",
+          "error"
+        );
+        return;
+      }
+
+      // ❌ Fallback error
       CommonToaster(
         isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
         "error"
