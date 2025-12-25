@@ -29,7 +29,8 @@ export const translations = {
     lease: "Lease",
     sale: "Sale",
     homeStay: "Home Stay",
-    trash: "Trash"
+    trash: "Trash",
+    bulkUpload: "Bulk Upload",
   },
 
   vi: {
@@ -62,6 +63,7 @@ export const translations = {
     propertyTitleLease: "Thuê Bất động sản",
     propertyTitleSale: "Bán Bất động sản",
     propertyTitleHomeStay: "Home Stay Bất động sản",
-    filter: "Lọc"
+    filter: "Lọc",
+    bulkUpload: "Tải lên hàng loạt",
   },
 };

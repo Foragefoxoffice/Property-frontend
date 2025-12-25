@@ -8,6 +8,7 @@ import {
   X,
   SlidersHorizontal,
   RotateCcw,
+  Upload,
 } from "lucide-react";
 import {
   deletePropertyListing,
@@ -381,6 +382,16 @@ export default function ManageProperty({
             <SlidersHorizontal className="w-4 h-4" />
             {t.filter}
           </button>
+
+          {trashMode ? null : (
+            <button
+              onClick={() => navigate(`/dashboard/${transactionRoute}/bulk-upload`)}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
+            >
+              <Upload className="w-4 h-4" />
+              {t.bulkUpload}
+            </button>
+          )}
 
           {trashMode ? null : (
             <button

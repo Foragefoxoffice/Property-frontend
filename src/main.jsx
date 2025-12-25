@@ -47,6 +47,7 @@ import StaffView from "./Admin/AddMembers/StaffView";
 import TrashPage from "./Admin/Trash/TrashPage";
 import ManageTrashProperty from "./Admin/Property/ManageTrashProperty.jsx"
 import FiltersPage from "./Admin/Filters/Filter.jsx";
+import BulkUpload from "./Admin/Property/BulkUpload.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -127,6 +128,12 @@ createRoot(document.getElementById("root")).render(
                 defaultTransactionType="Home Stay"
               />
             }
+          />
+
+          {/* BULK UPLOAD ROUTES */}
+          <Route
+            path=":type/bulk-upload"
+            element={<BulkUpload />}
           />
 
           {/* ---------- MASTER ROUTES ---------- */}
