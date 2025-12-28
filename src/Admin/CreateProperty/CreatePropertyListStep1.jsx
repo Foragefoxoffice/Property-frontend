@@ -1225,7 +1225,7 @@ export default function CreatePropertyListStep1({
 
               /* Selected value (must be string) */
               value={
-                form.floors
+                form.floors && (form.floors.en || form.floors.vi)
                   ? JSON.stringify(form.floors) // store full {en,vi} as string
                   : undefined
               }

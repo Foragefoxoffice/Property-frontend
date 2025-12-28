@@ -31,8 +31,72 @@ export default function BulkUpload() {
   const [errors, setErrors] = useState([]);
   const [pendingUploadData, setPendingUploadData] = useState(null);
 
-  // Define field mappings for each transaction type
-  const fieldMappings = {
+  // Bulk Upload page translations
+  const bulkTranslations = {
+    en: {
+      title: "Bulk Upload Properties",
+      backToManage: "Back to Manage Properties",
+      downloadTemplate: "Download CSV Template",
+      downloadDesc: "Download a sample CSV template with bilingual headers (English / Vietnamese) to fill in your property data.",
+      uploadFile: "Upload CSV File",
+      uploadDesc: "Select your filled CSV file to upload properties in bulk.",
+      selectFile: "Select CSV File",
+      dragDrop: "or drag and drop here",
+      uploadValidate: "Upload & Validate",
+      uploadCorrect: "Upload Correct Values Only",
+      cancel: "Cancel",
+      validating: "Validating...",
+      uploading: "Uploading...",
+      uploadSuccess: "Upload Successful!",
+      uploadFailed: "Upload Failed - All Rows Have Errors",
+      uploadPartial: "Upload Completed with Some Errors",
+      successMsg: "properties uploaded successfully",
+      failedMsg: "properties failed to upload",
+      fixErrors: "Please fix the errors below and try uploading again.",
+      validationErrors: "Validation Errors",
+      row: "Row",
+      mandatoryFields: "Mandatory Fields",
+      optionalFields: "Optional Fields",
+      bilingualSupport: "Bilingual Support",
+      bilingualDesc: "This template supports bilingual data entry. Each field has two columns - one for English and one for Vietnamese values.",
+      noteTitle: "Note:",
+      noteDesc: "Please fix the errors in your CSV file and upload again. Make sure all field names match exactly with the template."
+    },
+    vi: {
+      title: "Tải lên hàng loạt bất động sản",
+      backToManage: "Quay lại quản lý bất động sản",
+      downloadTemplate: "Tải xuống mẫu CSV",
+      downloadDesc: "Tải xuống mẫu CSV với tiêu đề song ngữ (Tiếng Anh / Tiếng Việt) để điền thông tin bất động sản của bạn.",
+      uploadFile: "Tải lên tệp CSV",
+      uploadDesc: "Chọn tệp CSV đã điền để tải lên hàng loạt bất động sản.",
+      selectFile: "Chọn tệp CSV",
+      dragDrop: "hoặc kéo thả vào đây",
+      uploadValidate: "Tải lên & Xác thực",
+      uploadCorrect: "Chỉ tải lên giá trị đúng",
+      cancel: "Hủy",
+      validating: "Đang xác thực...",
+      uploading: "Đang tải lên...",
+      uploadSuccess: "Tải lên thành công!",
+      uploadFailed: "Tải lên thất bại - Tất cả các hàng có lỗi",
+      uploadPartial: "Tải lên hoàn tất với một số lỗi",
+      successMsg: "bất động sản đã tải lên thành công",
+      failedMsg: "bất động sản tải lên thất bại",
+      fixErrors: "Vui lòng sửa các lỗi bên dưới và thử tải lên lại.",
+      validationErrors: "Lỗi xác thực",
+      row: "Hàng",
+      mandatoryFields: "Trường bắt buộc",
+      optionalFields: "Trường tùy chọn",
+      bilingualSupport: "Hỗ trợ song ngữ",
+      bilingualDesc: "Mẫu này hỗ trợ nhập liệu song ngữ. Mỗi trường có hai cột - một cho tiếng Anh và một cho tiếng Việt.",
+      noteTitle: "Lưu ý:",
+      noteDesc: "Vui lòng sửa lỗi trong tệp CSV của bạn và tải lên lại. Đảm bảo tất cả tên trường khớp chính xác với mẫu."
+    }
+  };
+
+  const bt = bulkTranslations[language];
+
+  // Define field mappings with separate English and Vietnamese columns
+  const baseFields = {
     lease: [
       "Project / Community",
       "Area / Zone",
@@ -91,24 +155,72 @@ export default function BulkUpload() {
     ],
   };
 
-  const currentFields = fieldMappings[type] || fieldMappings.lease;
+  // Field translations
+  const fieldTranslations = {
+    "Project / Community": "Dự án / Cộng đồng",
+    "Area / Zone": "Khu vực / Vùng",
+    "Block Name": "Tên khối",
+    "Property No": "Số bất động sản",
+    "Property Type": "Loại bất động sản",
+    "Available From": "Có sẵn từ",
+    "Unit": "Đơn vị",
+    "Unit Size": "Diện tích",
+    "Bedrooms": "Phòng ngủ",
+    "Bathrooms": "Phòng tắm",
+    "Floor Range": "Phạm vi tầng",
+    "Furnishing": "Trang bị nội thất",
+    "View": "Hướng nhìn",
+    "Property Title": "Tiêu đề bất động sản",
+    "Description": "Mô tả",
+    "Currency": "Tiền tệ",
+    "Lease Price": "Giá thuê",
+    "Sale Price": "Giá bán",
+    "Price Per Night": "Giá mỗi đêm",
+  };
 
-  // Generate sample CSV template
+  // Create bilingual field arrays (alternating English and Vietnamese columns)
+  const createBilingualFields = (fields) => {
+    const result = [];
+    fields.forEach(field => {
+      result.push(field); // English column
+      result.push(fieldTranslations[field]); // Vietnamese column
+    });
+    return result;
+  };
+
+  const fieldMappings = {
+    lease: createBilingualFields(baseFields.lease),
+    sale: createBilingualFields(baseFields.sale),
+    homestay: createBilingualFields(baseFields.homestay),
+  };
+
+  const currentFields = fieldMappings[type] || fieldMappings.lease;
+  const currentBaseFields = baseFields[type] || baseFields.lease;
+
+  // Generate sample CSV template with separate English and Vietnamese columns
   const generateTemplate = () => {
+    // Use the bilingual fields directly (already alternating EN/VI)
     const headers = currentFields.join(",");
+    
     const sampleRow = currentFields
-      .map((field) => {
-        if (field.includes("Price")) return "1000";
-        if (field === "Bedrooms" || field === "Bathrooms") return "2";
-        if (field === "Unit Size") return "1200";
-        if (field === "Currency") return "USD";
-        if (field === "Available From") return "2024-01-01";
-        return `Sample ${field}`;
+      .map((field, index) => {
+        // Check if it's a Vietnamese column (odd index)
+        const isVietnamese = index % 2 === 1;
+        const baseField = isVietnamese ? currentBaseFields[Math.floor(index / 2)] : field;
+        
+        if (baseField.includes("Price")) return "1000";
+        if (baseField === "Bedrooms" || baseField === "Bathrooms") return "2";
+        if (baseField === "Unit Size") return "1200";
+        if (baseField === "Currency") return "USD";
+        if (baseField === "Available From") return "2024-01-01";
+        return isVietnamese ? `Mẫu ${field}` : `Sample ${field}`;
       })
       .join(",");
 
     const csvContent = `${headers}\n${sampleRow}`;
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    // Add UTF-8 BOM to ensure Excel recognizes the encoding
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
@@ -138,22 +250,43 @@ export default function BulkUpload() {
     }
   };
 
-  // Parse CSV file
+  // Parse CSV file with separate English and Vietnamese columns
   const parseCSV = (text) => {
     const lines = text.split("\n").filter((line) => line.trim());
     if (lines.length === 0) return { headers: [], rows: [] };
 
-    const headers = lines[0].split(",").map((h) => h.trim());
+    const rawHeaders = lines[0].split(",").map((h) => h.trim());
+    
+    // Process rows and merge EN/VI columns into localized objects
     const rows = lines.slice(1).map((line, index) => {
       const values = line.split(",").map((v) => v.trim());
       const rowData = {};
-      headers.forEach((header, i) => {
-        rowData[header] = values[i] || "";
+      
+      // Process pairs of columns (English, Vietnamese)
+      currentBaseFields.forEach((baseField, fieldIndex) => {
+        const enIndex = fieldIndex * 2;
+        const viIndex = fieldIndex * 2 + 1;
+        
+        const enValue = values[enIndex] || "";
+        const viValue = values[viIndex] || "";
+        
+        // For fields that need localization, create {en, vi} object
+        // For numeric/date/identifier fields, just use the English value
+        if (baseField === "Property No" || baseField === "Unit Size" || baseField === "Bedrooms" || 
+            baseField === "Bathrooms" || baseField.includes("Price") ||
+            baseField === "Available From" || baseField === "Currency") {
+          rowData[baseField] = enValue;
+        } else {
+          // Create localized object
+          rowData[baseField] = { en: enValue, vi: viValue };
+        }
       });
+      
       return { rowNumber: index + 2, data: rowData }; // +2 because row 1 is header
     });
 
-    return { headers, rows };
+    // Return base field names as headers for validation
+    return { headers: currentBaseFields, rows };
   };
 
   // Validate row against master fields
@@ -161,15 +294,30 @@ export default function BulkUpload() {
     const errors = [];
     const missingFields = [];
 
-    currentFields.forEach((field) => {
-      if (!rowData[field] || rowData[field].trim() === "") {
-        missingFields.push(field);
+    // Only these three fields are mandatory
+    const mandatoryFields = [
+      "Project / Community",
+      "Area / Zone",
+      "Block Name"
+    ];
+
+    mandatoryFields.forEach((field) => {
+      const value = rowData[field];
+      // Check if value is empty (for localized objects, check both en and vi)
+      if (typeof value === 'object') {
+        if ((!value.en || value.en.trim() === "") && (!value.vi || value.vi.trim() === "")) {
+          missingFields.push(field);
+        }
+      } else {
+        if (!value || value.trim() === "") {
+          missingFields.push(field);
+        }
       }
     });
 
     // Check for extra fields
     const extraFields = Object.keys(rowData).filter(
-      (key) => !currentFields.includes(key)
+      (key) => !currentBaseFields.includes(key)
     );
 
     if (missingFields.length > 0) {
@@ -190,7 +338,7 @@ export default function BulkUpload() {
       });
     }
 
-    // Validate numeric fields
+    // Validate numeric fields (only if they are provided)
     const numericFields = ["Bedrooms", "Bathrooms", "Unit Size"];
     const priceField = currentFields.find((f) => f.includes("Price"));
 
@@ -218,7 +366,7 @@ export default function BulkUpload() {
       });
     }
 
-    // Validate date format for Available From
+    // Validate date format for Available From (only if provided)
     if (
       currentFields.includes("Available From") &&
       rowData["Available From"]
@@ -249,13 +397,19 @@ export default function BulkUpload() {
     setErrors([]);
 
     try {
-      // Read file
-      const text = await selectedFile.text();
+      // Read file with UTF-8 encoding
+      const text = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = (e) => reject(e);
+        reader.readAsText(selectedFile, 'UTF-8');
+      });
       const { headers, rows } = parseCSV(text);
 
-      // Validate headers
+      // Validate headers - only check mandatory fields
+      const mandatoryFields = ["Project / Community", "Area / Zone", "Block Name"];
       const headerErrors = [];
-      currentFields.forEach((field) => {
+      mandatoryFields.forEach((field) => {
         if (!headers.includes(field)) {
           headerErrors.push(field);
         }
@@ -263,7 +417,7 @@ export default function BulkUpload() {
 
       if (headerErrors.length > 0) {
         CommonToaster(
-          `CSV template mismatch. Missing columns: ${headerErrors.join(", ")}`,
+          `CSV template mismatch. Missing mandatory columns: ${headerErrors.join(", ")}`,
           "error"
         );
         setUploading(false);
@@ -429,13 +583,13 @@ export default function BulkUpload() {
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span>Back</span>
+          <span>{bt.backToManage}</span>
         </button>
         <h1 className="text-3xl font-semibold text-gray-900">
-          Bulk Upload - {getTransactionTypeLabel()} Properties
+          {bt.title} - {getTransactionTypeLabel()}
         </h1>
         <p className="text-gray-600 mt-2">
-          Upload multiple properties at once using a CSV file
+          {bt.uploadDesc}
         </p>
       </div>
 
@@ -447,35 +601,52 @@ export default function BulkUpload() {
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Download CSV Template
+              {bt.downloadTemplate}
             </h3>
             <p className="text-gray-600 mb-4">
-              Download the template file with the correct format for{" "}
-              {getTransactionTypeLabel()} properties. Fill in your data and
-              upload it back.
+              {bt.downloadDesc}
             </p>
             <button
               onClick={generateTemplate}
               className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398B] text-white rounded-lg transition cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              Download Template
+              {bt.downloadTemplate}
             </button>
           </div>
         </div>
 
         {/* Required Fields Info */}
         <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>📝 {bt.bilingualSupport}:</strong> {bt.bilingualDesc}
+            </p>
+          </div>
+          
           <h4 className="text-sm font-semibold text-gray-700 mb-3">
-            Required Fields:
+            {bt.mandatoryFields}:
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+            {["Project / Community", "Area / Zone", "Block Name"].map((field, index) => (
+              <div
+                key={index}
+                className="text-sm text-white bg-red-500 px-3 py-1 rounded-lg font-medium"
+              >
+                {field} / {fieldTranslations[field]} *
+              </div>
+            ))}
+          </div>
+          <h4 className="text-sm font-semibold text-gray-700 mb-3 mt-4">
+            {bt.optionalFields}:
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-            {currentFields.map((field, index) => (
+            {currentFields.filter(f => !["Project / Community", "Area / Zone", "Block Name"].includes(f)).map((field, index) => (
               <div
                 key={index}
                 className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg"
               >
-                {field}
+                {field} / {fieldTranslations[field]}
               </div>
             ))}
           </div>
@@ -485,7 +656,7 @@ export default function BulkUpload() {
       {/* Upload Section */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Upload CSV File
+          {bt.uploadFile}
         </h3>
 
         {/* File Input */}
@@ -523,9 +694,9 @@ export default function BulkUpload() {
                 <>
                   <Upload className="w-12 h-12 text-gray-400 mb-3" />
                   <p className="text-lg font-medium text-gray-900 mb-1">
-                    Click to upload or drag and drop
+                    {bt.selectFile}
                   </p>
-                  <p className="text-sm text-gray-600">CSV files only</p>
+                  <p className="text-sm text-gray-600">{bt.dragDrop}</p>
                 </>
               )}
             </label>
@@ -544,7 +715,7 @@ export default function BulkUpload() {
             }`}
           >
             <Upload className="w-4 h-4" />
-            {uploading ? "Processing..." : "Upload & Validate"}
+            {uploading ? bt.validating : bt.uploadValidate}
           </button>
 
           {selectedFile && (
@@ -554,7 +725,7 @@ export default function BulkUpload() {
               className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition cursor-pointer"
             >
               <X className="w-4 h-4" />
-              Reset
+              {bt.cancel}
             </button>
           )}
         </div>
@@ -563,7 +734,7 @@ export default function BulkUpload() {
         {uploading && (
           <div className="mt-6">
             <div className="flex justify-between text-sm text-gray-600 mb-2">
-              <span>Processing...</span>
+              <span>{bt.validating}</span>
               <span>{uploadProgress}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
