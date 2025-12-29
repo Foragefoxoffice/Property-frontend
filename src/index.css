@@ -11,30 +11,61 @@ body {
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 /* === Custom Select Styling === */
 /* --- Select Input Box --- */
 .custom-select .ant-select-selector {
-  height: 48px !important; /* makes it bigger */
+  height: 48px !important;
+  /* makes it bigger */
   font-size: 16px !important;
-  background-color: #f9fafb !important; /* light background */
+  background-color: #f9fafb !important;
+  /* light background */
   border-radius: 10px !important;
-  border: 1px solid #b2b2b3 !important; /* light gray border */
+  border: 1px solid #b2b2b3 !important;
+  /* light gray border */
   transition: all 0.3s ease;
 }
 
 .custom-select .ant-select-selection-item {
-  color: #111827 !important; /* dark text */
+  color: #111827 !important;
+  /* dark text */
 }
 
 .custom-select .ant-select-arrow {
+  height: 10px;
+  margin-top: -6px;
+  font-size: 14px;
+  color: #2a2a2a !important;
+}
+
+.custom-selects .ant-select-selector {
+  height: 40px !important;
+  /* makes it bigger */
+  font-size: 16px !important;
+  background-color: #f9fafb !important;
+  /* light background */
+  border-radius: 10px !important;
+  border: 1px solid #b2b2b3 !important;
+  /* light gray border */
+  transition: all 0.3s ease;
+}
+
+.custom-selects .ant-select-selection-item {
+  color: #111827 !important;
+  /* dark text */
+}
+
+.custom-selects .ant-select-arrow {
   height: 10px;
   margin-top: -6px;
   font-size: 14px;
@@ -66,12 +97,7 @@ body {
   height: 50px;
 }
 
-.ant-select-focused:where(
-    .css-dev-only-do-not-override-1odpy5d
-  ).ant-select-outlined:not(.ant-select-disabled):not(
-    .ant-select-customize-input
-  ):not(.ant-pagination-size-changer)
-  .ant-select-selector {
+.ant-select-focused:where(.css-dev-only-do-not-override-1odpy5d).ant-select-outlined:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector {
   box-shadow: none !important;
 }
 
@@ -93,6 +119,7 @@ body {
     opacity: 0;
     transform: translateY(-5px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -219,6 +246,7 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -227,11 +255,13 @@ body {
 /* loading animation */
 
 @keyframes bounce {
+
   0%,
   80%,
   100% {
     transform: translateY(0);
   }
+
   40% {
     transform: translateY(-8px);
   }
@@ -255,10 +285,12 @@ body {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
@@ -272,6 +304,7 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }

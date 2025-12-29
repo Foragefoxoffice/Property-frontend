@@ -16,7 +16,7 @@ API.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     // Log bulk upload requests
     if (config.url?.includes('bulk-upload')) {
       console.log("📤 Axios Request Config:", {
@@ -26,7 +26,7 @@ API.interceptors.request.use(
         dataKeys: config.data ? Object.keys(config.data) : []
       });
     }
-    
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -261,6 +261,10 @@ export const getPropertiesByTransactionType = (params) =>
 export const getTrashProperties = (params) =>
   API.get("/create-property/trash", { params });
 
+// NEW — Optimized Listing Page API with Filters
+export const getListingProperties = (params) =>
+  API.get("/create-property/listing", { params });
+
 /* =========================================================
    📤 BULK UPLOAD APIs
 ========================================================= */
@@ -270,7 +274,7 @@ export const bulkUploadProperties = (csvData, transactionType, validateOnly = fa
   console.log("   - transactionType:", transactionType);
   console.log("   - validateOnly:", validateOnly);
   console.log("   - Payload being sent:", { csvData: csvData?.substring(0, 30) + "...", transactionType, validateOnly });
-  
+
   return API.post("/create-property/bulk-upload", { csvData, transactionType, validateOnly });
 };
 

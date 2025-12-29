@@ -49,6 +49,9 @@ import ManageTrashProperty from "./Admin/Property/ManageTrashProperty.jsx"
 import FiltersPage from "./Admin/Filters/Filter.jsx";
 import BulkUpload from "./Admin/Property/BulkUpload.jsx";
 
+// Pages
+import ListingPage from "./Pages/ListingPage";
+
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <StrictMode>
@@ -180,6 +183,7 @@ createRoot(document.getElementById("root")).render(
           path="/property-showcase/:id"
           element={<PropertyShowcasePage />}
         />
+        <Route path="/listing" element={<ListingPage />} />
       </Routes>
     </StrictMode>
   </BrowserRouter>
