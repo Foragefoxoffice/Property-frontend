@@ -51,6 +51,8 @@ import BulkUpload from "./Admin/Property/BulkUpload.jsx";
 
 // Pages
 import ListingPage from "./Pages/ListingPage";
+import HomeBannerForm from "./AdminCms/HomeBannerForm.jsx";
+import CMSPlaceholder from "./AdminCms/CMSPlaceholder.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -174,6 +176,10 @@ createRoot(document.getElementById("root")).render(
 
           {/* ---------- TRASH ---------- */}
           <Route path="trash" element={<ManageTrashProperty />} />
+
+          {/* CMS ROUTES */}
+          <Route path="cms/home" element={<HomeBannerForm />} />
+          <Route path="cms/:section" element={<CMSPlaceholder />} />
         </Route>
 
         {/* OTHER NON-DASHBOARD PAGES */}
@@ -183,7 +189,11 @@ createRoot(document.getElementById("root")).render(
           path="/property-showcase/:id"
           element={<PropertyShowcasePage />}
         />
+        {/* Pages */}
         <Route path="/listing" element={<ListingPage />} />
+
+        {/* CMS Dashboard */}
+
       </Routes>
     </StrictMode>
   </BrowserRouter>

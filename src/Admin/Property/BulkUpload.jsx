@@ -201,13 +201,13 @@ export default function BulkUpload() {
   const generateTemplate = () => {
     // Use the bilingual fields directly (already alternating EN/VI)
     const headers = currentFields.join(",");
-    
+
     const sampleRow = currentFields
       .map((field, index) => {
         // Check if it's a Vietnamese column (odd index)
         const isVietnamese = index % 2 === 1;
         const baseField = isVietnamese ? currentBaseFields[Math.floor(index / 2)] : field;
-        
+
         if (baseField.includes("Price")) return "1000";
         if (baseField === "Bedrooms" || baseField === "Bathrooms") return "2";
         if (baseField === "Unit Size") return "1200";
@@ -256,32 +256,32 @@ export default function BulkUpload() {
     if (lines.length === 0) return { headers: [], rows: [] };
 
     const rawHeaders = lines[0].split(",").map((h) => h.trim());
-    
+
     // Process rows and merge EN/VI columns into localized objects
     const rows = lines.slice(1).map((line, index) => {
       const values = line.split(",").map((v) => v.trim());
       const rowData = {};
-      
+
       // Process pairs of columns (English, Vietnamese)
       currentBaseFields.forEach((baseField, fieldIndex) => {
         const enIndex = fieldIndex * 2;
         const viIndex = fieldIndex * 2 + 1;
-        
+
         const enValue = values[enIndex] || "";
         const viValue = values[viIndex] || "";
-        
+
         // For fields that need localization, create {en, vi} object
         // For numeric/date/identifier fields, just use the English value
-        if (baseField === "Property No" || baseField === "Unit Size" || baseField === "Bedrooms" || 
-            baseField === "Bathrooms" || baseField.includes("Price") ||
-            baseField === "Available From" || baseField === "Currency") {
+        if (baseField === "Property No" || baseField === "Unit Size" || baseField === "Bedrooms" ||
+          baseField === "Bathrooms" || baseField.includes("Price") ||
+          baseField === "Available From" || baseField === "Currency") {
           rowData[baseField] = enValue;
         } else {
           // Create localized object
           rowData[baseField] = { en: enValue, vi: viValue };
         }
       });
-      
+
       return { rowNumber: index + 2, data: rowData }; // +2 because row 1 is header
     });
 
@@ -450,7 +450,7 @@ export default function BulkUpload() {
 
       if (response?.data?.success) {
         const results = response.data.data;
-        
+
         // Format errors for display
         const formattedErrors = results.errors.map((err) => ({
           rowNumber: err.row,
@@ -527,9 +527,9 @@ export default function BulkUpload() {
 
       if (response?.data?.success) {
         const results = response.data.data;
-        
+
         setUploadProgress(100);
-        
+
         CommonToaster(
           `Successfully uploaded ${results.successful} properties!`,
           "success"
@@ -623,7 +623,7 @@ export default function BulkUpload() {
               <strong>📝 {bt.bilingualSupport}:</strong> {bt.bilingualDesc}
             </p>
           </div>
-          
+
           <h4 className="text-sm font-semibold text-gray-700 mb-3">
             {bt.mandatoryFields}:
           </h4>
@@ -641,7 +641,7 @@ export default function BulkUpload() {
             {bt.optionalFields}:
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-            {currentFields.filter(f => !["Project / Community", "Area / Zone", "Block Name"].includes(f)).map((field, index) => (
+            {currentBaseFields.filter(f => !["Project / Community", "Area / Zone", "Block Name"].includes(f)).map((field, index) => (
               <div
                 key={index}
                 className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg"
@@ -662,11 +662,10 @@ export default function BulkUpload() {
         {/* File Input */}
         <div className="mb-6">
           <div
-            className={`border-2 border-dashed rounded-xl p-8 text-center transition ${
-              selectedFile
+            className={`border-2 border-dashed rounded-xl p-8 text-center transition ${selectedFile
                 ? "border-green-400 bg-green-50"
                 : "border-gray-300 hover:border-gray-400 bg-gray-50"
-            }`}
+              }`}
           >
             <input
               ref={fileInputRef}
@@ -708,11 +707,10 @@ export default function BulkUpload() {
           <button
             onClick={handleUpload}
             disabled={!selectedFile || uploading}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition ${
-              !selectedFile || uploading
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition ${!selectedFile || uploading
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-[#41398B] hover:bg-[#41398be3] text-white cursor-pointer"
-            }`}
+              }`}
           >
             <Upload className="w-4 h-4" />
             {uploading ? bt.validating : bt.uploadValidate}

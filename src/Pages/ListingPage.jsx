@@ -1,6 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { getListingProperties } from '../Api/action';
-import { Select } from 'antd';
+import {
+    getListingProperties,
+    getAllProperties,
+    getAllZoneSubAreas,
+    getAllBlocks,
+    getAllPropertyTypes,
+    getAllCurrencies
+} from '../Api/action';
+import { Select, Skeleton } from 'antd';
 
 export default function ListingPage() {
     const [selectedCategory, setSelectedCategory] = useState('Lease');
@@ -10,19 +17,58 @@ export default function ListingPage() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
+
+    // Dropdown data
+    const [projects, setProjects] = useState([]);
+    const [zones, setZones] = useState([]);
+    const [blocks, setBlocks] = useState([]);
+    const [propertyTypes, setPropertyTypes] = useState([]);
+    const [currencies, setCurrencies] = useState([]);
+
+    // Comprehensive filters matching dashboard
     const [filters, setFilters] = useState({
-        search: '',
-        location: '',
+        propertyId: '',
+        keyword: '',
+        projectId: '',
+        zoneId: '',
+        blockId: '',
+        propertyType: '',
         bedrooms: '',
         bathrooms: '',
-        budget: '',
-        minSize: '',
-        maxSize: '',
-        propertyType: ''
+        currency: '',
+        minPrice: '',
+        maxPrice: ''
     });
     const [sortBy, setSortBy] = useState('default');
-    const [viewMode, setViewMode] = useState('grid');
     const observer = useRef();
+
+    // ⚡ Simple cache to avoid redundant API calls
+    const cacheRef = useRef({});
+
+    // Load dropdown data on mount
+    useEffect(() => {
+        const loadDropdownData = async () => {
+            try {
+                const [projectsRes, zonesRes, blocksRes, typesRes, currenciesRes] = await Promise.all([
+                    getAllProperties(),
+                    getAllZoneSubAreas(),
+                    getAllBlocks(),
+                    getAllPropertyTypes(),
+                    getAllCurrencies()
+                ]);
+
+                setProjects(projectsRes.data?.data || []);
+                setZones(zonesRes.data?.data || []);
+                setBlocks(blocksRes.data?.data || []);
+                setPropertyTypes(typesRes.data?.data || []);
+                setCurrencies(currenciesRes.data?.data || []);
+            } catch (error) {
+                console.error('Error loading dropdown data:', error);
+            }
+        };
+
+        loadDropdownData();
+    }, []);
 
     const lastPropertyRef = useCallback(node => {
         if (loading || loadingMore) return;
@@ -72,22 +118,47 @@ export default function ListingPage() {
                 sortBy: sortBy
             };
 
-            if (filters.search) params.search = filters.search;
-            if (filters.location) params.location = filters.location;
+            // Add comprehensive filters
+            if (filters.propertyId) params.propertyId = filters.propertyId;
+            if (filters.keyword) params.keyword = filters.keyword;
+            if (filters.projectId) params.projectId = filters.projectId;
+            if (filters.zoneId) params.zoneId = filters.zoneId;
+            if (filters.blockId) params.blockId = filters.blockId;
+            if (filters.propertyType) params.propertyType = filters.propertyType;
             if (filters.bedrooms) params.bedrooms = filters.bedrooms;
             if (filters.bathrooms) params.bathrooms = filters.bathrooms;
-            if (filters.propertyType) params.propertyType = filters.propertyType;
-            if (filters.budget) params.maxPrice = filters.budget;
-            if (filters.minSize) params.minSize = filters.minSize;
-            if (filters.maxSize) params.maxSize = filters.maxSize;
+            if (filters.currency) params.currency = filters.currency;
+            if (filters.minPrice) params.minPrice = filters.minPrice;
+            if (filters.maxPrice) params.maxPrice = filters.maxPrice;
 
+            // Create cache key from params
+            const cacheKey = JSON.stringify(params);
+
+            // Check cache first
+            if (cacheRef.current[cacheKey] && isNewSearch) {
+                console.log('⚡ Using cached data');
+                const cachedData = cacheRef.current[cacheKey];
+                setProperties(cachedData.properties);
+                setTotalPages(cachedData.totalPages);
+                setHasMore(currentPage < cachedData.totalPages);
+                setLoading(false);
+                return;
+            }
+
+            console.time('⏱️ API Request Time');
             const response = await getListingProperties(params);
+            console.timeEnd('⏱️ API Request Time');
 
             if (response.data.success) {
                 const newProperties = response.data.data;
 
                 if (isNewSearch) {
                     setProperties(newProperties);
+                    // Cache the first page results
+                    cacheRef.current[cacheKey] = {
+                        properties: newProperties,
+                        totalPages: response.data.totalPages || 0
+                    };
                 } else {
                     setProperties(prev => [...prev, ...newProperties]);
                 }
@@ -120,23 +191,17 @@ export default function ListingPage() {
         return value.en || value.vi || '';
     };
 
-    const formatPrice = (price, currency) => {
-        if (!price) return 'Contact for Price';
-        const currencySymbol = getLocalizedValue(currency) || '$';
-        return `${currencySymbol}${Number(price).toLocaleString()}`;
-    };
-
     const getCategoryBadgeClass = (category) => {
         const cat = getLocalizedValue(category).toLowerCase();
-        if (cat.includes('lease') || cat.includes('rent')) return 'bg-gradient-to-r from-emerald-500 to-teal-500';
-        if (cat.includes('sale') || cat.includes('sell')) return 'bg-gradient-to-r from-rose-500 to-pink-500';
-        if (cat.includes('home') || cat.includes('stay')) return 'bg-gradient-to-r from-blue-500 to-indigo-500';
-        return 'bg-gradient-to-r from-emerald-500 to-teal-500';
+        if (cat.includes('lease') || cat.includes('rent')) return 'bg-[#058135]';
+        if (cat.includes('sale') || cat.includes('sell')) return 'bg-[#eb4d4d]';
+        if (cat.includes('home') || cat.includes('stay')) return 'bg-[#055381]';
+        return 'bg-[#058135]';
     };
 
     const getCategoryLabel = (category) => {
         const cat = getLocalizedValue(category).toLowerCase();
-        if (cat.includes('lease') || cat.includes('rent')) return 'For Rent';
+        if (cat.includes('lease') || cat.includes('rent')) return 'For Lease';
         if (cat.includes('sale') || cat.includes('sell')) return 'For Sale';
         if (cat.includes('home') || cat.includes('stay')) return 'Homestay';
         return getLocalizedValue(category);
@@ -158,29 +223,10 @@ export default function ListingPage() {
                             <h1 className="text-3xl font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-1">
                                 Discover Your Dream Property
                             </h1>
-                            <p className="text-gray-600 text-sm">Find the perfect place to call home</p>
+                            <p className="text-gray-900 text-md">Find the perfect place to call home</p>
                         </div>
 
                         <div className="flex items-center gap-3">
-                            <div className="flex gap-1 bg-purple-50/80 p-1 rounded-xl">
-                                <button
-                                    className={`p-2.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-[#41398B] text-white shadow-lg shadow-purple-500/30' : 'text-gray-500 hover:text-[#41398B]'}`}
-                                    onClick={() => setViewMode('grid')}
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                                    </svg>
-                                </button>
-                                <button
-                                    className={`p-2.5 rounded-lg transition-all ${viewMode === 'list' ? 'bg-[#41398B] text-white shadow-lg shadow-purple-500/30' : 'text-gray-500 hover:text-[#41398B]'}`}
-                                    onClick={() => setViewMode('list')}
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                    </svg>
-                                </button>
-                            </div>
-
                             <Select
                                 className="custom-selects"
                                 popupClassName="custom-dropdown"
@@ -202,65 +248,146 @@ export default function ListingPage() {
 
             {/* Main Content */}
             <div className="max-w-7xl mx-auto py-10">
-                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
                     {/* Sidebar */}
                     <aside className="lg:sticky lg:top-28 h-fit">
-                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 pt-1 shadow-xl border border-purple-100/50">
+                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-purple-100/50 max-h-[calc(100vh-140px)] overflow-y-auto scrollbar-hide">
                             {/* Category */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-bold text-[#41398B] mb-3">Property Type</label>
+                            <div className="mb-3">
                                 <div className="space-y-2">
                                     {['Lease', 'Sale', 'Home Stay'].map((cat) => (
                                         <button
                                             key={cat}
-                                            className={`w-full px-4 py-3 text-left text-sm font-semibold rounded-xl cursor-pointer transition-all ${selectedCategory === cat
+                                            className={`w-full px-4 py-3 text-left text-md font-semibold rounded-xl cursor-pointer transition-all ${selectedCategory === cat
                                                 ? 'bg-gradient-to-r from-[#41398B] to-[#5b52a3] text-white'
                                                 : 'bg-purple-50/50 text-gray-700 hover:bg-purple-100/70'
                                                 }`}
                                             onClick={() => setSelectedCategory(cat)}
                                         >
-                                            {cat === 'Lease' ? 'For Rent' : cat === 'Sale' ? 'For Sale' : 'Homestay'}
+                                            {cat === 'Lease' ? 'For Lease' : cat === 'Sale' ? 'For Sale' : 'Homestay'}
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Search */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-bold text-[#41398B] mb-3">Search</label>
+                            <div className="border-t border-gray-200 mt-0 mb-4"></div>
+                            <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">Looking For</h3>
+                            {/* Property ID / Keyword Search */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Property ID or Keyword</label>
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-3 border border-purple-200/60 rounded-xl text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                    placeholder="Search properties..."
-                                    value={filters.search}
-                                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                                    className="w-full px-4 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
+                                    placeholder="Search by ID or keyword..."
+                                    value={filters.keyword}
+                                    onChange={(e) => handleFilterChange('keyword', e.target.value)}
                                 />
                             </div>
-
-                            {/* Location */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-bold text-[#41398B] mb-3">Location</label>
+                            <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">Location</h3>
+                            {/* Project / Community */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Project / Community</label>
                                 <Select
                                     className="custom-selects"
                                     popupClassName="custom-dropdown"
-                                    value={filters.location || undefined}
-                                    onChange={(value) => handleFilterChange('location', value || '')}
-                                    placeholder="All Cities"
+                                    value={filters.projectId || undefined}
+                                    onChange={(value) => handleFilterChange('projectId', value || '')}
+                                    placeholder="Select Project"
                                     style={{ width: '100%' }}
                                     size="large"
                                     allowClear
+                                    showSearch
+                                    filterOption={(input, option) =>
+                                        (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
                                 >
-                                    <Select.Option value="hanoi">Hanoi</Select.Option>
-                                    <Select.Option value="hcmc">Ho Chi Minh City</Select.Option>
-                                    <Select.Option value="danang">Da Nang</Select.Option>
-                                    <Select.Option value="haiphong">Hai Phong</Select.Option>
+                                    {projects.map((project) => (
+                                        <Select.Option key={project._id} value={getLocalizedValue(project.name)}>
+                                            {getLocalizedValue(project.name) || 'Unnamed'}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </div>
+
+                            {/* Area / Zone */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Area / Zone</label>
+                                <Select
+                                    className="custom-selects"
+                                    popupClassName="custom-dropdown"
+                                    value={filters.zoneId || undefined}
+                                    onChange={(value) => handleFilterChange('zoneId', value || '')}
+                                    placeholder="Select Area/Zone"
+                                    style={{ width: '100%' }}
+                                    size="large"
+                                    allowClear
+                                    showSearch
+                                    filterOption={(input, option) =>
+                                        (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
+                                >
+                                    {zones.map((zone) => (
+                                        <Select.Option key={zone._id} value={getLocalizedValue(zone.name)}>
+                                            {getLocalizedValue(zone.name) || 'Unnamed'}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </div>
+
+                            {/* Block Name */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Block Name</label>
+                                <Select
+                                    className="custom-selects"
+                                    popupClassName="custom-dropdown"
+                                    value={filters.blockId || undefined}
+                                    onChange={(value) => handleFilterChange('blockId', value || '')}
+                                    placeholder="Select Block"
+                                    style={{ width: '100%' }}
+                                    size="large"
+                                    allowClear
+                                    showSearch
+                                    filterOption={(input, option) =>
+                                        (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
+                                >
+                                    {blocks.map((block) => (
+                                        <Select.Option key={block._id} value={getLocalizedValue(block.name)}>
+                                            {getLocalizedValue(block.name) || 'Unnamed'}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </div>
+
+                            {/* Property Type */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Property Type</label>
+                                <Select
+                                    className="custom-selects"
+                                    popupClassName="custom-dropdown"
+                                    value={filters.propertyType || undefined}
+                                    onChange={(value) => handleFilterChange('propertyType', value || '')}
+                                    placeholder="Select Type"
+                                    style={{ width: '100%' }}
+                                    size="large"
+                                    allowClear
+                                    showSearch
+                                    filterOption={(input, option) =>
+                                        (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                    }
+                                >
+                                    {propertyTypes.map((type) => (
+                                        <Select.Option key={type._id} value={getLocalizedValue(type.name)}>
+                                            {getLocalizedValue(type.name) || 'Unnamed'}
+                                        </Select.Option>
+                                    ))}
                                 </Select>
                             </div>
 
                             {/* Bedrooms & Bathrooms */}
-                            <div className="grid grid-cols-2 gap-3 mb-6">
+                            <div className="grid grid-cols-2 gap-3 mb-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-[#41398B] mb-2">Bedrooms</label>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Bedrooms</label>
                                     <Select
                                         className="custom-selects"
                                         popupClassName="custom-dropdown"
@@ -278,7 +405,7 @@ export default function ListingPage() {
                                     </Select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-[#41398B] mb-2">Bathrooms</label>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Bathrooms</label>
                                     <Select
                                         className="custom-selects"
                                         popupClassName="custom-dropdown"
@@ -296,25 +423,56 @@ export default function ListingPage() {
                                 </div>
                             </div>
 
-                            {/* Budget */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-bold text-[#41398B] mb-3">Budget</label>
+                            <div className="border-t border-gray-200 my-4"></div>
+                            <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">Price Range</h3>
+
+                            {/* Currency */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Currency</label>
                                 <Select
                                     className="custom-selects"
                                     popupClassName="custom-dropdown"
-                                    value={filters.budget || undefined}
-                                    onChange={(value) => handleFilterChange('budget', value || '')}
-                                    placeholder="Max Price"
+                                    value={filters.currency || undefined}
+                                    onChange={(value) => handleFilterChange('currency', value || '')}
+                                    placeholder="Select Currency"
                                     style={{ width: '100%' }}
                                     size="large"
                                     allowClear
                                 >
-                                    <Select.Option value="500">Up to $500</Select.Option>
-                                    <Select.Option value="1000">Up to $1,000</Select.Option>
-                                    <Select.Option value="2000">Up to $2,000</Select.Option>
-                                    <Select.Option value="5000">Up to $5,000</Select.Option>
-                                    <Select.Option value="10000">$10,000+</Select.Option>
+                                    {currencies.map((curr) => {
+                                        const code = getLocalizedValue(curr.currencyCode) || getLocalizedValue(curr.currencyName) || 'N/A';
+                                        const symbol = getLocalizedValue(curr.currencySymbol) || '';
+                                        return (
+                                            <Select.Option key={curr._id} value={code}>
+                                                {code} {symbol && `(${symbol})`}
+                                            </Select.Option>
+                                        );
+                                    })}
                                 </Select>
+                            </div>
+
+                            {/* Min & Max Price */}
+                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                <div>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Min Price</label>
+                                    <input
+                                        type="number"
+                                        className="w-full px-3 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
+                                        placeholder="Min"
+                                        value={filters.minPrice}
+                                        onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Max Price</label>
+                                    <input
+                                        type="number"
+                                        className="w-full px-3 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
+                                        placeholder="Max"
+                                        value={filters.maxPrice}
+                                        onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                                    />
+                                </div>
                             </div>
 
                             {/* Search Button */}
@@ -322,7 +480,7 @@ export default function ListingPage() {
                                 className="w-full px-6 py-3.5 bg-gradient-to-r from-[#41398B] to-[#5b52a3] text-white font-bold rounded-xl hover:shadow-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all"
                                 onClick={handleSearch}
                             >
-                                Search Properties
+                                Apply Filters
                             </button>
                         </div>
                     </aside>
@@ -330,9 +488,13 @@ export default function ListingPage() {
                     {/* Property Grid */}
                     <main>
                         {loading ? (
-                            <div className="flex flex-col items-center justify-center py-20">
-                                <div className="w-16 h-16 border-4 border-purple-200 border-t-[#41398B] rounded-full animate-spin"></div>
-                                <p className="mt-4 text-gray-600 font-medium">Loading properties...</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {[1, 2, 3, 4, 5, 6].map((item) => (
+                                    <div key={item} className="bg-white rounded-2xl overflow-hidden p-4">
+                                        <Skeleton.Image active className="!w-full !h-56 rounded-2xl mb-4" />
+                                        <Skeleton active paragraph={{ rows: 3 }} />
+                                    </div>
+                                ))}
                             </div>
                         ) : properties.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20 bg-white/50 rounded-2xl">
@@ -351,81 +513,121 @@ export default function ListingPage() {
                                             <div
                                                 key={property._id}
                                                 ref={isLastProperty ? lastPropertyRef : null}
-                                                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-purple-50 hover:border-purple-200 transition-all duration-500 cursor-pointer"
+                                                className="card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer"
                                             >
                                                 {/* Image */}
-                                                <div className="relative h-56 overflow-hidden bg-gradient-to-br from-purple-100 to-indigo-100">
+                                                <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl">
                                                     <img
                                                         src={property.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
                                                         alt={getLocalizedValue(property.listingInformation?.listingInformationBlockName)}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                        className="w-full h-full object-cover rounded-2xl"
                                                     />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
                                                     {/* Badges */}
                                                     <div className="absolute top-3 left-3 flex gap-2">
-                                                        <span className={`px-3 py-1.5 ${getCategoryBadgeClass(property.listingInformation?.listingInformationTransactionType)} text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-lg`}>
+                                                        <span className={`px-2 py-1.5 text-[11px] ${getCategoryBadgeClass(property.listingInformation?.listingInformationTransactionType)} text-white text-xs font-bold uppercase tracking-wider rounded-sm shadow-lg`}>
                                                             {getCategoryLabel(property.listingInformation?.listingInformationTransactionType)}
                                                         </span>
                                                         {property.listingInformation?.listingInformationPropertyType && (
-                                                            <span className="px-3 py-1.5 bg-[#41398B]/90 backdrop-blur-sm text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-lg">
+                                                            <span className="px-2 py-1.5 text-[11px] bg-[#41398B]/90 backdrop-blur-sm text-white text-xs font-bold uppercase tracking-wider rounded-sm shadow-lg">
                                                                 {getLocalizedValue(property.listingInformation.listingInformationPropertyType)}
                                                             </span>
                                                         )}
                                                     </div>
+                                                    <div className="wishlist"><div className="hover-tooltip tooltip-left box-icon"><span className="icon icon-Heart"></span><span className="tooltip">Add to Wishlist</span></div></div>
                                                 </div>
 
                                                 {/* Content */}
-                                                <div className="p-5">
+                                                <div className="pt-5 pb-5 px-2">
                                                     {/* Price */}
-                                                    <div className="flex items-baseline gap-1 mb-1">
-                                                        <span className="text-2xl font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent">
-                                                            {formatPrice(property.financialDetails?.financialDetailsPrice, property.financialDetails?.financialDetailsCurrency)}
-                                                        </span>
-                                                        {selectedCategory === 'Lease' && <span className="text-sm text-gray-500 font-medium">/month</span>}
-                                                        {selectedCategory === 'Sale' && <span className="text-sm text-gray-500 font-medium">/sqft</span>}
+                                                    <div className="flex items-baseline gap-0 mb-2">
+                                                        {(() => {
+                                                            const type = getLocalizedValue(property.listingInformation?.listingInformationTransactionType);
+                                                            const priceSale = property.financialDetails?.financialDetailsPrice;
+                                                            const priceLease = property.financialDetails?.financialDetailsLeasePrice;
+                                                            const priceNight = property.financialDetails?.financialDetailsPricePerNight;
+                                                            const genericPrice = property.financialDetails?.financialDetailsPrice;
+
+                                                            let displayPrice = 'Contact for Price';
+                                                            let displaySuffix = null;
+
+                                                            if (type === 'Sale' && priceSale) {
+                                                                displayPrice = `₫ ${Number(priceSale).toLocaleString()}`;
+                                                            } else if (type === 'Lease' && priceLease) {
+                                                                displayPrice = `₫ ${Number(priceLease).toLocaleString()}`;
+                                                                displaySuffix = ' / month';
+                                                            } else if (type === 'Home Stay' && priceNight) {
+                                                                displayPrice = `$ ${Number(priceNight).toLocaleString()}`;
+                                                                displaySuffix = ' / night';
+                                                            } else if (genericPrice) {
+                                                                if (selectedCategory === 'Lease') {
+                                                                    displayPrice = `₫ ${Number(genericPrice).toLocaleString()}`;
+                                                                    displaySuffix = ' / month';
+                                                                } else if (selectedCategory === 'Home Stay') {
+                                                                    displayPrice = `$ ${Number(genericPrice).toLocaleString()}`;
+                                                                    displaySuffix = ' / night';
+                                                                } else {
+                                                                    displayPrice = `₫ ${Number(genericPrice).toLocaleString()}`;
+                                                                }
+                                                            }
+
+                                                            return (
+                                                                <>
+                                                                    <span className="text-2xl font-bold text-[#2a2a2a]">{displayPrice}</span>
+                                                                    {displaySuffix && <span className="text-sm text-gray-500 font-medium">{displaySuffix}</span>}
+                                                                </>
+                                                            );
+                                                        })()}
                                                     </div>
 
                                                     {/* Title */}
-                                                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-[#41398B] transition-colors">
-                                                        {getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
+                                                    <h3 className="text-[22px] font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-[#41398B] transition-colors">
+                                                        {getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
+                                                            getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
                                                             getLocalizedValue(property.listingInformation?.listingInformationProjectCommunity) ||
                                                             'Untitled Property'}
                                                     </h3>
 
-                                                    {/* Location */}
-                                                    <p className="text-sm text-gray-500 mb-4 line-clamp-1 flex items-center gap-1">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        </svg>
-                                                        {getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) || 'Location not specified'}
+                                                    {/* Location / Nearby */}
+                                                    <p className="text-[16px] text-gray-500 mb-4 line-clamp-3">
+                                                        {getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
+                                                            getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
+                                                            'Location not specified'}
                                                     </p>
 
                                                     {/* Details */}
-                                                    <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
-                                                        {property.propertyInformation?.informationBedrooms && (
-                                                            <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                                                                <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                                    <div className="flex items-center pt-3 border-t border-gray-200 justify-between">
+                                                        {property.propertyInformation?.informationBedrooms > 0 && (
+                                                            <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                                                                <svg
+                                                                    className="w-6 h-6 text-[#41398B]"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    viewBox="0 0 24 24"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={1.5}
+                                                                        d="M3 7h18M5 7v10M19 7v10M3 17h18M7 10h4a2 2 0 012 2v5M7 10a2 2 0 00-2 2v5"
+                                                                    />
                                                                 </svg>
-                                                                <span className="font-semibold">{property.propertyInformation.informationBedrooms}</span>
+                                                                <span className="font-medium text-lg">{property.propertyInformation.informationBedrooms} Bed</span>
                                                             </div>
                                                         )}
-                                                        {property.propertyInformation?.informationBathrooms && (
-                                                            <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                                                                <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                                                        {property.propertyInformation?.informationBathrooms > 0 && (
+                                                            <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                                                                <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 14h16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2zM6 14V9a3 3 0 0 1 6 0" />
                                                                 </svg>
-                                                                <span className="font-semibold">{property.propertyInformation.informationBathrooms}</span>
+                                                                <span className="font-medium text-lg">{property.propertyInformation.informationBathrooms} Bath</span>
                                                             </div>
                                                         )}
-                                                        {property.propertyInformation?.informationUnitSize && (
-                                                            <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                                                                <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                                        {property.propertyInformation?.informationUnitSize > 0 && (
+                                                            <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                                                                <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.4 4.6a2 2 0 0 1 0 2.8l-12 12a2 2 0 0 1-2.8 0l-2-2a2 2 0 0 1 0-2.8l12-12a2 2 0 0 1 2.8 0zM12 7l2 2M10 9l2 2M8 11l2 2" />
                                                                 </svg>
-                                                                <span className="font-semibold">{property.propertyInformation.informationUnitSize.toLocaleString()} {getLocalizedValue(property.propertyInformation.informationUnit) || 'sqft'}</span>
+                                                                <span className="font-medium text-lg">{property.propertyInformation.informationUnitSize.toLocaleString()} Sqft</span>
                                                             </div>
                                                         )}
                                                     </div>
@@ -437,9 +639,13 @@ export default function ListingPage() {
 
                                 {/* Loading More */}
                                 {loadingMore && (
-                                    <div className="flex justify-center items-center py-8">
-                                        <div className="w-10 h-10 border-4 border-purple-200 border-t-[#41398B] rounded-full animate-spin"></div>
-                                        <p className="ml-3 text-gray-600 font-medium">Loading more...</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+                                        {[1, 2, 3].map((item) => (
+                                            <div key={item} className="bg-white rounded-2xl overflow-hidden p-4">
+                                                <Skeleton.Image active className="!w-full !h-56 rounded-2xl mb-4" />
+                                                <Skeleton active paragraph={{ rows: 3 }} />
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
 
@@ -452,8 +658,8 @@ export default function ListingPage() {
                             </>
                         )}
                     </main>
-                </div>
-            </div>
-        </div>
+                </div >
+            </div >
+        </div >
     );
 }

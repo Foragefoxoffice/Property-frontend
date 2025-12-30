@@ -114,6 +114,49 @@ body {
   }
 }
 
+.wishlist {
+  z-index: 6;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  transform: translateX(10px);
+  opacity: 0;
+  transition: all .3s ease;
+}
+
+.hover-image .article-thumb:after,
+.hover-image .img-style:after {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 0;
+  left: 50%;
+  top: 50%;
+  background-color: hsla(0, 0%, 100%, .3);
+  transform: translate(-50%, -50%) rotate(-45deg);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hover-image:hover .article-thumb:after,
+.hover-image:hover .img-style:after {
+  height: 250%;
+  transition: all .6s linear;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.hover-image .img-style img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 1s;
+}
+
+.hover-image:hover .article-thumb img,
+.hover-image:hover .img-style img {
+  transform: scale(1.1);
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;

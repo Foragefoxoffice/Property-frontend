@@ -278,6 +278,16 @@ export const bulkUploadProperties = (csvData, transactionType, validateOnly = fa
   return API.post("/create-property/bulk-upload", { csvData, transactionType, validateOnly });
 };
 
+/* =========================================================
+   🏠 HOME BANNER CMS APIs
+========================================================= */
+export const getAllHomeBanners = (params) => API.get("/home-banner", { params });
+export const getHomeBannerById = (id) => API.get(`/home-banner/${id}`);
+export const createHomeBanner = (data) => API.post("/home-banner", data);
+export const updateHomeBanner = (id, data) => API.put(`/home-banner/${id}`, data);
+export const deleteHomeBanner = (id) => API.delete(`/home-banner/${id}`);
+export const getActiveHomeBanner = () => API.get("/home-banner/active");
+
 
 
 
