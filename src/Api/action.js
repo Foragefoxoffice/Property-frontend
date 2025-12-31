@@ -287,6 +287,42 @@ export const createHomeBanner = (data) => API.post("/home-banner", data);
 export const updateHomeBanner = (id, data) => API.put(`/home-banner/${id}`, data);
 export const deleteHomeBanner = (id) => API.delete(`/home-banner/${id}`);
 export const getActiveHomeBanner = () => API.get("/home-banner/active");
+export const uploadBannerImage = (file) => {
+  const formData = new FormData();
+  formData.append("backgroundImage", file);
+  
+  // Use plain axios to avoid Content-Type conflicts
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  
+  return axios.post(`${baseURL}/home-banner/upload`, formData, {
+    headers: { 
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
+/* =========================================================
+   🏠 HOME PAGE CMS APIs
+========================================================= */
+export const getHomePage = () => API.get("/home-page");
+export const createHomePage = (data) => API.post("/home-page", data);
+export const updateHomePage = (id, data) => API.put(`/home-page/${id}`, data);
+export const uploadHomePageImage = (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  
+  return axios.post(`${baseURL}/home-page/upload`, formData, {
+    headers: { 
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
 
 
 
