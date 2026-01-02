@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     getListingProperties,
     getAllProperties,
@@ -10,6 +11,7 @@ import {
 import { Select, Skeleton } from 'antd';
 
 export default function ListingPage() {
+    const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState('Lease');
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -514,6 +516,7 @@ export default function ListingPage() {
                                                 key={property._id}
                                                 ref={isLastProperty ? lastPropertyRef : null}
                                                 className="card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer"
+                                                onClick={() => navigate(`/property-showcase/${property.listingInformation?.listingInformationPropertyId || property._id}`)}
                                             >
                                                 {/* Image */}
                                                 <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl">
