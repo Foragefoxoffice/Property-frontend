@@ -12,6 +12,7 @@ import HomePageFeatureForm from './HomePageFeatureForm';
 import HomePageFaqForm from './HomePageFaqForm';
 import HomePageFindPropertyForm from './HomePageFindPropertyForm';
 import HomePageBlogForm from './HomePageBlogForm';
+import HomePageSeoForm from './HomePageSeoForm';
 
 export default function HomepageForm() {
     const [bannerForm] = Form.useForm();
@@ -20,6 +21,7 @@ export default function HomepageForm() {
     const [faqForm] = Form.useForm();
     const [findPropertyForm] = Form.useForm();
     const [blogForm] = Form.useForm();
+    const [seoForm] = Form.useForm();
     const [pageData, setPageData] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -30,7 +32,8 @@ export default function HomepageForm() {
         feature: false,
         faq: false,
         findProperty: false,
-        blog: false
+        blog: false,
+        seo: false
     });
 
     const toggleAccordion = (key) => {
@@ -40,7 +43,8 @@ export default function HomepageForm() {
             feature: key === 'feature' ? !prev.feature : false,
             faq: key === 'faq' ? !prev.faq : false,
             findProperty: key === 'findProperty' ? !prev.findProperty : false,
-            blog: key === 'blog' ? !prev.blog : false
+            blog: key === 'blog' ? !prev.blog : false,
+            seo: key === 'seo' ? !prev.seo : false
         }));
     };
     const [bannerLoading, setBannerLoading] = useState(false);
@@ -49,6 +53,7 @@ export default function HomepageForm() {
     const [faqLoading, setFaqLoading] = useState(false);
     const [findPropertyLoading, setFindPropertyLoading] = useState(false);
     const [blogLoading, setBlogLoading] = useState(false);
+    const [seoLoading, setSeoLoading] = useState(false);
 
     // Fetch the home page data
     const fetchPageData = async () => {
@@ -133,6 +138,28 @@ export default function HomepageForm() {
                     homeBlogDescription_en: page.homeBlogDescription_en,
                     homeBlogDescription_vn: page.homeBlogDescription_vn,
                 });
+
+                // Set SEO Form
+                seoForm.setFieldsValue({
+                    homeSeoMetaTitle_en: page.homeSeoMetaTitle_en,
+                    homeSeoMetaTitle_vn: page.homeSeoMetaTitle_vn,
+                    homeSeoMetaDescription_en: page.homeSeoMetaDescription_en,
+                    homeSeoMetaDescription_vn: page.homeSeoMetaDescription_vn,
+                    homeSeoMetaKeywords_en: page.homeSeoMetaKeywords_en || [],
+                    homeSeoMetaKeywords_vn: page.homeSeoMetaKeywords_vn || [],
+                    homeSeoSlugUrl_en: page.homeSeoSlugUrl_en,
+                    homeSeoSlugUrl_vn: page.homeSeoSlugUrl_vn,
+                    homeSeoCanonicalUrl_en: page.homeSeoCanonicalUrl_en,
+                    homeSeoCanonicalUrl_vn: page.homeSeoCanonicalUrl_vn,
+                    homeSeoSchemaType_en: page.homeSeoSchemaType_en,
+                    homeSeoSchemaType_vn: page.homeSeoSchemaType_vn,
+                    homeSeoOgTitle_en: page.homeSeoOgTitle_en,
+                    homeSeoOgTitle_vn: page.homeSeoOgTitle_vn,
+                    homeSeoOgDescription_en: page.homeSeoOgDescription_en,
+                    homeSeoOgDescription_vn: page.homeSeoOgDescription_vn,
+                    homeSeoAllowIndexing: page.homeSeoAllowIndexing !== undefined ? page.homeSeoAllowIndexing : true,
+                    homeSeoOgImages: page.homeSeoOgImages || [],
+                });
             } else {
                 setPageData(null);
                 bannerForm.resetFields();
@@ -141,6 +168,7 @@ export default function HomepageForm() {
                 faqForm.resetFields();
                 findPropertyForm.resetFields();
                 blogForm.resetFields();
+                seoForm.resetFields();
             }
         } catch (error) {
             if (error.response?.status === 404) {
@@ -151,6 +179,7 @@ export default function HomepageForm() {
                 faqForm.resetFields();
                 findPropertyForm.resetFields();
                 blogForm.resetFields();
+                seoForm.resetFields();
             } else {
                 CommonToaster('Failed to fetch page data', 'error');
                 console.error(error);
@@ -550,6 +579,92 @@ export default function HomepageForm() {
         }
     };
 
+    // Handle SEO form submission
+    const handleSeoSubmit = async (values) => {
+        try {
+            setSeoLoading(true);
+
+            const payload = {
+                ...values,
+                // Include existing data from other sections
+                ...(pageData && {
+                    heroTitle_en: pageData.heroTitle_en,
+                    heroDescription_en: pageData.heroDescription_en,
+                    heroTitle_vn: pageData.heroTitle_vn,
+                    heroDescription_vn: pageData.heroDescription_vn,
+                    backgroundImage: pageData.backgroundImage,
+                    homeAboutTitle_en: pageData.homeAboutTitle_en,
+                    homeAboutTitle_vn: pageData.homeAboutTitle_vn,
+                    homeAboutDescription_en: pageData.homeAboutDescription_en,
+                    homeAboutDescription_vn: pageData.homeAboutDescription_vn,
+                    homeAboutButtonText_en: pageData.homeAboutButtonText_en,
+                    homeAboutButtonText_vn: pageData.homeAboutButtonText_vn,
+                    homeAboutButtonLink: pageData.homeAboutButtonLink,
+                    homeAboutStep1Title_en: pageData.homeAboutStep1Title_en,
+                    homeAboutStep1Title_vn: pageData.homeAboutStep1Title_vn,
+                    homeAboutStep1Des_en: pageData.homeAboutStep1Des_en,
+                    homeAboutStep1Des_vn: pageData.homeAboutStep1Des_vn,
+                    homeAboutStep2Title_en: pageData.homeAboutStep2Title_en,
+                    homeAboutStep2Title_vn: pageData.homeAboutStep2Title_vn,
+                    homeAboutStep2Des_en: pageData.homeAboutStep2Des_en,
+                    homeAboutStep2Des_vn: pageData.homeAboutStep2Des_vn,
+                    homeAboutStep3Title_en: pageData.homeAboutStep3Title_en,
+                    homeAboutStep3Title_vn: pageData.homeAboutStep3Title_vn,
+                    homeAboutStep3Des_en: pageData.homeAboutStep3Des_en,
+                    homeAboutStep3Des_vn: pageData.homeAboutStep3Des_vn,
+                    homeFeatureTitle_en: pageData.homeFeatureTitle_en,
+                    homeFeatureTitle_vn: pageData.homeFeatureTitle_vn,
+                    homeFeatureDescription_en: pageData.homeFeatureDescription_en,
+                    homeFeatureDescription_vn: pageData.homeFeatureDescription_vn,
+                    homeFaqImageTitle_en: pageData.homeFaqImageTitle_en,
+                    homeFaqImageTitle_vn: pageData.homeFaqImageTitle_vn,
+                    homeFaqImageDescription_en: pageData.homeFaqImageDescription_en,
+                    homeFaqImageDescription_vn: pageData.homeFaqImageDescription_vn,
+                    homeFaqImageButtonText_en: pageData.homeFaqImageButtonText_en,
+                    homeFaqImageButtonText_vn: pageData.homeFaqImageButtonText_vn,
+                    homeFaqImageButtonLink: pageData.homeFaqImageButtonLink,
+                    homeFaqBg: pageData.homeFaqBg,
+                    homeFaqTitle_en: pageData.homeFaqTitle_en,
+                    homeFaqTitle_vn: pageData.homeFaqTitle_vn,
+                    homeFaqDescription_en: pageData.homeFaqDescription_en,
+                    homeFaqDescription_vn: pageData.homeFaqDescription_vn,
+                    faqs: pageData.faqs,
+                    homeFindTitle_en: pageData.homeFindTitle_en,
+                    homeFindTitle_vn: pageData.homeFindTitle_vn,
+                    homeFindDescription_en: pageData.homeFindDescription_en,
+                    homeFindDescription_vn: pageData.homeFindDescription_vn,
+                    homeFindBg: pageData.homeFindBg,
+                    homeBlogTitle_en: pageData.homeBlogTitle_en,
+                    homeBlogTitle_vn: pageData.homeBlogTitle_vn,
+                    homeBlogDescription_en: pageData.homeBlogDescription_en,
+                    homeBlogDescription_vn: pageData.homeBlogDescription_vn,
+                })
+            };
+
+            if (pageData) {
+                await updateHomePage(pageData._id, payload);
+                CommonToaster('SEO settings updated successfully!', 'success');
+            } else {
+                // For first time creation, need all other sections too
+                const bannerValues = await bannerForm.validateFields();
+                const aboutValues = await aboutForm.validateFields();
+                await createHomePage({ ...payload, ...bannerValues, ...aboutValues });
+                CommonToaster('Home page created successfully!', 'success');
+            }
+
+            fetchPageData();
+        } catch (error) {
+            if (error.errorFields) {
+                CommonToaster('Please fill in the required sections first', 'error');
+            } else {
+                CommonToaster(error.response?.data?.message || 'Failed to save SEO settings', 'error');
+                console.error(error);
+            }
+        } finally {
+            setSeoLoading(false);
+        }
+    };
+
     if (loading && !pageData) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -638,6 +753,17 @@ export default function HomepageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.blog}
                     onToggle={() => toggleAccordion('blog')}
+                />
+
+                {/* SEO Section */}
+                <HomePageSeoForm
+                    form={seoForm}
+                    onSubmit={handleSeoSubmit}
+                    loading={seoLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.seo}
+                    onToggle={() => toggleAccordion('seo')}
                 />
             </div>
         </div>

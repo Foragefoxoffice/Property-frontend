@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -14,13 +14,11 @@ import {
     DeleteOutlined,
     ReloadOutlined
 } from '@ant-design/icons';
-import { uploadHomePageImage } from '../../Api/action';
+import { uploadAboutPageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { X } from 'lucide-react';
 
-const { TextArea } = Input;
-
-export default function HomePageFindPropertyForm({
+export default function AboutPageBannerForm({
     form,
     onSubmit,
     loading,
@@ -30,19 +28,26 @@ export default function HomePageFindPropertyForm({
     onToggle
 }) {
     const [activeTab, setActiveTab] = useState('en');
-    const [findBgUrl, setFindBgUrl] = useState(pageData?.homeFindBg || '');
+    const [bannerImageUrl, setBannerImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
+
+    // Update banner image when pageData changes
+    useEffect(() => {
+        if (pageData?.aboutBannerBg) {
+            setBannerImageUrl(pageData.aboutBannerBg);
+        }
+    }, [pageData]);
 
     // Handle image upload
     const handleImageUpload = async (file) => {
         try {
             setUploading(true);
-            const response = await uploadHomePageImage(file);
+            const response = await uploadAboutPageImage(file);
             const uploadedUrl = response.data.data.url;
 
-            form.setFieldsValue({ homeFindBg: uploadedUrl });
-            setFindBgUrl(uploadedUrl);
+            form.setFieldsValue({ aboutBannerBg: uploadedUrl });
+            setBannerImageUrl(uploadedUrl);
             CommonToaster('Image uploaded successfully!', 'success');
 
             return false;
@@ -70,10 +75,10 @@ export default function HomePageFindPropertyForm({
         return false;
     };
 
-    // Remove image
-    const removeImage = () => {
-        setFindBgUrl('');
-        form.setFieldsValue({ homeFindBg: '' });
+    // Remove banner image
+    const removeBannerImage = () => {
+        setBannerImageUrl('');
+        form.setFieldsValue({ aboutBannerBg: '' });
         CommonToaster('Image removed', 'info');
     };
 
@@ -87,12 +92,12 @@ export default function HomePageFindPropertyForm({
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Find Property Section</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your find property content</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">About Us Banner</h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your about page banner section</p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -128,38 +133,19 @@ export default function HomePageFindPropertyForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Find Property Title
+                                                            Banner Title
                                                         </span>
                                                     }
-                                                    name="homeFindTitle_en"
+                                                    name="aboutBannerTitle_en"
                                                     rules={[
-                                                        { required: true, message: 'Please enter find property title in English' },
+                                                        { required: true, message: 'Please enter banner title in English' },
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
                                                     <Input
-                                                        placeholder="Find Your Dream Property"
+                                                        placeholder="About Us"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Find Property Description
-                                                        </span>
-                                                    }
-                                                    name="homeFindDescription_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter find property description in English' },
-                                                        { max: 500, message: 'Maximum 500 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Search through our extensive collection of properties to find the perfect match for you"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
                                                     />
                                                 </Form.Item>
                                             </>
@@ -177,38 +163,19 @@ export default function HomePageFindPropertyForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Tiêu Đề Tìm Bất Động Sản
+                                                            Tiêu Đề Banner
                                                         </span>
                                                     }
-                                                    name="homeFindTitle_vn"
+                                                    name="aboutBannerTitle_vn"
                                                     rules={[
-                                                        { required: true, message: 'Vui lòng nhập tiêu đề tìm bất động sản' },
+                                                        { required: true, message: 'Vui lòng nhập tiêu đề banner' },
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
                                                     <Input
-                                                        placeholder="Tìm Bất Động Sản Mơ Ước Của Bạn"
+                                                        placeholder="Về Chúng Tôi"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Mô Tả Tìm Bất Động Sản
-                                                        </span>
-                                                    }
-                                                    name="homeFindDescription_vn"
-                                                    rules={[
-                                                        { required: true, message: 'Vui lòng nhập mô tả tìm bất động sản' },
-                                                        { max: 500, message: 'Tối đa 500 ký tự' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Tìm kiếm trong bộ sưu tập bất động sản phong phú của chúng tôi để tìm sự lựa chọn hoàn hảo cho bạn"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
                                                     />
                                                 </Form.Item>
                                             </>
@@ -217,35 +184,41 @@ export default function HomePageFindPropertyForm({
                                 ]}
                             />
 
-                            {/* Background Image Upload */}
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        Find Property Background Image
+                                        Banner Background Image
                                         <span className="text-xs text-gray-400 ml-2 font-normal">
-                                            (Recommended: 1920x1080px, Max: 5MB)
+                                            (Recommended: 1920x600px, Max: 5MB)
                                         </span>
                                     </span>
                                 }
                             >
                                 <div className="space-y-3">
-                                    {findBgUrl ? (
+                                    {bannerImageUrl ? (
                                         <div className="relative w-48 h-36 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50 group">
                                             <img
-                                                src={findBgUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${findBgUrl}` : findBgUrl}
-                                                alt="Find Property Background"
+                                                src={bannerImageUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${bannerImageUrl}` : bannerImageUrl}
+                                                alt="Banner"
                                                 className="w-full h-full object-cover"
                                             />
+                                            {/* Icon Buttons Overlay */}
                                             <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
+                                                {/* Preview Button */}
                                                 <button
                                                     type="button"
-                                                    onClick={() => setPreviewImage(findBgUrl)}
+                                                    onClick={() => setPreviewImage(bannerImageUrl)}
                                                     className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
                                                     title="Preview"
                                                 >
                                                     <EyeOutlined className="text-[#41398B] text-lg" />
                                                 </button>
-                                                <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+
+                                                {/* Re-upload Button */}
+                                                <Upload
+                                                    showUploadList={false}
+                                                    beforeUpload={handleBeforeUpload}
+                                                >
                                                     <button
                                                         type="button"
                                                         className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
@@ -254,9 +227,11 @@ export default function HomePageFindPropertyForm({
                                                         <ReloadOutlined className="text-blue-600 text-lg" />
                                                     </button>
                                                 </Upload>
+
+                                                {/* Delete Button */}
                                                 <button
                                                     type="button"
-                                                    onClick={removeImage}
+                                                    onClick={removeBannerImage}
                                                     className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
                                                     title="Delete"
                                                 >
@@ -266,9 +241,9 @@ export default function HomePageFindPropertyForm({
                                         </div>
                                     ) : (
                                         <Upload
-                                            name="homeFindBg"
+                                            name="aboutBannerBg"
                                             listType="picture-card"
-                                            className="find-property-uploader"
+                                            className="banner-uploader"
                                             showUploadList={false}
                                             beforeUpload={handleBeforeUpload}
                                         >
@@ -280,7 +255,7 @@ export default function HomePageFindPropertyForm({
                                     )}
 
                                     <Form.Item
-                                        name="homeFindBg"
+                                        name="aboutBannerBg"
                                         noStyle
                                     >
                                         <Input type="hidden" />
@@ -307,29 +282,29 @@ export default function HomePageFindPropertyForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save Find Property Section' : 'Create Page'}
+                                    {pageData ? 'Save Banner' : 'Create Page'}
                                 </Button>
                             </div>
                         </Form>
                     </ConfigProvider>
 
                     <style>{`
-                        .find-property-uploader .ant-upload.ant-upload-select {
-                            width: 192px !important;
-                            height: 144px !important;
-                            border: 2px dashed #d1d5db !important;
-                            border-radius: 12px !important;
-                            background: #f9fafb !important;
-                            transition: all 0.3s ease !important;
-                        }
-                        .find-property-uploader .ant-upload.ant-upload-select:hover {
-                            border-color: #41398B !important;
-                            background: #f3f4f6 !important;
-                        }
-                        .find-property-uploader .ant-upload-list {
-                            display: none !important;
-                        }
-                    `}</style>
+                    .banner-uploader .ant-upload.ant-upload-select {
+                        width: 192px !important;
+                        height: 144px !important;
+                        border: 2px dashed #d1d5db !important;
+                        border-radius: 12px !important;
+                        background: #f9fafb !important;
+                        transition: all 0.3s ease !important;
+                    }
+                    .banner-uploader .ant-upload.ant-upload-select:hover {
+                        border-color: #41398B !important;
+                        background: #f3f4f6 !important;
+                    }
+                    .banner-uploader .ant-upload-list {
+                        display: none !important;
+                    }
+                `}</style>
                 </div>
             </div>
 

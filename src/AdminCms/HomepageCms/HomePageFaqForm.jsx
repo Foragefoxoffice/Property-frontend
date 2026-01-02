@@ -13,10 +13,13 @@ import {
     SaveOutlined,
     PlusOutlined,
     MinusCircleOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    EyeOutlined,
+    ReloadOutlined
 } from '@ant-design/icons';
 import { uploadHomePageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { X } from 'lucide-react';
 
 const { TextArea } = Input;
 
@@ -32,6 +35,7 @@ export default function HomePageFaqForm({
     const [activeTab, setActiveTab] = useState('en');
     const [faqBgUrl, setFaqBgUrl] = useState(pageData?.homeFaqBg || '');
     const [uploading, setUploading] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
 
     // Handle image upload
     const handleImageUpload = async (file) => {
@@ -67,6 +71,13 @@ export default function HomePageFaqForm({
         }
         handleImageUpload(file);
         return false;
+    };
+
+    // Remove image
+    const removeImage = () => {
+        setFaqBgUrl('');
+        form.setFieldsValue({ homeFaqBg: '' });
+        CommonToaster('Image removed', 'info');
     };
 
     return (
@@ -197,34 +208,55 @@ export default function HomePageFaqForm({
                                                         }
                                                     >
                                                         <div className="space-y-3">
-                                                            <Upload
-                                                                name="homeFaqBg"
-                                                                listType="picture-card"
-                                                                className="faq-uploader w-[200px] h-[200px]"
-                                                                showUploadList={false}
-                                                                beforeUpload={handleBeforeUpload}
-                                                            >
-                                                                {faqBgUrl ? (
-                                                                    <div className="relative w-full h-full">
-                                                                        <img
-                                                                            src={faqBgUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${faqBgUrl}` : faqBgUrl}
-                                                                            alt="faq background"
-                                                                            className="w-full h-full object-cover rounded-lg"
-                                                                        />
-                                                                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                                                                            <div className="text-white text-center">
-                                                                                <PlusOutlined className="text-2xl mb-2" />
-                                                                                <div className="text-sm">Change Image</div>
-                                                                            </div>
-                                                                        </div>
+                                                            {faqBgUrl ? (
+                                                                <div className="relative w-48 h-36 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50 group">
+                                                                    <img
+                                                                        src={faqBgUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${faqBgUrl}` : faqBgUrl}
+                                                                        alt="FAQ Background"
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                    <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setPreviewImage(faqBgUrl)}
+                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                            title="Preview"
+                                                                        >
+                                                                            <EyeOutlined className="text-[#41398B] text-lg" />
+                                                                        </button>
+                                                                        <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                                                            <button
+                                                                                type="button"
+                                                                                className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                                title="Change Image"
+                                                                            >
+                                                                                <ReloadOutlined className="text-blue-600 text-lg" />
+                                                                            </button>
+                                                                        </Upload>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={removeImage}
+                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                            title="Delete"
+                                                                        >
+                                                                            <X className="text-red-500 w-5 h-5" />
+                                                                        </button>
                                                                     </div>
-                                                                ) : (
+                                                                </div>
+                                                            ) : (
+                                                                <Upload
+                                                                    name="homeFaqBg"
+                                                                    listType="picture-card"
+                                                                    className="faq-uploader"
+                                                                    showUploadList={false}
+                                                                    beforeUpload={handleBeforeUpload}
+                                                                >
                                                                     <div className="flex flex-col items-center justify-center h-full">
                                                                         <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
                                                                         <div className="text-sm text-gray-500 font-['Manrope']">Upload Image</div>
                                                                     </div>
-                                                                )}
-                                                            </Upload>
+                                                                </Upload>
+                                                            )}
 
                                                             <Form.Item
                                                                 name="homeFaqBg"
@@ -559,8 +591,8 @@ export default function HomePageFaqForm({
 
                     <style>{`
                         .faq-uploader .ant-upload.ant-upload-select {
-                            width: 100% !important;
-                            height: 200px !important;
+                            width: 192px !important;
+                            height: 144px !important;
                             border: 2px dashed #d1d5db !important;
                             border-radius: 12px !important;
                             background: #f9fafb !important;
@@ -576,6 +608,32 @@ export default function HomePageFaqForm({
                     `}</style>
                 </div>
             </div>
+
+            {/* Preview Modal */}
+            {previewImage && (
+                <div
+                    onClick={() => setPreviewImage(null)}
+                    className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-center p-4"
+                >
+                    <div
+                        className="relative max-w-4xl w-full rounded-xl overflow-hidden bg-black/20"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setPreviewImage(null)}
+                            className="absolute top-3 right-3 bg-[#41398B] hover:bg-[#2f2775] text-white rounded-full p-2 z-10 transition-all"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                        <img
+                            src={previewImage.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${previewImage}` : previewImage}
+                            className="w-full h-full object-contain rounded-xl"
+                            alt="Preview"
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+

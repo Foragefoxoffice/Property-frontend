@@ -290,13 +290,13 @@ export const getActiveHomeBanner = () => API.get("/home-banner/active");
 export const uploadBannerImage = (file) => {
   const formData = new FormData();
   formData.append("backgroundImage", file);
-  
+
   // Use plain axios to avoid Content-Type conflicts
   const token = localStorage.getItem("token");
   const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
-  
+
   return axios.post(`${baseURL}/home-banner/upload`, formData, {
-    headers: { 
+    headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
     },
     withCredentials: true,
@@ -312,12 +312,12 @@ export const updateHomePage = (id, data) => API.put(`/home-page/${id}`, data);
 export const uploadHomePageImage = (file) => {
   const formData = new FormData();
   formData.append("image", file);
-  
+
   const token = localStorage.getItem("token");
   const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
-  
+
   return axios.post(`${baseURL}/home-page/upload`, formData, {
-    headers: { 
+    headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
     },
     withCredentials: true,
@@ -326,6 +326,26 @@ export const uploadHomePageImage = (file) => {
 
 
 
+/* =========================================================
+   📄 ABOUT PAGE CMS APIs
+========================================================= */
+export const getAboutPage = () => API.get("/about-page");
+export const createAboutPage = (data) => API.post("/about-page", data);
+export const updateAboutPage = (id, data) => API.put(`/about-page/${id}`, data);
+export const uploadAboutPageImage = (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/about-page/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
 
 /* =========================================================
    ✨ EXPORT DEFAULT
