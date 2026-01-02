@@ -53,6 +53,7 @@ import BulkUpload from "./Admin/Property/BulkUpload.jsx";
 import ListingPage from "./Pages/ListingPage";
 import HomepageForm from "./AdminCms/HomepageCms/HomepageForm.jsx";
 import AboutPageForm from "./AdminCms/AboutPageCms/AboutPageForm.jsx";
+import ContactPageForm from "./AdminCms/ContactpageCms/ContactPageForm.jsx";
 import CMSPlaceholder from "./AdminCms/CMSPlaceholder.jsx";
 
 createRoot(document.getElementById("root")).render(
@@ -180,6 +181,7 @@ createRoot(document.getElementById("root")).render(
         {/* CMS ROUTES */}
         <Route path="cms/home" element={<HomepageForm />} />
         <Route path="cms/about" element={<AboutPageForm />} />
+        <Route path="cms/contact" element={<ContactPageForm />} />
         <Route path="cms/:section" element={<CMSPlaceholder />} />
       </Route>
 

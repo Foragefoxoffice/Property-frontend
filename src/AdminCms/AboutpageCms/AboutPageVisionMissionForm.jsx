@@ -283,7 +283,7 @@ export default function AboutPageVisionMissionForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -294,7 +294,10 @@ export default function AboutPageVisionMissionForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save Vision & Mission' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Tầm Nhìn & Sứ Mệnh' : 'Tạo Trang')
+                                        : (pageData ? 'Save Vision & Mission' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>

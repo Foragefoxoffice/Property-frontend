@@ -115,8 +115,12 @@ export default function AboutPageBuyingForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Buying Process</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage homebuying steps and process</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Buying Process' : 'Quy Trình Mua'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage homebuying steps and process' : 'Quản lý các bước mua nhà'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -276,7 +280,7 @@ export default function AboutPageBuyingForm({
 
                                                     <div className="mb-4">
                                                         <span className="inline-block px-3 py-1 bg-[#41398B] text-white text-xs font-semibold rounded-full">
-                                                            Step {index + 1}
+                                                            {activeTab === 'en' ? `Step ${index + 1}` : `Bước ${index + 1}`}
                                                         </span>
                                                     </div>
 
@@ -471,7 +475,7 @@ export default function AboutPageBuyingForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -482,7 +486,10 @@ export default function AboutPageBuyingForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save Process Steps' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Quy Trình Mua' : 'Tạo Trang')
+                                        : (pageData ? 'Save Process Steps' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>

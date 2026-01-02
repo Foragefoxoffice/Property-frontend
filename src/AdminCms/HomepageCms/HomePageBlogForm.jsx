@@ -37,8 +37,12 @@ export default function HomePageBlogForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Blog Section</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your blog section content</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Blog Section' : 'Phần Blog'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage your blog section content' : 'Quản lý nội dung phần blog'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -171,7 +175,7 @@ export default function HomePageBlogForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -182,7 +186,10 @@ export default function HomePageBlogForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save Blog Section' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Phần Blog' : 'Tạo Trang')
+                                        : (pageData ? 'Save Blog Section' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>

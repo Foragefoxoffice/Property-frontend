@@ -274,7 +274,9 @@ export default function AboutPageFindPropertyForm({
                                         >
                                             <div className="flex flex-col items-center justify-center h-full">
                                                 <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
-                                                <div className="text-sm text-gray-500 font-['Manrope']">Upload Image</div>
+                                                <div className="text-sm text-gray-500 font-['Manrope']">
+                                                    {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                </div>
                                             </div>
                                         </Upload>
                                     )}
@@ -296,7 +298,7 @@ export default function AboutPageFindPropertyForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -307,7 +309,10 @@ export default function AboutPageFindPropertyForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save Find Property Section' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Phần Tìm Bất Động Sản' : 'Tạo Trang')
+                                        : (pageData ? 'Save Find Property Section' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>

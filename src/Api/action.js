@@ -348,6 +348,27 @@ export const uploadAboutPageImage = (file) => {
 };
 
 /* =========================================================
+   📞 CONTACT PAGE CMS APIs
+========================================================= */
+export const getContactPage = () => API.get("/contact-page");
+export const createContactPage = (data) => API.post("/contact-page", data);
+export const updateContactPage = (id, data) => API.put(`/contact-page/${id}`, data);
+export const uploadContactPageImage = (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/contact-page/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
+/* =========================================================
    ✨ EXPORT DEFAULT
 ========================================================= */
 export default API;

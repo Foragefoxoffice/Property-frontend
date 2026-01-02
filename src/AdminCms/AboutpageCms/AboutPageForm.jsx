@@ -250,8 +250,8 @@ export default function AboutPageForm() {
             setBannerLoading(true);
 
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
@@ -276,8 +276,8 @@ export default function AboutPageForm() {
         try {
             setHistoryLoading(true);
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
@@ -307,8 +307,8 @@ export default function AboutPageForm() {
         try {
             setBuyingLoading(true);
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
@@ -338,8 +338,8 @@ export default function AboutPageForm() {
         try {
             setWhyChooseLoading(true);
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
@@ -369,8 +369,8 @@ export default function AboutPageForm() {
         try {
             setVisionMissionLoading(true);
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
@@ -400,8 +400,8 @@ export default function AboutPageForm() {
         try {
             setFindLoading(true);
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
@@ -431,8 +431,8 @@ export default function AboutPageForm() {
         try {
             setSeoLoading(true);
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {

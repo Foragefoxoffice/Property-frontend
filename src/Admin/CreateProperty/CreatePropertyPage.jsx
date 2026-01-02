@@ -8,8 +8,6 @@ import CreatePropertyListStep3 from "./CreatePropertyListStep3";
 import CreatePropertyListStep4SEO from "./CreatePropertyListStep4SEO";
 import CreatePropertyPreview from "./CreatePropertyPreview";
 import { useParams } from "react-router-dom";
-
-
 import {
   createPropertyListing,
   updatePropertyListing,
@@ -34,7 +32,6 @@ import {
   getMe,
   getNextPropertyId,
 } from "../../Api/action";
-
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { useNavigate } from "react-router-dom";
@@ -157,7 +154,47 @@ function mapApiToForm(api) {
 
     financialDetailsLegalDoc: safe(api.financialDetails?.financialDetailsLegalDoc),
 
-    financialVisibility: api.financialVisibility || {},
+    /* -----------------------------------------
+       VISIBILITY FIELDS
+    ------------------------------------------ */
+    videoVisibility: api.videoVisibility || false,
+    floorImageVisibility: api.floorImageVisibility || false,
+    titleVisibility: api.titleVisibility || false,
+    descriptionVisibility: api.descriptionVisibility || false,
+    propertyUtilityVisibility: api.propertyUtilityVisibility || false,
+    
+    listingInformationVisibility: api.listingInformationVisibility || {
+      transactionType: false,
+      propertyId: false,
+      projectCommunity: false,
+      areaZone: false,
+      blockName: false,
+      propertyNo: false,
+      dateListed: false,
+      availableFrom: false,
+      availabilityStatus: false,
+    },
+    
+    propertyInformationVisibility: api.propertyInformationVisibility || {
+      unit: false,
+      unitSize: false,
+      bedrooms: false,
+      bathrooms: false,
+      floorRange: false,
+      furnishing: false,
+      view: false,
+    },
+
+    financialVisibility: api.financialVisibility || {
+      contractLength: false,
+      deposit: false,
+      paymentTerm: false,
+      feeTaxes: false,
+      legalDocs: false,
+      agentFee: false,
+      checkIn: false,
+      checkOut: false,
+    },
 
     /* -----------------------------------------
        CONTACT MANAGEMENT
@@ -462,9 +499,46 @@ export default function CreatePropertyPage({
       },
 
       /* ================================================
-         FINANCIAL VISIBILITY
+         VISIBILITY FIELDS
       ================================================= */
-      financialVisibility: n.financialVisibility || {},
+      videoVisibility: n.videoVisibility || false,
+      floorImageVisibility: n.floorImageVisibility || false,
+      titleVisibility: n.titleVisibility || false,
+      descriptionVisibility: n.descriptionVisibility || false,
+      propertyUtilityVisibility: n.propertyUtilityVisibility || false,
+      
+      listingInformationVisibility: n.listingInformationVisibility || {
+        transactionType: false,
+        propertyId: false,
+        projectCommunity: false,
+        areaZone: false,
+        blockName: false,
+        propertyNo: false,
+        dateListed: false,
+        availableFrom: false,
+        availabilityStatus: false,
+      },
+      
+      propertyInformationVisibility: n.propertyInformationVisibility || {
+        unit: false,
+        unitSize: false,
+        bedrooms: false,
+        bathrooms: false,
+        floorRange: false,
+        furnishing: false,
+        view: false,
+      },
+
+      financialVisibility: n.financialVisibility || {
+        contractLength: false,
+        deposit: false,
+        paymentTerm: false,
+        feeTaxes: false,
+        legalDocs: false,
+        agentFee: false,
+        checkIn: false,
+        checkOut: false,
+      },
 
       /* ================================================
          CONTACT MANAGEMENT

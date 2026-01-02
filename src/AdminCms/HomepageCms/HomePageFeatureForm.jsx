@@ -37,8 +37,12 @@ export default function HomePageFeatureForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Features Section</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your features content</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Features Section' : 'Phần Tính Năng'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage your features content' : 'Quản lý nội dung tính năng'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -152,7 +156,7 @@ export default function HomePageFeatureForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -163,7 +167,10 @@ export default function HomePageFeatureForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save Features Section' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Phần Tính Năng' : 'Tạo Trang')
+                                        : (pageData ? 'Save Features Section' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>

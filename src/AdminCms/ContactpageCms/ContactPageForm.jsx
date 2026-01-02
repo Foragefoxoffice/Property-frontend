@@ -1,0 +1,293 @@
+import { useState, useEffect } from 'react';
+import { Form, Spin, ConfigProvider } from 'antd';
+import {
+    getContactPage,
+    createContactPage,
+    updateContactPage,
+} from '../../Api/action';
+import { CommonToaster } from '@/Common/CommonToaster';
+import ContactPageBannerForm from './ContactPageBannerForm';
+import ContactPageReachOutForm from './ContactPageReachOutForm';
+import ContactMapLink from './ContactMapLink';
+
+export default function ContactPageForm() {
+    const [bannerForm] = Form.useForm();
+    const [reachOutForm] = Form.useForm();
+    const [mapForm] = Form.useForm();
+    const [pageData, setPageData] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    // Accordion state
+    const [openAccordions, setOpenAccordions] = useState({
+        banner: true,
+        reachOut: false,
+        map: false,
+    });
+
+    const toggleAccordion = (key) => {
+        setOpenAccordions(prev => ({
+            banner: key === 'banner' ? !prev.banner : false,
+            reachOut: key === 'reachOut' ? !prev.reachOut : false,
+            map: key === 'map' ? !prev.map : false,
+        }));
+    };
+
+    const [bannerLoading, setBannerLoading] = useState(false);
+    const [reachOutLoading, setReachOutLoading] = useState(false);
+    const [mapLoading, setMapLoading] = useState(false);
+
+    // Helper to get preserved data
+    const getPreservedData = (data) => {
+        if (!data) return {};
+        return {
+            // Banner
+            contactBannerTitle_en: data.contactBannerTitle_en,
+            contactBannerTitle_vn: data.contactBannerTitle_vn,
+            contactBannerBg: data.contactBannerBg,
+            // Reach Out
+            contactReachOutTitle_en: data.contactReachOutTitle_en,
+            contactReachOutTitle_vn: data.contactReachOutTitle_vn,
+            contactReachOutDescription_en: data.contactReachOutDescription_en,
+            contactReachOutDescription_vn: data.contactReachOutDescription_vn,
+            contactReachOutAddressHead_en: data.contactReachOutAddressHead_en,
+            contactReachOutAddressHead_vn: data.contactReachOutAddressHead_vn,
+            contactReachOutAddressContent_en: data.contactReachOutAddressContent_en,
+            contactReachOutAddressContent_vn: data.contactReachOutAddressContent_vn,
+            contactReachOutNumberHead_en: data.contactReachOutNumberHead_en,
+            contactReachOutNumberHead_vn: data.contactReachOutNumberHead_vn,
+            contactReachOutNumberContent: data.contactReachOutNumberContent,
+            contactReachOutEmailHead_en: data.contactReachOutEmailHead_en,
+            contactReachOutEmailHead_vn: data.contactReachOutEmailHead_vn,
+            contactReachOutEmailContent: data.contactReachOutEmailContent,
+            contactReachOutFollowTitle_en: data.contactReachOutFollowTitle_en,
+            contactReachOutFollowTitle_vn: data.contactReachOutFollowTitle_vn,
+            contactReachOutSocialIcons: data.contactReachOutSocialIcons,
+            contactReachOutGetinTitle_en: data.contactReachOutGetinTitle_en,
+            contactReachOutGetinTitle_vn: data.contactReachOutGetinTitle_vn,
+            contactReachOutGetinDescription_en: data.contactReachOutGetinDescription_en,
+            contactReachOutGetinDescription_vn: data.contactReachOutGetinDescription_vn,
+            // Map
+            contactMapIframe: data.contactMapIframe,
+        };
+    };
+
+    // Fetch the contact page data
+    const fetchPageData = async () => {
+        try {
+            setLoading(true);
+            const response = await getContactPage();
+            const page = response.data.data;
+
+            if (page) {
+                setPageData(page);
+
+                // Set Banner Form
+                bannerForm.setFieldsValue({
+                    contactBannerTitle_en: page.contactBannerTitle_en,
+                    contactBannerTitle_vn: page.contactBannerTitle_vn,
+                    contactBannerBg: page.contactBannerBg,
+                });
+
+                // Set Reach Out Form
+                reachOutForm.setFieldsValue({
+                    contactReachOutTitle_en: page.contactReachOutTitle_en,
+                    contactReachOutTitle_vn: page.contactReachOutTitle_vn,
+                    contactReachOutDescription_en: page.contactReachOutDescription_en,
+                    contactReachOutDescription_vn: page.contactReachOutDescription_vn,
+                    contactReachOutAddressHead_en: page.contactReachOutAddressHead_en,
+                    contactReachOutAddressHead_vn: page.contactReachOutAddressHead_vn,
+                    contactReachOutAddressContent_en: page.contactReachOutAddressContent_en,
+                    contactReachOutAddressContent_vn: page.contactReachOutAddressContent_vn,
+                    contactReachOutNumberHead_en: page.contactReachOutNumberHead_en,
+                    contactReachOutNumberHead_vn: page.contactReachOutNumberHead_vn,
+                    contactReachOutNumberContent: page.contactReachOutNumberContent,
+                    contactReachOutEmailHead_en: page.contactReachOutEmailHead_en,
+                    contactReachOutEmailHead_vn: page.contactReachOutEmailHead_vn,
+                    contactReachOutEmailContent: page.contactReachOutEmailContent,
+                    contactReachOutFollowTitle_en: page.contactReachOutFollowTitle_en,
+                    contactReachOutFollowTitle_vn: page.contactReachOutFollowTitle_vn,
+                    contactReachOutSocialIcons: page.contactReachOutSocialIcons || [],
+                    contactReachOutGetinTitle_en: page.contactReachOutGetinTitle_en,
+                    contactReachOutGetinTitle_vn: page.contactReachOutGetinTitle_vn,
+                    contactReachOutGetinDescription_en: page.contactReachOutGetinDescription_en,
+                    contactReachOutGetinDescription_vn: page.contactReachOutGetinDescription_vn,
+                });
+
+                // Set Map Form
+                mapForm.setFieldsValue({
+                    contactMapIframe: page.contactMapIframe,
+                });
+            } else {
+                setPageData(null);
+                bannerForm.resetFields();
+                reachOutForm.resetFields();
+                mapForm.resetFields();
+            }
+        } catch (error) {
+            if (error.response?.status === 404) {
+                setPageData(null);
+                bannerForm.resetFields();
+                reachOutForm.resetFields();
+                mapForm.resetFields();
+            } else {
+                CommonToaster('Failed to fetch page data', 'error');
+                console.error(error);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPageData();
+    }, []);
+
+    // Handle Banner form submission
+    const handleBannerSubmit = async (values) => {
+        try {
+            setBannerLoading(true);
+
+            const finalPayload = {
+               ...(pageData && getPreservedData(pageData)),
+               ...values
+            };
+
+            if (pageData) {
+                await updateContactPage(pageData._id, finalPayload);
+                CommonToaster('Banner section updated successfully!', 'success');
+            } else {
+                await createContactPage(finalPayload);
+                CommonToaster('Contact page created successfully!', 'success');
+            }
+
+            fetchPageData();
+        } catch (error) {
+            CommonToaster(error.response?.data?.message || 'Failed to save banner section', 'error');
+            console.error(error);
+        } finally {
+            setBannerLoading(false);
+        }
+    };
+
+    // Handle Reach Out form submission
+    const handleReachOutSubmit = async (values) => {
+        try {
+            setReachOutLoading(true);
+            const finalPayload = {
+               ...(pageData && getPreservedData(pageData)),
+               ...values
+            };
+
+            if (pageData) {
+                await updateContactPage(pageData._id, finalPayload);
+                CommonToaster('Reach Out section updated successfully!', 'success');
+            } else {
+                const bannerValues = await bannerForm.validateFields();
+                await createContactPage({ ...finalPayload, ...bannerValues });
+                CommonToaster('Contact page created successfully!', 'success');
+            }
+
+            fetchPageData();
+        } catch (error) {
+            if (error.errorFields) {
+                CommonToaster('Please fill in the Banner section first', 'error');
+            } else {
+                CommonToaster(error.response?.data?.message || 'Failed to save reach out section', 'error');
+                console.error(error);
+            }
+        } finally {
+            setReachOutLoading(false);
+        }
+    };
+
+    // Handle Map form submission
+    const handleMapSubmit = async (values) => {
+        try {
+            setMapLoading(true);
+            const finalPayload = {
+               ...(pageData && getPreservedData(pageData)),
+               ...values
+            };
+
+            if (pageData) {
+                await updateContactPage(pageData._id, finalPayload);
+                CommonToaster('Map section updated successfully!', 'success');
+            } else {
+                const bannerValues = await bannerForm.validateFields();
+                await createContactPage({ ...finalPayload, ...bannerValues });
+                CommonToaster('Contact page created successfully!', 'success');
+            }
+
+            fetchPageData();
+        } catch (error) {
+            if (error.errorFields) {
+                CommonToaster('Please fill in the Banner section first', 'error');
+            } else {
+                CommonToaster(error.response?.data?.message || 'Failed to save map section', 'error');
+                console.error(error);
+            }
+        } finally {
+            setMapLoading(false);
+        }
+    };
+
+    if (loading && !pageData) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <ConfigProvider theme={{ token: { colorPrimary: '#41398B' } }}>
+                    <Spin size="large" />
+                </ConfigProvider>
+            </div>
+        );
+    }
+
+    return (
+        <div className="">
+            <h2 style={{
+                color: '#111827',
+                fontSize: '36px',
+                fontWeight: '700',
+                textAlign: 'center',
+                marginBottom: '18px',
+                fontFamily: 'Manrope, sans-serif'
+            }}>
+                Contact Us Page Sections
+            </h2>
+
+            <div className="space-y-6">
+                {/* Banner Section */}
+                <ContactPageBannerForm
+                    form={bannerForm}
+                    onSubmit={handleBannerSubmit}
+                    loading={bannerLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.banner}
+                    onToggle={() => toggleAccordion('banner')}
+                />
+
+                {/* Reach Out Section */}
+                <ContactPageReachOutForm
+                    form={reachOutForm}
+                    onSubmit={handleReachOutSubmit}
+                    loading={reachOutLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.reachOut}
+                    onToggle={() => toggleAccordion('reachOut')}
+                />
+
+                {/* Map Section */}
+                <ContactMapLink
+                    form={mapForm}
+                    onSubmit={handleMapSubmit}
+                    loading={mapLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.map}
+                    onToggle={() => toggleAccordion('map')}
+                />
+            </div>
+        </div>
+    );
+}

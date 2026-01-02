@@ -98,8 +98,12 @@ export default function HomePageSeoForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">SEO Settings</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage homepage SEO and meta information</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'SEO Settings' : 'Cài Đặt SEO'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage homepage SEO and meta information' : 'Quản lý SEO trang chủ và thông tin meta'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -552,7 +556,7 @@ export default function HomePageSeoForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -563,7 +567,10 @@ export default function HomePageSeoForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save SEO Settings' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Cài Đặt SEO' : 'Tạo Trang')
+                                        : (pageData ? 'Save SEO Settings' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>

@@ -14,11 +14,11 @@ import {
     DeleteOutlined,
     ReloadOutlined
 } from '@ant-design/icons';
-import { uploadAboutPageImage } from '../../Api/action';
+import { uploadContactPageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { X } from 'lucide-react';
 
-export default function AboutPageBannerForm({
+export default function ContactPageBannerForm({
     form,
     onSubmit,
     loading,
@@ -34,8 +34,8 @@ export default function AboutPageBannerForm({
 
     // Update banner image when pageData changes
     useEffect(() => {
-        if (pageData?.aboutBannerBg) {
-            setBannerImageUrl(pageData.aboutBannerBg);
+        if (pageData?.contactBannerBg) {
+            setBannerImageUrl(pageData.contactBannerBg);
         }
     }, [pageData]);
 
@@ -43,10 +43,10 @@ export default function AboutPageBannerForm({
     const handleImageUpload = async (file) => {
         try {
             setUploading(true);
-            const response = await uploadAboutPageImage(file);
+            const response = await uploadContactPageImage(file);
             const uploadedUrl = response.data.data.url;
 
-            form.setFieldsValue({ aboutBannerBg: uploadedUrl });
+            form.setFieldsValue({ contactBannerBg: uploadedUrl });
             setBannerImageUrl(uploadedUrl);
             CommonToaster('Image uploaded successfully!', 'success');
 
@@ -78,30 +78,30 @@ export default function AboutPageBannerForm({
     // Remove banner image
     const removeBannerImage = () => {
         setBannerImageUrl('');
-        form.setFieldsValue({ aboutBannerBg: '' });
+        form.setFieldsValue({ contactBannerBg: '' });
         CommonToaster('Image removed', 'info');
     };
 
     return (
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent transition-all duration-300 shadow-lg hover:shadow-xl">
             {/* Accordion Header */}
             <div
                 className="flex items-center justify-between p-6 cursor-pointer bg-gradient-to-r from-purple-50/50 to-indigo-50/50"
                 onClick={onToggle}
             >
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">About Us Banner</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your about page banner section</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Contact Us Banner</h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your contact page banner section</p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
-                    <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                     </svg>
                 </div>
@@ -136,14 +136,14 @@ export default function AboutPageBannerForm({
                                                             Banner Title
                                                         </span>
                                                     }
-                                                    name="aboutBannerTitle_en"
+                                                    name="contactBannerTitle_en"
                                                     rules={[
                                                         { required: true, message: 'Please enter banner title in English' },
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
                                                     <Input
-                                                        placeholder="About Us"
+                                                        placeholder="Contact Us"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                     />
@@ -166,14 +166,14 @@ export default function AboutPageBannerForm({
                                                             Tiêu Đề Banner
                                                         </span>
                                                     }
-                                                    name="aboutBannerTitle_vn"
+                                                    name="contactBannerTitle_vn"
                                                     rules={[
                                                         { required: true, message: 'Vui lòng nhập tiêu đề banner' },
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
                                                     <Input
-                                                        placeholder="Về Chúng Tôi"
+                                                        placeholder="Liên Hệ"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                     />
@@ -241,21 +241,21 @@ export default function AboutPageBannerForm({
                                         </div>
                                     ) : (
                                         <Upload
-                                            name="aboutBannerBg"
+                                            name="contactBannerBg"
                                             listType="picture-card"
                                             className="banner-uploader"
                                             showUploadList={false}
                                             beforeUpload={handleBeforeUpload}
                                         >
                                             <div className="flex flex-col items-center justify-center h-full">
-                                                <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
+                                                <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-blue-600" />
                                                 <div className="text-sm text-gray-500 font-['Manrope']">Upload Image</div>
                                             </div>
                                         </Upload>
                                     )}
 
                                     <Form.Item
-                                        name="aboutBannerBg"
+                                        name="contactBannerBg"
                                         noStyle
                                     >
                                         <Input type="hidden" />
@@ -338,4 +338,3 @@ export default function AboutPageBannerForm({
         </div>
     );
 }
-

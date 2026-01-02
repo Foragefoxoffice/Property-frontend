@@ -528,12 +528,11 @@ export default function CreatePropertyListStep2({
                   ? "#41398B"
                   : "#d9d9d9",
               }}
-              onChange={(val) =>
-                setForm((p) => ({
-                  ...p,
-                  videoVisibility: val,
-                }))
-              }
+              onChange={(val) => {
+                const updated = { ...form, videoVisibility: val };
+                setForm(updated);
+                onChange && onChange(updated);
+              }}
             />
           </div>
         </div>
@@ -562,12 +561,11 @@ export default function CreatePropertyListStep2({
                   ? "#41398B"
                   : "#d9d9d9",
               }}
-              onChange={(val) =>
-                setForm((p) => ({
-                  ...p,
-                  floorImageVisibility: val,
-                }))
-              }
+              onChange={(val) => {
+                const updated = { ...form, floorImageVisibility: val };
+                setForm(updated);
+                onChange && onChange(updated);
+              }}
             />
           </div>
         </div>
@@ -680,21 +678,23 @@ export default function CreatePropertyListStep2({
                 </span>
 
                 <Switch
-                  checked={form.financialVisibility?.depositPaymentTerms}
+                  checked={form.financialVisibility?.deposit}
                   style={{
-                    backgroundColor: form.financialVisibility?.depositPaymentTerms
+                    backgroundColor: form.financialVisibility?.deposit
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
-                        depositPaymentTerms: val,
+                        ...form.financialVisibility,
+                        deposit: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -770,15 +770,17 @@ export default function CreatePropertyListStep2({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
+                        ...form.financialVisibility,
                         paymentTerm: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -854,15 +856,17 @@ export default function CreatePropertyListStep2({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
+                        ...form.financialVisibility,
                         feeTaxes: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -939,15 +943,17 @@ export default function CreatePropertyListStep2({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
+                        ...form.financialVisibility,
                         legalDocs: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1126,15 +1132,17 @@ export default function CreatePropertyListStep2({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
+                        ...form.financialVisibility,
                         contractLength: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1166,15 +1174,17 @@ export default function CreatePropertyListStep2({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
+                        ...form.financialVisibility,
                         deposit: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1232,15 +1242,17 @@ export default function CreatePropertyListStep2({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
+                        ...form.financialVisibility,
                         paymentTerm: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1418,15 +1430,17 @@ export default function CreatePropertyListStep2({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
+                        ...form.financialVisibility,
                         checkIn: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1456,15 +1470,17 @@ export default function CreatePropertyListStep2({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
+                        ...form.financialVisibility,
                         checkOut: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1490,21 +1506,23 @@ export default function CreatePropertyListStep2({
                 </span>
 
                 <Switch
-                  checked={form.financialVisibility?.depositPaymentTerms}
+                  checked={form.financialVisibility?.deposit}
                   style={{
-                    backgroundColor: form.financialVisibility?.depositPaymentTerms
+                    backgroundColor: form.financialVisibility?.deposit
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
-                        depositPaymentTerms: val,
+                        ...form.financialVisibility,
+                        deposit: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1574,21 +1592,23 @@ export default function CreatePropertyListStep2({
                   {lang === "en" ? "Public" : "Công cộng"}
                 </span>
                 <Switch
-                  checked={form.financialVisibility?.maintenanceFeeMonthly}
+                  checked={form.financialVisibility?.paymentTerm}
                   style={{
-                    backgroundColor: form.financialVisibility?.maintenanceFeeMonthly
+                    backgroundColor: form.financialVisibility?.paymentTerm
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       financialVisibility: {
-                        ...p.financialVisibility,
-                        maintenanceFeeMonthly: val,
+                        ...form.financialVisibility,
+                        paymentTerm: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>

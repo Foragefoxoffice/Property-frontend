@@ -37,7 +37,9 @@ export default function HomePageAboutForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Who We Are Section</h3>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Who We Are Section' : 'Phần Về Chúng Tôi'}
+                        </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">Manage your about us content</p>
                     </div>
                 </div>
@@ -341,7 +343,9 @@ export default function HomePageAboutForm({
                             />
 
                             <Form.Item
-                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Button Link</span>}
+                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                    {activeTab === 'en' ? 'Button Link' : 'Liên Kết Nút'}
+                                </span>}
                                 name="homeAboutButtonLink"
                                 rules={[{ required: true, message: 'Please enter button link' }]}
                             >
@@ -360,7 +364,7 @@ export default function HomePageAboutForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -371,7 +375,10 @@ export default function HomePageAboutForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save About Section' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Phần Về Chúng Tôi' : 'Tạo Trang')
+                                        : (pageData ? 'Save About Section' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>

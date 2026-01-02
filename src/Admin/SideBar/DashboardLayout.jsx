@@ -107,6 +107,28 @@ const DashboardLayout = () => {
                                         <span>{t.home || "Home Page"}</span>
                                     </button>
 
+                                                                        {/* ABOUT US */}
+                                    <button
+                                        onClick={() => navigate("/dashboard/cms/about")}
+                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/about") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                    >
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Users /> </span>
+                                        <span>About Us</span>
+                                    </button>
+
+                                    {/* CONTACT */}
+                                    <button
+                                        onClick={() => navigate("/dashboard/cms/contact")}
+                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/contact") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                    >
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserCog /> </span>
+                                        <span>Contact</span>
+                                    </button>
+
                                     {/* HEADER */}
                                     <button
                                         onClick={() => navigate("/dashboard/cms/header")}
@@ -127,28 +149,6 @@ const DashboardLayout = () => {
                                     >
                                         <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
                                         <span>Footer</span>
-                                    </button>
-
-                                    {/* ABOUT US */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/about")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
-                      ${isActive("/dashboard/cms/about") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-                    `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Users /> </span>
-                                        <span>About Us</span>
-                                    </button>
-
-                                    {/* CONTACT */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/contact")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
-                      ${isActive("/dashboard/cms/contact") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-                    `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserCog /> </span>
-                                        <span>Contact</span>
                                     </button>
                                 </div>
                             )}

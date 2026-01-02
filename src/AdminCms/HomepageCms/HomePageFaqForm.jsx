@@ -94,8 +94,12 @@ export default function HomePageFaqForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">FAQ Section</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your FAQ content and questions</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'FAQ Section' : 'Phần FAQ'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage your FAQ content and questions' : 'Quản lý nội dung và câu hỏi thường gặp'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -572,7 +576,7 @@ export default function HomePageFaqForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -583,7 +587,10 @@ export default function HomePageFaqForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save FAQ Section' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Phần FAQ' : 'Tạo Trang')
+                                        : (pageData ? 'Save FAQ Section' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>

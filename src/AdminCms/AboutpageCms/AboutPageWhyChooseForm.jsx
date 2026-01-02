@@ -220,7 +220,7 @@ export default function AboutPageWhyChooseForm({
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        Button Link
+                                        {activeTab === 'en' ? 'Button Link' : 'Liên Kết Nút'}
                                     </span>
                                 }
                                 name="aboutWhyChooseButtonLink"
@@ -236,7 +236,7 @@ export default function AboutPageWhyChooseForm({
                             <div className="mt-8 mb-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h4 className="text-md font-bold text-gray-800 font-['Manrope']">
-                                        Why Choose Boxes
+                                        {activeTab === 'en' ? 'Why Choose Boxes' : 'Hộp Lý Do Chọn'}
                                     </h4>
                                 </div>
 
@@ -259,7 +259,7 @@ export default function AboutPageWhyChooseForm({
 
                                                     <div className="mb-4">
                                                         <span className="inline-block px-3 py-1 bg-[#41398B] text-white text-xs font-semibold rounded-full">
-                                                            Box {index + 1}
+                                                            {activeTab === 'en' ? `Box ${index + 1}` : `Hộp ${index + 1}`}
                                                         </span>
                                                     </div>
 
@@ -403,7 +403,7 @@ export default function AboutPageWhyChooseForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        Cancel
+                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 <Button
@@ -414,7 +414,10 @@ export default function AboutPageWhyChooseForm({
                                     loading={loading}
                                     className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
                                 >
-                                    {pageData ? 'Save Why Choose Section' : 'Create Page'}
+                                    {activeTab === 'vn'
+                                        ? (pageData ? 'Lưu Phần Tại Sao Chọn' : 'Tạo Trang')
+                                        : (pageData ? 'Save Why Choose Section' : 'Create Page')
+                                    }
                                 </Button>
                             </div>
                         </Form>
