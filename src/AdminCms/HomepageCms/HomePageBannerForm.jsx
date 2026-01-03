@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 import { uploadHomePageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { X } from 'lucide-react';
 
 const { TextArea } = Input;
@@ -115,6 +116,7 @@ export default function HomePageBannerForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}

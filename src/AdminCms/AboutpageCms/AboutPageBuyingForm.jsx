@@ -14,6 +14,7 @@ import {
     EyeOutlined,
     ReloadOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { uploadAboutPageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { X } from 'lucide-react';
@@ -138,6 +139,7 @@ export default function AboutPageBuyingForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -249,7 +251,7 @@ export default function AboutPageBuyingForm({
                             <div className="mt-8 mb-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h4 className="text-md font-bold text-gray-800 font-['Manrope']">
-                                        Process Steps
+                                        {activeTab === 'en' ? 'Process Steps' : 'Các Bước Quy Trình'}
                                     </h4>
                                 </div>
 

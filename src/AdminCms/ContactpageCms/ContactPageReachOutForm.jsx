@@ -12,14 +12,18 @@ import {
     PlusOutlined,
     DeleteOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 import * as LucideIcons from 'lucide-react';
 
 const { TextArea } = Input;
 
 // Get all Lucide icon names
-const lucideIconNames = Object.keys(LucideIcons).filter(
-    key => typeof LucideIcons[key] === 'function' && key !== 'createLucideIcon'
+const lucideIconNames = Object.keys(LucideIcons).filter(name =>
+    name !== 'createLucideIcon' &&
+    name !== 'icons' &&
+    name !== 'default' &&
+    /^[A-Z]/.test(name) // Only keep exports starting with Uppercase (Components)
 );
 
 export default function ContactPageReachOutForm({
@@ -54,8 +58,12 @@ export default function ContactPageReachOutForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Reach Out Section</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage contact information and social media</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Reach Out Section' : 'Phần Liên Hệ'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage contact information and social media' : 'Quản lý thông tin liên hệ và mạng xã hội'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -73,6 +81,7 @@ export default function ContactPageReachOutForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -199,8 +208,8 @@ export default function ContactPageReachOutForm({
                                                 </Form.Item>
 
                                                 {/* Get In Touch */}
-                                                <div className="bg-blue-50 p-4 rounded-xl space-y-3 mt-6">
-                                                    <h4 className="font-semibold text-blue-700 text-sm font-['Manrope']">Get In Touch Section</h4>
+                                                <div className="bg-purple-50 p-4 rounded-xl space-y-3 mt-6">
+                                                    <h4 className="font-semibold text-[#41398B] text-sm font-['Manrope']">Get In Touch Section</h4>
                                                     <Form.Item
                                                         label={<span className="text-sm font-['Manrope']">Title</span>}
                                                         name="contactReachOutGetinTitle_en"
@@ -423,7 +432,7 @@ export default function ContactPageReachOutForm({
 
                                                 {/* Social Media Icons */}
                                                 <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-5 rounded-xl">
-                                                    <h4 className="font-semibold text-purple-700 text-sm font-['Manrope'] mb-4">
+                                                    <h4 className="font-semibold text-[#41398B] text-sm font-['Manrope'] mb-4">
                                                         Social Media Icons
                                                     </h4>
                                                     <Form.List name="contactReachOutSocialIcons">
@@ -444,14 +453,19 @@ export default function ContactPageReachOutForm({
                                                                                         placeholder="Select Lucide icon"
                                                                                         size="large"
                                                                                         className="w-full"
-                                                                                        optionFilterProp="children"
-                                                                                        filterOption={(input, option) =>
-                                                                                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                                                                        }
-                                                                                        options={lucideIconNames.map(name => ({
-                                                                                            value: name,
-                                                                                            label: name,
-                                                                                        }))}
+                                                                                        optionFilterProp="value"
+                                                                                        options={lucideIconNames.map(name => {
+                                                                                            const Icon = LucideIcons[name];
+                                                                                            return {
+                                                                                                value: name,
+                                                                                                label: (
+                                                                                                    <div className="flex items-center gap-2">
+                                                                                                        {Icon && <Icon size={16} />}
+                                                                                                        <span>{name}</span>
+                                                                                                    </div>
+                                                                                                ),
+                                                                                            };
+                                                                                        })}
                                                                                     />
                                                                                 </Form.Item>
 

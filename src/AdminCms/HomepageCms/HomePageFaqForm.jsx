@@ -19,6 +19,7 @@ import {
 } from '@ant-design/icons';
 import { uploadHomePageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { X } from 'lucide-react';
 
 const { TextArea } = Input;
@@ -117,6 +118,7 @@ export default function HomePageFaqForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                             initialValues={{
                                 faqs: [{ header_en: '', content_en: '', header_vn: '', content_vn: '' }]
                             }}
@@ -387,7 +389,7 @@ export default function HomePageFaqForm({
                                                                         block
                                                                         icon={<PlusOutlined />}
                                                                         size="large"
-                                                                        className="!border-2 !border-[#41398B] !text-[#41398B] hover:!border-[#41398B] hover:!text-[#41398B] font-semibold font-['Manrope'] h-12"
+                                                                        className="!border-2 !border-[#41398B] !text-[#41398B] hover:!border-[#41398B] hover:!text-[#41398B] font-semibold font-['Manrope'] mt-5 h-12"
                                                                     >
                                                                         Add FAQ Question
                                                                     </Button>

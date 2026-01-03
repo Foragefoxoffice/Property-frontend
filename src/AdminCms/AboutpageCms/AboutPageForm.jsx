@@ -12,7 +12,10 @@ import AboutPageBuyingForm from './AboutPageBuyingForm';
 import AboutPageWhyChooseForm from './AboutPageWhyChooseForm';
 import AboutPageVisionMissionForm from './AboutPageVisionMissionForm';
 import AboutPageFindPropertyForm from './AboutPageFindPropertyForm';
+import AboutAgentForm from './AboutAgentForm';
+import AboutOverviewForm from './AboutOverviewForm';
 import AboutPageSeoForm from './AboutPageSeoForm';
+import { validateVietnameseFields } from '@/utils/formValidation';
 
 export default function AboutPageForm() {
     const [bannerForm] = Form.useForm();
@@ -20,6 +23,8 @@ export default function AboutPageForm() {
     const [buyingForm] = Form.useForm();
     const [whyChooseForm] = Form.useForm();
     const [visionMissionForm] = Form.useForm();
+    const [agentForm] = Form.useForm();
+    const [overviewForm] = Form.useForm();
     const [findForm] = Form.useForm();
     const [seoForm] = Form.useForm();
     const [pageData, setPageData] = useState(null);
@@ -32,6 +37,8 @@ export default function AboutPageForm() {
         buying: false,
         whyChoose: false,
         visionMission: false,
+        agent: false,
+        overview: false,
         find: false,
         seo: false,
     });
@@ -43,6 +50,8 @@ export default function AboutPageForm() {
             buying: key === 'buying' ? !prev.buying : false,
             whyChoose: key === 'whyChoose' ? !prev.whyChoose : false,
             visionMission: key === 'visionMission' ? !prev.visionMission : false,
+            agent: key === 'agent' ? !prev.agent : false,
+            overview: key === 'overview' ? !prev.overview : false,
             find: key === 'find' ? !prev.find : false,
             seo: key === 'seo' ? !prev.seo : false,
         }));
@@ -53,6 +62,8 @@ export default function AboutPageForm() {
     const [buyingLoading, setBuyingLoading] = useState(false);
     const [whyChooseLoading, setWhyChooseLoading] = useState(false);
     const [visionMissionLoading, setVisionMissionLoading] = useState(false);
+    const [agentLoading, setAgentLoading] = useState(false);
+    const [overviewLoading, setOverviewLoading] = useState(false);
     const [findLoading, setFindLoading] = useState(false);
     const [seoLoading, setSeoLoading] = useState(false);
 
@@ -94,6 +105,25 @@ export default function AboutPageForm() {
             aboutMissionTitle_vn: data.aboutMissionTitle_vn,
             aboutMissionDescription_en: data.aboutMissionDescription_en,
             aboutMissionDescription_vn: data.aboutMissionDescription_vn,
+            // Agent
+            aboutAgentTitle_en: data.aboutAgentTitle_en,
+            aboutAgentTitle_vn: data.aboutAgentTitle_vn,
+            aboutAgentSubTitle_en: data.aboutAgentSubTitle_en,
+            aboutAgentSubTitle_vn: data.aboutAgentSubTitle_vn,
+            aboutAgentDescription_en: data.aboutAgentDescription_en,
+            aboutAgentDescription_vn: data.aboutAgentDescription_vn,
+            aboutAgentContent_en: data.aboutAgentContent_en,
+            aboutAgentContent_vn: data.aboutAgentContent_vn,
+            aboutAgentButtonText_en: data.aboutAgentButtonText_en,
+            aboutAgentButtonText_vn: data.aboutAgentButtonText_vn,
+            aboutAgentButtonLink: data.aboutAgentButtonLink,
+            aboutAgentImage: data.aboutAgentImage,
+            // Overview
+            aboutOverviewTitle_en: data.aboutOverviewTitle_en,
+            aboutOverviewTitle_vn: data.aboutOverviewTitle_vn,
+            aboutOverviewDescription_en: data.aboutOverviewDescription_en,
+            aboutOverviewDescription_vn: data.aboutOverviewDescription_vn,
+            aboutOverviewBg: data.aboutOverviewBg,
             // Find Property
             aboutFindTitle_en: data.aboutFindTitle_en,
             aboutFindTitle_vn: data.aboutFindTitle_vn,
@@ -181,6 +211,31 @@ export default function AboutPageForm() {
                     aboutMissionDescription_vn: page.aboutMissionDescription_vn,
                 });
 
+                // Set Agent Form
+                agentForm.setFieldsValue({
+                    aboutAgentTitle_en: page.aboutAgentTitle_en,
+                    aboutAgentTitle_vn: page.aboutAgentTitle_vn,
+                    aboutAgentSubTitle_en: page.aboutAgentSubTitle_en,
+                    aboutAgentSubTitle_vn: page.aboutAgentSubTitle_vn,
+                    aboutAgentDescription_en: page.aboutAgentDescription_en,
+                    aboutAgentDescription_vn: page.aboutAgentDescription_vn,
+                    aboutAgentContent_en: page.aboutAgentContent_en,
+                    aboutAgentContent_vn: page.aboutAgentContent_vn,
+                    aboutAgentButtonText_en: page.aboutAgentButtonText_en,
+                    aboutAgentButtonText_vn: page.aboutAgentButtonText_vn,
+                    aboutAgentButtonLink: page.aboutAgentButtonLink,
+                    aboutAgentImage: page.aboutAgentImage,
+                });
+
+                // Set Overview Form
+                overviewForm.setFieldsValue({
+                    aboutOverviewTitle_en: page.aboutOverviewTitle_en,
+                    aboutOverviewTitle_vn: page.aboutOverviewTitle_vn,
+                    aboutOverviewDescription_en: page.aboutOverviewDescription_en,
+                    aboutOverviewDescription_vn: page.aboutOverviewDescription_vn,
+                    aboutOverviewBg: page.aboutOverviewBg,
+                });
+
                 // Set Find Property Form
                 findForm.setFieldsValue({
                     aboutFindTitle_en: page.aboutFindTitle_en,
@@ -218,6 +273,8 @@ export default function AboutPageForm() {
                 buyingForm.resetFields();
                 whyChooseForm.resetFields();
                 visionMissionForm.resetFields();
+                agentForm.resetFields();
+                overviewForm.resetFields();
                 findForm.resetFields();
                 seoForm.resetFields();
             }
@@ -229,6 +286,7 @@ export default function AboutPageForm() {
                 buyingForm.resetFields();
                 whyChooseForm.resetFields();
                 visionMissionForm.resetFields();
+                agentForm.resetFields();
                 findForm.resetFields();
                 seoForm.resetFields();
             } else {
@@ -246,6 +304,7 @@ export default function AboutPageForm() {
 
     // Handle Banner form submission
     const handleBannerSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setBannerLoading(true);
 
@@ -273,6 +332,7 @@ export default function AboutPageForm() {
 
     // Handle History form submission
     const handleHistorySubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setHistoryLoading(true);
             const finalPayload = {
@@ -304,6 +364,7 @@ export default function AboutPageForm() {
 
     // Handle Buying form submission
     const handleBuyingSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setBuyingLoading(true);
             const finalPayload = {
@@ -335,6 +396,7 @@ export default function AboutPageForm() {
 
     // Handle Why Choose form submission
     const handleWhyChooseSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setWhyChooseLoading(true);
             const finalPayload = {
@@ -366,6 +428,7 @@ export default function AboutPageForm() {
 
     // Handle Vision Mission form submission
     const handleVisionMissionSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setVisionMissionLoading(true);
             const finalPayload = {
@@ -395,8 +458,73 @@ export default function AboutPageForm() {
         }
     };
 
+    // Handle Agent form submission
+    const handleAgentSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
+        try {
+            setAgentLoading(true);
+            const finalPayload = {
+                ...(pageData && getPreservedData(pageData)),
+                ...values
+            };
+
+            if (pageData) {
+                await updateAboutPage(pageData._id, finalPayload);
+                CommonToaster('Agent section updated successfully!', 'success');
+            } else {
+                const bannerValues = await bannerForm.validateFields();
+                await createAboutPage({ ...finalPayload, ...bannerValues });
+                CommonToaster('About page created successfully!', 'success');
+            }
+
+            fetchPageData();
+        } catch (error) {
+            if (error.errorFields) {
+                CommonToaster('Please fill in the Banner section first', 'error');
+            } else {
+                CommonToaster(error.response?.data?.message || 'Failed to save agent section', 'error');
+                console.error(error);
+            }
+        } finally {
+            setAgentLoading(false);
+        }
+    };
+
+    // Handle Overview form submission
+    const handleOverviewSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
+        try {
+            setOverviewLoading(true);
+            const finalPayload = {
+                ...(pageData && getPreservedData(pageData)),
+                ...values
+            };
+
+            if (pageData) {
+                await updateAboutPage(pageData._id, finalPayload);
+                CommonToaster('Overview section updated successfully!', 'success');
+            } else {
+                const bannerValues = await bannerForm.validateFields();
+                await createAboutPage({ ...finalPayload, ...bannerValues });
+                CommonToaster('About page created successfully!', 'success');
+            }
+
+            fetchPageData();
+        } catch (error) {
+            if (error.errorFields) {
+                CommonToaster('Please fill in the Banner section first', 'error');
+            } else {
+                CommonToaster(error.response?.data?.message || 'Failed to save overview section', 'error');
+                console.error(error);
+            }
+        } finally {
+            setOverviewLoading(false);
+        }
+    };
+
     // Handle Find Property form submission
     const handleFindPropertySubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setFindLoading(true);
             const finalPayload = {
@@ -428,6 +556,7 @@ export default function AboutPageForm() {
 
     // Handle SEO form submission
     const handleSeoSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setSeoLoading(true);
             const finalPayload = {
@@ -492,6 +621,17 @@ export default function AboutPageForm() {
                     onToggle={() => toggleAccordion('banner')}
                 />
 
+                {/* Overview Section */}
+                <AboutOverviewForm
+                    form={overviewForm}
+                    onSubmit={handleOverviewSubmit}
+                    loading={overviewLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.overview}
+                    onToggle={() => toggleAccordion('overview')}
+                />
+
                 {/* Vision & Mission Section */}
                 <AboutPageVisionMissionForm
                     form={visionMissionForm}
@@ -534,6 +674,17 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.buying}
                     onToggle={() => toggleAccordion('buying')}
+                />
+
+                {/* Agent Section */}
+                <AboutAgentForm
+                    form={agentForm}
+                    onSubmit={handleAgentSubmit}
+                    loading={agentLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.agent}
+                    onToggle={() => toggleAccordion('agent')}
                 />
 
                 {/* Find Property Section */}

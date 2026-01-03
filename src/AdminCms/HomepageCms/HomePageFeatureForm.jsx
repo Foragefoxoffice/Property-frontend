@@ -9,6 +9,7 @@ import {
 import {
     SaveOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 
 const { TextArea } = Input;
 
@@ -61,6 +62,7 @@ export default function HomePageFeatureForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -103,6 +105,20 @@ export default function HomePageFeatureForm({
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
                                                     />
                                                 </Form.Item>
+
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Feature Button Text</span>}
+                                                    name="homeFeatureButtonText_en"
+                                                    rules={[
+                                                        { max: 50, message: 'Maximum 50 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="e.g. View All Properties"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
                                             </>
                                         )
                                     },
@@ -142,11 +158,36 @@ export default function HomePageFeatureForm({
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
                                                     />
                                                 </Form.Item>
+
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Văn Bản Nút Tính Năng</span>}
+                                                    name="homeFeatureButtonText_vn"
+                                                    rules={[
+                                                        { max: 50, message: 'Tối đa 50 ký tự' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="ví dụ: Xem Tất Cả Tài Sản"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
                                             </>
                                         )
                                     }
                                 ]}
                             />
+
+                            <Form.Item
+                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">{activeTab === 'en' ? 'Feature Button Link' : 'Liên Kết Nút Tính Năng'}</span>}
+                                name="homeFeatureButtonLink"
+                            >
+                                <Input
+                                    placeholder={activeTab === 'en' ? "/properties" : "/vn/properties"}
+                                    size="large"
+                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                />
+                            </Form.Item>
 
                             {/* Feature Save Button */}
                             <div className="flex gap-3 justify-end mt-6 pt-4">

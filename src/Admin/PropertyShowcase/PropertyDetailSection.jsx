@@ -139,7 +139,7 @@ export default function PropertyDetailsSection({ property }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:px-8 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-24">
         {/* -------------------------------------------------------
            LEFT CONTENT (UI preserved)
         ------------------------------------------------------- */}

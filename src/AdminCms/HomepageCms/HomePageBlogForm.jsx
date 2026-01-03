@@ -9,6 +9,7 @@ import {
 import {
     SaveOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 
 const { TextArea } = Input;
 
@@ -60,6 +61,7 @@ export default function HomePageBlogForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}

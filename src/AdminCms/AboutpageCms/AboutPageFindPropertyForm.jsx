@@ -14,6 +14,7 @@ import {
     DeleteOutlined,
     ReloadOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { uploadAboutPageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { X } from 'lucide-react';
@@ -91,8 +92,12 @@ export default function AboutPageFindPropertyForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Find Property Section</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage about page find property content</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Find Property Section' : 'Phần Tìm Bất Động Sản'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage about page find property content' : 'Quản lý nội dung tìm bất động sản'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -110,6 +115,7 @@ export default function AboutPageFindPropertyForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -221,7 +227,7 @@ export default function AboutPageFindPropertyForm({
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        Find Property Background Image
+                                        {activeTab === 'en' ? 'Find Property Background Image' : 'Hình Nền Tìm Bất Động Sản'}
                                         <span className="text-xs text-gray-400 ml-2 font-normal">
                                             (Recommended: 1920x1080px, Max: 5MB)
                                         </span>

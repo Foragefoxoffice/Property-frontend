@@ -14,6 +14,7 @@ import {
     DeleteOutlined,
     ReloadOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { uploadAboutPageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { X } from 'lucide-react';
@@ -96,8 +97,12 @@ export default function AboutPageBannerForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">About Us Banner</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your about page banner section</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'About Us Banner' : 'Banner Về Chúng Tôi'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage your about page banner section' : 'Quản lý phần banner trang giới thiệu'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -115,6 +120,7 @@ export default function AboutPageBannerForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -187,7 +193,7 @@ export default function AboutPageBannerForm({
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        Banner Background Image
+                                        {activeTab === 'en' ? 'Banner Background Image' : 'Hình Nền Banner'}
                                         <span className="text-xs text-gray-400 ml-2 font-normal">
                                             (Recommended: 1920x600px, Max: 5MB)
                                         </span>
@@ -249,7 +255,9 @@ export default function AboutPageBannerForm({
                                         >
                                             <div className="flex flex-col items-center justify-center h-full">
                                                 <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
-                                                <div className="text-sm text-gray-500 font-['Manrope']">Upload Image</div>
+                                                <div className="text-sm text-gray-500 font-['Manrope']">
+                                                    {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                </div>
                                             </div>
                                         </Upload>
                                     )}

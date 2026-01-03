@@ -11,6 +11,7 @@ import {
     PlusOutlined,
     DeleteOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 
 const { TextArea } = Input;
@@ -40,8 +41,12 @@ export default function AboutPageHistoryForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Our History</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage company history and timeline</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Our History' : 'Lịch Sử Của Chúng Tôi'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage company history and timeline' : 'Quản lý lịch sử và dòng thời gian công ty'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -59,6 +64,7 @@ export default function AboutPageHistoryForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}

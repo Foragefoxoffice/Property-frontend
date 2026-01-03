@@ -20,6 +20,7 @@ import {
     uploadHomePageImage,
 } from '../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { validateVietnameseFields } from '@/utils/formValidation';
 
 const { TextArea } = Input;
 
@@ -164,6 +165,7 @@ export default function HomePageForm() {
 
     // Handle Banner form submission
     const handleBannerSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setBannerLoading(true);
 
@@ -222,6 +224,7 @@ export default function HomePageForm() {
 
     // Handle About form submission
     const handleAboutSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setAboutLoading(true);
 
@@ -266,6 +269,7 @@ export default function HomePageForm() {
 
     // Handle Feature form submission
     const handleFeatureSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setFeatureLoading(true);
 

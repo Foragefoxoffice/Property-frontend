@@ -9,6 +9,7 @@ import {
 import {
     SaveOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 
 const { TextArea } = Input;
@@ -39,8 +40,12 @@ export default function AboutPageVisionMissionForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Vision & Mission</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your vision and mission statements</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Vision & Mission' : 'Tầm Nhìn & Sứ Mệnh'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage your vision and mission statements' : 'Quản lý tầm nhìn và sứ mệnh của bạn'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -58,6 +63,7 @@ export default function AboutPageVisionMissionForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}

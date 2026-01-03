@@ -13,6 +13,7 @@ import HomePageFaqForm from './HomePageFaqForm';
 import HomePageFindPropertyForm from './HomePageFindPropertyForm';
 import HomePageBlogForm from './HomePageBlogForm';
 import HomePageSeoForm from './HomePageSeoForm';
+import { validateVietnameseFields } from '@/utils/formValidation';
 
 export default function HomepageForm() {
     const [bannerForm] = Form.useForm();
@@ -195,6 +196,7 @@ export default function HomepageForm() {
 
     // Handle Banner form submission
     const handleBannerSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setBannerLoading(true);
 
@@ -253,6 +255,7 @@ export default function HomepageForm() {
 
     // Handle About form submission
     const handleAboutSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setAboutLoading(true);
 
@@ -297,6 +300,7 @@ export default function HomepageForm() {
 
     // Handle Feature form submission
     const handleFeatureSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setFeatureLoading(true);
 
@@ -357,6 +361,7 @@ export default function HomepageForm() {
 
     // Handle FAQ form submission
     const handleFaqSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setFaqLoading(true);
 
@@ -422,6 +427,7 @@ export default function HomepageForm() {
 
     // Handle Find Property form submission
     const handleFindPropertySubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setFindPropertyLoading(true);
 
@@ -499,6 +505,7 @@ export default function HomepageForm() {
 
     // Handle Blog form submission
     const handleBlogSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setBlogLoading(true);
 
@@ -581,6 +588,7 @@ export default function HomepageForm() {
 
     // Handle SEO form submission
     const handleSeoSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setSeoLoading(true);
 

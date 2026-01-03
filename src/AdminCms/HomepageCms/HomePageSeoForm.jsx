@@ -15,6 +15,7 @@ import {
     EyeOutlined,
     DeleteOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { X } from 'lucide-react';
 
 const { TextArea } = Input;
@@ -121,6 +122,7 @@ export default function HomePageSeoForm({
                             form={form}
                             layout="vertical"
                             onFinish={handleFormSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}

@@ -12,6 +12,7 @@ import {
     PlusOutlined,
     DeleteOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 import * as LucideIcons from 'lucide-react';
 
@@ -58,8 +59,12 @@ export default function AboutPageWhyChooseForm({
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">Why Choose Us</h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage why choose us section</p>
+                        <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
+                            {activeTab === 'en' ? 'Why Choose Us' : 'Tại Sao Chọn Chúng Tôi'}
+                        </h3>
+                        <p className="text-sm text-gray-500 font-['Manrope']">
+                            {activeTab === 'en' ? 'Manage why choose us section' : 'Quản lý phần tại sao chọn chúng tôi'}
+                        </p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -77,6 +82,7 @@ export default function AboutPageWhyChooseForm({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -246,7 +252,7 @@ export default function AboutPageWhyChooseForm({
                                             {fields.map(({ key, name, ...restField }, index) => (
                                                 <div
                                                     key={key}
-                                                    className="relative mb-6 p-6 bg-gradient-to-br from-blue-50/30 to-cyan-50/30 rounded-xl border-2 border-blue-100"
+                                                    className="relative mb-6 p-6 bg-gradient-to-br from-blue-50/30 to-cyan-50/30 rounded-xl border-1 border-[#41398b1c]"
                                                 >
                                                     {/* Delete Button */}
                                                     <button

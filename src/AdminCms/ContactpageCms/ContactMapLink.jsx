@@ -11,6 +11,7 @@ import {
     SaveOutlined,
     EnvironmentOutlined
 } from '@ant-design/icons';
+import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 
 const { TextArea } = Input;
@@ -77,6 +78,7 @@ export default function ContactMapLink({
                             form={form}
                             layout="vertical"
                             onFinish={onSubmit}
+                            onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs
                                 activeKey={activeTab}

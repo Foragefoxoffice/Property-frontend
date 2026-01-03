@@ -9,6 +9,7 @@ import { CommonToaster } from '@/Common/CommonToaster';
 import ContactPageBannerForm from './ContactPageBannerForm';
 import ContactPageReachOutForm from './ContactPageReachOutForm';
 import ContactMapLink from './ContactMapLink';
+import { validateVietnameseFields } from '@/utils/formValidation';
 
 export default function ContactPageForm() {
     const [bannerForm] = Form.useForm();
@@ -144,12 +145,13 @@ export default function ContactPageForm() {
 
     // Handle Banner form submission
     const handleBannerSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setBannerLoading(true);
 
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
@@ -171,11 +173,12 @@ export default function ContactPageForm() {
 
     // Handle Reach Out form submission
     const handleReachOutSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setReachOutLoading(true);
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
@@ -202,11 +205,12 @@ export default function ContactPageForm() {
 
     // Handle Map form submission
     const handleMapSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
         try {
             setMapLoading(true);
             const finalPayload = {
-               ...(pageData && getPreservedData(pageData)),
-               ...values
+                ...(pageData && getPreservedData(pageData)),
+                ...values
             };
 
             if (pageData) {
