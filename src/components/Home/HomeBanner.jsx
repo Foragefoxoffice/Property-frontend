@@ -51,11 +51,14 @@ export default function HomeBanner({ homePageData }) {
                     getAllCurrencies()
                 ]);
 
-                setProjects(projectsRes.data?.data || []);
-                setZones(zonesRes.data?.data || []);
-                setBlocks(blocksRes.data?.data || []);
-                setPropertyTypes(typesRes.data?.data || []);
-                setCurrencies(currenciesRes.data?.data || []);
+                // ✅ Filter to only show Active items in dropdowns
+                const filterActive = (items) => items.filter(item => item.status === "Active");
+
+                setProjects(filterActive(projectsRes.data?.data || []));
+                setZones(filterActive(zonesRes.data?.data || []));
+                setBlocks(filterActive(blocksRes.data?.data || []));
+                setPropertyTypes(filterActive(typesRes.data?.data || []));
+                setCurrencies(filterActive(currenciesRes.data?.data || []));
             } catch (error) {
                 console.error('Error loading dropdown data:', error);
             }

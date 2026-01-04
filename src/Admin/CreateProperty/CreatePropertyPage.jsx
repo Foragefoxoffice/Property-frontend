@@ -162,7 +162,7 @@ function mapApiToForm(api) {
     titleVisibility: api.titleVisibility || false,
     descriptionVisibility: api.descriptionVisibility || false,
     propertyUtilityVisibility: api.propertyUtilityVisibility || false,
-    
+
     listingInformationVisibility: api.listingInformationVisibility || {
       transactionType: false,
       propertyId: false,
@@ -174,7 +174,7 @@ function mapApiToForm(api) {
       availableFrom: false,
       availabilityStatus: false,
     },
-    
+
     propertyInformationVisibility: api.propertyInformationVisibility || {
       unit: false,
       unitSize: false,
@@ -329,22 +329,25 @@ export default function CreatePropertyPage({
           getMe(),
         ]);
 
+        // ✅ Filter to only show Active items in dropdowns
+        const filterActive = (items) => items.filter(item => item.status === "Active");
+
         setDropdowns({
-          properties: res[0].data.data,
-          zones: res[1].data.data,
-          types: res[2].data.data,
-          statuses: res[3].data.data,
-          units: res[4].data.data,
-          furnishings: res[5].data.data,
-          parkings: res[6].data.data,
-          pets: res[7].data.data,
-          blocks: res[8].data.data,
-          floorRanges: res[9].data.data,
-          feeTaxes: res[10].data.data,
-          legalDocs: res[11].data.data,
-          deposits: res[12].data.data,
-          payments: res[13].data.data,
-          currencies: res[14].data.data,
+          properties: filterActive(res[0].data.data),
+          zones: filterActive(res[1].data.data),
+          types: filterActive(res[2].data.data),
+          statuses: filterActive(res[3].data.data),
+          units: filterActive(res[4].data.data),
+          furnishings: filterActive(res[5].data.data),
+          parkings: filterActive(res[6].data.data),
+          pets: filterActive(res[7].data.data),
+          blocks: filterActive(res[8].data.data),
+          floorRanges: filterActive(res[9].data.data),
+          feeTaxes: filterActive(res[10].data.data),
+          legalDocs: filterActive(res[11].data.data),
+          deposits: filterActive(res[12].data.data),
+          payments: filterActive(res[13].data.data),
+          currencies: filterActive(res[14].data.data),
 
           // ✅ New
           owners: res[15].data.data,
@@ -506,7 +509,7 @@ export default function CreatePropertyPage({
       titleVisibility: n.titleVisibility || false,
       descriptionVisibility: n.descriptionVisibility || false,
       propertyUtilityVisibility: n.propertyUtilityVisibility || false,
-      
+
       listingInformationVisibility: n.listingInformationVisibility || {
         transactionType: false,
         propertyId: false,
@@ -518,7 +521,7 @@ export default function CreatePropertyPage({
         availableFrom: false,
         availabilityStatus: false,
       },
-      
+
       propertyInformationVisibility: n.propertyInformationVisibility || {
         unit: false,
         unitSize: false,

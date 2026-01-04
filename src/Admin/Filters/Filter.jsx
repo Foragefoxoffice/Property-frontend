@@ -155,45 +155,48 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   ======================================================= */
   useEffect(() => {
     const load = async () => {
-  try {
-    const [pRes, zRes, bRes, tRes, fRes, cRes] = await Promise.all([
-      getAllProperties(),
-      getAllZoneSubAreas(),
-      getAllBlocks(),
-      getAllPropertyTypes(),
-      getAllFloorRanges(),
-      getAllCurrencies(),
-    ]);
+      try {
+        const [pRes, zRes, bRes, tRes, fRes, cRes] = await Promise.all([
+          getAllProperties(),
+          getAllZoneSubAreas(),
+          getAllBlocks(),
+          getAllPropertyTypes(),
+          getAllFloorRanges(),
+          getAllCurrencies(),
+        ]);
 
-    const pList = pRes.data?.data || [];
-    const zList = zRes.data?.data || [];
-    const bList = bRes.data?.data || [];
-    const tList = tRes.data?.data || [];
-    const fList = fRes.data?.data || [];
-    const cList = cRes.data?.data || [];
+        const pList = pRes.data?.data || [];
+        const zList = zRes.data?.data || [];
+        const bList = bRes.data?.data || [];
+        const tList = tRes.data?.data || [];
+        const fList = fRes.data?.data || [];
+        const cList = cRes.data?.data || [];
 
-    // master lists
-    setProjectsAll(pList);
-    setZonesAll(zList);
-    setBlocksAll(bList);
-    setPropertyTypes(tList);
-    setFloorRanges(fList);
+        // ✅ Filter to only show Active items in dropdowns
+        const filterActive = (items) => items.filter(item => item.status === "Active");
 
-    // FIXED: currency now matches Select component format
-    setCurrencies(
-      cList.map((c) => ({
-        id: c._id,
-        name: c.currencyName, 
-        code: c.currencyCode,
-        symbol: c.currencySymbol,
-      }))
-    );
+        // master lists
+        setProjectsAll(filterActive(pList));
+        setZonesAll(filterActive(zList));
+        setBlocksAll(filterActive(bList));
+        setPropertyTypes(filterActive(tList));
+        setFloorRanges(filterActive(fList));
 
-    setProjects(pList);
-  } catch (err) {
-    console.error("Filter dropdown load error:", err);
-  }
-};
+        // FIXED: currency now matches Select component format
+        setCurrencies(
+          filterActive(cList).map((c) => ({
+            id: c._id,
+            name: c.currencyName,
+            code: c.currencyCode,
+            symbol: c.currencySymbol,
+          }))
+        );
+
+        setProjects(filterActive(pList));
+      } catch (err) {
+        console.error("Filter dropdown load error:", err);
+      }
+    };
 
 
     load();
@@ -338,9 +341,8 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         {["en", "vi"].map((lng) => (
           <button
             key={lng}
-            className={`px-6 py-2 text-sm font-medium ${
-              lang === lng ? "border-b-2 border-[#41398B] text-black" : "text-gray-500 hover:text-black"
-            }`}
+            className={`px-6 py-2 text-sm font-medium ${lang === lng ? "border-b-2 border-[#41398B] text-black" : "text-gray-500 hover:text-black"
+              }`}
             onClick={() => setLang(lng)}
           >
             {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
