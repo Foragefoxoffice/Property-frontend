@@ -5,7 +5,7 @@ export const getImageUrl = (imagePath) => {
         return imagePath;
     }
 
-    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api/v1';
+    const baseURL = import.meta.env.VITE_API_URL || 'https://dev.placetest.in/api/v1';
     // Remove /api/v1 to get the base server URL
     const serverURL = baseURL.replace('/api/v1', '');
 

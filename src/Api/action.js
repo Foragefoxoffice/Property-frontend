@@ -3,7 +3,7 @@ import axios from "axios";
 // ✅ Create axios instance
 const API = axios.create({
   baseURL: (
-    import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1"
+    import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1"
   ).replace(/\/$/, ""),
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
@@ -293,7 +293,7 @@ export const uploadBannerImage = (file) => {
 
   // Use plain axios to avoid Content-Type conflicts
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
 
   return axios.post(`${baseURL}/home-banner/upload`, formData, {
     headers: {
@@ -314,7 +314,7 @@ export const uploadHomePageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
 
   return axios.post(`${baseURL}/home-page/upload`, formData, {
     headers: {
@@ -337,7 +337,7 @@ export const uploadAboutPageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
 
   return axios.post(`${baseURL}/about-page/upload`, formData, {
     headers: {
@@ -358,7 +358,7 @@ export const uploadContactPageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
 
   return axios.post(`${baseURL}/contact-page/upload`, formData, {
     headers: {
@@ -391,7 +391,7 @@ export const uploadBlogImage = (file) => {
   formData.append("file", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
 
   return axios.post(`${baseURL}/upload`, formData, {
     headers: {
