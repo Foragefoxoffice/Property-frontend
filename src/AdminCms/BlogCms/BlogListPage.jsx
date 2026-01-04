@@ -7,6 +7,8 @@ import { getAdminBlogs, deleteBlog } from "../../Api/action";
 export default function BlogListPage() {
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [deletingBlogId, setDeletingBlogId] = useState(null);
 
     useEffect(() => {
         fetchBlogs();
@@ -25,23 +27,26 @@ export default function BlogListPage() {
     };
 
     const handleDelete = (id) => {
-        Modal.confirm({
-            title: "Are you sure you want to delete this blog?",
-            content: "This action cannot be undone.",
-            okText: "Yes, Delete",
-            okType: "danger",
-            cancelText: "Cancel",
-            onOk: async () => {
-                try {
-                    await deleteBlog(id);
-                    message.success("Blog deleted successfully");
-                    fetchBlogs();
-                } catch (error) {
-                    console.error(error);
-                    message.error("Failed to delete blog");
-                }
-            },
-        });
+        setDeletingBlogId(id);
+        setDeleteModalVisible(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        try {
+            await deleteBlog(deletingBlogId);
+            message.success("Blog deleted successfully");
+            setDeleteModalVisible(false);
+            setDeletingBlogId(null);
+            fetchBlogs();
+        } catch (error) {
+            console.error(error);
+            message.error("Failed to delete blog");
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteModalVisible(false);
+        setDeletingBlogId(null);
     };
 
     const columns = [
@@ -145,6 +150,18 @@ export default function BlogListPage() {
                     className="font-['Manrope']"
                 />
             </div>
+
+            <Modal
+                title="Are you sure you want to delete this blog?"
+                open={deleteModalVisible}
+                onOk={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                okText="Yes, Delete"
+                okType="danger"
+                cancelText="Cancel"
+            >
+                <p>This action cannot be undone.</p>
+            </Modal>
         </div>
     );
 }
