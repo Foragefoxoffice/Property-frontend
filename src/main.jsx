@@ -11,6 +11,7 @@ import ResetPassword from "./Login/ResetPassword.jsx";
 import DashboardLayout from "./Admin/SideBar/DashboardLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { LanguageProvider } from "./Language/LanguageContext.jsx";
+import PublicLayout from "./components/Layout/PublicLayout.jsx";
 
 import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage.jsx";
@@ -58,6 +59,11 @@ import CMSPlaceholder from "./AdminCms/CMSPlaceholder.jsx";
 import HomePage from "./Pages/HomePage.jsx";
 import AboutPage from "./Pages/AboutPage.jsx";
 import ContactPage from "./Pages/ContactPage.jsx";
+import BlogPage from "./Pages/BlogPage.jsx";
+import BlogDetailPage from "./Pages/BlogDetailPage.jsx";
+import BlogListPage from "./AdminCms/BlogCms/BlogListPage.jsx";
+import BlogFormPage from "./AdminCms/BlogCms/BlogFormPage.jsx";
+import CategoryListPage from "./AdminCms/CategoryCms/CategoryListPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -184,6 +190,12 @@ createRoot(document.getElementById("root")).render(
           <Route path="cms/home" element={<HomepageForm />} />
           <Route path="cms/about" element={<AboutPageForm />} />
           <Route path="cms/contact" element={<ContactPageForm />} />
+          <Route path="cms/blogs" element={<BlogListPage />} />
+          <Route path="cms/blogs/create" element={<BlogFormPage />} />
+          <Route path="cms/blogs/edit/:id" element={<BlogFormPage />} />
+
+          <Route path="cms/categories" element={<CategoryListPage />} />
+
           <Route path="cms/:section" element={<CMSPlaceholder />} />
         </Route>
 
@@ -194,11 +206,16 @@ createRoot(document.getElementById("root")).render(
           path="/property-showcase/:id"
           element={<PropertyShowcasePage />}
         />
-        {/* Pages */}
-        <Route path="/listing" element={<ListingPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+
+        {/* Pages with Public Layout */}
+        <Route element={<PublicLayout />}>
+          <Route path="/listing" element={<ListingPage />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/blogs" element={<BlogPage />} />
+          <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+        </Route>
 
         {/* CMS Dashboard */}
 

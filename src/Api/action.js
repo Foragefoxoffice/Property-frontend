@@ -3,7 +3,7 @@ import axios from "axios";
 // ✅ Create axios instance
 const API = axios.create({
   baseURL: (
-    import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1"
+    import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1"
   ).replace(/\/$/, ""),
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
@@ -293,7 +293,7 @@ export const uploadBannerImage = (file) => {
 
   // Use plain axios to avoid Content-Type conflicts
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
 
   return axios.post(`${baseURL}/home-banner/upload`, formData, {
     headers: {
@@ -314,7 +314,7 @@ export const uploadHomePageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
 
   return axios.post(`${baseURL}/home-page/upload`, formData, {
     headers: {
@@ -337,7 +337,7 @@ export const uploadAboutPageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
 
   return axios.post(`${baseURL}/about-page/upload`, formData, {
     headers: {
@@ -358,9 +358,42 @@ export const uploadContactPageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
 
   return axios.post(`${baseURL}/contact-page/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
+/* =========================================================
+   📝 BLOG CMS APIs
+   ========================================================= */
+export const getBlogs = () => API.get("/blogs"); // Public
+export const getBlogBySlug = (slug) => API.get(`/blogs/${slug}`); // Public
+export const getAdminBlogs = () => API.get("/blogs/admin/all"); // Admin
+export const getBlogById = (id) => API.get(`/blogs/admin/${id}`); // Admin
+export const createBlog = (data) => API.post("/blogs", data);
+export const updateBlog = (id, data) => API.put(`/blogs/${id}`, data);
+export const deleteBlog = (id) => API.delete(`/blogs/${id}`);
+
+// Category API
+export const getCategories = () => API.get("/categories");
+export const getCategory = (id) => API.get(`/categories/${id}`);
+export const createCategory = (data) => API.post("/categories", data);
+export const updateCategory = (id, data) => API.put(`/categories/${id}`, data);
+export const deleteCategory = (id) => API.delete(`/categories/${id}`);
+
+export const uploadBlogImage = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5002/api/v1";
+
+  return axios.post(`${baseURL}/upload`, formData, {
     headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
     },

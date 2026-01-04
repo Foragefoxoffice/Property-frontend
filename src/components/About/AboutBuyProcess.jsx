@@ -14,7 +14,7 @@ export default function AboutBuyProcess({ data }) {
     const getImageUrl = (imagePath) => {
         if (!imagePath) return null;
         if (imagePath.startsWith('http') || imagePath.startsWith('data:')) return imagePath;
-        const baseURL = import.meta.env.VITE_API_URL || 'https://dev.placetest.in/api/v1';
+        const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api/v1';
         const serverURL = baseURL.replace('/api/v1', '');
         return `${serverURL}${imagePath}`;
     };

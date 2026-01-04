@@ -2,31 +2,30 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-export default function ContactBanner({ data }) {
+export default function BlogBanner({ title, breadcrumbs = [], backgroundImage }) {
 
-    // Improved URL handling matching AboutBanner logic which seems more robust
+    // Helper to ensure valid image URLs, similar to ContactBanner
     const getImageUrl = (imagePath) => {
         if (!imagePath) return null;
         if (imagePath.startsWith('http') || imagePath.startsWith('data:')) {
             return imagePath;
         }
         const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api/v1';
-        const serverURL = baseURL.replace('/api/v1', ''); // Remove /api/v1 suffix if present for static files
-        // ensuring slash
+        const serverURL = baseURL.replace('/api/v1', '');
         return `${serverURL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
     };
 
-    const displayBgImage = data?.contactBannerBg ? getImageUrl(data.contactBannerBg) : "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2669&auto=format&fit=crop";
+    const displayBgImage = backgroundImage
+        ? getImageUrl(backgroundImage)
+        : "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop"; // Corporate building default
 
-    const title = data?.contactBannerTitle_en || "Contact Us";
-
-    // Animation variants
+    // Animation variants from ContactBanner
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.2, // Stagger effect for children
+                staggerChildren: 0.2,
                 delayChildren: 0.3,
             },
         },
@@ -48,14 +47,14 @@ export default function ContactBanner({ data }) {
 
     return (
         <div className="relative lg:h-[400px] h-96 w-full flex items-center justify-center bg-cover bg-center">
-            {/* Background Image with Parallax-like feel or just cover */}
+            {/* Background Image */}
             <div className="absolute inset-0">
                 <img
                     src={displayBgImage}
-                    alt="Contact Banner"
+                    alt="Blog Banner"
                     className="w-full h-full object-cover"
                 />
-                {/* Dark Overlay for text readability */}
+                {/* Dark Overlay */}
                 <div className="absolute inset-0 bg-black/60" />
             </div>
 
@@ -80,8 +79,19 @@ export default function ContactBanner({ data }) {
                     <Link to="/" className="hover:text-white transition-colors duration-200">
                         Home
                     </Link>
-                    <span>&gt;</span>
-                    <span className="text-white font-medium">{title}</span>
+
+                    {breadcrumbs.map((crumb, index) => (
+                        <React.Fragment key={index}>
+                            <span>&gt;</span>
+                            {crumb.path ? (
+                                <Link to={crumb.path} className="hover:text-white transition-colors duration-200">
+                                    {crumb.label}
+                                </Link>
+                            ) : (
+                                <span className="text-white font-medium">{crumb.label}</span>
+                            )}
+                        </React.Fragment>
+                    ))}
                 </motion.div>
             </motion.div>
         </div>

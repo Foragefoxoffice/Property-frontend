@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Wrench } from "lucide-react";
+import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Wrench, Tags } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "../Header/Header";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -107,7 +107,7 @@ const DashboardLayout = () => {
                                         <span>{t.home || "Home Page"}</span>
                                     </button>
 
-                                                                        {/* ABOUT US */}
+                                    {/* ABOUT US */}
                                     <button
                                         onClick={() => navigate("/dashboard/cms/about")}
                                         className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
@@ -149,6 +149,28 @@ const DashboardLayout = () => {
                                     >
                                         <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
                                         <span>Footer</span>
+                                    </button>
+
+                                    {/* BLOGS */}
+                                    <button
+                                        onClick={() => navigate("/dashboard/cms/blogs")}
+                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/blogs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                    >
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder /> </span>
+                                        <span>Blogs</span>
+                                    </button>
+
+                                    {/* CATEGORIES */}
+                                    <button
+                                        onClick={() => navigate("/dashboard/cms/categories")}
+                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                    >
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags /> </span>
+                                        <span>Categories</span>
                                     </button>
                                 </div>
                             )}
