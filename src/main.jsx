@@ -53,7 +53,7 @@ import BulkUpload from "./Admin/Property/BulkUpload.jsx";
 // Pages
 import ListingPage from "./Pages/ListingPage";
 import HomepageForm from "./AdminCms/HomepageCms/HomepageForm.jsx";
-import AboutPageForm from "./AdminCms/AboutPageCms/AboutPageForm.jsx";
+import AboutPageForm from "./AdminCms/AboutpageCms/AboutPageForm.jsx";
 import ContactPageForm from "./AdminCms/ContactpageCms/ContactPageForm.jsx";
 import CMSPlaceholder from "./AdminCms/CMSPlaceholder.jsx";
 import HomePage from "./Pages/HomePage.jsx";
