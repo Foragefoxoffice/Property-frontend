@@ -279,6 +279,28 @@ export const bulkUploadProperties = (csvData, transactionType, validateOnly = fa
 };
 
 /* =========================================================
+   📤 PROPERTY MEDIA UPLOAD API
+   Upload images, videos, and floor plans to server
+========================================================= */
+export const uploadPropertyMedia = (file, type) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("type", type); // 'image', 'video', or 'floor'
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/upload/property-media`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+      "Content-Type": "multipart/form-data",
+    },
+    withCredentials: true,
+  });
+};
+
+
+/* =========================================================
    🏠 HOME BANNER CMS APIs
 ========================================================= */
 export const getAllHomeBanners = (params) => API.get("/home-banner", { params });

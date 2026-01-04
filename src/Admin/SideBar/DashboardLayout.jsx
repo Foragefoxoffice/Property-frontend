@@ -13,6 +13,7 @@ const DashboardLayout = () => {
 
     const [openProperties, setOpenProperties] = React.useState(true);
     const [openCMS, setOpenCMS] = React.useState(false);
+    const [openBlogs, setOpenBlogs] = React.useState(false);
 
     const isActive = (path) => location.pathname.startsWith(path);
 
@@ -36,7 +37,7 @@ const DashboardLayout = () => {
                                     <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
                                         <Home className="w-4 h-4" />
                                     </span>
-                                    <span className="text-sm font-medium">Properties</span>
+                                    <span className="text-sm font-medium">{t.properties}</span>
                                 </div>
                                 <ChevronDown className={`transition ${openProperties ? "rotate-180" : ""}`} />
                             </button>
@@ -89,7 +90,7 @@ const DashboardLayout = () => {
                                     <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
                                         <LayoutGrid className="w-4 h-4" />
                                     </span>
-                                    <span className="text-sm font-medium">CMS Admin</span>
+                                    <span className="text-sm font-medium">{t.cmsAdmin}</span>
                                 </div>
                                 <ChevronDown className={`transition ${openCMS ? "rotate-180" : ""}`} />
                             </button>
@@ -115,7 +116,7 @@ const DashboardLayout = () => {
                     `}
                                     >
                                         <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Users /> </span>
-                                        <span>About Us</span>
+                                        <span>{t.aboutUs}</span>
                                     </button>
 
                                     {/* CONTACT */}
@@ -126,7 +127,7 @@ const DashboardLayout = () => {
                     `}
                                     >
                                         <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserCog /> </span>
-                                        <span>Contact</span>
+                                        <span>{t.contact}</span>
                                     </button>
 
                                     {/* HEADER */}
@@ -137,7 +138,7 @@ const DashboardLayout = () => {
                     `}
                                     >
                                         <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
-                                        <span>Header</span>
+                                        <span>{t.header}</span>
                                     </button>
 
                                     {/* FOOTER */}
@@ -148,21 +149,31 @@ const DashboardLayout = () => {
                     `}
                                     >
                                         <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
-                                        <span>Footer</span>
+                                        <span>{t.footer}</span>
                                     </button>
+                                </div>
+                            )}
+                        </div>
 
-                                    {/* BLOGS */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/blogs")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
-                      ${isActive("/dashboard/cms/blogs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-                    `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder /> </span>
-                                        <span>Blogs</span>
-                                    </button>
+                        {/* BLOGS DROPDOWN */}
+                        <div className="w-full">
+                            <button
+                                onClick={() => setOpenBlogs(!openBlogs)}
+                                className="group flex w-full items-center justify-between px-2 py-2 rounded-full
+                hover:bg-[#41398B] hover:text-white transition"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
+                                        <Folder className="w-4 h-4" />
+                                    </span>
+                                    <span className="text-sm font-medium">{t.blogs}</span>
+                                </div>
+                                <ChevronDown className={`transition ${openBlogs ? "rotate-180" : ""}`} />
+                            </button>
 
-                                    {/* CATEGORIES */}
+                            {openBlogs && (
+                                <div className="ml-10 mt-2 flex flex-col gap-2">
+                                    {/* CATEGORY */}
                                     <button
                                         onClick={() => navigate("/dashboard/cms/categories")}
                                         className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
@@ -170,7 +181,18 @@ const DashboardLayout = () => {
                     `}
                                     >
                                         <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags /> </span>
-                                        <span>Categories</span>
+                                        <span>{t.categories}</span>
+                                    </button>
+
+                                    {/* ADD BLOG */}
+                                    <button
+                                        onClick={() => navigate("/dashboard/cms/blogs")}
+                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/blogs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                    >
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder /> </span>
+                                        <span>{t.addBlog || "Add Blog"}</span>
                                     </button>
                                 </div>
                             )}

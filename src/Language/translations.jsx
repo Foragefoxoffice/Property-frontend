@@ -31,6 +31,23 @@ export const translations = {
     homeStay: "Home Stay",
     trash: "Trash",
     bulkUpload: "Bulk Upload",
+    // Navigation
+    cmsAdmin: "CMS Admin",
+    home: "Home Page",
+    aboutUs: "About Us",
+    contact: "Contact",
+    header: "Header",
+    footer: "Footer",
+    blogs: "Blogs",
+    categories: "Categories",
+    addBlog: "Add Blog",
+    // Create Property Steps
+    createProperty: "Create Property",
+    listingPropertyInfo: "Listing & Property Information",
+    libraryFinanceInfo: "Library & Finance Information",
+    landlordInfo: "Landlord Information",
+    seoInfo: "SEO Information",
+    reviewPublish: "Review & Publish",
   },
 
   vi: {
@@ -65,5 +82,22 @@ export const translations = {
     propertyTitleHomeStay: "Home Stay Bất động sản",
     filter: "Lọc",
     bulkUpload: "Tải lên hàng loạt",
+    // Navigation
+    cmsAdmin: "Quản Trị CMS",
+    home: "Trang Chủ",
+    aboutUs: "Về Chúng Tôi",
+    contact: "Liên Hệ",
+    header: "Tiêu Đề",
+    footer: "Chân Trang",
+    blogs: "Bài Viết",
+    categories: "Danh Mục",
+    addBlog: "Thêm Bài Viết",
+    // Create Property Steps
+    createProperty: "Tạo Bất Động Sản",
+    listingPropertyInfo: "Thông Tin Niêm Yết & Bất Động Sản",
+    libraryFinanceInfo: "Thông Tin Thư Viện & Tài Chính",
+    landlordInfo: "Thông Tin Chủ Nhà",
+    seoInfo: "Thông Tin SEO",
+    reviewPublish: "Xem Lại & Xuất Bản",
   },
 };

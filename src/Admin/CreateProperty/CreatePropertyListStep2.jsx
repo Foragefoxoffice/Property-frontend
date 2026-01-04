@@ -216,11 +216,11 @@ export default function CreatePropertyListStep2({
 
   /* =========================================================
    ✅ File Size Limits
-   Images & floorplan: 2 MB
-   Videos: 50 MB
+   Images & floorplan: 5 MB (compressed to base64 if small, uploaded if large)
+   Videos: 50 MB (always uploaded to server)
 ========================================================= */
   function validateFileSize(file, type) {
-    const imageLimit = 2 * 1024 * 1024; // 2MB
+    const imageLimit = 5 * 1024 * 1024; // 5MB
     const videoLimit = 50 * 1024 * 1024; // 50MB
 
     if (type === "video" && file.size > videoLimit) {
@@ -229,7 +229,7 @@ export default function CreatePropertyListStep2({
     }
 
     if ((type === "image" || type === "floor") && file.size > imageLimit) {
-      CommonToaster("Image must be under 2MB", "error");
+      CommonToaster("Image must be under 5MB", "error");
       return false;
     }
 
@@ -259,31 +259,66 @@ export default function CreatePropertyListStep2({
         continue; // Skip files that don't meet size requirements
       }
 
-      let base64;
+      let url;
+      let isServerFile = false;
 
-      // Compress images to reduce size
-      if (type === "image" || type === "floor") {
+      // ✅ VIDEOS: Always upload to server (supports up to 50MB)
+      if (type === "video") {
         try {
-          console.log(`Original file size: ${formatBytes(file.size)}`);
-          base64 = await compressImage(file, 400); // Compress to max 400KB
-          const compressedSize = getBase64Size(base64);
-          console.log(`Compressed size: ${formatBytes(compressedSize)}`);
-
-          if (compressedSize > 500 * 1024) { // 500KB limit after compression
-            CommonToaster(`Image still too large after compression. Please use a smaller image.`, "error");
-            continue;
-          }
+          CommonToaster("Uploading video...", "info");
+          const { uploadPropertyMedia } = await import("@/Api/action");
+          const response = await uploadPropertyMedia(file, type);
+          url = response.data.url;
+          isServerFile = true;
+          CommonToaster("Video uploaded successfully!", "success");
+          console.log(`✅ Video uploaded: ${response.data.fileName} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
         } catch (error) {
-          console.error("Compression error:", error);
-          CommonToaster("Failed to compress image", "error");
+          console.error("Video upload error:", error);
+          CommonToaster("Failed to upload video. Please try again.", "error");
           continue;
         }
-      } else {
-        // For videos, use regular base64 conversion
-        base64 = await fileToBase64(file);
+      }
+      // ✅ IMAGES: Compress small images to base64, upload large ones
+      else if (type === "image" || type === "floor") {
+        const COMPRESSION_THRESHOLD = 2 * 1024 * 1024; // 2MB
+
+        // If image is larger than 2MB, upload to server
+        if (file.size > COMPRESSION_THRESHOLD) {
+          try {
+            CommonToaster("Uploading image...", "info");
+            const { uploadPropertyMedia } = await import("@/Api/action");
+            const response = await uploadPropertyMedia(file, type);
+            url = response.data.url;
+            isServerFile = true;
+            CommonToaster("Image uploaded successfully!", "success");
+            console.log(`✅ Image uploaded: ${response.data.fileName} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+          } catch (error) {
+            console.error("Image upload error:", error);
+            CommonToaster("Failed to upload image. Please try again.", "error");
+            continue;
+          }
+        }
+        // If image is small, compress to base64
+        else {
+          try {
+            console.log(`Original file size: ${formatBytes(file.size)}`);
+            url = await compressImage(file, 400); // Compress to max 400KB
+            const compressedSize = getBase64Size(url);
+            console.log(`Compressed size: ${formatBytes(compressedSize)}`);
+
+            if (compressedSize > 500 * 1024) { // 500KB limit after compression
+              CommonToaster(`Image still too large after compression. Please use a smaller image.`, "error");
+              continue;
+            }
+          } catch (error) {
+            console.error("Compression error:", error);
+            CommonToaster("Failed to compress image", "error");
+            continue;
+          }
+        }
       }
 
-      processedFiles.push({ file, url: base64 });
+      processedFiles.push({ file, url, isServerFile });
     }
 
     // If no files passed validation, return early
@@ -514,12 +549,12 @@ export default function CreatePropertyListStep2({
       />
 
       <div className="flex flex-col w-full gap-1">
-        {/* ✅ Top Row: Label + Public + Switch */}
+        {/* ✅ Top Row: Label + Hide + Switch */}
         <div className="flex items-center justify-between mb-1">
           <label className="text-sm text-[#131517] font-semibold"></label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
-              {lang === "en" ? "Public" : "Công cộng"}
+              {lang === "en" ? "Hide" : "Trốn"}
             </span>
             <Switch
               checked={form.videoVisibility}
@@ -552,7 +587,7 @@ export default function CreatePropertyListStep2({
           <label className="text-sm text-[#131517] font-semibold"></label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
-              {lang === "en" ? "Public" : "Công cộng"}
+              {lang === "en" ? "Hide" : "Trốn"}
             </span>
             <Switch
               checked={form.floorImageVisibility}
@@ -674,7 +709,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
 
                 <Switch
@@ -761,7 +796,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}
@@ -847,7 +882,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.feeTaxes}
@@ -934,7 +969,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.legalDocs}
@@ -1115,7 +1150,7 @@ export default function CreatePropertyListStep2({
 
           {/* Contract Length */}
           <div className="flex flex-col w-full gap-1">
-            {/* ✅ Top Row: Label + Public + Switch */}
+            {/* ✅ Top Row: Label + Hide + Switch */}
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm text-[#131517] font-semibold">
                 {t.contractLength}
@@ -1123,7 +1158,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.contractLength}
@@ -1165,7 +1200,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.deposit}
@@ -1198,7 +1233,26 @@ export default function CreatePropertyListStep2({
               }
               value={form.depositPaymentTerms?.[lang] || undefined}
               onChange={(value) => {
-                handleLocalizedChange(lang, "depositPaymentTerms", value);
+                const selected = deposits.find((d) => d.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    depositPaymentTerms: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      depositPaymentTerms: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "depositPaymentTerms", value);
+                }
               }}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
@@ -1233,7 +1287,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}
@@ -1266,7 +1320,26 @@ export default function CreatePropertyListStep2({
               }
               value={form.maintenanceFeeMonthly?.[lang] || undefined}
               onChange={(value) => {
-                handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+                const selected = payments.find((p) => p.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    maintenanceFeeMonthly: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      maintenanceFeeMonthly: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
+                }
               }}
               onSearch={(val) => {
                 if (val && val.trim() !== "") {
@@ -1421,7 +1494,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.checkIn}
@@ -1461,7 +1534,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.checkOut}
@@ -1502,7 +1575,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
 
                 <Switch
@@ -1589,7 +1662,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}

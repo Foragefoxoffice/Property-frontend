@@ -9,12 +9,14 @@ import { CommonToaster } from '@/Common/CommonToaster';
 import ContactPageBannerForm from './ContactPageBannerForm';
 import ContactPageReachOutForm from './ContactPageReachOutForm';
 import ContactMapLink from './ContactMapLink';
+import ContactPageSeoForm from './ContactPageSeoForm';
 import { validateVietnameseFields } from '@/utils/formValidation';
 
 export default function ContactPageForm() {
     const [bannerForm] = Form.useForm();
     const [reachOutForm] = Form.useForm();
     const [mapForm] = Form.useForm();
+    const [seoForm] = Form.useForm();
     const [pageData, setPageData] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -23,6 +25,7 @@ export default function ContactPageForm() {
         banner: true,
         reachOut: false,
         map: false,
+        seo: false,
     });
 
     const toggleAccordion = (key) => {
@@ -30,12 +33,14 @@ export default function ContactPageForm() {
             banner: key === 'banner' ? !prev.banner : false,
             reachOut: key === 'reachOut' ? !prev.reachOut : false,
             map: key === 'map' ? !prev.map : false,
+            seo: key === 'seo' ? !prev.seo : false,
         }));
     };
 
     const [bannerLoading, setBannerLoading] = useState(false);
     const [reachOutLoading, setReachOutLoading] = useState(false);
     const [mapLoading, setMapLoading] = useState(false);
+    const [seoLoading, setSeoLoading] = useState(false);
 
     // Helper to get preserved data
     const getPreservedData = (data) => {
@@ -69,6 +74,25 @@ export default function ContactPageForm() {
             contactReachOutGetinDescription_vn: data.contactReachOutGetinDescription_vn,
             // Map
             contactMapIframe: data.contactMapIframe,
+            // SEO
+            contactSeoMetaTitle_en: data.contactSeoMetaTitle_en,
+            contactSeoMetaTitle_vn: data.contactSeoMetaTitle_vn,
+            contactSeoMetaDescription_en: data.contactSeoMetaDescription_en,
+            contactSeoMetaDescription_vn: data.contactSeoMetaDescription_vn,
+            contactSeoMetaKeywords_en: data.contactSeoMetaKeywords_en,
+            contactSeoMetaKeywords_vn: data.contactSeoMetaKeywords_vn,
+            contactSeoSlugUrl_en: data.contactSeoSlugUrl_en,
+            contactSeoSlugUrl_vn: data.contactSeoSlugUrl_vn,
+            contactSeoCanonicalUrl_en: data.contactSeoCanonicalUrl_en,
+            contactSeoCanonicalUrl_vn: data.contactSeoCanonicalUrl_vn,
+            contactSeoSchemaType_en: data.contactSeoSchemaType_en,
+            contactSeoSchemaType_vn: data.contactSeoSchemaType_vn,
+            contactSeoOgTitle_en: data.contactSeoOgTitle_en,
+            contactSeoOgTitle_vn: data.contactSeoOgTitle_vn,
+            contactSeoOgDescription_en: data.contactSeoOgDescription_en,
+            contactSeoOgDescription_vn: data.contactSeoOgDescription_vn,
+            contactSeoAllowIndexing: data.contactSeoAllowIndexing,
+            contactSeoOgImages: data.contactSeoOgImages,
         };
     };
 
@@ -118,11 +142,33 @@ export default function ContactPageForm() {
                 mapForm.setFieldsValue({
                     contactMapIframe: page.contactMapIframe,
                 });
+
+                // Set SEO Form
+                seoForm.setFieldsValue({
+                    contactSeoMetaTitle_en: page.contactSeoMetaTitle_en,
+                    contactSeoMetaTitle_vn: page.contactSeoMetaTitle_vn,
+                    contactSeoMetaDescription_en: page.contactSeoMetaDescription_en,
+                    contactSeoMetaDescription_vn: page.contactSeoMetaDescription_vn,
+                    contactSeoMetaKeywords_en: page.contactSeoMetaKeywords_en || [],
+                    contactSeoMetaKeywords_vn: page.contactSeoMetaKeywords_vn || [],
+                    contactSeoSlugUrl_en: page.contactSeoSlugUrl_en,
+                    contactSeoSlugUrl_vn: page.contactSeoSlugUrl_vn,
+                    contactSeoCanonicalUrl_en: page.contactSeoCanonicalUrl_en,
+                    contactSeoCanonicalUrl_vn: page.contactSeoCanonicalUrl_vn,
+                    contactSeoSchemaType_en: page.contactSeoSchemaType_en,
+                    contactSeoSchemaType_vn: page.contactSeoSchemaType_vn,
+                    contactSeoOgTitle_en: page.contactSeoOgTitle_en,
+                    contactSeoOgTitle_vn: page.contactSeoOgTitle_vn,
+                    contactSeoOgDescription_en: page.contactSeoOgDescription_en,
+                    contactSeoOgDescription_vn: page.contactSeoOgDescription_vn,
+                    contactSeoAllowIndexing: page.contactSeoAllowIndexing,
+                });
             } else {
                 setPageData(null);
                 bannerForm.resetFields();
                 reachOutForm.resetFields();
                 mapForm.resetFields();
+                seoForm.resetFields();
             }
         } catch (error) {
             if (error.response?.status === 404) {
@@ -130,6 +176,7 @@ export default function ContactPageForm() {
                 bannerForm.resetFields();
                 reachOutForm.resetFields();
                 mapForm.resetFields();
+                seoForm.resetFields();
             } else {
                 CommonToaster('Failed to fetch page data', 'error');
                 console.error(error);
@@ -235,6 +282,38 @@ export default function ContactPageForm() {
         }
     };
 
+    // Handle SEO form submission
+    const handleSeoSubmit = async (values) => {
+        if (!validateVietnameseFields(values)) return;
+        try {
+            setSeoLoading(true);
+            const finalPayload = {
+                ...(pageData && getPreservedData(pageData)),
+                ...values
+            };
+
+            if (pageData) {
+                await updateContactPage(pageData._id, finalPayload);
+                CommonToaster('SEO section updated successfully!', 'success');
+            } else {
+                const bannerValues = await bannerForm.validateFields();
+                await createContactPage({ ...finalPayload, ...bannerValues });
+                CommonToaster('Contact page created successfully!', 'success');
+            }
+
+            fetchPageData();
+        } catch (error) {
+            if (error.errorFields) {
+                CommonToaster('Please fill in the Banner section first', 'error');
+            } else {
+                CommonToaster(error.response?.data?.message || 'Failed to save SEO section', 'error');
+                console.error(error);
+            }
+        } finally {
+            setSeoLoading(false);
+        }
+    };
+
     if (loading && !pageData) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -290,6 +369,17 @@ export default function ContactPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.map}
                     onToggle={() => toggleAccordion('map')}
+                />
+
+                {/* SEO Section */}
+                <ContactPageSeoForm
+                    form={seoForm}
+                    onSubmit={handleSeoSubmit}
+                    loading={seoLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.seo}
+                    onToggle={() => toggleAccordion('seo')}
                 />
             </div>
         </div>

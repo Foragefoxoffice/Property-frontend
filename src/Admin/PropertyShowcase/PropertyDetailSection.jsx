@@ -34,11 +34,11 @@ function SimpleSlider({ items, type = "image" }) {
     <div className="relative w-full">
       <div className="rounded-xl overflow-hidden border">
         {type === "video" ? (
-          <video controls className="w-full rounded-lg">
+          <video controls className="w-full h-[400px] object-cover rounded-lg">
             <source src={safeItems[index]} type="video/mp4" />
           </video>
         ) : (
-          <img src={safeItems[index]} className="w-full rounded-lg" />
+          <img src={safeItems[index]} className="w-full h-[400px] object-cover rounded-lg" />
         )}
       </div>
 
@@ -139,7 +139,7 @@ export default function PropertyDetailsSection({ property }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-24">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-[1320px] mx-auto">
         {/* -------------------------------------------------------
            LEFT CONTENT (UI preserved)
         ------------------------------------------------------- */}

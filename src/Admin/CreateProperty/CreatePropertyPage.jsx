@@ -34,6 +34,7 @@ import {
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations";
 import { useNavigate } from "react-router-dom";
 
 /* =====================================================================================
@@ -267,6 +268,7 @@ export default function CreatePropertyPage({
   const [dropdowns, setDropdowns] = useState({});
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const t = translations[language];
   const [loadingSingle, setLoadingSingle] = useState(true);
   const [loadingDropdowns, setLoadingDropdowns] = useState(true);
 
@@ -658,11 +660,11 @@ export default function CreatePropertyPage({
       UI STEP CONFIG
   ===================================================================================== */
   const steps = [
-    { title: "Create Property", label: "Listing & Property Information" },
-    { title: "Create Property", label: "Library & Finance Information" },
-    { title: "Create Property", label: "Landlord Information" },
-    { title: "Create Property", label: "SEO Information" },
-    { title: "Create Property", label: "Review & Publish" },
+    { title: t.createProperty, label: t.listingPropertyInfo },
+    { title: t.createProperty, label: t.libraryFinanceInfo },
+    { title: t.createProperty, label: t.landlordInfo },
+    { title: t.createProperty, label: t.seoInfo },
+    { title: t.createProperty, label: t.reviewPublish },
   ];
 
   /* =====================================================================================

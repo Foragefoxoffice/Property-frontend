@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space, Modal, message, Form, Input, Tabs } from "antd";
+import { Table, Button, Space, Modal, message, Form, Input, Tabs, ConfigProvider, Spin } from "antd";
 import { Edit, Trash, Plus } from "lucide-react";
 import { getCategories, deleteCategory, createCategory, updateCategory } from "../../Api/action";
 
@@ -119,6 +119,16 @@ export default function CategoryListPage() {
         },
     ];
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <ConfigProvider theme={{ token: { colorPrimary: '#41398B' } }}>
+                    <Spin size="large" />
+                </ConfigProvider>
+            </div>
+        );
+    }
+
     const columns = [
         {
             title: "Name",
@@ -173,6 +183,7 @@ export default function CategoryListPage() {
                     </p>
                 </div>
                 <Button
+                    style={{ backgroundColor: '#41398B' }}
                     type="primary"
                     icon={<Plus className="w-4 h-4" />}
                     size="large"
@@ -215,6 +226,7 @@ export default function CategoryListPage() {
                             Cancel
                         </Button>
                         <Button
+                            style={{ backgroundColor: '#41398B' }}
                             type="primary"
                             htmlType="submit"
                             loading={submitLoading}

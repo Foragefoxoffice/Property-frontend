@@ -774,7 +774,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.areaZone}
@@ -852,7 +852,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.blockName}
@@ -927,7 +927,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.propertyNo}
@@ -987,7 +987,7 @@ export default function CreatePropertyListStep1({
 
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">
-                      {lang === "en" ? "Public" : "Công cộng"}
+                      {lang === "en" ? "Hide" : "Trốn"}
                     </span>
                     <Switch
                       checked={form.listingInformationVisibility?.availableFrom}
@@ -1043,7 +1043,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.unit}
@@ -1081,7 +1081,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.unitSize}
@@ -1118,7 +1118,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.bedrooms}
@@ -1155,7 +1155,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.bathrooms}
@@ -1193,7 +1193,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.floorRange}
@@ -1275,7 +1275,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.furnishing}
@@ -1313,7 +1313,7 @@ export default function CreatePropertyListStep1({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Public" : "Công cộng"}
+                  {lang === "en" ? "Hide" : "Trốn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.view}
@@ -1361,7 +1361,7 @@ export default function CreatePropertyListStep1({
             </label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">
-                {lang === "en" ? "Public" : "Công cộng"}
+                {lang === "en" ? "Hide" : "Trốn"}
               </span>
               <Switch
                 checked={form.descriptionVisibility}
@@ -1389,7 +1389,7 @@ export default function CreatePropertyListStep1({
         </div>
 
         {/* === Property Utility === */}
-        {/* ✅ Header Row: Title + Add + {lang === "en" ? "Public" : "Công cộng"} Switch */}
+        {/* ✅ Header Row: Title + Add + {lang === "en" ? "Hide" : "Trốn"} Switch */}
         <div className="flex items-center justify-between mt-8 mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">{t.propertyUtility}</h2>
@@ -1403,7 +1403,7 @@ export default function CreatePropertyListStep1({
 
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
-              {lang === "en" ? "Public" : "Công cộng"}
+              {lang === "en" ? "Hide" : "Trốn"}
             </span>
             <Switch
               checked={form.propertyUtilityVisibility}

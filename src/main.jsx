@@ -62,7 +62,7 @@ import ContactPage from "./Pages/ContactPage.jsx";
 import BlogPage from "./Pages/BlogPage.jsx";
 import BlogDetailPage from "./Pages/BlogDetailPage.jsx";
 import BlogListPage from "./AdminCms/BlogCms/BlogListPage.jsx";
-import BlogFormPage from "./AdminCms/BlogCms/BlogFormPage.jsx";
+import BlogCmsForm from "./AdminCms/BlogCms/BlogCmsForm.jsx";
 import CategoryListPage from "./AdminCms/CategoryCms/CategoryListPage.jsx";
 
 createRoot(document.getElementById("root")).render(
@@ -191,8 +191,8 @@ createRoot(document.getElementById("root")).render(
           <Route path="cms/about" element={<AboutPageForm />} />
           <Route path="cms/contact" element={<ContactPageForm />} />
           <Route path="cms/blogs" element={<BlogListPage />} />
-          <Route path="cms/blogs/create" element={<BlogFormPage />} />
-          <Route path="cms/blogs/edit/:id" element={<BlogFormPage />} />
+          <Route path="cms/blogs/create" element={<BlogCmsForm />} />
+          <Route path="cms/blogs/edit/:id" element={<BlogCmsForm />} />
 
           <Route path="cms/categories" element={<CategoryListPage />} />
 

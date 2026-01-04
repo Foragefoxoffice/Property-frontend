@@ -41,9 +41,9 @@ export default function PropertyHome({ property }) {
   };
 
   return (
-    <div className="bg-white md:min-h-screen flex flex-col lg:flex-row border-b">
+    <div className="bg-white md:h-[700px] flex flex-col lg:flex-row border-b">
       {/* LEFT: Text */}
-      <div className="w-full lg:w-1/2 p-6 flex flex-col justify-center gap-8 order-2 lg:order-1">
+      <div className="w-full lg:w-1/2 p-6 pl-12 flex flex-col justify-center gap-8 order-2 lg:order-1">
         <div>
           <div className="flex flex-wrap gap-3 mb-3">
             <span
@@ -77,14 +77,14 @@ export default function PropertyHome({ property }) {
 
       {/* RIGHT: Images */}
       <div className="w-full lg:w-2/3 relative order-1 lg:order-2">
-        <div className="relative w-full overflow-hidden bg-gray-100">
+        <div className="relative w-full h-[700px] overflow-hidden bg-gray-100">
           {images.length > 0 ? (
             <AnimatePresence mode="wait">
               <motion.img
                 key={current}
                 src={images[current]}
                 alt={`property-img-${current}`}
-                className="object-cover w-full h-[50vh] sm:h-[60vh] lg:h-screen"
+                className="object-cover w-full h-[700px]"
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -30 }}
@@ -103,12 +103,18 @@ export default function PropertyHome({ property }) {
 
         {/* Thumbnails (desktop) */}
         {images.length > 0 && (
-          <div className="absolute lg:top-8 lg:right-4 hidden lg:flex flex-col gap-3">
+          <div
+            className="absolute lg:top-8 lg:right-4 hidden lg:flex flex-col gap-3 max-h-[calc(700px-4rem)] overflow-y-auto pr-2"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#888 transparent'
+            }}
+          >
             {images.map((img, i) => (
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className={`w-20 h-16 rounded-lg overflow-hidden border-2 transition ${current === i ? "border-black scale-105" : "border-transparent hover:border-gray-300"}`}
+                className={`w-20 h-16 rounded-lg overflow-hidden border-2 transition flex-shrink-0 ${current === i ? "border-black scale-105" : "border-transparent hover:border-gray-300"}`}
               >
                 <img src={img} alt={`thumb-${i}`} className="object-cover w-full h-full" />
               </button>

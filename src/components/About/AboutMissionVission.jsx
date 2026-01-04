@@ -34,7 +34,7 @@ export default function AboutMissionVission({ data }) {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-14 px-6 bg-[#F5F5F5] overflow-hidden">
+        <section ref={sectionRef} className="py-14 px-6 bg-[#fff] overflow-hidden">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
 
                 {/* Our Vision */}

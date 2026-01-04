@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Table, Button, Space, Modal, message } from "antd";
+import { Table, Button, Space, Modal, message, ConfigProvider, Spin } from "antd";
 import { Edit, Trash, Plus } from "lucide-react";
 import { getAdminBlogs, deleteBlog } from "../../Api/action";
 
@@ -48,6 +48,16 @@ export default function BlogListPage() {
         setDeleteModalVisible(false);
         setDeletingBlogId(null);
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <ConfigProvider theme={{ token: { colorPrimary: '#41398B' } }}>
+                    <Spin size="large" />
+                </ConfigProvider>
+            </div>
+        );
+    }
 
     const columns = [
         {
@@ -129,11 +139,11 @@ export default function BlogListPage() {
                     </p>
                 </div>
                 <Link to="/dashboard/cms/blogs/create">
-                    <Button
+                    <Button style={{ backgroundColor: '#41398B' }}
                         type="primary"
                         icon={<Plus className="w-4 h-4" />}
                         size="large"
-                        className="bg-[#41398B] hover:!bg-[#352e7a] border-none font-['Manrope'] flex items-center gap-2"
+                        className="hover:!bg-[#352e7a] border-none font-['Manrope'] flex items-center gap-2"
                     >
                         Create New Blog
                     </Button>
