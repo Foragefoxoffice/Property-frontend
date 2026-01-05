@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space, Modal, message, Form, Input, Tabs, ConfigProvider, Spin } from "antd";
-import { Edit, Trash, Plus } from "lucide-react";
+import { Table, Button, Space, Modal, Form, Input, Tabs, ConfigProvider, Spin } from "antd";
+import { Edit, Trash, Plus, AlertTriangle } from "lucide-react";
 import { getCategories, deleteCategory, createCategory, updateCategory } from "../../Api/action";
+import { useLanguage } from "../../Language/LanguageContext";
+import { CommonToaster } from "@/Common/CommonToaster";
 
 export default function CategoryListPage() {
+    const { language } = useLanguage();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +27,7 @@ export default function CategoryListPage() {
             setCategories(res.data.data);
         } catch (error) {
             console.error(error);
-            message.error("Failed to fetch categories");
+            CommonToaster("Failed to fetch categories", "error");
         } finally {
             setLoading(false);
         }
@@ -40,13 +43,13 @@ export default function CategoryListPage() {
         setSubmitLoading(true);
         try {
             await deleteCategory(deleteId);
-            message.success("Category deleted successfully");
+            CommonToaster("Category deleted successfully", "success");
             fetchCategories();
             setIsDeleteModalOpen(false);
             setDeleteId(null);
         } catch (error) {
             console.error("Delete Error:", error);
-            message.error(error.response?.data?.error || "Failed to delete category");
+            CommonToaster(error.response?.data?.error || "Failed to delete category", "error");
         } finally {
             setSubmitLoading(false);
         }
@@ -75,20 +78,62 @@ export default function CategoryListPage() {
         try {
             if (editingCategory) {
                 await updateCategory(editingCategory._id, values);
-                message.success("Category updated successfully");
+                CommonToaster("Category updated successfully", "success");
             } else {
                 await createCategory(values);
-                message.success("Category created successfully");
+                CommonToaster("Category created successfully", "success");
             }
             handleCloseModal();
             fetchCategories();
         } catch (error) {
             console.error(error);
-            message.error(error.response?.data?.error || "Failed to save category");
+            CommonToaster(error.response?.data?.error || "Failed to save category", "error");
         } finally {
             setSubmitLoading(false);
         }
     };
+
+    // Translation object
+    const translations = {
+        en: {
+            pageTitle: "Categories",
+            pageDescription: "Manage blog categories",
+            addCategory: "Add Category",
+            name: "Name",
+            slug: "Slug",
+            createdAt: "Created At",
+            actions: "Actions",
+            editCategory: "Edit Category",
+            addNewCategory: "Add New Category",
+            cancel: "Cancel",
+            update: "Update",
+            create: "Create",
+            deleteCategory: "Delete Category?",
+            deleteConfirmation: "Are you sure you want to delete this category? This action cannot be undone.",
+            yesDelete: "Yes, Delete",
+            noName: "No Name",
+        },
+        vi: {
+            pageTitle: "Danh mục",
+            pageDescription: "Quản lý danh mục blog",
+            addCategory: "Thêm danh mục",
+            name: "Tên",
+            slug: "Đường dẫn",
+            createdAt: "Ngày tạo",
+            actions: "Hành động",
+            editCategory: "Chỉnh sửa danh mục",
+            addNewCategory: "Thêm danh mục mới",
+            cancel: "Hủy",
+            update: "Cập nhật",
+            create: "Tạo mới",
+            deleteCategory: "Xóa danh mục?",
+            deleteConfirmation: "Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.",
+            yesDelete: "Có, Xóa",
+            noName: "Không có tên",
+        }
+    };
+
+    const t = translations[language];
 
     const tabItems = [
         {
@@ -131,25 +176,25 @@ export default function CategoryListPage() {
 
     const columns = [
         {
-            title: "Name",
+            title: t.name,
             dataIndex: "name",
             key: "name",
-            render: (name) => <span className="font-semibold text-gray-700">{name?.en || name?.vi || 'No Name'}</span>,
+            render: (name) => <span className="font-semibold text-gray-700">{name?.[language] || name?.en || name?.vi || t.noName}</span>,
         },
         {
-            title: "Slug",
+            title: t.slug,
             dataIndex: "slug",
             key: "slug",
-            render: (slug) => <span className="text-gray-500">{slug?.en || slug?.vi || '-'}</span>,
+            render: (slug) => <span className="text-gray-500">{slug?.[language] || slug?.en || slug?.vi || '-'}</span>,
         },
         {
-            title: "Created At",
+            title: t.createdAt,
             dataIndex: "createdAt",
             key: "createdAt",
             render: (date) => new Date(date).toLocaleDateString(),
         },
         {
-            title: "Actions",
+            title: t.actions,
             key: "actions",
             render: (_, record) => (
                 <Space size="middle">
@@ -176,10 +221,10 @@ export default function CategoryListPage() {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800 font-['Manrope']">
-                        Categories
+                        {t.pageTitle}
                     </h1>
                     <p className="text-sm text-gray-500 font-['Manrope']">
-                        Manage blog categories
+                        {t.pageDescription}
                     </p>
                 </div>
                 <Button
@@ -190,7 +235,7 @@ export default function CategoryListPage() {
                     className="bg-[#41398B] hover:!bg-[#352e7a] border-none font-['Manrope'] flex items-center gap-2"
                     onClick={() => handleOpenModal(null)}
                 >
-                    Add Category
+                    {t.addCategory}
                 </Button>
             </div>
 
@@ -207,7 +252,7 @@ export default function CategoryListPage() {
 
             {/* Create/Edit Modal */}
             <Modal
-                title={editingCategory ? "Edit Category" : "Add New Category"}
+                title={editingCategory ? t.editCategory : t.addNewCategory}
                 open={isModalOpen}
                 onCancel={handleCloseModal}
                 footer={null}
@@ -223,7 +268,7 @@ export default function CategoryListPage() {
 
                     <div className="flex justify-end gap-3 mt-6">
                         <Button onClick={handleCloseModal}>
-                            Cancel
+                            {t.cancel}
                         </Button>
                         <Button
                             style={{ backgroundColor: '#41398B' }}
@@ -232,25 +277,43 @@ export default function CategoryListPage() {
                             loading={submitLoading}
                             className="bg-[#41398B] hover:!bg-[#352e7a]"
                         >
-                            {editingCategory ? "Update" : "Create"}
+                            {editingCategory ? t.update : t.create}
                         </Button>
                     </div>
                 </Form>
             </Modal>
 
             {/* Delete Confirmation Modal */}
-            <Modal
-                title="Delete Category?"
-                open={isDeleteModalOpen}
-                onOk={handleDelete}
-                onCancel={() => setIsDeleteModalOpen(false)}
-                okText="Yes, Delete"
-                okType="danger"
-                confirmLoading={submitLoading}
-                cancelText="Cancel"
-            >
-                <p>Are you sure you want to delete this category? This action cannot be undone.</p>
-            </Modal>
+            {isDeleteModalOpen && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
+                        <div className="flex items-center mb-3">
+                            <AlertTriangle className="text-red-600 mr-2" />
+                            <h3 className="font-semibold text-gray-800">
+                                {t.deleteCategory}
+                            </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-5">
+                            {t.deleteConfirmation}
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setIsDeleteModalOpen(false)}
+                                className="px-5 py-2 border rounded-full hover:bg-gray-100"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                disabled={submitLoading}
+                                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 disabled:opacity-50"
+                            >
+                                {submitLoading ? (language === 'vi' ? 'Đang xóa...' : 'Deleting...') : t.yesDelete}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

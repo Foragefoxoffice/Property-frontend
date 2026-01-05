@@ -232,6 +232,7 @@ export default function CreatePropertyListStep1({
   onChange,
   defaultTransactionType,
   dropdowns, // ✅ Correct
+  isEditMode, // ✅ Added
 }) {
   useEffect(() => {
     console.log("initialData:", initialData);
@@ -288,6 +289,7 @@ export default function CreatePropertyListStep1({
 
   // ✅ Auto-generate ID when transactionType changes
   useEffect(() => {
+    if (isEditMode) return; // ✅ Skip if editing
     if (!form.transactionType) return;
 
     getNextPropertyId(form.transactionType)
@@ -298,7 +300,7 @@ export default function CreatePropertyListStep1({
         }));
       })
       .catch((err) => console.log(err));
-  }, [form.transactionType]);
+  }, [form.transactionType, isEditMode]);
 
   const loading =
     !dropdowns ||
@@ -924,7 +926,7 @@ export default function CreatePropertyListStep1({
               <label className="text-sm font-medium">
                 {lang === "en" ? "Property No" : "Số bất động sản"}
               </label>
-
+              {/* 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
                   {lang === "en" ? "Hide" : "Trốn"}
@@ -946,7 +948,7 @@ export default function CreatePropertyListStep1({
                     }))
                   }
                 />
-              </div>
+              </div> */}
             </div>
 
             {/* Input field */}

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Share2 } from "lucide-react";
 import { safeVal, safeArray, formatNumber } from "@/utils/display";
+import { CommonToaster } from "@/Common/CommonToaster";
 
 export default function PropertyHome({ property }) {
   const [current, setCurrent] = useState(0);
@@ -25,9 +26,9 @@ export default function PropertyHome({ property }) {
   }, [images.length]);
 
   const getShowcasePrice = () => {
-    if (type === "Sale" && priceSale) return `₫ ${formatNumber(priceSale)}`;
-    if (type === "Lease" && priceLease) return `₫ ${formatNumber(priceLease)} / month`;
-    if (type === "Home Stay" && priceNight) return `$ ${formatNumber(priceNight)} / night`;
+    if (type === "Sale" && priceSale) return `${formatNumber(priceSale)} ${property?.financialDetails?.financialDetailsCurrency}`;
+    if (type === "Lease" && priceLease) return `${formatNumber(priceLease)} ${property?.financialDetails?.financialDetailsCurrency} / month`;
+    if (type === "Home Stay" && priceNight) return `${formatNumber(priceNight)} ${property?.financialDetails?.financialDetailsCurrency} / night`;
     return "-";
   };
 
@@ -37,6 +38,30 @@ export default function PropertyHome({ property }) {
       case "Lease": return "#DAFFF9";
       case "Home Stay": return "#DEF6FE";
       default: return "#F2F2F2";
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: title || "Property",
+      text: `Check out this property: ${title}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        CommonToaster("Link copied to clipboard", "success");
+      } catch (err) {
+        console.error("Failed to copy:", err);
+        CommonToaster("Failed to copy link", "error");
+      }
     }
   };
 
@@ -61,7 +86,10 @@ export default function PropertyHome({ property }) {
             {title || "Untitled property"}
           </h1>
 
-          <button className="flex items-center gap-2 text-gray-700 border border-gray-300 px-3 py-2 rounded-full cursor-pointer w-fit">
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 text-gray-700 border border-gray-300 px-3 py-2 rounded-full cursor-pointer w-fit hover:bg-gray-50 transition-colors"
+          >
             <Share2 className="w-5 h-5" />
             Share
           </button>

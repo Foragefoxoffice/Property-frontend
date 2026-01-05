@@ -424,6 +424,46 @@ export const uploadBlogImage = (file) => {
 };
 
 /* =========================================================
+   🎯 HEADER CMS APIs
+========================================================= */
+export const getHeader = () => API.get("/header/get-header");
+export const updateHeader = (data) => API.put("/header/update-header", data);
+export const uploadHeaderImage = (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/header/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
+/* =========================================================
+   🦶 FOOTER CMS APIs
+========================================================= */
+export const getFooter = () => API.get("/footer/get-footer");
+export const updateFooter = (data) => API.put("/footer/update-footer", data);
+export const uploadFooterImage = (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/footer/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
+/* =========================================================
    ✨ EXPORT DEFAULT
 ========================================================= */
 export default API;

@@ -1,8 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/Language/LanguageContext";
 
 export default function ContactBanner({ data }) {
+    const { language } = useLanguage();
 
     // Improved URL handling matching AboutBanner logic which seems more robust
     const getImageUrl = (imagePath) => {
@@ -18,7 +20,9 @@ export default function ContactBanner({ data }) {
 
     const displayBgImage = data?.contactBannerBg ? getImageUrl(data.contactBannerBg) : "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2669&auto=format&fit=crop";
 
-    const title = data?.contactBannerTitle_en || "Contact Us";
+    const title = language === 'en'
+        ? (data?.contactBannerTitle_en || "Contact Us")
+        : (data?.contactBannerTitle_vn || "Liên Hệ");
 
     // Animation variants
     const containerVariants = {
@@ -78,7 +82,7 @@ export default function ContactBanner({ data }) {
                     variants={itemVariants}
                 >
                     <Link to="/" className="hover:text-white transition-colors duration-200">
-                        Home
+                        {language === 'en' ? "Home" : "Trang Chủ"}
                     </Link>
                     <span>&gt;</span>
                     <span className="text-white font-medium">{title}</span>

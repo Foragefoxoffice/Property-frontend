@@ -1,17 +1,29 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutAgent({ data }) {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const { language } = useLanguage();
 
     // CMS Data with Fallbacks
-    const subTitle = data?.aboutAgentTitle_en || "TOP AGENT";
-    const title = data?.aboutAgentSubTitle_en || "Jessica Lane";
-    const stats = data?.aboutAgentDescription_en || "Total Sales Volume: $48M+ in Closed Sales";
-    const description = data?.aboutAgentContent_en || "With over a decade of real estate experience in luxury coastal properties, Jessica is known for her integrity, deep market knowledge and commitment to her clients.";
-    const buttonText = data?.aboutAgentButtonText_en || "View Agent";
+    const subTitle = language === 'en'
+        ? (data?.aboutAgentTitle_en || "TOP AGENT")
+        : (data?.aboutAgentTitle_vn || "ĐẠI LÝ HÀNG ĐẦU");
+    const title = language === 'en'
+        ? (data?.aboutAgentSubTitle_en || "Jessica Lane")
+        : (data?.aboutAgentSubTitle_vn || "Jessica Lane");
+    const stats = language === 'en'
+        ? (data?.aboutAgentDescription_en || "Total Sales Volume: $48M+ in Closed Sales")
+        : (data?.aboutAgentDescription_vn || "Tổng Doanh Số Bán Hàng: $48M+ Trong Doanh Số Đóng");
+    const description = language === 'en'
+        ? (data?.aboutAgentContent_en || "With over a decade of real estate experience in luxury coastal properties, Jessica is known for her integrity, deep market knowledge and commitment to her clients.")
+        : (data?.aboutAgentContent_vn || "Với hơn một thập kỷ kinh nghiệm bất động sản trong bất động sản ven biển cao cấp, Jessica được biết đến với sự chính trực, kiến thức thị trường sâu sắc và cam kết với khách hàng của cô ấy.");
+    const buttonText = language === 'en'
+        ? (data?.aboutAgentButtonText_en || "View Agent")
+        : (data?.aboutAgentButtonText_vn || "Xem Đại Lý");
     const buttonLink = data?.aboutAgentButtonLink || "#";
 
     // Image Handling

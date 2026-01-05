@@ -2,31 +2,45 @@ import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { LifeBuoy, Clock, Diamond, Award } from 'lucide-react';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutWhyChoose({ data }) {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const { language } = useLanguage();
 
-    const title = data?.aboutWhyChooseDescription_en || "Experience The Difference With Our Solutions";
-    const subTitle = data?.aboutWhyChooseTitle_en || "WHY CHOOSE US";
-    const buttonText = data?.aboutWhyChooseButtonText_en || "Contact Us";
+    const title = language === 'en'
+        ? (data?.aboutWhyChooseDescription_en || "Experience The Difference With Our Solutions")
+        : (data?.aboutWhyChooseDescription_vn || "Trải Nghiệm Sự Khác Biệt Với Giải Pháp Của Chúng Tôi");
+    const subTitle = language === 'en'
+        ? (data?.aboutWhyChooseTitle_en || "WHY CHOOSE US")
+        : (data?.aboutWhyChooseTitle_vn || "TẠI SAO CHỌN CHÚNG TÔI");
+    const buttonText = language === 'en'
+        ? (data?.aboutWhyChooseButtonText_en || "Contact Us")
+        : (data?.aboutWhyChooseButtonText_vn || "Liên Hệ");
     const buttonLink = data?.aboutWhyChooseButtonLink || "/contact";
 
     const defaultBoxes = [
         {
             icon: "LifeBuoy",
             title_en: "Personalized Support",
-            description_en: "Receive tailored assistance from our experienced team to ensure every step fits your specific needs and goals."
+            title_vn: "Hỗ Trợ Cá Nhân Hóa",
+            description_en: "Receive tailored assistance from our experienced team to ensure every step fits your specific needs and goals.",
+            description_vn: "Nhận được sự hỗ trợ được tùy chỉnh từ đội ngũ giàu kinh nghiệm của chúng tôi để đảm bảo mỗi bước phù hợp với nhu cầu và mục tiêu cụ thể của bạn."
         },
         {
             icon: "Clock",
             title_en: "Time-Saving Process",
-            description_en: "From quick callbacks to streamlined procedures, we value your time and help you move forward without delays."
+            title_vn: "Quy Trình Tiết Kiệm Thời Gian",
+            description_en: "From quick callbacks to streamlined procedures, we value your time and help you move forward without delays.",
+            description_vn: "Từ việc gọi lại nhanh chóng đến các thủ tục được sắp xếp hợp lý, chúng tôi trân trọng thời gian của bạn và giúp bạn tiến lên mà không bị trì hoãn."
         },
         {
             icon: "Diamond",
             title_en: "Trusted Expertise",
-            description_en: "Work with professionals who bring deep industry knowledge and proven strategies to guide your decisions confidently."
+            title_vn: "Chuyên Môn Đáng Tin Cậy",
+            description_en: "Work with professionals who bring deep industry knowledge and proven strategies to guide your decisions confidently.",
+            description_vn: "Làm việc với các chuyên gia mang lại kiến thức sâu sắc về ngành và chiến lược đã được chứng minh để hướng dẫn quyết định của bạn một cách tự tin."
         }
     ];
 
@@ -116,11 +130,11 @@ export default function AboutWhyChoose({ data }) {
                                 </div>
 
                                 <h3 className="text-3xl font-bold mb-4">
-                                    {box.title_en || box.title}
+                                    {language === 'en' ? (box.title_en || box.title) : (box.title_vn || box.title_en || box.title)}
                                 </h3>
 
                                 <p className="text-gray-400 text-lg leading-relaxed text-base group-hover:text-gray-300 transition-colors duration-300">
-                                    {box.description_en || box.description}
+                                    {language === 'en' ? (box.description_en || box.description) : (box.description_vn || box.description_en || box.description)}
                                 </p>
                             </motion.div>
                         );

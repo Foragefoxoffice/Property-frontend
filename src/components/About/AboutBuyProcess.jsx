@@ -1,14 +1,20 @@
 import React, { useRef, useState } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutBuyProcess({ data }) {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
     const [activeIndex, setActiveIndex] = useState(0);
+    const { language } = useLanguage();
 
     // CMS Data with Fallbacks
-    const subTitle = data?.aboutBuyingTitle_en || "OUR PROCESS";
-    const title = data?.aboutBuyingDescription_en || "Homebuying Steps";
+    const subTitle = language === 'en'
+        ? (data?.aboutBuyingTitle_en || "OUR PROCESS")
+        : (data?.aboutBuyingTitle_vn || "QUY TRÌNH CỦA CHÚNG TÔI");
+    const title = language === 'en'
+        ? (data?.aboutBuyingDescription_en || "Homebuying Steps")
+        : (data?.aboutBuyingDescription_vn || "Các Bước Mua Nhà");
 
     // Helper to handle image URL
     const getImageUrl = (imagePath) => {
@@ -26,17 +32,23 @@ export default function AboutBuyProcess({ data }) {
     const defaultSteps = [
         {
             title: "Step 1: Discover Your Dream Home",
+            title_vn: "Bước 1: Khám Phá Ngôi Nhà Mơ Ước",
             description: "Browse through a curated selection of properties tailored to your lifestyle and budget.",
+            description_vn: "Duyệt qua lựa chọn bất động sản được chọn lọc phù hợp với lối sống và ngân sách của bạn.",
             image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop"
         },
         {
             title: "Step 2: Schedule A Viewing",
+            title_vn: "Bước 2: Đặt Lịch Xem Nhà",
             description: "Book a tour at your convenience and explore the space in person or virtually.",
+            description_vn: "Đặt lịch tham quan theo sự thuận tiện của bạn và khám phá không gian trực tiếp hoặc trực tuyến.",
             image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2053&auto=format&fit=crop"
         },
         {
             title: "Step 3: Seal The Deal",
+            title_vn: "Bước 3: Hoàn Tất Giao Dịch",
             description: "Get expert guidance to finalize paperwork and move into your new home with confidence.",
+            description_vn: "Nhận hướng dẫn chuyên nghiệp để hoàn tất giấy tờ và chuyển đến ngôi nhà mới của bạn với sự tự tin.",
             image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1973&auto=format&fit=crop"
         }
     ];
@@ -96,10 +108,10 @@ export default function AboutBuyProcess({ data }) {
                                 ></div>
 
                                 <h3 className={`text-2xl font-semibold mb-2 transition-colors duration-300 ${index === activeIndex ? 'text-[#41398B]' : 'text-[#000]'}`}>
-                                    {step.title_en || step.title}
+                                    {language === 'en' ? (step.title_en || step.title) : (step.title_vn || step.title_en || step.title)}
                                 </h3>
                                 <p className="text-gray-500 leading-relaxed">
-                                    {step.description_en || step.description}
+                                    {language === 'en' ? (step.description_en || step.description) : (step.description_vn || step.description_en || step.description)}
                                 </p>
                             </motion.div>
                         ))}

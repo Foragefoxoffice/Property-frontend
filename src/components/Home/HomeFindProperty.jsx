@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function HomeFindProperty({ homePageData }) {
+    const { language } = useLanguage();
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
 
@@ -16,8 +18,12 @@ export default function HomeFindProperty({ homePageData }) {
     };
 
     // CMS Content with Fallbacks
-    const title = homePageData?.homeFindTitle_en || 'Find Your Property,\nStart Your Homeownership Journey Today';
-    const description = homePageData?.homeFindDescription_en || 'Connect with your Designer in minutes';
+    const title = language === 'en'
+        ? (homePageData?.homeFindTitle_en || 'Find Your Property,\nStart Your Homeownership Journey Today')
+        : (homePageData?.homeFindTitle_vn || 'Tìm Bất Động Sản Của Bạn,\nBắt Đầu Hành Trình Sở Hữu Nhà Ngay Hôm Nay');
+    const description = language === 'en'
+        ? (homePageData?.homeFindDescription_en || 'Connect with your Designer in minutes')
+        : (homePageData?.homeFindDescription_vn || 'Kết nối với Nhà thiết kế của bạn trong vài phút');
     const bgImage = homePageData?.homeFindBg
         ? getImageUrl(homePageData.homeFindBg)
         : '/images/property/home-banner.jpg'; // Verify if this image exists, defaulting to one we saw earlier

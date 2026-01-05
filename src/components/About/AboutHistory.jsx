@@ -1,39 +1,55 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutHistory({ data }) {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const { language } = useLanguage();
 
     // CMS Data with Fallbacks
-    const sectionTitle = data?.aboutHistoryTitle_en || "Milestones That Define Us";
-    const sectionDescription = data?.aboutHistoryDescription_en || "OUR HISTORY"; // Using the description field for the small caption "OUR HISTORY" or generic text if not provided
+    const sectionTitle = language === 'en'
+        ? (data?.aboutHistoryTitle_en || "Milestones That Define Us")
+        : (data?.aboutHistoryTitle_vn || "Những Cột Mốc Định Hình Chúng Tôi");
+    const sectionDescription = language === 'en'
+        ? (data?.aboutHistoryDescription_en || "OUR HISTORY")
+        : (data?.aboutHistoryDescription_vn || "LỊCH SỬ CỦA CHÚNG TÔI"); // Using the description field for the small caption "OUR HISTORY" or generic text if not provided
 
     const timelineData = data?.aboutHistoryTimeline?.length > 0 ? data.aboutHistoryTimeline : [
         {
             date: "2009",
             title_en: "HUMBLE BEGINNINGS",
-            description_en: "We started as a small, local agency with a clear mission: helping people find homes with honesty and care."
+            title_vn: "KHỞI ĐẦU KHIÊM TỐN",
+            description_en: "We started as a small, local agency with a clear mission: helping people find homes with honesty and care.",
+            description_vn: "Chúng tôi bắt đầu như một đại lý nhỏ, địa phương với sứ mệnh rõ ràng: giúp mọi người tìm nhà với sự trung thực và quan tâm."
         },
         {
             date: "2015",
             title_en: "A TRUSTED NAME",
-            description_en: "Gained recognition for reliable service and built long-term relationships with clients and partners."
+            title_vn: "TÊN ĐÁNG TIN CẬY",
+            description_en: "Gained recognition for reliable service and built long-term relationships with clients and partners.",
+            description_vn: "Được công nhận về dịch vụ đáng tin cậy và xây dựng mối quan hệ lâu dài với khách hàng và đối tác."
         },
         {
             date: "2018",
             title_en: "EMBRACING INNOVATION",
-            description_en: "Adopted new technologies to streamline the property search and improve customer experience."
+            title_vn: "ÁP DỤNG ĐỔI MỚI",
+            description_en: "Adopted new technologies to streamline the property search and improve customer experience.",
+            description_vn: "Áp dụng công nghệ mới để đơn giản hóa tìm kiếm bất động sản và cải thiện trải nghiệm khách hàng."
         },
         {
             date: "2021",
             title_en: "OVER 1,000 HOMES SOLD",
-            description_en: "Reached a major milestone with over a thousand successful property transactions completed."
+            title_vn: "HƠN 1.000 NGÔI NHÀ ĐÃ BÁN",
+            description_en: "Reached a major milestone with over a thousand successful property transactions completed.",
+            description_vn: "Đạt được cột mốc quan trọng với hơn một nghìn giao dịch bất động sản thành công được hoàn thành."
         },
         {
             date: "2024",
             title_en: "MOVING FORWARD TOGETHER",
-            description_en: "Continuing to grow with a dedicated team, modern tools, and a renewed vision for the future."
+            title_vn: "TIẾN LÊN CÙNG NHAU",
+            description_en: "Continuing to grow with a dedicated team, modern tools, and a renewed vision for the future.",
+            description_vn: "Tiếp tục phát triển với đội ngũ tận tâm, công cụ hiện đại và tầm nhìn mới cho tương lai."
         }
     ];
 
@@ -95,7 +111,7 @@ export default function AboutHistory({ data }) {
 
                                 {/* Title */}
                                 <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-8 h-8 flex items-end justify-center">
-                                    {item.title_en || item.title}
+                                    {language === 'en' ? (item.title_en || item.title) : (item.title_vn || item.title_en || item.title)}
                                 </h4>
 
                                 {/* Circle Indicator */}
@@ -107,7 +123,7 @@ export default function AboutHistory({ data }) {
 
                                 {/* Description */}
                                 <p className="text-gray-500 text-md leading-relaxed max-w-xs mx-auto">
-                                    {item.description_en || item.description}
+                                    {language === 'en' ? (item.description_en || item.description) : (item.description_vn || item.description_en || item.description)}
                                 </p>
                             </motion.div>
                         ))}

@@ -116,8 +116,22 @@ export default function Currency({ goBack }) {
   const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
   const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Auto-sync code and symbol fields between EN and VI
+    if (name === 'code_en') {
+      setForm({ ...form, code_en: value, code_vi: value });
+    } else if (name === 'code_vi') {
+      setForm({ ...form, code_vi: value, code_en: value });
+    } else if (name === 'symbol_en') {
+      setForm({ ...form, symbol_en: value, symbol_vi: value });
+    } else if (name === 'symbol_vi') {
+      setForm({ ...form, symbol_vi: value, symbol_en: value });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  };
 
   // Save
   const handleSubmit = async () => {
@@ -610,22 +624,6 @@ export default function Currency({ goBack }) {
 
             {/* Form */}
             <div className="p-6 space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {activeLang === "EN" ? "Code" : "Mã"}
-                  <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name={`code_${activeLang.toLowerCase()}`}
-                  value={form[`code_${activeLang.toLowerCase()}`]}
-                  onChange={handleChange}
-                  placeholder={
-                    activeLang === "EN" ? "Type here" : "Nhập tại đây"
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -645,7 +643,9 @@ export default function Currency({ goBack }) {
                       setForm((prev) => ({
                         ...prev,
                         [`name_${activeLang.toLowerCase()}`]: `${name} (${code})`,
-                        [`code_${activeLang.toLowerCase()}`]: code,
+                        // Sync code to both EN and VI
+                        code_en: code,
+                        code_vi: code,
                       }));
                     } else {
                       handleChange(e);
@@ -665,6 +665,23 @@ export default function Currency({ goBack }) {
                     );
                   })}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {activeLang === "EN" ? "Code" : "Mã"}
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name={`code_${activeLang.toLowerCase()}`}
+                  value={form[`code_${activeLang.toLowerCase()}`]}
+                  onChange={handleChange}
+                  placeholder={
+                    activeLang === "EN" ? "Type here" : "Nhập tại đây"
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                />
               </div>
 
               <div>

@@ -79,7 +79,10 @@ export default function HomeBanner({ homePageData }) {
 
     const handleSearch = () => {
         // Navigate to listing page with filters
-        const category = selectedTab === 'For Rent' ? 'Lease' : 'Sale';
+        let category = 'Lease';
+        if (selectedTab === 'For Sale') category = 'Sale';
+        if (selectedTab === 'Home Stay') category = 'Home Stay';
+
         const params = new URLSearchParams({
             type: category,
             ...(filters.propertyId && { propertyId: filters.propertyId }),
@@ -148,7 +151,7 @@ export default function HomeBanner({ homePageData }) {
                             }`}
                         onClick={() => setSelectedTab('For Rent')}
                     >
-                        For Rent
+                        {language === 'en' ? 'For Rent' : 'Cho Thuê'}
                     </button>
                     <button
                         className={`px-8 py-3 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Sale'
@@ -157,7 +160,7 @@ export default function HomeBanner({ homePageData }) {
                             }`}
                         onClick={() => setSelectedTab('For Sale')}
                     >
-                        For Sale
+                        {language === 'en' ? 'For Sale' : 'Bán'}
                     </button>
                     <button
                         className={`px-8 py-3 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'Home Stay'
@@ -166,7 +169,7 @@ export default function HomeBanner({ homePageData }) {
                             }`}
                         onClick={() => setSelectedTab('Home Stay')}
                     >
-                        Home Stay
+                        {language === 'en' ? 'Home Stay' : 'Lưu Trú'}
                     </button>
                 </div>
 
@@ -176,12 +179,12 @@ export default function HomeBanner({ homePageData }) {
                         {/* Looking For (Keyword) */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                Looking For
+                                {language === 'en' ? 'Looking For' : 'Tìm Kiếm'}
                             </label>
                             <input
                                 type="text"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                placeholder="Search keyword"
+                                placeholder={language === 'en' ? 'Search keyword' : 'Từ khóa tìm kiếm'}
                                 value={filters.keyword}
                                 onChange={(e) => handleFilterChange('keyword', e.target.value)}
                             />
@@ -190,14 +193,14 @@ export default function HomeBanner({ homePageData }) {
                         {/* Location (Area/Zone) */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                Location
+                                {language === 'en' ? 'Location' : 'Vị Trí'}
                             </label>
                             <Select
                                 className="custom-selectss"
                                 popupClassName="custom-dropdown"
                                 value={filters.zoneId || undefined}
                                 onChange={(value) => handleFilterChange('zoneId', value || '')}
-                                placeholder="All Cities"
+                                placeholder={language === 'en' ? 'All Cities' : 'Tất Cả Thành Phố'}
                                 style={{ width: '100%' }}
                                 size="large"
                                 allowClear
@@ -217,14 +220,14 @@ export default function HomeBanner({ homePageData }) {
                         {/* Bedrooms */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                Bedrooms
+                                {language === 'en' ? 'Bedrooms' : 'Phòng Ngủ'}
                             </label>
                             <Select
                                 className="custom-selectss"
                                 popupClassName="custom-dropdown"
                                 value={filters.bedrooms || undefined}
                                 onChange={(value) => handleFilterChange('bedrooms', value || '')}
-                                placeholder="Any Bedrooms"
+                                placeholder={language === 'en' ? 'Any Bedrooms' : 'Bất Kỳ'}
                                 style={{ width: '100%' }}
                                 size="large"
                                 allowClear
@@ -239,12 +242,12 @@ export default function HomeBanner({ homePageData }) {
                         {/* Your Budget (Max Price) */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                Your Budget
+                                {language === 'en' ? 'Your Budget' : 'Ngân Sách'}
                             </label>
                             <input
                                 type="number"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                placeholder="Max. Price"
+                                placeholder={language === 'en' ? 'Max. Price' : 'Giá Tối Đa'}
                                 value={filters.maxPrice}
                                 onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
                             />
@@ -264,7 +267,7 @@ export default function HomeBanner({ homePageData }) {
                                 className="px-8 py-2.5 bg-[#41398B] hover:bg-[#41398be1] text-white font-bold rounded-lg hover:shadow-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all"
                                 onClick={handleSearch}
                             >
-                                Search
+                                {language === 'en' ? 'Search' : 'Tìm Kiếm'}
                             </button>
                         </div>
                     </div>
@@ -281,14 +284,14 @@ export default function HomeBanner({ homePageData }) {
                                 {/* Bathrooms */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">
-                                        Bathrooms
+                                        {language === 'en' ? 'Bathrooms' : 'Phòng Tắm'}
                                     </label>
                                     <Select
                                         className="custom-selectss"
                                         popupClassName="custom-dropdown"
                                         value={filters.bathrooms || undefined}
                                         onChange={(value) => handleFilterChange('bathrooms', value || '')}
-                                        placeholder="Any"
+                                        placeholder={language === 'en' ? 'Any' : 'Bất Kỳ'}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -302,14 +305,14 @@ export default function HomeBanner({ homePageData }) {
                                 {/* Property Type */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">
-                                        Property Type
+                                        {language === 'en' ? 'Property Type' : 'Loại Bất Động Sản'}
                                     </label>
                                     <Select
                                         className="custom-selectss"
                                         popupClassName="custom-dropdown"
                                         value={filters.propertyType || undefined}
                                         onChange={(value) => handleFilterChange('propertyType', value || '')}
-                                        placeholder="Select Type"
+                                        placeholder={language === 'en' ? 'Select Type' : 'Chọn Loại'}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -329,14 +332,14 @@ export default function HomeBanner({ homePageData }) {
                                 {/* Project / Community */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">
-                                        Project / Community
+                                        {language === 'en' ? 'Project / Community' : 'Dự Án / Cộng Đồng'}
                                     </label>
                                     <Select
                                         className="custom-selectss"
                                         popupClassName="custom-dropdown"
                                         value={filters.projectId || undefined}
                                         onChange={(value) => handleFilterChange('projectId', value || '')}
-                                        placeholder="Select Project"
+                                        placeholder={language === 'en' ? 'Select Project' : 'Chọn Dự Án'}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -356,14 +359,14 @@ export default function HomeBanner({ homePageData }) {
                                 {/* Block Name */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">
-                                        Block Name
+                                        {language === 'en' ? 'Block Name' : 'Tên Khối'}
                                     </label>
                                     <Select
                                         className="custom-selectss"
                                         popupClassName="custom-dropdown"
                                         value={filters.blockId || undefined}
                                         onChange={(value) => handleFilterChange('blockId', value || '')}
-                                        placeholder="Select Block"
+                                        placeholder={language === 'en' ? 'Select Block' : 'Chọn Khối'}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -386,14 +389,14 @@ export default function HomeBanner({ homePageData }) {
                                 {/* Currency */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">
-                                        Currency
+                                        {language === 'en' ? 'Currency' : 'Tiền Tệ'}
                                     </label>
                                     <Select
                                         className="custom-selectss"
                                         popupClassName="custom-dropdown"
                                         value={filters.currency || undefined}
                                         onChange={(value) => handleFilterChange('currency', value || '')}
-                                        placeholder="Select Currency"
+                                        placeholder={language === 'en' ? 'Select Currency' : 'Chọn Tiền Tệ'}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -413,12 +416,12 @@ export default function HomeBanner({ homePageData }) {
                                 {/* Min Price */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">
-                                        Min Price
+                                        {language === 'en' ? 'Min Price' : 'Giá Tối Thiểu'}
                                     </label>
                                     <input
                                         type="number"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                        placeholder="Min"
+                                        placeholder={language === 'en' ? 'Min' : 'Tối Thiểu'}
                                         value={filters.minPrice}
                                         onChange={(e) => handleFilterChange('minPrice', e.target.value)}
                                     />
@@ -427,12 +430,12 @@ export default function HomeBanner({ homePageData }) {
                                 {/* Max Price */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">
-                                        Max Price
+                                        {language === 'en' ? 'Max Price' : 'Giá Tối Đa'}
                                     </label>
                                     <input
                                         type="number"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                        placeholder="Max"
+                                        placeholder={language === 'en' ? 'Max' : 'Tối Đa'}
                                         value={filters.maxPrice}
                                         onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
                                     />

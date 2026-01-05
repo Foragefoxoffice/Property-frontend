@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function HomeFaq({ homePageData }) {
     const navigate = useNavigate();
+    const { language } = useLanguage();
     const [openIndex, setOpenIndex] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
@@ -19,9 +21,15 @@ export default function HomeFaq({ homePageData }) {
     };
 
     // CMS Content with Fallbacks
-    const cardTitle = homePageData?.homeFaqImageTitle_en || 'Get in Touch With Us';
-    const cardDescription = homePageData?.homeFaqImageDescription_en || 'Reach out today for expert real estate advice, personalized support, and a dedicated team ready to guide you every step of the way.';
-    const buttonText = homePageData?.homeFaqImageButtonText_en || 'Schedule a Consultation';
+    const cardTitle = language === 'en'
+        ? (homePageData?.homeFaqImageTitle_en || 'Get in Touch With Us')
+        : (homePageData?.homeFaqImageTitle_vn || 'Liên Hệ Với Chúng Tôi');
+    const cardDescription = language === 'en'
+        ? (homePageData?.homeFaqImageDescription_en || 'Reach out today for expert real estate advice, personalized support, and a dedicated team ready to guide you every step of the way.')
+        : (homePageData?.homeFaqImageDescription_vn || 'Liên hệ ngay hôm nay để được tư vấn bất động sản chuyên nghiệp, hỗ trợ cá nhân hóa và đội ngũ tận tâm sẵn sàng hướng dẫn bạn từng bước.');
+    const buttonText = language === 'en'
+        ? (homePageData?.homeFaqImageButtonText_en || 'Schedule a Consultation')
+        : (homePageData?.homeFaqImageButtonText_vn || 'Đặt Lịch Tư Vấn');
     const buttonLink = homePageData?.homeFaqImageButtonLink || '/contact';
 
     // Resolve image URL: if CMS has value, process it; else use frontend fallback
@@ -29,27 +37,39 @@ export default function HomeFaq({ homePageData }) {
         ? getImageUrl(homePageData.homeFaqBg)
         : '/images/property/property1.jpg';
 
-    const faqSectionSubtitle = homePageData?.homeFaqTitle_en || 'FAQS';
-    const faqSectionTitle = homePageData?.homeFaqDescription_en || 'Ask Us Anything About Home Buying & Selling';
+    const faqSectionSubtitle = language === 'en'
+        ? (homePageData?.homeFaqTitle_en || 'FAQS')
+        : (homePageData?.homeFaqTitle_vn || 'CÂU HỎI THƯỜNG GẶP');
+    const faqSectionTitle = language === 'en'
+        ? (homePageData?.homeFaqDescription_en || 'Ask Us Anything About Home Buying & Selling')
+        : (homePageData?.homeFaqDescription_vn || 'Hỏi Chúng Tôi Bất Cứ Điều Gì Về Mua Bán Nhà');
 
     // Parse FAQs
     // The previous model view showed 'faqs' as an array.
     const faqs = homePageData?.faqs?.length > 0 ? homePageData.faqs : [
         {
             header_en: 'How do I start the home buying process?',
-            content_en: 'Starting the home buying process involves getting pre-approved for a mortgage to understand your budget, finding a real estate agent to guide you, and identifying your needs and preferences for your new home.'
+            header_vn: 'Làm thế nào để bắt đầu quá trình mua nhà?',
+            content_en: 'Starting the home buying process involves getting pre-approved for a mortgage to understand your budget, finding a real estate agent to guide you, and identifying your needs and preferences for your new home.',
+            content_vn: 'Bắt đầu quá trình mua nhà bao gồm việc được phê duyệt trước cho khoản vay thế chấp để hiểu ngân sách của bạn, tìm một đại lý bất động sản để hướng dẫn bạn và xác định nhu cầu và sở thích của bạn cho ngôi nhà mới.'
         },
         {
             header_en: 'What costs are involved in buying a home?',
-            content_en: 'Our approach combines personalized strategies, data-driven insights, and dedicated support to help you reach your financial goals. Each step is crafted to maximize growth, reduce risk, and build lasting financial confidence.'
+            header_vn: 'Chi phí nào liên quan đến việc mua nhà?',
+            content_en: 'Our approach combines personalized strategies, data-driven insights, and dedicated support to help you reach your financial goals. Each step is crafted to maximize growth, reduce risk, and build lasting financial confidence.',
+            content_vn: 'Phương pháp của chúng tôi kết hợp các chiến lược cá nhân hóa, thông tin chi tiết dựa trên dữ liệu và hỗ trợ tận tâm để giúp bạn đạt được mục tiêu tài chính. Mỗi bước được thiết kế để tối đa hóa tăng trưởng, giảm rủi ro và xây dựng sự tự tin tài chính lâu dài.'
         },
         {
             header_en: 'How long does it take to buy a home?',
-            content_en: 'The timeline varies but typically takes 30-45 days from contract to closing. Finding the right home can take weeks or months depending on the market and your specific criteria.'
+            header_vn: 'Mất bao lâu để mua một ngôi nhà?',
+            content_en: 'The timeline varies but typically takes 30-45 days from contract to closing. Finding the right home can take weeks or months depending on the market and your specific criteria.',
+            content_vn: 'Thời gian thay đổi nhưng thường mất 30-45 ngày từ hợp đồng đến kết thúc. Việc tìm ngôi nhà phù hợp có thể mất vài tuần hoặc vài tháng tùy thuộc vào thị trường và tiêu chí cụ thể của bạn.'
         },
         {
             header_en: 'Can I buy a home without a real estate agent?',
-            content_en: 'Yes, you can, but it is not recommended. An agent provides valuable expertise, negotiation skills, and handles the complex paperwork involved in the transaction, often saving you time and money.'
+            header_vn: 'Tôi có thể mua nhà mà không cần đại lý bất động sản không?',
+            content_en: 'Yes, you can, but it is not recommended. An agent provides valuable expertise, negotiation skills, and handles the complex paperwork involved in the transaction, often saving you time and money.',
+            content_vn: 'Có, bạn có thể, nhưng không được khuyến khích. Một đại lý cung cấp chuyên môn có giá trị, kỹ năng đàm phán và xử lý các giấy tờ phức tạp liên quan đến giao dịch, thường tiết kiệm thời gian và tiền bạc của bạn.'
         }
     ];
 
@@ -139,7 +159,7 @@ export default function HomeFaq({ homePageData }) {
                                     onClick={() => toggleAccordion(index)}
                                 >
                                     <span className="text-xl font-medium text-[#1a1a1a] pr-8 group-hover:text-[#41398B] transition-colors duration-300">
-                                        {faq.header_en || faq.header}
+                                        {language === 'en' ? (faq.header_en || faq.header) : (faq.header_vn || faq.header_en || faq.header)}
                                     </span>
                                     <span className={`transform transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-[#41398B]' : 'rotate-0 text-gray-400 group-hover:text-[#41398B]'}`}>
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -152,7 +172,7 @@ export default function HomeFaq({ homePageData }) {
                                         }`}
                                 >
                                     <p className="text-gray-500 leading-relaxed text-lg">
-                                        {faq.content_en || faq.content}
+                                        {language === 'en' ? (faq.content_en || faq.content) : (faq.content_vn || faq.content_en || faq.content)}
                                     </p>
                                 </div>
                             </div>

@@ -43,7 +43,7 @@ export default function HomeAbout({ homePageData }) {
                             }`}
                     >
                         <p className="text-sm font-semibold text-[#a4aeb5] uppercase tracking-wider">
-                            ABOUT US
+                            {language === 'en' ? 'ABOUT US' : 'VỀ CHÚNG TÔI'}
                         </p>
 
                         <h2

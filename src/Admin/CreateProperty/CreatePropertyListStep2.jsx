@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, X, ArrowRight, ArrowLeft, Eye } from "lucide-react";
 import { Select as AntdSelect, Switch } from "antd";
 import { CommonToaster } from "@/Common/CommonToaster";
-import { compressImage, getBase64Size, formatBytes } from "@/utils/imageCompression";
+
 
 /* =========================================================
    💜 SKELETON LOADER (with bg-[#41398b29])
@@ -262,60 +262,19 @@ export default function CreatePropertyListStep2({
       let url;
       let isServerFile = false;
 
-      // ✅ VIDEOS: Always upload to server (supports up to 50MB)
-      if (type === "video") {
-        try {
-          CommonToaster("Uploading video...", "info");
-          const { uploadPropertyMedia } = await import("@/Api/action");
-          const response = await uploadPropertyMedia(file, type);
-          url = response.data.url;
-          isServerFile = true;
-          CommonToaster("Video uploaded successfully!", "success");
-          console.log(`✅ Video uploaded: ${response.data.fileName} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
-        } catch (error) {
-          console.error("Video upload error:", error);
-          CommonToaster("Failed to upload video. Please try again.", "error");
-          continue;
-        }
-      }
-      // ✅ IMAGES: Compress small images to base64, upload large ones
-      else if (type === "image" || type === "floor") {
-        const COMPRESSION_THRESHOLD = 2 * 1024 * 1024; // 2MB
-
-        // If image is larger than 2MB, upload to server
-        if (file.size > COMPRESSION_THRESHOLD) {
-          try {
-            CommonToaster("Uploading image...", "info");
-            const { uploadPropertyMedia } = await import("@/Api/action");
-            const response = await uploadPropertyMedia(file, type);
-            url = response.data.url;
-            isServerFile = true;
-            CommonToaster("Image uploaded successfully!", "success");
-            console.log(`✅ Image uploaded: ${response.data.fileName} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
-          } catch (error) {
-            console.error("Image upload error:", error);
-            CommonToaster("Failed to upload image. Please try again.", "error");
-            continue;
-          }
-        }
-        // If image is small, compress to base64
-        else {
-          try {
-            console.log(`Original file size: ${formatBytes(file.size)}`);
-            url = await compressImage(file, 400); // Compress to max 400KB
-            const compressedSize = getBase64Size(url);
-            console.log(`Compressed size: ${formatBytes(compressedSize)}`);
-
-            if (compressedSize > 500 * 1024) { // 500KB limit after compression
-              CommonToaster(`Image still too large after compression. Please use a smaller image.`, "error");
-              continue;
-            }
-          } catch (error) {
-            console.error("Compression error:", error);
-            CommonToaster("Failed to compress image", "error");
-            continue;
-          }
-        }
+      // ✅ ALL MEDIA TYPES: Always upload to server
+      try {
+        CommonToaster(`Uploading ${type === "floor" ? "floor plan" : type}...`, "info");
+        const { uploadPropertyMedia } = await import("@/Api/action");
+        const response = await uploadPropertyMedia(file, type);
+        url = response.data.url;
+        isServerFile = true;
+        CommonToaster(`${type === "floor" ? "Floor plan" : type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`, "success");
+        console.log(`✅ ${type} uploaded: ${response.data.fileName} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+      } catch (error) {
+        console.error(`${type} upload error:`, error);
+        CommonToaster(`Failed to upload ${type}. Please try again.`, "error");
+        continue;
       }
 
       processedFiles.push({ file, url, isServerFile });

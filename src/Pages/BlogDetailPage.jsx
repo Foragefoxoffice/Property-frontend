@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getBlogBySlug } from '../Api/action';
-import Header from '../components/Header';
 import BlogSidebar from '../components/Blog/BlogSidebar';
 import { Twitter, Facebook, Linkedin, Link as LinkIcon } from 'lucide-react';
 import { useLanguage } from '../Language/LanguageContext';

@@ -64,6 +64,8 @@ import BlogDetailPage from "./Pages/BlogDetailPage.jsx";
 import BlogListPage from "./AdminCms/BlogCms/BlogListPage.jsx";
 import BlogCmsForm from "./AdminCms/BlogCms/BlogCmsForm.jsx";
 import CategoryListPage from "./AdminCms/CategoryCms/CategoryListPage.jsx";
+import HeaderCmsForm from "./AdminCms/HeaderCms/HeaderCmsForm.jsx";
+import FooterCmsForm from "./AdminCms/FooterCms/FooterCmsForm.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -105,7 +107,7 @@ createRoot(document.getElementById("root")).render(
           />
           <Route
             path="homestay"
-            element={<PropertyManager propertyTypeFilter="Home Stay" />}
+            element={<PropertyManager propertyTypeFilter="HomeStay" />}
           />
 
           {/* CREATE / EDIT PROPERTY */}
@@ -119,7 +121,7 @@ createRoot(document.getElementById("root")).render(
           />
           <Route
             path="homestay/create"
-            element={<CreatePropertyPage defaultTransactionType="Home Stay" />}
+            element={<CreatePropertyPage defaultTransactionType="HomeStay" />}
           />
 
           <Route
@@ -139,7 +141,7 @@ createRoot(document.getElementById("root")).render(
             element={
               <CreatePropertyPage
                 isEditMode
-                defaultTransactionType="Home Stay"
+                defaultTransactionType="HomeStay"
               />
             }
           />
@@ -195,7 +197,8 @@ createRoot(document.getElementById("root")).render(
           <Route path="cms/blogs/edit/:id" element={<BlogCmsForm />} />
 
           <Route path="cms/categories" element={<CategoryListPage />} />
-
+          <Route path="cms/header" element={<HeaderCmsForm />} />
+          <Route path="cms/footer" element={<FooterCmsForm />} />
           <Route path="cms/:section" element={<CMSPlaceholder />} />
         </Route>
 
@@ -215,6 +218,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/blogs" element={<BlogPage />} />
           <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+
         </Route>
 
         {/* CMS Dashboard */}

@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutFindProperty({ data }) {
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
+    const { language } = useLanguage();
 
     // Helper to get partial or full URL (reused consistent logic)
     const getImageUrl = (imagePath) => {
@@ -16,8 +18,12 @@ export default function AboutFindProperty({ data }) {
     };
 
     // CMS Content with Fallbacks
-    const title = data?.aboutFindTitle_en || 'Find Your Property,\nStart Your Homeownership Journey Today';
-    const description = data?.aboutFindDescription_en || 'Connect with your Designer in minutes';
+    const title = language === 'en'
+        ? (data?.aboutFindTitle_en || 'Find Your Property,\nStart Your Homeownership Journey Today')
+        : (data?.aboutFindTitle_vn || 'Tìm Bất Động Sản Của Bạn,\nBắt Đầu Hành Trình Sở Hữu Nhà Ngay Hôm Nay');
+    const description = language === 'en'
+        ? (data?.aboutFindDescription_en || 'Connect with your Designer in minutes')
+        : (data?.aboutFindDescription_vn || 'Kết nối với Nhà thiết kế của bạn trong vài phút');
     const bgImage = data?.aboutFindBg
         ? getImageUrl(data.aboutFindBg)
         : '/images/property/home-banner.jpg'

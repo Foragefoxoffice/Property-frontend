@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Eye, X, Plus, ArrowRight, ArrowLeft } from "lucide-react";
 import { Select as AntdSelect, Switch } from "antd";
+import { uploadPropertyMedia } from "../../Api/action";
+import { CommonToaster } from "../../Common/CommonToaster";
 
 export default function CreatePropertyListStep4SEO({
   onNext,
@@ -119,23 +121,34 @@ export default function CreatePropertyListStep4SEO({
     onChange({ seoInformation: updated });
   };
 
+
+
   /* ---------------------------------------------
        ✅ OG IMAGE UPLOAD + DELETE
     --------------------------------------------- */
-  const handleOgUpload = (e) => {
+  const handleOgUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
+    try {
+      CommonToaster("Uploading OG image...", "info");
+      const response = await uploadPropertyMedia(file, "image");
+      const url = response.data.url;
+
       const updated = {
         ...seo,
-        ogImages: [...seo.ogImages, reader.result],
+        ogImages: [...seo.ogImages, url],
       };
       setSeo(updated);
       onChange({ seoInformation: updated });
-    };
-    reader.readAsDataURL(file);
+      CommonToaster("OG Image uploaded successfully!", "success");
+    } catch (error) {
+      console.error("OG Image upload error:", error);
+      CommonToaster("Failed to upload OG Image", "error");
+    }
+
+    // Reset input
+    e.target.value = '';
   };
 
   const removeOgImage = (index) => {

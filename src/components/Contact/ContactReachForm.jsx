@@ -2,23 +2,50 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Linkedin, Youtube, HelpCircle } from "lucide-react";
 import * as LucideIcons from 'lucide-react';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function ContactReachForm({ data }) {
+    const { language } = useLanguage();
+
     // CMS Data extraction with fallbacks
-    const reachOutTitle = data?.contactReachOutTitle_en || "Reach Out To Us";
-    const reachOutDescription = data?.contactReachOutDescription_en || "We're here to assist with any questions, concerns, or inquiries—contact us today!";
-    const addressTitle = data?.contactReachOutAddressHead_en || "101 E 129th St, East Chicago, 2nd Floor, NY";
-    const address = data?.contactReachOutAddressContent_en || "101 E 129th St, East Chicago, 2nd Floor, NY";
-    const phoneTitle = data?.contactReachOutNumberHead_en || "1-555-678-8888";
-    const phone = data?.contactReachOutNumberContent || "1-555-678-8888";
-    const emailTitle = data?.contactReachOutEmailHead_en || "themesflat@gmail.com";
+    const reachOutTitle = language === 'en'
+        ? (data?.contactReachOutTitle_en || "Reach Out To Us")
+        : (data?.contactReachOutTitle_vn || "Liên Hệ Với Chúng Tôi");
+    const reachOutDescription = language === 'en'
+        ? (data?.contactReachOutDescription_en || "We're here to assist with any questions, concerns, or inquiries—contact us today!")
+        : (data?.contactReachOutDescription_vn || "Chúng tôi ở đây để hỗ trợ với bất kỳ câu hỏi, thắc mắc hoặc yêu cầu nào—liên hệ với chúng tôi ngay hôm nay!");
+
+    const addressTitle = language === 'en'
+        ? (data?.contactReachOutAddressHead_en || "101 E 129th St, East Chicago, 2nd Floor, NY")
+        : (data?.contactReachOutAddressHead_vn || "101 E 129th St, East Chicago, Tầng 2, NY");
+    const address = language === 'en'
+        ? (data?.contactReachOutAddressContent_en || "101 E 129th St, East Chicago, 2nd Floor, NY")
+        : (data?.contactReachOutAddressContent_vn || "101 E 129th St, East Chicago, Tầng 2, NY");
+
+    const phoneTitle = language === 'en'
+        ? (data?.contactReachOutNumberHead_en || "1-555-678-8888")
+        : (data?.contactReachOutNumberHead_vn || "1-555-678-8888");
+
+    const phone = data?.contactReachOutNumberContent || "1-555-678-8888"; // Usually generic/numeric
+
+    const emailTitle = language === 'en'
+        ? (data?.contactReachOutEmailHead_en || "themesflat@gmail.com")
+        : (data?.contactReachOutEmailHead_vn || "themesflat@gmail.com");
     const email = data?.contactReachOutEmailContent || "themesflat@gmail.com";
 
-    const formTitle = data?.contactReachOutGetinTitle_en || "Get In Touch";
-    const formDescription = data?.contactReachOutGetinDescription_en || "We'd love to hear from you! If you have any questions";
-    const formButtonText = data?.contactReachOutGetinButtonText_en || "Send Message";
+    const formTitle = language === 'en'
+        ? (data?.contactReachOutGetinTitle_en || "Get In Touch")
+        : (data?.contactReachOutGetinTitle_vn || "Liên Hệ Ngay");
+    const formDescription = language === 'en'
+        ? (data?.contactReachOutGetinDescription_en || "We'd love to hear from you! If you have any questions")
+        : (data?.contactReachOutGetinDescription_vn || "Chúng tôi rất muốn nghe từ bạn! Nếu bạn có bất kỳ câu hỏi nào");
+    const formButtonText = language === 'en'
+        ? (data?.contactReachOutGetinButtonText_en || "Send Message")
+        : (data?.contactReachOutGetinButtonText_vn || "Gửi Tin Nhắn");
 
-    const followUsTitle = data?.contactReachOutFollowTitle_en || "Send Message";
+    const followUsTitle = language === 'en'
+        ? (data?.contactReachOutFollowTitle_en || "Follow Us")
+        : (data?.contactReachOutFollowTitle_vn || "Theo Dõi Chúng Tôi");
 
     // Social Links from CMS
     const socialLinks = data?.contactReachOutSocialIcons?.map(item => {
@@ -125,21 +152,25 @@ export default function ContactReachForm({ data }) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* First Name */}
                                 <div className="space-y-2">
-                                    <label className="text-lg font-semibold text-black" htmlFor="firstName">First Name</label>
+                                    <label className="text-lg font-semibold text-black" htmlFor="firstName">
+                                        {language === 'en' ? "First Name" : "Tên"}
+                                    </label>
                                     <input
                                         type="text"
                                         id="firstName"
-                                        placeholder="First Name"
+                                        placeholder={language === 'en' ? "First Name" : "Tên"}
                                         className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light"
                                     />
                                 </div>
                                 {/* Last Name */}
                                 <div className="space-y-2">
-                                    <label className="text-lg font-semibold text-black" htmlFor="lastName">Last Name</label>
+                                    <label className="text-lg font-semibold text-black" htmlFor="lastName">
+                                        {language === 'en' ? "Last Name" : "Họ"}
+                                    </label>
                                     <input
                                         type="text"
                                         id="lastName"
-                                        placeholder="Last Name"
+                                        placeholder={language === 'en' ? "Last Name" : "Họ"}
                                         className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light"
                                     />
                                 </div>
@@ -152,17 +183,19 @@ export default function ContactReachForm({ data }) {
                                     <input
                                         type="email"
                                         id="email"
-                                        placeholder="Enter your email address"
+                                        placeholder={language === 'en' ? "Enter your email address" : "Nhập địa chỉ email của bạn"}
                                         className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light"
                                     />
                                 </div>
                                 {/* Phone Number */}
                                 <div className="space-y-2">
-                                    <label className="text-lg font-semibold text-black" htmlFor="phone">Phone Number</label>
+                                    <label className="text-lg font-semibold text-black" htmlFor="phone">
+                                        {language === 'en' ? "Phone Number" : "Số Điện Thoại"}
+                                    </label>
                                     <input
                                         type="tel"
                                         id="phone"
-                                        placeholder="Enter your phone number"
+                                        placeholder={language === 'en' ? "Enter your phone number" : "Nhập số điện thoại của bạn"}
                                         className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light"
                                     />
                                 </div>
@@ -170,11 +203,13 @@ export default function ContactReachForm({ data }) {
 
                             {/* Message */}
                             <div className="space-y-2">
-                                <label className="text-lg font-semibold text-black" htmlFor="message">Message</label>
+                                <label className="text-lg font-semibold text-black" htmlFor="message">
+                                    {language === 'en' ? "Message" : "Tin Nhắn"}
+                                </label>
                                 <textarea
                                     id="message"
                                     rows="5"
-                                    placeholder="Your Message"
+                                    placeholder={language === 'en' ? "Your Message" : "Tin nhắn của bạn"}
                                     className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light resize-none"
                                 ></textarea>
                             </div>

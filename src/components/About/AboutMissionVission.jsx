@@ -1,16 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Crown, Target } from 'lucide-react';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutMissionVission({ data }) {
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
+    const { language } = useLanguage();
 
     // CMS Data with Fallbacks
-    const missionTitle = data?.aboutMissionTitle_en || "To simplify the real estate journey by connecting people with the right properties through trust, transparency, and technology.";
-    const missionDesc = data?.aboutMissionDescription_en || "We are committed to delivering personalized experiences, whether you're buying, selling, or renting. We embrace new technologies and market trends to deliver smarter, faster, and more efficient property solutions.";
+    const missionTitle = language === 'en'
+        ? (data?.aboutMissionTitle_en || "To simplify the real estate journey by connecting people with the right properties through trust, transparency, and technology.")
+        : (data?.aboutMissionTitle_vn || "Đơn giản hóa hành trình bất động sản bằng cách kết nối mọi người với các bất động sản phù hợp thông qua sự tin cậy, minh bạch và công nghệ.");
+    const missionDesc = language === 'en'
+        ? (data?.aboutMissionDescription_en || "We are committed to delivering personalized experiences, whether you're buying, selling, or renting. We embrace new technologies and market trends to deliver smarter, faster, and more efficient property solutions.")
+        : (data?.aboutMissionDescription_vn || "Chúng tôi cam kết mang đến trải nghiệm cá nhân hóa, cho dù bạn đang mua, bán hay cho thuê. Chúng tôi áp dụng công nghệ mới và xu hướng thị trường để cung cấp các giải pháp bất động sản thông minh hơn, nhanh hơn và hiệu quả hơn.");
 
-    const visionTitle = data?.aboutVisionTitle_en || "To become the most trusted real estate partner by redefining how people discover, evaluate, and engage with properties.";
-    const visionDesc = data?.aboutVisionDescription_en || "We envision a future where every individual can find their ideal home or investment with confidence, supported by innovation, integrity, and a deep understanding of market needs.";
+    const visionTitle = language === 'en'
+        ? (data?.aboutVisionTitle_en || "To become the most trusted real estate partner by redefining how people discover, evaluate, and engage with properties.")
+        : (data?.aboutVisionTitle_vn || "Trở thành đối tác bất động sản đáng tin cậy nhất bằng cách định nghĩa lại cách mọi người khám phá, đánh giá và tương tác với bất động sản.");
+    const visionDesc = language === 'en'
+        ? (data?.aboutVisionDescription_en || "We envision a future where every individual can find their ideal home or investment with confidence, supported by innovation, integrity, and a deep understanding of market needs.")
+        : (data?.aboutVisionDescription_vn || "Chúng tôi hình dung một tương lai nơi mọi cá nhân có thể tìm thấy ngôi nhà hoặc khoản đầu tư lý tưởng của họ với sự tự tin, được hỗ trợ bởi sự đổi mới, chính trực và hiểu biết sâu sắc về nhu cầu thị trường.");
 
     useEffect(() => {
         const observer = new IntersectionObserver(

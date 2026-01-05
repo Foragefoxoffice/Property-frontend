@@ -1,13 +1,19 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutOverview({ data }) {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const { language } = useLanguage();
 
     // CMS Data with Fallbacks
-    const title = data?.aboutOverviewTitle_en || "Your Reliable Partner In Real Estate Success";
-    const description = data?.aboutOverviewDescription_en || ""; // Optional description if needed, though UI shows mainly title
+    const title = language === 'en'
+        ? (data?.aboutOverviewTitle_en || "Your Reliable Partner In Real Estate Success")
+        : (data?.aboutOverviewTitle_vn || "Đối Tác Đáng Tin Cậy Trong Thành Công Bất Động Sản");
+    const description = language === 'en'
+        ? (data?.aboutOverviewDescription_en || "")
+        : (data?.aboutOverviewDescription_vn || ""); // Optional description if needed, though UI shows mainly title
 
     // Image Handling
     const getImageUrl = (imagePath) => {

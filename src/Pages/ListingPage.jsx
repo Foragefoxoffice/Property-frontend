@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     getListingProperties,
     getAllProperties,
@@ -12,7 +12,14 @@ import { Select, Skeleton } from 'antd';
 
 export default function ListingPage() {
     const navigate = useNavigate();
-    const [selectedCategory, setSelectedCategory] = useState('Lease');
+    const [searchParams] = useSearchParams();
+
+    // Initialize category from URL or default to 'Lease'
+    const [selectedCategory, setSelectedCategory] = useState(() => {
+        const type = searchParams.get('type');
+        return (type === 'Lease' || type === 'Sale' || type === 'Home Stay') ? type : 'Lease';
+    });
+
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -29,23 +36,55 @@ export default function ListingPage() {
 
     // Comprehensive filters matching dashboard
     const [filters, setFilters] = useState({
-        propertyId: '',
-        keyword: '',
-        projectId: '',
-        zoneId: '',
-        blockId: '',
-        propertyType: '',
-        bedrooms: '',
-        bathrooms: '',
-        currency: '',
-        minPrice: '',
-        maxPrice: ''
+        propertyId: searchParams.get('propertyId') || '',
+        keyword: searchParams.get('keyword') || '',
+        projectId: searchParams.get('projectId') || '',
+        zoneId: searchParams.get('zoneId') || '',
+        blockId: searchParams.get('blockId') || '',
+        propertyType: searchParams.get('propertyType') || '',
+        bedrooms: searchParams.get('bedrooms') || '',
+        bathrooms: searchParams.get('bathrooms') || '',
+        currency: searchParams.get('currency') || '',
+        minPrice: searchParams.get('minPrice') || '',
+        maxPrice: searchParams.get('maxPrice') || ''
     });
     const [sortBy, setSortBy] = useState('default');
     const observer = useRef();
 
     // ⚡ Simple cache to avoid redundant API calls
     const cacheRef = useRef({});
+
+    // Sync state with URL params when they change (e.g. Back button)
+    useEffect(() => {
+        const type = searchParams.get('type');
+        const newFilters = {
+            propertyId: searchParams.get('propertyId') || '',
+            keyword: searchParams.get('keyword') || '',
+            projectId: searchParams.get('projectId') || '',
+            zoneId: searchParams.get('zoneId') || '',
+            blockId: searchParams.get('blockId') || '',
+            propertyType: searchParams.get('propertyType') || '',
+            bedrooms: searchParams.get('bedrooms') || '',
+            bathrooms: searchParams.get('bathrooms') || '',
+            currency: searchParams.get('currency') || '',
+            minPrice: searchParams.get('minPrice') || '',
+            maxPrice: searchParams.get('maxPrice') || ''
+        };
+
+        const typeChanged = type && ['Lease', 'Sale', 'Home Stay'].includes(type) && type !== selectedCategory;
+        const filtersChanged = JSON.stringify(newFilters) !== JSON.stringify(filters);
+
+        if (typeChanged) {
+            setSelectedCategory(type);
+            if (filtersChanged) setFilters(newFilters);
+        } else if (filtersChanged) {
+            setFilters(newFilters);
+            setProperties([]);
+            setPage(1);
+            setHasMore(true);
+            fetchProperties(1, true, newFilters);
+        }
+    }, [searchParams]);
 
     // Load dropdown data on mount
     useEffect(() => {
@@ -108,7 +147,7 @@ export default function ListingPage() {
         }
     }, [page]);
 
-    const fetchProperties = async (currentPage, isNewSearch = false) => {
+    const fetchProperties = async (currentPage, isNewSearch = false, filterOverrides = null) => {
         if (isNewSearch) {
             setLoading(true);
         } else {
@@ -123,18 +162,20 @@ export default function ListingPage() {
                 sortBy: sortBy
             };
 
+            const activeFilters = filterOverrides || filters;
+
             // Add comprehensive filters
-            if (filters.propertyId) params.propertyId = filters.propertyId;
-            if (filters.keyword) params.keyword = filters.keyword;
-            if (filters.projectId) params.projectId = filters.projectId;
-            if (filters.zoneId) params.zoneId = filters.zoneId;
-            if (filters.blockId) params.blockId = filters.blockId;
-            if (filters.propertyType) params.propertyType = filters.propertyType;
-            if (filters.bedrooms) params.bedrooms = filters.bedrooms;
-            if (filters.bathrooms) params.bathrooms = filters.bathrooms;
-            if (filters.currency) params.currency = filters.currency;
-            if (filters.minPrice) params.minPrice = filters.minPrice;
-            if (filters.maxPrice) params.maxPrice = filters.maxPrice;
+            if (activeFilters.propertyId) params.propertyId = activeFilters.propertyId;
+            if (activeFilters.keyword) params.keyword = activeFilters.keyword;
+            if (activeFilters.projectId) params.projectId = activeFilters.projectId;
+            if (activeFilters.zoneId) params.zoneId = activeFilters.zoneId;
+            if (activeFilters.blockId) params.blockId = activeFilters.blockId;
+            if (activeFilters.propertyType) params.propertyType = activeFilters.propertyType;
+            if (activeFilters.bedrooms) params.bedrooms = activeFilters.bedrooms;
+            if (activeFilters.bathrooms) params.bathrooms = activeFilters.bathrooms;
+            if (activeFilters.currency) params.currency = activeFilters.currency;
+            if (activeFilters.minPrice) params.minPrice = activeFilters.minPrice;
+            if (activeFilters.maxPrice) params.maxPrice = activeFilters.maxPrice;
 
             // Create cache key from params
             const cacheKey = JSON.stringify(params);
@@ -215,7 +256,7 @@ export default function ListingPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff]">
             {/* Modern Header */}
-            <div className="bg-white/80 backdrop-blur-xl border-b border-purple-100/50 sticky top-0 z-40 shadow-sm">
+            <div className="">
                 <div className="max-w-7xl mx-auto px-6 py-5">
                     <div className="flex items-center gap-3 text-sm mb-4">
                         <a href="/" className="text-gray-500 hover:text-[#41398B] font-medium transition-colors">Home</a>

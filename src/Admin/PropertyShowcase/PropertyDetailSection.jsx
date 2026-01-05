@@ -1,5 +1,3 @@
-// PropertyDetailsSection.jsx (FINAL FIXED VERSION — UI UNCHANGED, LOGIC SAFE)
-
 import React, { useState, useRef } from "react";
 import {
   Phone,
@@ -13,9 +11,43 @@ import {
   Armchair,
   ArrowLeft,
   ArrowRight,
+  X,
+  PlayIcon, // Added X
 } from "lucide-react";
 
 import { safeVal, safeArray, formatNumber } from "@/utils/display";
+
+/* -------------------------------------------------------
+   MEDIA PREVIEW MODAL
+------------------------------------------------------- */
+const MediaPreviewModal = ({ url, type, onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div className="relative max-w-3xl w-full mx-4 rounded-2xl shadow-xl">
+        <button
+          onClick={onClose}
+          className="absolute top-3 z-10 right-3 bg-[#41398B]/90 hover:bg-[#41398B] text-white p-2 rounded-full shadow"
+        >
+          <X className="cursor-pointer" size={20} />
+        </button>
+        {type === "video" ? (
+          <video
+            src={url}
+            controls
+            autoPlay
+            className="w-full h-[70vh] object-contain rounded-lg bg-black"
+          />
+        ) : (
+          <img
+            src={url}
+            alt="Preview"
+            className="w-full max-h-[80vh] object-contain rounded-lg bg-[#F8F7FC]"
+          />
+        )}
+      </div>
+    </div>
+  );
+};
 
 /* -------------------------------------------------------
    SLIDER (kept same UI — only added safety)
@@ -38,7 +70,10 @@ function SimpleSlider({ items, type = "image" }) {
             <source src={safeItems[index]} type="video/mp4" />
           </video>
         ) : (
-          <img src={safeItems[index]} className="w-full h-[400px] object-cover rounded-lg" />
+          <img
+            src={safeItems[index]}
+            className="w-full h-[400px] object-cover rounded-lg"
+          />
         )}
       </div>
 
@@ -74,6 +109,8 @@ export default function PropertyDetailsSection({ property }) {
     Video: useRef(null),
     "Floor Plans": useRef(null),
   };
+
+  const [previewUrl, setPreviewUrl] = useState(null); // Preview state
 
   const scrollTo = (name) => {
     sectionRefs[name]?.current?.scrollIntoView({
@@ -336,15 +373,44 @@ export default function PropertyDetailsSection({ property }) {
           </section>
 
           {/* -------------------------------------------------------
-             VIDEO (UI preserved)
+             VIDEO (Thumbnails + Popup)
           ------------------------------------------------------- */}
-          {show(visVideo.videoVisibility) && (
+          {show(visVideo.videoVisibility) && videos.length > 0 && (
             <section
               ref={sectionRefs["Video"]}
               className="bg-white p-6 rounded-2xl mb-16"
             >
               <h2 className="text-xl font-semibold mb-5">Video</h2>
-              <SimpleSlider items={videos} type="video" />
+
+              <div className="grid sm:grid-cols-2 gap-5">
+                {videos.map((url, i) => (
+                  <div
+                    key={i}
+                    className="relative group rounded-2xl overflow-hidden bg-white transition h-64"
+                  >
+                    {/* Fake Thumbnail (muted video) */}
+                    <video
+                      src={url}
+                      muted
+                      playsInline
+                      className="w-full h-full object-contain bg-black/5"
+                    />
+
+                    {/* Overlay + Eye */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/0 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <button
+                        onClick={() => setPreviewUrl(url)}
+                        className="p-3 bg-[#41398B] rounded-full shadow hover:scale-110 transition"
+                      >
+                        <PlayIcon
+                          className="text-white cursor-pointer"
+                          size={20}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
           )}
 
@@ -394,6 +460,15 @@ export default function PropertyDetailsSection({ property }) {
           </button>
         </div>
       </div>
+
+      {/* Modal for Video Preview */}
+      {previewUrl && (
+        <MediaPreviewModal
+          url={previewUrl}
+          type="video"
+          onClose={() => setPreviewUrl(null)}
+        />
+      )}
     </div>
   );
 }

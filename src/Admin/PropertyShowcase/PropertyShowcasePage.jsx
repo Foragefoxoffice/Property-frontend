@@ -4,6 +4,7 @@ import { getSingleListingByPropertyID } from "@/Api/action";
 import { useParams } from "react-router-dom";
 import PropertyHome from "./PropertyHome";
 import PropertyDetailsSection from "./PropertyDetailSection";
+import Header from "../Header/Header";
 
 export default function PropertyShowcasePage() {
   const { id } = useParams(); // id is the property id in URL
@@ -80,6 +81,7 @@ export default function PropertyShowcasePage() {
   // Render page with property data
   return (
     <div className="fade-in">
+      <Header />
       <PropertyHome property={property} />
       <PropertyDetailsSection property={property} />
     </div>

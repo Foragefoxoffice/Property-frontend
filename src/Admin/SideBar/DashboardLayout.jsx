@@ -20,7 +20,7 @@ const DashboardLayout = () => {
     return (
         <>
             <Header />
-            <div className="flex h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD]">
+            <div className="flex h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD] pt-4">
 
                 {/* SIDEBAR */}
                 <div className="w-[280px] flex flex-col items-center py-6 h-full overflow-y-auto scrollbar-hide">

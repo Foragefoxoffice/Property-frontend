@@ -472,7 +472,7 @@ export default function CreatePropertyPage({
       ================================================= */
       financialDetails: {
         financialDetailsCurrency:
-          typeof n.currency === "object" ? n.currency.symbol : n.currency,
+          typeof n.currency === "object" ? n.currency.code : n.currency,
 
         financialDetailsPrice: num(n.price),
 
@@ -680,6 +680,7 @@ export default function CreatePropertyPage({
             initialData={propertyData}
             defaultTransactionType={defaultTransactionType}
             dropdowns={dropdowns}
+            isEditMode={isEditMode}
           />
         );
 
@@ -747,6 +748,11 @@ export default function CreatePropertyPage({
       RENDER PAGE
   ===================================================================================== */
 
+
+  if (isEditMode && loadingSingle) {
+    return <SkeletonLoader />;
+  }
+
   return (
     <Steps
       steps={steps}
@@ -760,3 +766,42 @@ export default function CreatePropertyPage({
     </Steps>
   );
 }
+
+/* ✅ Skeleton Loader Component */
+const SkeletonLoader = () => (
+  <div className="min-h-screen bg-white rounded-2xl shadow-sm border border-gray-100 p-10 animate-pulse">
+    <div className="h-8 bg-[#41398b29] rounded w-64 mb-8"></div> {/* Page Title Placeholder */}
+
+    {/* Steps Placeholder */}
+    <div className="flex gap-4 mb-8">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex flex-col gap-2 w-full">
+          <div className="h-1 bg-[#41398b29] rounded-full mb-2"></div>
+          <div className="h-4 bg-[#41398b29] rounded w-3/4"></div>
+        </div>
+      ))}
+    </div>
+
+    <div className="grid grid-cols-3 gap-10">
+      {/* Left Column (Inputs) */}
+      <div className="col-span-2 space-y-8">
+        <div className="h-6 bg-[#41398b29] rounded w-40 mb-4"></div>
+        <div className="grid grid-cols-2 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex flex-col gap-2">
+              <div className="h-4 bg-[#41398b29] rounded w-24"></div>
+              <div className="h-12 bg-[#41398b29] rounded-lg"></div>
+            </div>
+          ))}
+        </div>
+        <div className="h-40 bg-[#41398b29] rounded-lg mt-6"></div>
+      </div>
+
+      {/* Right Column (Map/Status/Etc) */}
+      <div className="col-span-1 space-y-6">
+        <div className="h-64 bg-[#41398b29] rounded-2xl"></div>
+        <div className="h-32 bg-[#41398b29] rounded-xl"></div>
+      </div>
+    </div>
+  </div>
+);

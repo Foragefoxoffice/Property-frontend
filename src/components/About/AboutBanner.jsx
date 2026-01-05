@@ -1,7 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutBanner({ data }) {
+    const { language } = useLanguage();
+
     // Helper to get partial or full URL
     const getImageUrl = (imagePath) => {
         if (!imagePath) return null;
@@ -13,7 +16,9 @@ export default function AboutBanner({ data }) {
         return `${serverURL}${imagePath}`;
     };
 
-    const title = data?.aboutBannerTitle_en || 'About Us';
+    const title = language === 'en'
+        ? (data?.aboutBannerTitle_en || 'About Us')
+        : (data?.aboutBannerTitle_vn || 'Về Chúng Tôi');
     const bgImage = data?.aboutBannerBg ? getImageUrl(data.aboutBannerBg) : null;
     // Fallback image usage if needed, but styling handles null gracefully or use a placeholder
     const backgroundStyle = bgImage ? { backgroundImage: `url(${bgImage})` } : { backgroundColor: '#1a1a1a' };
@@ -35,7 +40,7 @@ export default function AboutBanner({ data }) {
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-white/80 text-sm md:text-base animate-slideUpFade animation-delay-200">
                     <Link to="/home" className="hover:text-white transition-colors">
-                        Home
+                        {language === 'en' ? 'Home' : 'Trang Chủ'}
                     </Link>
                     <span>&gt;</span>
                     <span className="text-white">{title}</span>

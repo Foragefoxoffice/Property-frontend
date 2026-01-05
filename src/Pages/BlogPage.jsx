@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getBlogs } from '../Api/action';
 import { Link, useLocation } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import BlogBanner from '../components/Blog/BlogBanner';
 import BlogSidebar from '../components/Blog/BlogSidebar';
 import { useLanguage } from '../Language/LanguageContext';
@@ -50,7 +48,7 @@ export default function BlogPage() {
 
     return (
         <div className="font-['Manrope'] bg-gray-50 min-h-screen">
-          
+
 
             <BlogBanner
                 title={language === 'vi' ? 'Tin tức & Bài viết' : 'News & Articles'}
@@ -120,7 +118,7 @@ export default function BlogPage() {
                     </div>
                 </div>
             </div>
-       
+
         </div>
     );
 }

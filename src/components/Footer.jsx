@@ -1,81 +1,215 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+import { useLanguage } from '../Language/LanguageContext';
+import { getFooter } from '../Api/action';
+
+const staticTranslations = {
+    propertyForSale: {
+        en: "Property For Sale",
+        vi: "Bất động sản bán"
+    },
+    propertyForLease: {
+        en: "Property For Lease",
+        vi: "Bất động sản cho thuê"
+    },
+    propertyForHomeStay: {
+        en: "Property For Home Stay",
+        vi: "Homestay"
+    },
+    allProperties: {
+        en: "All Properties",
+        vi: "Tất cả bất động sản"
+    },
+    aboutUs: {
+        en: "About Us",
+        vi: "Về chúng tôi"
+    },
+    contactUs: {
+        en: "Contact Us",
+        vi: "Liên hệ"
+    },
+    ourTeam: {
+        en: "Our Team",
+        vi: "Đội ngũ của chúng tôi"
+    },
+    latestNews: {
+        en: "Latest News",
+        vi: "Tin tức mới nhất"
+    },
+    emailPlaceholder: {
+        en: "E-mail",
+        vi: "Email"
+    },
+    termsOfService: {
+        en: "Terms of Service",
+        vi: "Điều khoản dịch vụ"
+    },
+    privacyPolicy: {
+        en: "Privacy Policy",
+        vi: "Chính sách bảo mật"
+    },
+    allRightsReserved: {
+        en: "All Rights Reserved.",
+        vi: "Đã đăng ký bản quyền."
+    }
+};
 
 export default function Footer() {
+    const { language } = useLanguage();
+    const [footerData, setFooterData] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await getFooter();
+                if (response.data && response.data.data) {
+                    setFooterData(response.data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch footer data", error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // CMS language mapping: frontend 'vi' -> backend 'vn'
+    const cmsLang = language === 'vi' ? 'vn' : 'en';
+
+    const t = (key) => {
+        if (!footerData) return '';
+        return footerData[`${key}_${cmsLang}`] || footerData[`${key}_en`] || '';
+    };
+
+    const st = (key) => {
+        return staticTranslations[key][language] || staticTranslations[key]['en'];
+    };
+
+    const renderIcon = (iconName) => {
+        const Icon = LucideIcons[iconName];
+        return Icon ? <Icon size={20} /> : null;
+    };
+
+    const baseURL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/v1', '') : '';
+
     return (
-        <footer className="bg-gray-900 text-white font-['Manrope'] pt-16 pb-8">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                    {/* Brand Section */}
-                    <div className="space-y-6">
-                        <Link to="/" className="flex items-center gap-2">
-                            <span className="text-2xl font-bold text-white">Property</span>
-                        </Link>
-                        <p className="text-gray-400 text-sm leading-relaxed">
-                            Your trusted partner in finding the perfect property. We bridge the gap between dream homes and reality with expert guidance.
-                        </p>
-                        <div className="flex gap-4">
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#41398B] transition-colors">
-                                <Facebook size={18} />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#41398B] transition-colors">
-                                <Twitter size={18} />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#41398B] transition-colors">
-                                <Instagram size={18} />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#41398B] transition-colors">
-                                <Linkedin size={18} />
-                            </a>
+        <footer className="bg-[#161616] text-white pt-16 pb-8 font-['Manrope']">
+            <div className="container mx-auto px-4 max-w-7xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 border-b border-gray-800 pb-12">
+                    {/* Left Column - Contact Info */}
+                    <div className="lg:col-span-4 space-y-8">
+                        {footerData?.footerLogo && (
+                            <Link to="/home" className="block mb-4">
+                                <img
+                                    src={footerData.footerLogo.startsWith('/') ? `${baseURL}${footerData.footerLogo}` : footerData.footerLogo}
+                                    alt="Logo"
+                                    className="h-8 md:h-24 w-auto object-contain"
+                                />
+                            </Link>
+                        )}
+
+                        <div className="space-y-6">
+                            {/* Address */}
+                            <div className="space-y-2">
+                                <h4 className="text-[#898989] text-[15px] font-medium block">{t('footerAddressLable')}</h4>
+                                <p className="text-white text-[15px] leading-relaxed max-w-[280px]">
+                                    {t('footerAddress')}
+                                </p>
+                            </div>
+
+                            {/* Phone */}
+                            <div className="space-y-1">
+                                <h4 className="text-[#898989] text-[15px] font-medium inline-block mr-2">{t('footerNumberLable')}</h4>
+                                <div className="inline-flex flex-wrap gap-2">
+                                    {footerData?.footerNumber?.map((num, i) => (
+                                        <a key={i} href={`tel:${num}`} className="text-white text-[15px] hover:text-[#7f75d5] transition-colors">
+                                            {num}{i < footerData.footerNumber.length - 1 ? ',' : ''}
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Email */}
+                            <div className="space-y-1">
+                                <h4 className="text-[#898989] text-[15px] font-medium inline-block mr-2">{t('footerEmailLable')}</h4>
+                                <a href={`mailto:${footerData?.footerEmail}`} className="text-white text-[15px] hover:text-[#7f75d5] transition-colors inline-block">
+                                    {footerData?.footerEmail}
+                                </a>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-lg font-bold mb-6">Quick Links</h3>
+                    {/* Middle Column 1 - Our Company */}
+                    <div className="lg:col-span-2 lg:col-start-6 pt-2">
+                        <h3 className="text-[16px] font-bold text-white mb-6">{t('footerOurCompanyLable')}</h3>
                         <ul className="space-y-4">
-                            <li><Link to="/home" className="text-gray-400 hover:text-white transition-colors">Home</Link></li>
-                            <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
-                            <li><Link to="/listing" className="text-gray-400 hover:text-white transition-colors">Listings</Link></li>
-                            <li><Link to="/blogs" className="text-gray-400 hover:text-white transition-colors">Blogs</Link></li>
-                            <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
+                            <li><Link to="/listing?type=Sale" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForSale')}</Link></li>
+                            <li><Link to="/listing?type=Lease" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForLease')}</Link></li>
+                            <li><Link to="/listing?type=Home Stay" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForHomeStay')}</Link></li>
+                            <li><Link to="/listing" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('allProperties')}</Link></li>
                         </ul>
                     </div>
 
-                    {/* Services */}
-                    <div>
-                        <h3 className="text-lg font-bold mb-6">Services</h3>
+                    {/* Middle Column 2 - Quick Links */}
+                    <div className="lg:col-span-2 pt-2">
+                        <h3 className="text-[16px] font-bold text-white mb-6">{t('footerQuickLinksLable')}</h3>
                         <ul className="space-y-4">
-                            <li><Link to="#" className="text-gray-400 hover:text-white transition-colors">Property Management</Link></li>
-                            <li><Link to="#" className="text-gray-400 hover:text-white transition-colors">Consulting</Link></li>
-                            <li><Link to="#" className="text-gray-400 hover:text-white transition-colors">Mortgage Services</Link></li>
-                            <li><Link to="#" className="text-gray-400 hover:text-white transition-colors">Appraisals</Link></li>
+                            <li><Link to="/about" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('aboutUs')}</Link></li>
+                            <li><Link to="/contact" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('contactUs')}</Link></li>
+                            <li><Link to="/about" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('ourTeam')}</Link></li>
+                            <li><Link to="/blogs" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('latestNews')}</Link></li>
                         </ul>
                     </div>
 
-                    {/* Contact Info */}
-                    <div>
-                        <h3 className="text-lg font-bold mb-6">Contact Us</h3>
-                        <ul className="space-y-4">
-                            <li className="flex items-start gap-3 text-gray-400">
-                                <MapPin size={20} className="mt-1 flex-shrink-0 text-[#41398B]" />
-                                <span>123 Real Estate Ave, Business District, City, Country</span>
-                            </li>
-                            <li className="flex items-center gap-3 text-gray-400">
-                                <Phone size={20} className="flex-shrink-0 text-[#41398B]" />
-                                <span>+1 (234) 567-8900</span>
-                            </li>
-                            <li className="flex items-center gap-3 text-gray-400">
-                                <Mail size={20} className="flex-shrink-0 text-[#41398B]" />
-                                <span>info@property.com</span>
-                            </li>
-                        </ul>
+                    {/* Right Column - Newsletter */}
+                    <div className="lg:col-span-3 lg:col-start-10 pt-2">
+                        <h3 className="text-[16px] font-bold text-white mb-4">{t('footerJoinOurNewsTitle')}</h3>
+                        <p className="text-[#898989] text-[15px] mb-6 leading-relaxed">
+                            {t('footerJoinOurNewsDescription')}
+                        </p>
+
+                        <div className="relative mb-8">
+                            <input
+                                type="email"
+                                placeholder={st('emailPlaceholder')}
+                                className="w-full h-11 pl-5 pr-12 rounded-full bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-[15px]"
+                            />
+                            <button className="absolute right-1 top-1 w-9 h-9 bg-black rounded-full flex items-center justify-center text-white hover:bg-gray-800 transition-colors">
+                                <ArrowUpRight size={18} />
+                            </button>
+                        </div>
+
+                        <div className="flex gap-6">
+                            <Link to="#" className="text-[#898989] hover:text-white text-[14px] underline underline-offset-4 decoration-gray-600 hover:decoration-white transition-all">
+                                {st('termsOfService')}
+                            </Link>
+                            <Link to="#" className="text-[#898989] hover:text-white text-[14px] underline underline-offset-4 decoration-gray-600 hover:decoration-white transition-all">
+                                {st('privacyPolicy')}
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
-                <div className="pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-                    <p>&copy; {new Date().getFullYear()} Property. All rights reserved.</p>
+                {/* Bottom Bar */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p className="text-[#898989] text-[14px]">
+                        &copy; {new Date().getFullYear()} <Link to="/home" className="text-white hover:text-[#7f75d5] transition-all">183 Housing Solutions</Link>. {st('allRightsReserved')}
+                    </p>
+
+                    <div className="flex items-center gap-4">
+                        {footerData?.footerIcons?.map((item, index) => (
+                            <a
+                                key={index}
+                                href={item.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#7f75d5] bg-transparent border border-gray-700 rounded-full hover:border-[#7f75d5] transition-all"
+                            >
+                                {renderIcon(item.icon)}
+                            </a>
+                        ))}
+                    </div>
                 </div>
             </div>
         </footer>

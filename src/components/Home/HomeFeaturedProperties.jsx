@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getListingProperties } from '@/Api/action';
 import { Skeleton } from 'antd';
+import { useLanguage } from '@/Language/LanguageContext';
 
 export default function HomeFeaturedProperties({ homePageData }) {
     const navigate = useNavigate();
+    const { language } = useLanguage();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isVisible, setIsVisible] = useState(false);
@@ -86,9 +88,15 @@ export default function HomeFeaturedProperties({ homePageData }) {
     };
 
     // Get CMS content with fallbacks
-    const title = homePageData?.homeFeatureTitle_en || 'FEATURED PROPERTIES';
-    const description = homePageData?.homeFeatureDescription_en || '';
-    const buttonText = homePageData?.homeFeatureButtonText_en || 'View Properties';
+    const title = language === 'en'
+        ? (homePageData?.homeFeatureTitle_en || 'FEATURED PROPERTIES')
+        : (homePageData?.homeFeatureTitle_vn || 'BẤT ĐỘNG SẢN NỔI BẬT');
+    const description = language === 'en'
+        ? (homePageData?.homeFeatureDescription_en || '')
+        : (homePageData?.homeFeatureDescription_vn || '');
+    const buttonText = language === 'en'
+        ? (homePageData?.homeFeatureButtonText_en || 'View Properties')
+        : (homePageData?.homeFeatureButtonText_vn || 'Xem Bất Động Sản');
     const buttonLink = homePageData?.homeFeatureButtonLink || '/listing';
 
     return (
@@ -142,7 +150,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                             >
                                 {/* Image */}
                                 <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl">
-                                    <img
+                                    <img style={{ width: "100%" }}
                                         src={property.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
                                         alt={getLocalizedValue(property.listingInformation?.listingInformationBlockName)}
                                         className="w-full h-full object-cover rounded-2xl transition-transform duration-500 group-hover:scale-96"
