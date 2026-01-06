@@ -26,12 +26,17 @@ export default function ContactReachForm({ data }) {
         ? (data?.contactReachOutNumberHead_en || "1-555-678-8888")
         : (data?.contactReachOutNumberHead_vn || "1-555-678-8888");
 
-    const phone = data?.contactReachOutNumberContent || "1-555-678-8888"; // Usually generic/numeric
+    const phones = Array.isArray(data?.contactReachOutNumberContent)
+        ? data.contactReachOutNumberContent
+        : [data?.contactReachOutNumberContent || "1-555-678-8888"];
 
     const emailTitle = language === 'en'
         ? (data?.contactReachOutEmailHead_en || "themesflat@gmail.com")
         : (data?.contactReachOutEmailHead_vn || "themesflat@gmail.com");
-    const email = data?.contactReachOutEmailContent || "themesflat@gmail.com";
+
+    const emails = Array.isArray(data?.contactReachOutEmailContent)
+        ? data.contactReachOutEmailContent
+        : [data?.contactReachOutEmailContent || "themesflat@gmail.com"];
 
     const formTitle = language === 'en'
         ? (data?.contactReachOutGetinTitle_en || "Get In Touch")
@@ -49,9 +54,18 @@ export default function ContactReachForm({ data }) {
 
     // Social Links from CMS
     const socialLinks = data?.contactReachOutSocialIcons?.map(item => {
+        const isUrl = item.icon?.includes('/') || item.icon?.includes('http');
+        if (isUrl) {
+            return {
+                type: 'image',
+                value: item.icon,
+                href: item.link || "#"
+            };
+        }
         const IconComponent = LucideIcons[item.icon];
         return {
-            icon: IconComponent || LucideIcons.HelpCircle, // Fallback icon
+            type: 'icon',
+            value: IconComponent || LucideIcons.HelpCircle, // Fallback icon
             href: item.link || "#"
         };
     }) || [];
@@ -101,18 +115,30 @@ export default function ContactReachForm({ data }) {
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-xl text-gray-900 mb-1">{phoneTitle}</h4>
-                                        <p className="text-gray-500 font-light text-sm md:text-base">{phone}</p>
+                                        <div className="flex flex-col gap-1">
+                                            {phones.map((phone, index) => (
+                                                <p key={index} className="text-gray-500 font-light text-sm md:text-base">
+                                                    {phone}
+                                                </p>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 
                                 {/* Email */}
                                 <div className="flex items-start gap-4">
                                     <div className="flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300">
-                                        <Clock className="w-5 h-5" />
+                                        <Mail className="w-5 h-5" />
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-xl text-gray-900 mb-1">{emailTitle}</h4>
-                                        <p className="text-gray-500 font-light text-sm md:text-base break-all">{email}</p>
+                                        <div className="flex flex-col gap-1">
+                                            {emails.map((email, index) => (
+                                                <p key={index} className="text-gray-500 font-light text-sm md:text-base break-all">
+                                                    {email}
+                                                </p>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -125,9 +151,17 @@ export default function ContactReachForm({ data }) {
                                         <a
                                             key={index}
                                             href={item.href}
-                                            className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300"
+                                            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 bg-[#41398B] hover:bg-[#41398B] hover:text-white hover:border-[#41398B] hover:scale-110 transition-all duration-300"
                                         >
-                                            <item.icon className="w-6 h-6" />
+                                            {item.type === 'image' ? (
+                                                <img
+                                                    src={item.value.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${item.value}` : item.value}
+                                                    alt="Social"
+                                                    className="w-5 h-5 object-contain"
+                                                />
+                                            ) : (
+                                                <item.value className="w-5 h-5" />
+                                            )}
                                         </a>
                                     ))}
                                 </div>

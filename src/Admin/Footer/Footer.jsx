@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import * as LucideIcons from 'lucide-react';
 import { ArrowUpRight } from 'lucide-react';
-import { useLanguage } from '../Language/LanguageContext';
-import { getFooter } from '../Api/action';
+import { useLanguage } from '@/Language/LanguageContext';
+import { getFooter } from '@/Api/action';
 
 const staticTranslations = {
     propertyForSale: {
@@ -65,7 +64,14 @@ export default function Footer() {
             try {
                 const response = await getFooter();
                 if (response.data && response.data.data) {
-                    setFooterData(response.data.data);
+                    const data = response.data.data;
+                    // Ensure footerEmail is an array
+                    if (data.footerEmail && typeof data.footerEmail === 'string') {
+                        data.footerEmail = [data.footerEmail];
+                    } else if (!data.footerEmail) {
+                        data.footerEmail = [];
+                    }
+                    setFooterData(data);
                 }
             } catch (error) {
                 console.error("Failed to fetch footer data", error);
@@ -86,10 +92,7 @@ export default function Footer() {
         return staticTranslations[key][language] || staticTranslations[key]['en'];
     };
 
-    const renderIcon = (iconName) => {
-        const Icon = LucideIcons[iconName];
-        return Icon ? <Icon size={20} /> : null;
-    };
+
 
     const baseURL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/v1', '') : '';
 
@@ -111,7 +114,7 @@ export default function Footer() {
 
                         <div className="space-y-6">
                             {/* Address */}
-                            <div className="space-y-2">
+                            <div className="space-y-1 mb-4">
                                 <h4 className="text-[#898989] text-[15px] font-medium block">{t('footerAddressLable')}</h4>
                                 <p className="text-white text-[15px] leading-relaxed max-w-[280px]">
                                     {t('footerAddress')}
@@ -119,7 +122,7 @@ export default function Footer() {
                             </div>
 
                             {/* Phone */}
-                            <div className="space-y-1">
+                            <div className="space-y-1 mb-3">
                                 <h4 className="text-[#898989] text-[15px] font-medium inline-block mr-2">{t('footerNumberLable')}</h4>
                                 <div className="inline-flex flex-wrap gap-2">
                                     {footerData?.footerNumber?.map((num, i) => (
@@ -133,9 +136,13 @@ export default function Footer() {
                             {/* Email */}
                             <div className="space-y-1">
                                 <h4 className="text-[#898989] text-[15px] font-medium inline-block mr-2">{t('footerEmailLable')}</h4>
-                                <a href={`mailto:${footerData?.footerEmail}`} className="text-white text-[15px] hover:text-[#7f75d5] transition-colors inline-block">
-                                    {footerData?.footerEmail}
-                                </a>
+                                <div className="inline-flex flex-wrap gap-2">
+                                    {footerData?.footerEmail?.map((email, i) => (
+                                        <a key={i} href={`mailto:${email}`} className="text-white text-[15px] hover:text-[#7f75d5] transition-colors inline-block">
+                                            {email}{i < footerData.footerEmail.length - 1 ? ',' : ''}
+                                        </a>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -194,7 +201,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-[#898989] text-[14px]">
-                        &copy; {new Date().getFullYear()} <Link to="/home" className="text-white hover:text-[#7f75d5] transition-all">183 Housing Solutions</Link>. {st('allRightsReserved')}
+                        &copy; {new Date().getFullYear()} <Link to="/home" className="text-white hover:text-[#7f75d5] transition-all">{t('footerCopyRight') || '183 Housing Solutions'}</Link>. {st('allRightsReserved')}
                     </p>
 
                     <div className="flex items-center gap-4">
@@ -204,9 +211,13 @@ export default function Footer() {
                                 href={item.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-8 h-8 flex items-center justify-center text-white hover:text-[#7f75d5] bg-transparent border border-gray-700 rounded-full hover:border-[#7f75d5] transition-all"
+                                className="w-6 h-6 flex items-center justify-center text-white hover:text-[#7f75d5] hover:opacity-80 transition-all"
                             >
-                                {renderIcon(item.icon)}
+                                <img
+                                    src={item.icon.startsWith('/') ? `${baseURL}${item.icon}` : item.icon}
+                                    alt="social"
+                                    className="w-full h-full object-contain"
+                                />
                             </a>
                         ))}
                     </div>

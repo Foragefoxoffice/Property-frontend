@@ -41,6 +41,7 @@ export default function FooterCmsForm() {
     const [footerData, setFooterData] = useState(null);
     const [logoUrl, setLogoUrl] = useState('');
     const [uploading, setUploading] = useState(false);
+    const [iconUploading, setIconUploading] = useState(null); // Track which icon is uploading
     const [previewImage, setPreviewImage] = useState(null);
     const [activeTab, setActiveTab] = useState('en');
 
@@ -101,6 +102,12 @@ export default function FooterCmsForm() {
             setFooterData(data);
             if (data) {
                 setLogoUrl(data.footerLogo || '');
+                // Ensure footerEmail is an array
+                if (data.footerEmail && typeof data.footerEmail === 'string') {
+                    data.footerEmail = [data.footerEmail];
+                } else if (!data.footerEmail) {
+                    data.footerEmail = [];
+                }
                 form.setFieldsValue(data);
             }
         } catch (error) {
@@ -132,6 +139,30 @@ export default function FooterCmsForm() {
         }
     };
 
+    const handleIconUpload = async (file, index) => {
+        try {
+            setIconUploading(index);
+            const response = await uploadFooterImage(file);
+            const uploadedUrl = response.data.data.url;
+
+            // Get current icons list
+            const icons = form.getFieldValue('footerIcons') || [];
+            // Update the specific icon at index
+            if (!icons[index]) icons[index] = {};
+            icons[index].icon = uploadedUrl;
+
+            form.setFieldsValue({ footerIcons: icons });
+            CommonToaster(t.uploadSuccess, 'success');
+            return false;
+        } catch (error) {
+            CommonToaster(t.uploadError, 'error');
+            console.error(error);
+            return false;
+        } finally {
+            setIconUploading(null);
+        }
+    };
+
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
@@ -144,6 +175,21 @@ export default function FooterCmsForm() {
             return Upload.LIST_IGNORE;
         }
         handleImageUpload(file);
+        return false;
+    };
+
+    const handleBeforeIconUpload = (file, index) => {
+        const isImage = file.type.startsWith('image/');
+        if (!isImage) {
+            CommonToaster(t.invalidFileType, 'error');
+            return Upload.LIST_IGNORE;
+        }
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+            CommonToaster(t.fileSizeError, 'error');
+            return Upload.LIST_IGNORE;
+        }
+        handleIconUpload(file, index);
         return false;
     };
 
@@ -224,7 +270,8 @@ export default function FooterCmsForm() {
                             onFinishFailed={onFormFinishFailed}
                             initialValues={{
                                 footerIcons: [],
-                                footerNumber: []
+                                footerNumber: [],
+                                footerEmail: []
                             }}
                         >
                             <Tabs
@@ -253,6 +300,12 @@ export default function FooterCmsForm() {
                                                         rules={[{ required: true, message: 'Please enter address' }]}
                                                     >
                                                         <TextArea rows={3} placeholder="123 Street Name, City, Country" className="rounded-lg" />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Copyright Text</span>}
+                                                        name="footerCopyRight_en"
+                                                    >
+                                                        <Input placeholder="e.g. 183 Housing Solutions" className="h-11 rounded-lg" />
                                                     </Form.Item>
                                                 </div>
 
@@ -327,6 +380,12 @@ export default function FooterCmsForm() {
                                                         rules={[{ required: true, message: 'Vui lòng nhập địa chỉ' }]}
                                                     >
                                                         <TextArea rows={3} placeholder="123 Tên Đường, Thành Phố, Quốc Gia" className="rounded-lg" />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Nội Dung Bản Quyền</span>}
+                                                        name="footerCopyRight_vn"
+                                                    >
+                                                        <Input placeholder="Vd: 183 Housing Solutions" className="h-11 rounded-lg" />
                                                     </Form.Item>
                                                 </div>
 
@@ -449,13 +508,42 @@ export default function FooterCmsForm() {
                                                 {/* Email & Numbers */}
                                                 <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
                                                     <h3 className="text-md font-bold text-gray-700 mb-4 font-['Manrope']">Contact Info</h3>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Email Address</span>}
-                                                        name="footerEmail"
-                                                        rules={[{ type: 'email', message: 'Please enter a valid email' }]}
-                                                    >
-                                                        <Input placeholder="contact@example.com" className="h-11 rounded-lg" />
-                                                    </Form.Item>
+                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope'] mb-2">Email Addresses</h4>
+                                                    <Form.List name="footerEmail">
+                                                        {(fields, { add, remove }) => (
+                                                            <>
+                                                                {fields.map((field, index) => (
+                                                                    <div key={field.key} className="flex gap-2 mb-2">
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            className="mb-0 flex-1"
+                                                                            rules={[
+                                                                                { required: true, message: 'Please enter an email' },
+                                                                                { type: 'email', message: 'Please enter a valid email' }
+                                                                            ]}
+                                                                        >
+                                                                            <Input placeholder="contact@example.com" className="h-11 rounded-lg" />
+                                                                        </Form.Item>
+                                                                        <Button
+                                                                            danger
+                                                                            onClick={() => remove(field.name)}
+                                                                            icon={<DeleteOutlined />}
+                                                                            className="h-11 w-11 flex items-center justify-center rounded-lg"
+                                                                        />
+                                                                    </div>
+                                                                ))}
+                                                                <Button
+                                                                    type="dashed"
+                                                                    onClick={() => add()}
+                                                                    block
+                                                                    icon={<PlusOutlined />}
+                                                                    className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope'] mb-6"
+                                                                >
+                                                                    Add Email Address
+                                                                </Button>
+                                                            </>
+                                                        )}
+                                                    </Form.List>
 
                                                     <h4 className="font-semibold text-gray-700 text-sm font-['Manrope'] mb-2">Phone Numbers</h4>
                                                     <Form.List name="footerNumber">
@@ -493,86 +581,91 @@ export default function FooterCmsForm() {
                                                 </div>
 
                                                 {/* Social Media Icons */}
-                                                <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-5 rounded-xl border border-purple-100">
-                                                    <h3 className="text-md font-bold text-[#41398B] mb-4 font-['Manrope']">Footer Icons (Social Media)</h3>
+                                                <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-100">
+                                                    <h3 className="text-md font-bold text-[#41398B] mb-6 font-['Manrope']">Social Icons</h3>
                                                     <Form.List name="footerIcons">
                                                         {(fields, { add, remove }) => (
                                                             <>
                                                                 {fields.map((field, index) => (
-                                                                    <div key={field.key} className="bg-white p-4 rounded-lg mb-3 border border-purple-200">
-                                                                        <div className="flex items-start gap-3">
-                                                                            <div className="flex-1 space-y-3">
-                                                                                <Form.Item
-                                                                                    {...field}
-                                                                                    label={<span className="text-sm font-['Manrope']">Icon Name</span>}
-                                                                                    name={[field.name, 'icon']}
-                                                                                    className="mb-0"
-                                                                                    rules={[{ required: true, message: 'Please select an icon' }]}
-                                                                                >
-                                                                                    <Select
-                                                                                        showSearch
-                                                                                        placeholder="Select Lucide icon"
-                                                                                        size="large"
-                                                                                        className="w-full"
-                                                                                        optionFilterProp="value"
-                                                                                        options={lucideIconNames.map(name => {
-                                                                                            const Icon = LucideIcons[name];
-                                                                                            return {
-                                                                                                value: name,
-                                                                                                label: (
-                                                                                                    <div className="flex items-center gap-2">
-                                                                                                        {Icon && <Icon size={16} />}
-                                                                                                        <span>{name}</span>
-                                                                                                    </div>
-                                                                                                ),
-                                                                                            };
-                                                                                        })}
-                                                                                    />
-                                                                                </Form.Item>
-                                                                                <Form.Item
-                                                                                    {...field}
-                                                                                    label={<span className="text-sm font-['Manrope']">Link URL</span>}
-                                                                                    name={[field.name, 'link']}
-                                                                                    className="mb-0"
-                                                                                    rules={[{ type: 'url', message: 'Please enter a valid URL' }]}
-                                                                                >
-                                                                                    <Input placeholder="https://..." className="h-11 rounded-lg" />
-                                                                                </Form.Item>
+                                                                    <div key={field.key} className="flex items-center gap-4 mb-1 bg-white pr-4 rounded-xl">
+                                                                        {/* Upload Icon Box */}
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            name={[field.name, 'icon']}
+                                                                            rules={[{ required: true, message: 'Required' }]}
+                                                                            className="mb-0"
+                                                                        >
+                                                                            <Form.Item shouldUpdate noStyle>
+                                                                                {() => {
+                                                                                    const icons = form.getFieldValue('footerIcons') || [];
+                                                                                    const currentIcon = icons[index]?.icon;
 
-                                                                                {/* Icon Preview */}
-                                                                                <Form.Item noStyle shouldUpdate>
-                                                                                    {() => {
-                                                                                        const icons = form.getFieldValue('footerIcons') || [];
-                                                                                        const currentIcon = icons[index]?.icon;
-                                                                                        return currentIcon ? (
-                                                                                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                                                                <span>Preview:</span>
-                                                                                                {renderIcon(currentIcon)}
-                                                                                                <span className="font-mono text-xs">{currentIcon}</span>
-                                                                                            </div>
-                                                                                        ) : null;
-                                                                                    }}
-                                                                                </Form.Item>
-                                                                            </div>
-                                                                            <Button
-                                                                                danger
-                                                                                type="text"
-                                                                                icon={<DeleteOutlined />}
-                                                                                onClick={() => remove(field.name)}
-                                                                                className="mt-8"
+                                                                                    return (
+                                                                                        <Upload
+                                                                                            name="icon"
+                                                                                            listType="picture-card"
+                                                                                            showUploadList={false}
+                                                                                            beforeUpload={(file) => handleBeforeIconUpload(file, index)}
+                                                                                            className="w-[60px] h-[60px] flex-shrink-0 [&>.ant-upload]:!w-[60px] [&>.ant-upload]:!h-[60px] [&>.ant-upload]:!border-purple-200 [&>.ant-upload]:!bg-gray-50 [&>.ant-upload]:!rounded-lg overflow-hidden [&>.ant-upload]:!m-0"
+                                                                                        >
+                                                                                            {currentIcon ? (
+                                                                                                <div className="w-full bg-[#41398B] rounded-lg h-full relative group">
+                                                                                                    <img
+                                                                                                        src={currentIcon.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${currentIcon}` : currentIcon}
+                                                                                                        alt="icon"
+                                                                                                        className="w-full h-full object-contain p-1"
+                                                                                                    />
+                                                                                                    {/* Loading Spinner for Icon */}
+                                                                                                    {iconUploading === index && (
+                                                                                                        <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                                                                                                            <Spin size="small" />
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            ) : (
+                                                                                                <div className="flex flex-col items-center justify-center h-full text-purple-300 hover:text-[#41398B] transition-colors">
+                                                                                                    {iconUploading === index ? (
+                                                                                                        <Spin size="small" />
+                                                                                                    ) : (
+                                                                                                        <PlusOutlined className="text-xl" />
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            )}
+                                                                                        </Upload>
+                                                                                    );
+                                                                                }}
+                                                                            </Form.Item>
+                                                                        </Form.Item>
+
+                                                                        {/* Link Input */}
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            name={[field.name, 'link']}
+                                                                            className="mb-0 flex-1"
+                                                                            rules={[{ required: true, message: 'Link is required' }, { type: 'url', message: 'Valid URL required' }]}
+                                                                        >
+                                                                            <Input
+                                                                                placeholder="Paste URL here..."
+                                                                                className="h-[44px] bg-gray-50 border-gray-200 text-gray-700 placeholder-gray-400 rounded-lg focus:border-[#41398B] hover:border-[#41398B] font-['Manrope']"
                                                                             />
-                                                                        </div>
+                                                                        </Form.Item>
+
+                                                                        {/* Remove Button */}
+                                                                        <Button
+                                                                            danger
+                                                                            type="text"
+                                                                            onClick={() => remove(field.name)}
+                                                                            className="h-[36px] px-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg border border-red-100 font-medium text-sm flex items-center gap-2"
+                                                                        >
+                                                                            <DeleteOutlined /> Remove
+                                                                        </Button>
                                                                     </div>
                                                                 ))}
                                                                 <Button
-                                                                    type="dashed"
                                                                     onClick={() => add()}
-                                                                    block
-                                                                    icon={<PlusOutlined />}
-                                                                    size="large"
-                                                                    className="h-12 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope']"
+                                                                    className="h-[58px] px-6 py-5 rounded-xl bg-[#41398B] text-white border-none font-bold text-[15px] mt-2 w-full flex items-center justify-center gap-2 shadow-md shadow-indigo-100 transition-all hover:scale-[1.01]"
                                                                 >
-                                                                    Add Social Icon
+                                                                    <PlusOutlined /> Add Social Icon
                                                                 </Button>
                                                             </>
                                                         )}

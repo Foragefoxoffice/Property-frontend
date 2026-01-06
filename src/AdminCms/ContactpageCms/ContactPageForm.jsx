@@ -125,10 +125,14 @@ export default function ContactPageForm() {
                     contactReachOutAddressContent_vn: page.contactReachOutAddressContent_vn,
                     contactReachOutNumberHead_en: page.contactReachOutNumberHead_en,
                     contactReachOutNumberHead_vn: page.contactReachOutNumberHead_vn,
-                    contactReachOutNumberContent: page.contactReachOutNumberContent,
+                    contactReachOutNumberContent: Array.isArray(page.contactReachOutNumberContent)
+                        ? page.contactReachOutNumberContent
+                        : (page.contactReachOutNumberContent ? [page.contactReachOutNumberContent] : []),
                     contactReachOutEmailHead_en: page.contactReachOutEmailHead_en,
                     contactReachOutEmailHead_vn: page.contactReachOutEmailHead_vn,
-                    contactReachOutEmailContent: page.contactReachOutEmailContent,
+                    contactReachOutEmailContent: Array.isArray(page.contactReachOutEmailContent)
+                        ? page.contactReachOutEmailContent
+                        : (page.contactReachOutEmailContent ? [page.contactReachOutEmailContent] : []),
                     contactReachOutFollowTitle_en: page.contactReachOutFollowTitle_en,
                     contactReachOutFollowTitle_vn: page.contactReachOutFollowTitle_vn,
                     contactReachOutSocialIcons: page.contactReachOutSocialIcons || [],

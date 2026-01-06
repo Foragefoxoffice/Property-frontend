@@ -40,7 +40,7 @@ export const translations = {
     footer: "Footer",
     blogs: "Blogs",
     categories: "Categories",
-    addBlog: "Add Blog",
+    addBlog: "Blog Cms",
     // Create Property Steps
     createProperty: "Create Property",
     listingPropertyInfo: "Listing & Property Information",
@@ -48,6 +48,7 @@ export const translations = {
     landlordInfo: "Landlord Information",
     seoInfo: "SEO Information",
     reviewPublish: "Review & Publish",
+    blog: "Blog",
   },
 
   vi: {
@@ -91,7 +92,7 @@ export const translations = {
     footer: "Chân Trang",
     blogs: "Bài Viết",
     categories: "Danh Mục",
-    addBlog: "Thêm Bài Viết",
+    addBlog: "Lời nhắn trên blog",
     // Create Property Steps
     createProperty: "Tạo Bất Động Sản",
     listingPropertyInfo: "Thông Tin Niêm Yết & Bất Động Sản",
@@ -99,5 +100,6 @@ export const translations = {
     landlordInfo: "Thông Tin Chủ Nhà",
     seoInfo: "Thông Tin SEO",
     reviewPublish: "Xem Lại & Xuất Bản",
+    blog: "Bài Viết",
   },
 };

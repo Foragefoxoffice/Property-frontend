@@ -205,10 +205,7 @@ createRoot(document.getElementById("root")).render(
         {/* OTHER NON-DASHBOARD PAGES */}
         <Route path="/manage-property" element={<ManageProperty />} />
         <Route path="/filters" element={<FiltersPage />} />
-        <Route
-          path="/property-showcase/:id"
-          element={<PropertyShowcasePage />}
-        />
+
 
         {/* Pages with Public Layout */}
         <Route element={<PublicLayout />}>
@@ -218,6 +215,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/blogs" element={<BlogPage />} />
           <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+          <Route path="/property-showcase/:id" element={<PropertyShowcasePage />} />
 
         </Route>
 

@@ -5,7 +5,9 @@ import {
     Button,
     Tabs,
     ConfigProvider,
-    Select
+    Select,
+    Upload,
+    Spin
 } from 'antd';
 import {
     SaveOutlined,
@@ -15,16 +17,9 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 import * as LucideIcons from 'lucide-react';
+import { uploadContactPageImage } from '../../Api/action';
 
 const { TextArea } = Input;
-
-// Get all Lucide icon names
-const lucideIconNames = Object.keys(LucideIcons).filter(name =>
-    name !== 'createLucideIcon' &&
-    name !== 'icons' &&
-    name !== 'default' &&
-    /^[A-Z]/.test(name) // Only keep exports starting with Uppercase (Components)
-);
 
 export default function ContactPageReachOutForm({
     form,
@@ -36,12 +31,45 @@ export default function ContactPageReachOutForm({
     onToggle
 }) {
     const [activeTab, setActiveTab] = useState('en');
+    const [iconUploading, setIconUploading] = useState(null);
 
-    // Render Lucide Icon by name
-    const renderIcon = (iconName) => {
-        const IconComponent = LucideIcons[iconName];
-        if (!IconComponent) return null;
-        return <IconComponent className="w-5 h-5" />;
+    const handleIconUpload = async (file, index) => {
+        try {
+            setIconUploading(index);
+            const response = await uploadContactPageImage(file);
+            const uploadedUrl = response.data.data.url;
+
+            // Get current icons list
+            const icons = form.getFieldValue('contactReachOutSocialIcons') || [];
+            // Update the specific icon at index
+            if (!icons[index]) icons[index] = {};
+            icons[index].icon = uploadedUrl;
+
+            form.setFieldsValue({ contactReachOutSocialIcons: icons });
+            CommonToaster('Icon uploaded successfully!', 'success');
+            return false;
+        } catch (error) {
+            CommonToaster('Failed to upload icon', 'error');
+            console.error(error);
+            return false;
+        } finally {
+            setIconUploading(null);
+        }
+    };
+
+    const handleBeforeIconUpload = (file, index) => {
+        const isImage = file.type.startsWith('image/');
+        if (!isImage) {
+            CommonToaster('You can only upload image files!', 'error');
+            return Upload.LIST_IGNORE;
+        }
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+            CommonToaster('Image must be smaller than 5MB!', 'error');
+            return Upload.LIST_IGNORE;
+        }
+        handleIconUpload(file, index);
+        return false;
     };
 
     return (
@@ -393,42 +421,102 @@ export default function ContactPageReachOutForm({
                                         ),
                                         children: (
                                             <div className="space-y-4">
-                                                {/* Phone Number Content */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Phone Number
-                                                        </span>
-                                                    }
-                                                    name="contactReachOutNumberContent"
-                                                    rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
-                                                >
-                                                    <Input
-                                                        placeholder="+1 234 567 8900"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
+                                                {/* Phone Numbers */}
+                                                <div className="bg-gray-50 p-4 rounded-xl mb-4">
+                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope'] mb-3">
+                                                        Phone Numbers
+                                                    </h4>
+                                                    <Form.List name="contactReachOutNumberContent">
+                                                        {(fields, { add, remove }) => (
+                                                            <>
+                                                                {fields.map((field, index) => (
+                                                                    <div key={field.key} className="flex gap-2 mb-1">
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            className="mb-0 flex-1"
+                                                                            rules={[
+                                                                                { required: true, message: 'Please enter a phone number' },
+                                                                                { max: 100, message: 'Maximum 100 characters allowed' }
+                                                                            ]}
+                                                                        >
+                                                                            <Input
+                                                                                placeholder="+1 234 567 8900"
+                                                                                size="large"
+                                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                            />
+                                                                        </Form.Item>
+                                                                        <Button
+                                                                            type="text"
+                                                                            danger
+                                                                            icon={<DeleteOutlined />}
+                                                                            onClick={() => remove(field.name)}
+                                                                            className="flex items-center justify-center h-12 w-12"
+                                                                        />
+                                                                    </div>
+                                                                ))}
+                                                                <Button
+                                                                    type="dashed"
+                                                                    onClick={() => add()}
+                                                                    block
+                                                                    icon={<PlusOutlined />}
+                                                                    size="large"
+                                                                    className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] h-12 font-['Manrope']"
+                                                                >
+                                                                    Add Phone Number
+                                                                </Button>
+                                                            </>
+                                                        )}
+                                                    </Form.List>
+                                                </div>
 
-                                                {/* Email Content */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Email Address
-                                                        </span>
-                                                    }
-                                                    name="contactReachOutEmailContent"
-                                                    rules={[
-                                                        { type: 'email', message: 'Please enter a valid email' },
-                                                        { max: 100, message: 'Maximum 100 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="contact@example.com"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
+                                                {/* Email Addresses */}
+                                                <div className="bg-gray-50 p-4 rounded-xl mb-4">
+                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope'] mb-3">
+                                                        Email Addresses
+                                                    </h4>
+                                                    <Form.List name="contactReachOutEmailContent">
+                                                        {(fields, { add, remove }) => (
+                                                            <>
+                                                                {fields.map((field, index) => (
+                                                                    <div key={field.key} className="flex gap-2 mb-1">
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            className="mb-0 flex-1"
+                                                                            rules={[
+                                                                                { required: true, message: 'Please enter an email address' },
+                                                                                { type: 'email', message: 'Please enter a valid email' },
+                                                                                { max: 100, message: 'Maximum 100 characters allowed' }
+                                                                            ]}
+                                                                        >
+                                                                            <Input
+                                                                                placeholder="contact@example.com"
+                                                                                size="large"
+                                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                            />
+                                                                        </Form.Item>
+                                                                        <Button
+                                                                            type="text"
+                                                                            danger
+                                                                            icon={<DeleteOutlined />}
+                                                                            onClick={() => remove(field.name)}
+                                                                            className="flex items-center justify-center h-12 w-12"
+                                                                        />
+                                                                    </div>
+                                                                ))}
+                                                                <Button
+                                                                    type="dashed"
+                                                                    onClick={() => add()}
+                                                                    block
+                                                                    icon={<PlusOutlined />}
+                                                                    size="large"
+                                                                    className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] h-12 font-['Manrope']"
+                                                                >
+                                                                    Add Email Address
+                                                                </Button>
+                                                            </>
+                                                        )}
+                                                    </Form.List>
+                                                </div>
 
                                                 {/* Social Media Icons */}
                                                 <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-5 rounded-xl">
@@ -439,76 +527,79 @@ export default function ContactPageReachOutForm({
                                                         {(fields, { add, remove }) => (
                                                             <>
                                                                 {fields.map((field, index) => (
-                                                                    <div key={field.key} className="bg-white p-4 rounded-lg mb-3 border-2 border-purple-100">
-                                                                        <div className="flex items-start gap-3">
-                                                                            <div className="flex-1 space-y-3">
-                                                                                <Form.Item
-                                                                                    {...field}
-                                                                                    label={<span className="text-sm font-['Manrope']">Icon Name</span>}
-                                                                                    name={[field.name, 'icon']}
-                                                                                    className="mb-0"
-                                                                                >
-                                                                                    <Select
-                                                                                        showSearch
-                                                                                        placeholder="Select Lucide icon"
-                                                                                        size="large"
-                                                                                        className="w-full"
-                                                                                        optionFilterProp="value"
-                                                                                        options={lucideIconNames.map(name => {
-                                                                                            const Icon = LucideIcons[name];
-                                                                                            return {
-                                                                                                value: name,
-                                                                                                label: (
-                                                                                                    <div className="flex items-center gap-2">
-                                                                                                        {Icon && <Icon size={16} />}
-                                                                                                        <span>{name}</span>
-                                                                                                    </div>
-                                                                                                ),
-                                                                                            };
-                                                                                        })}
-                                                                                    />
-                                                                                </Form.Item>
+                                                                    <div key={field.key} className="flex items-center gap-4 mb-3 bg-white p-3 rounded-lg border-2 border-purple-100">
+                                                                        {/* Upload Icon Box */}
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            name={[field.name, 'icon']}
+                                                                            rules={[{ required: true, message: 'Required' }]}
+                                                                            className="mb-0"
+                                                                        >
+                                                                            <Form.Item shouldUpdate noStyle>
+                                                                                {() => {
+                                                                                    const icons = form.getFieldValue('contactReachOutSocialIcons') || [];
+                                                                                    const currentIcon = icons[index]?.icon;
 
-                                                                                <Form.Item
-                                                                                    {...field}
-                                                                                    label={<span className="text-sm font-['Manrope']">Link URL</span>}
-                                                                                    name={[field.name, 'link']}
-                                                                                    className="mb-0"
-                                                                                    rules={[{ type: 'url', message: 'Please enter a valid URL' }]}
-                                                                                >
-                                                                                    <Input
-                                                                                        placeholder="https://facebook.com/yourpage"
-                                                                                        size="large"
-                                                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                                                    />
-                                                                                </Form.Item>
+                                                                                    return (
+                                                                                        <Upload
+                                                                                            name="icon"
+                                                                                            listType="picture-card"
+                                                                                            showUploadList={false}
+                                                                                            beforeUpload={(file) => handleBeforeIconUpload(file, index)}
+                                                                                            className="w-[60px] h-[60px] flex-shrink-0 [&>.ant-upload]:!w-[60px] [&>.ant-upload]:!h-[60px] [&>.ant-upload]:!border-purple-200 [&>.ant-upload]:!bg-gray-50 [&>.ant-upload]:!rounded-lg overflow-hidden [&>.ant-upload]:!m-0"
+                                                                                        >
+                                                                                            {currentIcon ? (
+                                                                                                <div className="w-full bg-[#41398B] rounded-lg h-full relative group">
+                                                                                                    <img
+                                                                                                        src={currentIcon.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${currentIcon}` : currentIcon}
+                                                                                                        alt="icon"
+                                                                                                        className="w-full h-full object-contain p-1"
+                                                                                                    />
+                                                                                                    {/* Loading Spinner for Icon */}
+                                                                                                    {iconUploading === index && (
+                                                                                                        <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                                                                                                            <Spin size="small" />
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            ) : (
+                                                                                                <div className="flex flex-col items-center justify-center h-full text-purple-300 hover:text-[#41398B] transition-colors">
+                                                                                                    {iconUploading === index ? (
+                                                                                                        <Spin size="small" />
+                                                                                                    ) : (
+                                                                                                        <PlusOutlined className="text-xl" />
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            )}
+                                                                                        </Upload>
+                                                                                    );
+                                                                                }}
+                                                                            </Form.Item>
+                                                                        </Form.Item>
 
-                                                                                {/* Icon Preview */}
-                                                                                <Form.Item noStyle shouldUpdate>
-                                                                                    {() => {
-                                                                                        const icons = form.getFieldValue('contactReachOutSocialIcons') || [];
-                                                                                        const currentIcon = icons[index]?.icon;
-                                                                                        return currentIcon ? (
-                                                                                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                                                                <span>Preview:</span>
-                                                                                                {renderIcon(currentIcon)}
-                                                                                                <span className="font-mono text-xs">{currentIcon}</span>
-                                                                                            </div>
-                                                                                        ) : null;
-                                                                                    }}
-                                                                                </Form.Item>
-                                                                            </div>
-
-                                                                            <Button
-                                                                                type="text"
-                                                                                danger
-                                                                                icon={<DeleteOutlined />}
-                                                                                onClick={() => remove(field.name)}
-                                                                                className="mt-7"
+                                                                        <div className="flex-1">
+                                                                            <Form.Item
+                                                                                {...field}
+                                                                                label={<span className="text-sm font-['Manrope']">Link URL</span>}
+                                                                                name={[field.name, 'link']}
+                                                                                className="mb-0"
+                                                                                rules={[{ type: 'url', message: 'Please enter a valid URL' }]}
                                                                             >
-                                                                                Remove
-                                                                            </Button>
+                                                                                <Input
+                                                                                    placeholder="https://facebook.com/yourpage"
+                                                                                    size="large"
+                                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                                />
+                                                                            </Form.Item>
                                                                         </div>
+
+                                                                        <Button
+                                                                            type="text"
+                                                                            danger
+                                                                            icon={<DeleteOutlined />}
+                                                                            onClick={() => remove(field.name)}
+                                                                            className="mt-6 h-12 w-12 flex items-center justify-center"
+                                                                        />
                                                                     </div>
                                                                 ))}
                                                                 <Button

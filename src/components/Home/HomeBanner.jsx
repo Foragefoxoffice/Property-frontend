@@ -190,17 +190,44 @@ export default function HomeBanner({ homePageData }) {
                             />
                         </div>
 
-                        {/* Location (Area/Zone) */}
+                        {/* Project / Community */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                {language === 'en' ? 'Location' : 'Vị Trí'}
+                                {language === 'en' ? 'Project / Community' : 'Dự Án / Cộng Đồng'}
+                            </label>
+                            <Select
+                                className="custom-selectss"
+                                popupClassName="custom-dropdown"
+                                value={filters.projectId || undefined}
+                                onChange={(value) => handleFilterChange('projectId', value || '')}
+                                placeholder={language === 'en' ? 'Select Project' : 'Chọn Dự Án'}
+                                style={{ width: '100%' }}
+                                size="large"
+                                allowClear
+                                showSearch
+                                filterOption={(input, option) =>
+                                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                            >
+                                {projects.map((project) => (
+                                    <Select.Option key={project._id} value={getLocalizedValue(project.name)}>
+                                        {getLocalizedValue(project.name) || 'Unnamed'}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
+
+                        {/* Area / Zone */}
+                        <div>
+                            <label className="block text-md font-bold text-black mb-2">
+                                {language === 'en' ? 'Area / Zone' : 'Khu Vực / Vùng'}
                             </label>
                             <Select
                                 className="custom-selectss"
                                 popupClassName="custom-dropdown"
                                 value={filters.zoneId || undefined}
                                 onChange={(value) => handleFilterChange('zoneId', value || '')}
-                                placeholder={language === 'en' ? 'All Cities' : 'Tất Cả Thành Phố'}
+                                placeholder={language === 'en' ? 'Select Area/Zone' : 'Chọn Khu Vực'}
                                 style={{ width: '100%' }}
                                 size="large"
                                 allowClear
@@ -217,41 +244,33 @@ export default function HomeBanner({ homePageData }) {
                             </Select>
                         </div>
 
-                        {/* Bedrooms */}
+                        {/* Block Name */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                {language === 'en' ? 'Bedrooms' : 'Phòng Ngủ'}
+                                {language === 'en' ? 'Block Name' : 'Tên Khối'}
                             </label>
                             <Select
                                 className="custom-selectss"
                                 popupClassName="custom-dropdown"
-                                value={filters.bedrooms || undefined}
-                                onChange={(value) => handleFilterChange('bedrooms', value || '')}
-                                placeholder={language === 'en' ? 'Any Bedrooms' : 'Bất Kỳ'}
+                                value={filters.blockId || undefined}
+                                onChange={(value) => handleFilterChange('blockId', value || '')}
+                                placeholder={language === 'en' ? 'Select Block' : 'Chọn Khối'}
                                 style={{ width: '100%' }}
                                 size="large"
                                 allowClear
+                                showSearch
+                                filterOption={(input, option) =>
+                                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
                             >
-                                <Select.Option value="1">1</Select.Option>
-                                <Select.Option value="2">2</Select.Option>
-                                <Select.Option value="3">3</Select.Option>
-                                <Select.Option value="4">4+</Select.Option>
+                                {blocks.map((block) => (
+                                    <Select.Option key={block._id} value={getLocalizedValue(block.name)}>
+                                        {getLocalizedValue(block.name) || 'Unnamed'}
+                                    </Select.Option>
+                                ))}
                             </Select>
                         </div>
 
-                        {/* Your Budget (Max Price) */}
-                        <div>
-                            <label className="block text-md font-bold text-black mb-2">
-                                {language === 'en' ? 'Your Budget' : 'Ngân Sách'}
-                            </label>
-                            <input
-                                type="number"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                placeholder={language === 'en' ? 'Max. Price' : 'Giá Tối Đa'}
-                                value={filters.maxPrice}
-                                onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                            />
-                        </div>
                         {/* Bottom Row - Show More Button & Search Button */}
                         <div className="flex items-end gap-3">
                             {/* Show More Filters Button */}
@@ -279,8 +298,30 @@ export default function HomeBanner({ homePageData }) {
                     >
                         <div className={`mb-6 transform transition-all duration-500 ${showMoreFilters ? 'translate-y-0' : '-translate-y-4'
                             }`}>
-                            {/* Second Row */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+                            {/* Hidden Filters Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
+                                {/* Bedrooms */}
+                                <div>
+                                    <label className="block text-md font-bold text-black mb-2">
+                                        {language === 'en' ? 'Bedrooms' : 'Phòng Ngủ'}
+                                    </label>
+                                    <Select
+                                        className="custom-selectss"
+                                        popupClassName="custom-dropdown"
+                                        value={filters.bedrooms || undefined}
+                                        onChange={(value) => handleFilterChange('bedrooms', value || '')}
+                                        placeholder={language === 'en' ? 'Any Bedrooms' : 'Bất Kỳ'}
+                                        style={{ width: '100%' }}
+                                        size="large"
+                                        allowClear
+                                    >
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4+</Select.Option>
+                                    </Select>
+                                </div>
+
                                 {/* Bathrooms */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">
@@ -329,63 +370,6 @@ export default function HomeBanner({ homePageData }) {
                                     </Select>
                                 </div>
 
-                                {/* Project / Community */}
-                                <div>
-                                    <label className="block text-md font-bold text-black mb-2">
-                                        {language === 'en' ? 'Project / Community' : 'Dự Án / Cộng Đồng'}
-                                    </label>
-                                    <Select
-                                        className="custom-selectss"
-                                        popupClassName="custom-dropdown"
-                                        value={filters.projectId || undefined}
-                                        onChange={(value) => handleFilterChange('projectId', value || '')}
-                                        placeholder={language === 'en' ? 'Select Project' : 'Chọn Dự Án'}
-                                        style={{ width: '100%' }}
-                                        size="large"
-                                        allowClear
-                                        showSearch
-                                        filterOption={(input, option) =>
-                                            (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                                        }
-                                    >
-                                        {projects.map((project) => (
-                                            <Select.Option key={project._id} value={getLocalizedValue(project.name)}>
-                                                {getLocalizedValue(project.name) || 'Unnamed'}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </div>
-
-                                {/* Block Name */}
-                                <div>
-                                    <label className="block text-md font-bold text-black mb-2">
-                                        {language === 'en' ? 'Block Name' : 'Tên Khối'}
-                                    </label>
-                                    <Select
-                                        className="custom-selectss"
-                                        popupClassName="custom-dropdown"
-                                        value={filters.blockId || undefined}
-                                        onChange={(value) => handleFilterChange('blockId', value || '')}
-                                        placeholder={language === 'en' ? 'Select Block' : 'Chọn Khối'}
-                                        style={{ width: '100%' }}
-                                        size="large"
-                                        allowClear
-                                        showSearch
-                                        filterOption={(input, option) =>
-                                            (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                                        }
-                                    >
-                                        {blocks.map((block) => (
-                                            <Select.Option key={block._id} value={getLocalizedValue(block.name)}>
-                                                {getLocalizedValue(block.name) || 'Unnamed'}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </div>
-                            </div>
-
-                            {/* Third Row - Price Range */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
                                 {/* Currency */}
                                 <div>
                                     <label className="block text-md font-bold text-black mb-2">

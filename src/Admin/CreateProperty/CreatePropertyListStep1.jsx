@@ -664,9 +664,20 @@ export default function CreatePropertyListStep1({
               label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
               name="transactionType"
               value={
-                typeof form.transactionType === "object"
-                  ? form.transactionType?.[lang] || ""
-                  : form.transactionType || ""
+                (() => {
+                  const type = form.transactionType;
+                  const map = {
+                    "Sale": { en: "Sale", vi: "Bán" },
+                    "Lease": { en: "Lease", vi: "Cho thuê" },
+                    "Home Stay": { en: "Home Stay", vi: "Homestay" }
+                  };
+
+                  if (typeof type === 'object') {
+                    return type?.[lang] || "";
+                  }
+
+                  return map[type]?.[lang] || type || "";
+                })()
               }
               onChange={(e) => {
                 const val = e.target.value;

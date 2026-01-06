@@ -3,7 +3,10 @@ import { getContactPage } from "../Api/action";
 import ContactBanner from "../components/Contact/ContactBanner";
 import ContactReachForm from "../components/Contact/ContactReachForm";
 import ContactMap from "../components/Contact/ContactMap";
-import SmoothScroll from "@/components/SmoothScroll"; // Assuming SmoothScroll is wanted here too, or just for consistency
+import SmoothScroll from "@/components/SmoothScroll";
+import Loader from "@/components/Loader/Loader";
+import Header from "@/Admin/Header/Header";
+import Footer from "@/Admin/Footer/Footer";
 
 export default function ContactPage() {
     const [pageData, setPageData] = useState(null);
@@ -29,34 +32,17 @@ export default function ContactPage() {
     }, []);
 
     if (loading) {
-        return (
-            <div className="flex flex-col relative items-center justify-center h-screen bg-white">
-                <img
-                    src="/images/login/logo.png"
-                    alt="Loading..."
-                    className="w-40 h-40 object-contain mb-4 animate-pulse"
-                />
-
-                <div
-                    style={{ fontSize: 30 }}
-                    className="flex space-x-1 text-[#41398B] absolute top-[55%] text-2xl font-semibold"
-                >
-                    <span className="animate-bounce rounded-full">•</span>
-                    <span className="animate-bounce delay-150">•</span>
-                    <span className="animate-bounce delay-300">•</span>
-                    <span className="animate-bounce delay-300">•</span>
-                </div>
-            </div>
-        );
+        return <Loader />;
     }
 
     return (
         <div>
             <SmoothScroll />
+            <Header />
             <ContactBanner data={pageData} />
             <ContactMap data={pageData} />
             <ContactReachForm data={pageData} />
-
+            <Footer />
         </div>
     );
 }

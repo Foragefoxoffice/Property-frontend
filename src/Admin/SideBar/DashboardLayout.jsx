@@ -192,7 +192,7 @@ const DashboardLayout = () => {
                     `}
                                     >
                                         <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder /> </span>
-                                        <span>{t.addBlog || "Add Blog"}</span>
+                                        <span>{t.addBlog || "Blog Cms"}</span>
                                     </button>
                                 </div>
                             )}
