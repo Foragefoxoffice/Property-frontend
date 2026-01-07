@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, ChevronDown } from "lucide-react";
 import { CommonToaster } from "../../Common/CommonToaster";
@@ -7,7 +7,7 @@ import { useLanguage } from "../../Language/LanguageContext";
 import { getHeader } from "../../Api/action";
 import AnimatedNavLink from "../../components/AnimatedNavLink";
 
-export default function Header() {
+export default function Header({ showNavigation = true }) {
   const navigate = useNavigate();
   const [showLogout, setShowLogout] = useState(false);
   const [showPropertiesDropdown, setShowPropertiesDropdown] = useState(false);
@@ -81,102 +81,107 @@ export default function Header() {
         </div>
 
         {/* Center Navigation */}
-        <nav className="hidden lg:flex items-center gap-10">
-          {/* Homepage Link */}
-          <div className="font-semibold text-[16px]">
-            <AnimatedNavLink
-              text={labels.homepages[language]}
-              onClick={() => navigate("/home")}
-            />
-          </div>
-
-          {/* Properties Dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setShowPropertiesDropdown(true)}
-            onMouseLeave={() => setShowPropertiesDropdown(false)}
-          >
-            <div className="flex items-center gap-1 font-semibold text-[16px]">
+        {showNavigation && (
+          <nav className="hidden lg:flex items-center gap-10">
+            {/* Homepage Link */}
+            <div className="font-semibold text-[16px]">
               <AnimatedNavLink
-                onClick={() => navigate("/listing")}
-                text={labels.properties[language]}
-                hasDropdown={true}
-                isDropdownOpen={showPropertiesDropdown}
+                text={labels.homepages[language]}
+                onClick={() => navigate("/home")}
               />
-              <motion.div
-                animate={{ rotate: showPropertiesDropdown ? 180 : 0 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-              >
-                <ChevronDown className="w-4 h-4 text-[#000]" />
-              </motion.div>
             </div>
 
-            <AnimatePresence>
-              {showPropertiesDropdown && (
+            {/* Properties Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setShowPropertiesDropdown(true)}
+              onMouseLeave={() => setShowPropertiesDropdown(false)}
+            >
+              <div className="flex items-center gap-1 font-semibold text-[16px]">
+                <AnimatedNavLink
+                  onClick={() => navigate("/listing")}
+                  text={labels.properties[language]}
+                  hasDropdown={true}
+                  isDropdownOpen={showPropertiesDropdown}
+                />
                 <motion.div
-                  initial={{ scaleY: 0, opacity: 0 }}
-                  animate={{ scaleY: 1, opacity: 1 }}
-                  exit={{ scaleY: 0, opacity: 0 }}
+                  animate={{ rotate: showPropertiesDropdown ? 180 : 0 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  style={{ transformOrigin: "center top" }}
-                  className="absolute left-0 top-full mt-3 w-[220px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-50 overflow-hidden border border-gray-100"
                 >
-                  <div className="py-1">
-                    {[
-                      { label: labels.propertiesLease[language], path: "/listing?type=Lease", delay: 0 },
-                      { label: labels.propertiesSale[language], path: "/listing?type=Sale", delay: 0.05 },
-                      { label: labels.propertiesHomestay[language], path: "/listing?type=Home Stay", delay: 0.1 }
-                    ].map((item, index) => (
-                      <motion.button
-                        key={index}
-                        onClick={() => navigate(item.path)}
-                        initial={{ y: 11, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{
-                          duration: 0.5,
-                          delay: item.delay,
-                          ease: [0.5, 0, 0, 1]
-                        }}
-                        whileHover={{ backgroundColor: "#f8f7ff" }}
-                        className={`w-full cursor-pointer text-left px-5 py-3 text-[15px] text-[#2a2a2a] hover:text-[#41398B] font-semibold transition-colors ${index < 2 ? 'border-b border-gray-100' : ''
-                          }`}
-                      >
-                        {item.label}
-                      </motion.button>
-                    ))}
-                  </div>
+                  <ChevronDown className="w-4 h-4 text-[#000]" />
                 </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+              </div>
 
-          {/* About Us Link */}
-          <div className="font-semibold text-[16px]">
-            <AnimatedNavLink
-              text={labels.aboutus[language]}
-              onClick={() => navigate("/about")}
-            />
-          </div>
+              <AnimatePresence>
+                {showPropertiesDropdown && (
+                  <motion.div
+                    initial={{ scaleY: 0, opacity: 0 }}
+                    animate={{ scaleY: 1, opacity: 1 }}
+                    exit={{ scaleY: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    style={{ transformOrigin: "center top" }}
+                    className="absolute left-0 top-full mt-3 w-[220px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-50 overflow-hidden border border-gray-100"
+                  >
+                    <div className="py-1">
+                      {[
+                        { label: labels.propertiesLease[language], path: "/listing?type=Lease", delay: 0 },
+                        { label: labels.propertiesSale[language], path: "/listing?type=Sale", delay: 0.05 },
+                        { label: labels.propertiesHomestay[language], path: "/listing?type=Home Stay", delay: 0.1 }
+                      ].map((item, index) => (
+                        <motion.button
+                          key={index}
+                          onClick={() => navigate(item.path)}
+                          initial={{ y: 11, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{
+                            duration: 0.5,
+                            delay: item.delay,
+                            ease: [0.5, 0, 0, 1]
+                          }}
+                          whileHover={{ backgroundColor: "#f8f7ff" }}
+                          className={`w-full cursor-pointer text-left px-5 py-3 text-[15px] text-[#2a2a2a] hover:text-[#41398B] font-semibold transition-colors ${index < 2 ? 'border-b border-gray-100' : ''
+                            }`}
+                        >
+                          {item.label}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-          {/* Blog Link */}
-          <div className="font-semibold text-[16px]">
-            <AnimatedNavLink
-              text={labels.blog[language]}
-              onClick={() => navigate("/blogs")}
-            />
-          </div>
+            {/* About Us Link */}
+            <div className="font-semibold text-[16px]">
+              <AnimatedNavLink
+                text={labels.aboutus[language]}
+                onClick={() => navigate("/about")}
+              />
+            </div>
 
-          {/* Contact Link */}
-          <div className="font-semibold text-[16px]">
-            <AnimatedNavLink
-              text={labels.contacts[language]}
-              onClick={() => navigate("/contact")}
-            />
-          </div>
-        </nav>
+            {/* Blog Link */}
+            <div className="font-semibold text-[16px]">
+              <AnimatedNavLink
+                text={labels.blog[language]}
+                onClick={() => navigate("/blogs")}
+              />
+            </div>
+
+            {/* Contact Link */}
+            <div className="font-semibold text-[16px]">
+              <AnimatedNavLink
+                text={labels.contacts[language]}
+                onClick={() => navigate("/contact")}
+              />
+            </div>
+          </nav>
+        )}
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
+          <div>
+            <Link className="font-medium text-[16px] hover:text-[#41398B]" to="/">Login/Register</Link>
+          </div>
           {/* Language Toggle */}
           <div className="inline-flex items-center gap-1 rounded-full bg-gray-100 p-1">
             {/* English Flag */}
@@ -264,7 +269,6 @@ export default function Header() {
                 </g>
               </svg>
             </button>
-
             {/* Vietnamese Flag */}
             <button
               onClick={() => toggleLanguage("vi")}

@@ -13,6 +13,7 @@ import {
 } from '@ant-design/icons';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { usePermissions } from '../../Context/PermissionContext';
 
 const { TextArea } = Input;
 
@@ -25,6 +26,7 @@ export default function AboutPageHistoryForm({
     isOpen,
     onToggle
 }) {
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
 
     return (
@@ -338,19 +340,21 @@ export default function AboutPageHistoryForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vn'
-                                        ? (pageData ? 'Lưu Lịch Sử' : 'Tạo Trang')
-                                        : (pageData ? 'Save History' : 'Create Page')
-                                    }
-                                </Button>
+                                {can('cms.aboutUs', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vn'
+                                            ? (pageData ? 'Lưu Lịch Sử' : 'Tạo Trang')
+                                            : (pageData ? 'Save History' : 'Create Page')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

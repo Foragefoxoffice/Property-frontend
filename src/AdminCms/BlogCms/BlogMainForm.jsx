@@ -22,6 +22,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import { uploadBlogImage } from '../../Api/action';
 import { getImageUrl } from '../../utils/imageHelper';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
 
 export default function BlogMainForm({
@@ -35,6 +36,7 @@ export default function BlogMainForm({
     categories,
     isEditMode
 }) {
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
     const [mainImageUrl, setMainImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
@@ -202,6 +204,7 @@ export default function BlogMainForm({
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
                             initialValues={{ published: true }}
+                            disabled={!can('blogs.blogCms', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -531,19 +534,21 @@ export default function BlogMainForm({
                                 >
                                     {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                 </Button>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vn'
-                                        ? (blogData ? 'Lưu Blog' : 'Tạo Blog')
-                                        : (blogData ? 'Save Blog' : 'Create Blog')
-                                    }
-                                </Button>
+                                {can('blogs.blogCms', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vn'
+                                            ? (blogData ? 'Lưu Blog' : 'Tạo Blog')
+                                            : (blogData ? 'Save Blog' : 'Create Blog')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

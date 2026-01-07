@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { loginUser } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
@@ -24,13 +24,21 @@ export default function Login() {
         const user = res.data.user;
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userName", user?.name || "");
+        localStorage.setItem("userRole", user?.role || "user");
         CommonToaster("Login Successfully!", "success");
-        navigate("/dashboard/lease  ");
+
+        // Redirect based on user role
+        if (user?.role === "admin") {
+          navigate("/dashboard/lease");
+        } else {
+          navigate("/home");
+        }
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Login failed. Please check your credentials."
+        "Login failed. Please check your credentials."
+
       );
     } finally {
       setLoading(false);
@@ -132,6 +140,19 @@ export default function Login() {
               "Login"
             )}
           </button>
+
+          {/* Register Link */}
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="text-[#4A3AFF] hover:text-[#41398B] font-semibold transition"
+              >
+                Register here
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

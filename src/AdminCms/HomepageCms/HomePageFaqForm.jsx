@@ -21,6 +21,7 @@ import { uploadHomePageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { X } from 'lucide-react';
+import { usePermissions } from '../../Context/PermissionContext';
 
 const { TextArea } = Input;
 
@@ -33,6 +34,8 @@ export default function HomePageFaqForm({
     isOpen,
     onToggle
 }) {
+
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
     const [faqBgUrl, setFaqBgUrl] = useState(pageData?.homeFaqBg || '');
     const [uploading, setUploading] = useState(false);
@@ -119,6 +122,7 @@ export default function HomePageFaqForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.homePage', 'edit')}
                             initialValues={{
                                 faqs: [{ header_en: '', content_en: '', header_vn: '', content_vn: '' }]
                             }}
@@ -581,19 +585,21 @@ export default function HomePageFaqForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vn'
-                                        ? (pageData ? 'Lưu Phần FAQ' : 'Tạo Trang')
-                                        : (pageData ? 'Save FAQ Section' : 'Create Page')
-                                    }
-                                </Button>
+                                {can('cms.homePage', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vn'
+                                            ? (pageData ? 'Lưu Phần FAQ' : 'Tạo Trang')
+                                            : (pageData ? 'Save FAQ Section' : 'Create Page')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

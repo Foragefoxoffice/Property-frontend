@@ -20,6 +20,7 @@ import { getFooter, updateFooter, uploadFooterImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { useLanguage } from '../../Language/LanguageContext';
+import { usePermissions } from '../../Context/PermissionContext';
 import { X, Check } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
@@ -35,6 +36,7 @@ const lucideIconNames = Object.keys(LucideIcons).filter(name =>
 
 export default function FooterCmsForm() {
     const { language } = useLanguage();
+    const { can } = usePermissions();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [fetchLoading, setFetchLoading] = useState(true);
@@ -688,16 +690,18 @@ export default function FooterCmsForm() {
                                         {t.cancelButton}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="bg-[#41398B] hover:!bg-[#352e7a] border-none rounded-xl font-semibold text-[15px] h-12 px-8 font-['Manrope'] shadow-lg shadow-indigo-100"
-                                >
-                                    {t.saveButton}
-                                </Button>
+                                {can('cms.footer', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="bg-[#41398B] hover:!bg-[#352e7a] border-none rounded-xl font-semibold text-[15px] h-12 px-8 font-['Manrope'] shadow-lg shadow-indigo-100"
+                                    >
+                                        {t.saveButton}
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

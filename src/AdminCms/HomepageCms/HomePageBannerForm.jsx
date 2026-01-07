@@ -18,6 +18,7 @@ import { uploadHomePageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { X } from 'lucide-react';
+import { usePermissions } from '../../Context/PermissionContext';
 
 const { TextArea } = Input;
 
@@ -30,6 +31,7 @@ export default function HomePageBannerForm({
     isOpen,
     onToggle
 }) {
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
     const [bannerImageUrl, setBannerImageUrl] = useState(pageData?.backgroundImage || '');
     const [uploading, setUploading] = useState(false);
@@ -117,6 +119,7 @@ export default function HomePageBannerForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.homePage', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -316,19 +319,21 @@ export default function HomePageBannerForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vn'
-                                        ? (pageData ? 'Lưu Banner' : 'Tạo Trang')
-                                        : (pageData ? 'Save Banner' : 'Create Page')
-                                    }
-                                </Button>
+                                {can('cms.homePage', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vn'
+                                            ? (pageData ? 'Lưu Banner' : 'Tạo Trang')
+                                            : (pageData ? 'Save Banner' : 'Create Page')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

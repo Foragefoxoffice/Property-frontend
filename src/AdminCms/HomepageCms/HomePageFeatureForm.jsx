@@ -10,6 +10,7 @@ import {
     SaveOutlined
 } from '@ant-design/icons';
 import { onFormFinishFailed } from '@/utils/formValidation';
+import { usePermissions } from '../../Context/PermissionContext';
 
 const { TextArea } = Input;
 
@@ -22,6 +23,7 @@ export default function HomePageFeatureForm({
     isOpen,
     onToggle
 }) {
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
 
     return (
@@ -63,6 +65,7 @@ export default function HomePageFeatureForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.homePage', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -200,19 +203,21 @@ export default function HomePageFeatureForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vn'
-                                        ? (pageData ? 'Lưu Phần Tính Năng' : 'Tạo Trang')
-                                        : (pageData ? 'Save Features Section' : 'Create Page')
-                                    }
-                                </Button>
+                                {can('cms.homePage', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vn'
+                                            ? (pageData ? 'Lưu Phần Tính Năng' : 'Tạo Trang')
+                                            : (pageData ? 'Save Features Section' : 'Create Page')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

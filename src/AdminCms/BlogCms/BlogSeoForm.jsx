@@ -16,6 +16,7 @@ import {
     DeleteOutlined
 } from '@ant-design/icons';
 import { onFormFinishFailed } from '@/utils/formValidation';
+import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
 
 const { TextArea } = Input;
@@ -30,6 +31,7 @@ export default function BlogSeoForm({
     onToggle,
     isEditMode
 }) {
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
     const [previewImage, setPreviewImage] = useState(null);
     const [ogImages, setOgImages] = useState([]);
@@ -153,6 +155,7 @@ export default function BlogSeoForm({
                             layout="vertical"
                             onFinish={handleFormSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('blogs.blogCms', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -581,19 +584,21 @@ export default function BlogSeoForm({
                                         {activeTab === 'vi' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vi'
-                                        ? (blogData ? 'Lưu Cài Đặt SEO' : 'Tạo Blog')
-                                        : (blogData ? 'Save SEO Settings' : 'Create Blog')
-                                    }
-                                </Button>
+                                {can('blogs.blogCms', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vi'
+                                            ? (blogData ? 'Lưu Cài Đặt SEO' : 'Tạo Blog')
+                                            : (blogData ? 'Save SEO Settings' : 'Create Blog')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

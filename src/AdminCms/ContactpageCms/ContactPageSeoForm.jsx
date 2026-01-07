@@ -16,6 +16,7 @@ import {
     DeleteOutlined
 } from '@ant-design/icons';
 import { onFormFinishFailed } from '@/utils/formValidation';
+import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
 
 const { TextArea } = Input;
@@ -29,6 +30,7 @@ export default function ContactPageSeoForm({
     isOpen,
     onToggle
 }) {
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
     const [previewImage, setPreviewImage] = useState(null);
     const [ogImages, setOgImages] = useState([]);
@@ -553,19 +555,21 @@ export default function ContactPageSeoForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vn'
-                                        ? (pageData ? 'Lưu Cài Đặt SEO' : 'Tạo Trang')
-                                        : (pageData ? 'Save SEO Settings' : 'Create Page')
-                                    }
-                                </Button>
+                                {can('cms.contactUs', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vn'
+                                            ? (pageData ? 'Lưu Cài Đặt SEO' : 'Tạo Trang')
+                                            : (pageData ? 'Save SEO Settings' : 'Create Page')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

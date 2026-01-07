@@ -17,6 +17,7 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { uploadAboutPageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
 
 const { TextArea } = Input;
@@ -30,6 +31,7 @@ export default function AboutPageFindPropertyForm({
     isOpen,
     onToggle
 }) {
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
     const [findBgUrl, setFindBgUrl] = useState(pageData?.aboutFindBg || '');
     const [uploading, setUploading] = useState(false);
@@ -307,19 +309,21 @@ export default function AboutPageFindPropertyForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vn'
-                                        ? (pageData ? 'Lưu Phần Tìm Bất Động Sản' : 'Tạo Trang')
-                                        : (pageData ? 'Save Find Property Section' : 'Create Page')
-                                    }
-                                </Button>
+                                {can('cms.aboutUs', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vn'
+                                            ? (pageData ? 'Lưu Phần Tìm Bất Động Sản' : 'Tạo Trang')
+                                            : (pageData ? 'Save Find Property Section' : 'Create Page')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

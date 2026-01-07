@@ -9,6 +9,7 @@ import {
   SlidersHorizontal,
   RotateCcw,
   Upload,
+  MoreVertical,
 } from "lucide-react";
 import {
   deletePropertyListing,
@@ -22,10 +23,10 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "antd";
-import { MoreVertical } from "lucide-react";
 import FiltersPage from "../Filters/Filter";
+import { usePermissions } from "../../Context/PermissionContext";
 
 export default function ManageProperty({
   filterByTransactionType,
@@ -50,6 +51,15 @@ export default function ManageProperty({
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
+  const { can } = usePermissions();
+
+  const getPermissionKey = () => {
+    if (filterByTransactionType === "Lease") return "properties.lease";
+    if (filterByTransactionType === "Sale") return "properties.sale";
+    if (filterByTransactionType === "Home Stay" || filterByTransactionType === "HomeStay") return "properties.homestay";
+    return null;
+  };
+  const permissionKey = getPermissionKey();
 
 
   // Helper: fetch page from backend
@@ -317,7 +327,7 @@ export default function ManageProperty({
       ];
     }
 
-    if (filterByTransactionType === "Home Stay") {
+    if (filterByTransactionType === "Home Stay" || filterByTransactionType === "HomeStay") {
       return [
         {
           key: "copy_sale",
@@ -369,7 +379,7 @@ export default function ManageProperty({
             ? t.propertyTitleLease
             : filterByTransactionType === "Sale"
               ? t.propertyTitleSale
-              : filterByTransactionType === "Home Stay"
+              : (filterByTransactionType === "Home Stay" || filterByTransactionType === "HomeStay")
                 ? t.propertyTitleHomeStay
                 : ""}
         </h1>
@@ -394,13 +404,16 @@ export default function ManageProperty({
           )}
 
           {trashMode ? null : (
-            <button
-              onClick={() => navigate(`/dashboard/${transactionRoute}/create`)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
-            >
-              <Plus className="w-4 h-4" />
-              {t.addProperty}
-            </button>
+            // Conditionally render Add button. Assuming 'edit' permission implies ability to modify/add.
+            can(permissionKey, 'edit') && (
+              <button
+                onClick={() => navigate(`/dashboard/${transactionRoute}/create`)}
+                className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
+              >
+                <Plus className="w-4 h-4" />
+                {t.addProperty}
+              </button>
+            )
           )}
         </div>
       </div>
@@ -511,10 +524,10 @@ export default function ManageProperty({
                       <div className="flex items-center gap-2">
                         <span
                           className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
-                              ? "bg-green-100 text-green-700"
-                              : p.status === "Draft"
-                                ? "bg-[#FFF3DE] text-[#FFA600]"
-                                : "bg-gray-200 text-gray-700"
+                            ? "bg-green-100 text-green-700"
+                            : p.status === "Draft"
+                              ? "bg-[#FFF3DE] text-[#FFA600]"
+                              : "bg-gray-200 text-gray-700"
                             }`}
                         >
                           {p.status === "Published"
@@ -531,39 +544,47 @@ export default function ManageProperty({
                     </td>
 
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`
-                          )
-                        }
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
-                      >
-                        <Eye className="w-4 h-4 text-gray-600" />
-                      </button>
+                      {can(permissionKey, 'view') && (
+                        <button
+                          onClick={() =>
+                            navigate(
+                              `/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`
+                            )
+                          }
+                          className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
+                        >
+                          <Eye className="w-4 h-4 text-gray-600" />
+                        </button>
+                      )}
 
-                      <button
-                        onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}`)}
-                        className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
-                      >
-                        <Pencil color="#1d47ffff" className="w-4 h-4 text-gray-600" />
-                      </button>
+                      {can(permissionKey, 'edit') && (
+                        <button
+                          onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}`)}
+                          className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
+                        >
+                          <Pencil color="#1d47ffff" className="w-4 h-4 text-gray-600" />
+                        </button>
+                      )}
 
                       {trashMode ? (
                         <button onClick={() => handleRestore(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
                           <RotateCcw className="w-4 h-4 text-green-600" />
                         </button>
                       ) : (
-                        <button onClick={() => confirmDelete(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </button>
+                        can(permissionKey, 'delete') && (
+                          <button onClick={() => confirmDelete(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </button>
+                        )
                       )}
 
-                      <Dropdown trigger={["click"]} menu={{ items: getCopyMenuItems(p) }} placement="bottomRight">
-                        <button className="p-2 rounded-full hover:bg-gray-200 transition border h-10 w-10">
-                          <MoreVertical />
-                        </button>
-                      </Dropdown>
+                      {can(permissionKey, 'copy') && (
+                        <Dropdown trigger={["click"]} menu={{ items: getCopyMenuItems(p) }} placement="bottomRight">
+                          <button className="p-2 rounded-full hover:bg-gray-200 transition border h-10 w-10">
+                            <MoreVertical />
+                          </button>
+                        </Dropdown>
+                      )}
                     </td>
                   </tr>
                 );

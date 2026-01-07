@@ -3,10 +3,12 @@ import { Table, Button, Space, Modal, Form, Input, Tabs, ConfigProvider, Spin } 
 import { Edit, Trash, Plus, AlertTriangle } from "lucide-react";
 import { getCategories, deleteCategory, createCategory, updateCategory } from "../../Api/action";
 import { useLanguage } from "../../Language/LanguageContext";
+import { usePermissions } from "../../Context/PermissionContext";
 import { CommonToaster } from "@/Common/CommonToaster";
 
 export default function CategoryListPage() {
     const { language } = useLanguage();
+    const { can } = usePermissions();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -198,19 +200,23 @@ export default function CategoryListPage() {
             key: "actions",
             render: (_, record) => (
                 <Space size="middle">
-                    <Button
-                        type="text"
-                        icon={<Edit className="w-4 h-4 text-blue-600" />}
-                        className="flex items-center justify-center hover:bg-blue-50"
-                        onClick={() => handleOpenModal(record)}
-                    />
-                    <Button
-                        type="text"
-                        danger
-                        icon={<Trash className="w-4 h-4" />}
-                        onClick={() => confirmDelete(record._id)}
-                        className="flex items-center justify-center hover:bg-red-50"
-                    />
+                    {can('blogs.category', 'edit') && (
+                        <Button
+                            type="text"
+                            icon={<Edit className="w-4 h-4 text-blue-600" />}
+                            className="flex items-center justify-center hover:bg-blue-50"
+                            onClick={() => handleOpenModal(record)}
+                        />
+                    )}
+                    {can('blogs.category', 'delete') && (
+                        <Button
+                            type="text"
+                            danger
+                            icon={<Trash className="w-4 h-4" />}
+                            onClick={() => confirmDelete(record._id)}
+                            className="flex items-center justify-center hover:bg-red-50"
+                        />
+                    )}
                 </Space>
             ),
         },
@@ -227,16 +233,18 @@ export default function CategoryListPage() {
                         {t.pageDescription}
                     </p>
                 </div>
-                <Button
-                    style={{ backgroundColor: '#41398B' }}
-                    type="primary"
-                    icon={<Plus className="w-4 h-4" />}
-                    size="large"
-                    className="bg-[#41398B] hover:!bg-[#352e7a] border-none font-['Manrope'] flex items-center gap-2"
-                    onClick={() => handleOpenModal(null)}
-                >
-                    {t.addCategory}
-                </Button>
+                {can('blogs.category', 'add') && (
+                    <Button
+                        style={{ backgroundColor: '#41398B' }}
+                        type="primary"
+                        icon={<Plus className="w-4 h-4" />}
+                        size="large"
+                        className="bg-[#41398B] hover:!bg-[#352e7a] border-none font-['Manrope'] flex items-center gap-2"
+                        onClick={() => handleOpenModal(null)}
+                    >
+                        {t.addCategory}
+                    </Button>
+                )}
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -284,36 +292,38 @@ export default function CategoryListPage() {
             </Modal>
 
             {/* Delete Confirmation Modal */}
-            {isDeleteModalOpen && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
-                        <div className="flex items-center mb-3">
-                            <AlertTriangle className="text-red-600 mr-2" />
-                            <h3 className="font-semibold text-gray-800">
-                                {t.deleteCategory}
-                            </h3>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-5">
-                            {t.deleteConfirmation}
-                        </p>
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setIsDeleteModalOpen(false)}
-                                className="px-5 py-2 border rounded-full hover:bg-gray-100"
-                            >
-                                {t.cancel}
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                disabled={submitLoading}
-                                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 disabled:opacity-50"
-                            >
-                                {submitLoading ? (language === 'vi' ? 'Đang xóa...' : 'Deleting...') : t.yesDelete}
-                            </button>
+            {
+                isDeleteModalOpen && (
+                    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
+                            <div className="flex items-center mb-3">
+                                <AlertTriangle className="text-red-600 mr-2" />
+                                <h3 className="font-semibold text-gray-800">
+                                    {t.deleteCategory}
+                                </h3>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-5">
+                                {t.deleteConfirmation}
+                            </p>
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => setIsDeleteModalOpen(false)}
+                                    className="px-5 py-2 border rounded-full hover:bg-gray-100"
+                                >
+                                    {t.cancel}
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    disabled={submitLoading}
+                                    className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 disabled:opacity-50"
+                                >
+                                    {submitLoading ? (language === 'vi' ? 'Đang xóa...' : 'Deleting...') : t.yesDelete}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

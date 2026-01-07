@@ -1,233 +1,371 @@
-import React from "react";
-import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Wrench, Tags } from "lucide-react";
+import React, { useState } from "react";
+import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Tags, User, UserCheck, UserLockIcon, PersonStanding, SettingsIcon, UserPlus2 } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "../Header/Header";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { FaQuestionCircle } from "react-icons/fa";
+import { usePermissions } from "../../Context/PermissionContext";
+import Loader from "../../components/Loader/Loader";
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { language } = useLanguage();
     const t = translations[language];
-
-    const [openProperties, setOpenProperties] = React.useState(true);
-    const [openCMS, setOpenCMS] = React.useState(false);
-    const [openBlogs, setOpenBlogs] = React.useState(false);
+    const { isHidden, loading } = usePermissions();
+    const [openProperties, setOpenProperties] = useState(true);
+    const [openCMS, setOpenCMS] = useState(false);
+    const [openBlogs, setOpenBlogs] = useState(false);
+    const [openUserManagement, setOpenUserManagement] = useState(false);
+    const [openManageStaffs, setOpenManageStaffs] = useState(false);
 
     const isActive = (path) => location.pathname.startsWith(path);
 
+    if (loading) {
+        return <Loader />;
+    }
+
     return (
         <>
-            <Header />
+            <Header showNavigation={false} />
             <div className="flex h-screen bg-gradient-to-b from-[#F7F6F9] to-[#EAE8FD] pt-4">
 
                 {/* SIDEBAR */}
                 <div className="w-[280px] flex flex-col items-center py-6 h-full overflow-y-auto scrollbar-hide">
                     <div className="flex flex-col w-full gap-4 px-4">
-
                         {/* PROPERTIES DROPDOWN */}
-                        <div className="w-full">
-                            <button
-                                onClick={() => setOpenProperties(!openProperties)}
-                                className="group flex w-full items-center justify-between px-2 py-2 rounded-full
+                        {(!isHidden("properties.lease") || !isHidden("properties.sale") || !isHidden("properties.homestay")) && (
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenProperties(!openProperties)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-full
                 hover:bg-[#41398B] hover:text-white transition"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
-                                        <Home className="w-4 h-4" />
-                                    </span>
-                                    <span className="text-sm font-medium">{t.properties}</span>
-                                </div>
-                                <ChevronDown className={`transition ${openProperties ? "rotate-180" : ""}`} />
-                            </button>
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
+                                            <Home className="w-4 h-4" />
+                                        </span>
+                                        <span className="text-sm font-medium">{t.properties}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openProperties ? "rotate-180" : ""}`} />
+                                </button>
 
-                            {openProperties && (
-                                <div className="ml-10 mt-2 flex flex-col gap-2">
-                                    {/* LEASE */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/lease")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                {openProperties && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        {/* LEASE */}
+                                        {!isHidden("properties.lease") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/lease")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/lease") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Key /> </span>
-                                        <span>{t.lease}</span>
-                                    </button>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Key /> </span>
+                                                <span>{t.lease}</span>
+                                            </button>
+                                        )}
 
-                                    {/* SALE */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/sale")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                        {/* SALE */}
+                                        {!isHidden("properties.sale") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/sale")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/sale") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home /> </span>
-                                        <span>{t.sale}</span>
-                                    </button>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home /> </span>
+                                                <span>{t.sale}</span>
+                                            </button>
+                                        )}
 
-                                    {/* HOME STAY */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/homestay")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                        {/* HOME STAY */}
+                                        {!isHidden("properties.homestay") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/homestay")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/homestay") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <BedDouble /> </span>
-                                        <span>{t.homeStay}</span>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                        {/* CMS SETTINGS DROPDOWN */}
-                        <div className="w-full">
-                            <button
-                                onClick={() => setOpenCMS(!openCMS)}
-                                className="group flex w-full items-center justify-between px-2 py-2 rounded-full
-                hover:bg-[#41398B] hover:text-white transition"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
-                                        <LayoutGrid className="w-4 h-4" />
-                                    </span>
-                                    <span className="text-sm font-medium">{t.cmsAdmin}</span>
-                                </div>
-                                <ChevronDown className={`transition ${openCMS ? "rotate-180" : ""}`} />
-                            </button>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <BedDouble /> </span>
+                                                <span>{t.homeStay}</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
-                            {openCMS && (
-                                <div className="ml-10 mt-2 flex flex-col gap-2">
-                                    {/* HOME PAGE */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/home")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                        {/* CMS SETTINGS DROPDOWN */}
+                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent")) && (
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenCMS(!openCMS)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-full
+                hover:bg-[#41398B] hover:text-white transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
+                                            <LayoutGrid className="w-4 h-4" />
+                                        </span>
+                                        <span className="text-sm font-medium">{t.cmsAdmin}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openCMS ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {openCMS && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        {/* HOME PAGE */}
+                                        {!isHidden("cms.homePage") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/home")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/cms/home") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home /> </span>
-                                        <span>{t.home || "Home Page"}</span>
-                                    </button>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home /> </span>
+                                                <span>{t.home || "Home Page"}</span>
+                                            </button>
+                                        )}
 
-                                    {/* ABOUT US */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/about")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                        {/* ABOUT US */}
+                                        {!isHidden("cms.aboutUs") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/about")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/cms/about") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Users /> </span>
-                                        <span>{t.aboutUs}</span>
-                                    </button>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Users /> </span>
+                                                <span>{t.aboutUs}</span>
+                                            </button>
+                                        )}
 
-                                    {/* CONTACT */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/contact")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                        {/* CONTACT */}
+                                        {!isHidden("cms.contactUs") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/contact")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/cms/contact") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserCog /> </span>
-                                        <span>{t.contact}</span>
-                                    </button>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserCog /> </span>
+                                                <span>{t.contact}</span>
+                                            </button>
+                                        )}
 
-                                    {/* HEADER */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/header")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                        {/* HEADER */}
+                                        {!isHidden("cms.header") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/header")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/cms/header") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
-                                        <span>{t.header}</span>
-                                    </button>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
+                                                <span>{t.header}</span>
+                                            </button>
+                                        )}
 
-                                    {/* FOOTER */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/footer")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                        {/* FOOTER */}
+                                        {!isHidden("cms.footer") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/footer")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/cms/footer") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
-                                        <span>{t.footer}</span>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
+                                                <span>{t.footer}</span>
+                                            </button>
+                                        )}
+
+                                        {/* AGENT */}
+                                        {!isHidden("cms.agent") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/agent")}
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/agent") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <User /> </span>
+                                                <span className="text-sm">{t.agent}</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* BLOGS DROPDOWN */}
-                        <div className="w-full">
-                            <button
-                                onClick={() => setOpenBlogs(!openBlogs)}
-                                className="group flex w-full items-center justify-between px-2 py-2 rounded-full
+                        {(!isHidden("blogs.category") || !isHidden("blogs.blogCms")) && (
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenBlogs(!openBlogs)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-full
                 hover:bg-[#41398B] hover:text-white transition"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
-                                        <Folder className="w-4 h-4" />
-                                    </span>
-                                    <span className="text-sm font-medium">{t.blogs}</span>
-                                </div>
-                                <ChevronDown className={`transition ${openBlogs ? "rotate-180" : ""}`} />
-                            </button>
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
+                                            <Folder className="w-4 h-4" />
+                                        </span>
+                                        <span className="text-sm font-medium">{t.blogs}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openBlogs ? "rotate-180" : ""}`} />
+                                </button>
 
-                            {openBlogs && (
-                                <div className="ml-10 mt-2 flex flex-col gap-2">
-                                    {/* CATEGORY */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/categories")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                {openBlogs && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        {/* CATEGORY */}
+                                        {!isHidden("blogs.category") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/categories")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/cms/categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags /> </span>
-                                        <span>{t.categories}</span>
-                                    </button>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags /> </span>
+                                                <span>{t.categories}</span>
+                                            </button>
+                                        )}
 
-                                    {/* ADD BLOG */}
-                                    <button
-                                        onClick={() => navigate("/dashboard/cms/blogs")}
-                                        className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                        {/* ADD BLOG */}
+                                        {!isHidden("blogs.blogCms") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/blogs")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                       ${isActive("/dashboard/cms/blogs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
-                                    >
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder /> </span>
-                                        <span>{t.addBlog || "Blog Cms"}</span>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder /> </span>
+                                                <span>{t.addBlog || "Blog Cms"}</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* USERMANAGEMENT DROPDOWN */}
+                        {(!isHidden("userManagement.userDetails") || !isHidden("userManagement.enquires")) && (
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenUserManagement(!openUserManagement)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-full
+                hover:bg-[#41398B] hover:text-white transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
+                                            <UserCheck className="w-4 h-4" />
+                                        </span>
+                                        <span>{t.userManagement}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openUserManagement ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {openUserManagement && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        {/* USER DETAILS */}
+                                        {!isHidden("userManagement.userDetails") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/user-details")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/user-details") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserLockIcon /> </span>
+                                                <span>{t.userDetails}</span>
+                                            </button>
+                                        )}
+
+                                        {/* ENQUIRES */}
+                                        {!isHidden("userManagement.enquires") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/enquires")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/enquires") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <FaQuestionCircle /> </span>
+                                                <span>{t.enquires}</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* STAFF MANAGEMENT DROPDOWN */}
+                        {(!isHidden("menuStaffs.roles") || !isHidden("menuStaffs.staffs")) && (
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenManageStaffs(!openManageStaffs)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-full
+                hover:bg-[#41398B] hover:text-white transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
+                                            <PersonStanding className="w-4 h-4" />
+                                        </span>
+                                        <span>{t.manageStaffs}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openManageStaffs ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {openManageStaffs && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        {/* ROLES */}
+                                        {!isHidden("menuStaffs.roles") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/roles")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/roles") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <SettingsIcon /> </span>
+                                                <span>{t.roles}</span>
+                                            </button>
+                                        )}
+
+                                        {/* STAFFS */}
+                                        {!isHidden("menuStaffs.staffs") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/staffs")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/staffs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserPlus2 /> </span>
+                                                <span>{t.staffs}</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* OTHER PAGES */}
 
                         {/* LANDLORDS */}
-                        <button
-                            onClick={() => navigate("/dashboard/landlords")}
-                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
-                ${isActive("/dashboard/landlords") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-              `}
-                        >
-                            <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><Users /></span>
-                            <span>{t.owners}</span>
-                        </button>
+                        {!isHidden("landlords") && (
+                            <button
+                                onClick={() => navigate("/dashboard/landlords")}
+                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                 ${isActive("/dashboard/landlords") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+               `}
+                            >
+                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><Users /></span>
+                                <span>{t.owners}</span>
+                            </button>
+                        )}
 
-                        {/* STAFF */}
-                        {/* <button
-              onClick={() => navigate("/dashboard/staffs")}
-              className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
-                ${isActive("/dashboard/staffs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-              `}
-            >
-              <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><UserCog /></span>
-              <span>{t.staffs}</span>
-            </button> */}
 
                         {/* MASTERS */}
                         <button
                             onClick={() => navigate("/dashboard/masters")}
                             className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
-                ${isActive("/dashboard/masters") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-              `}
+                 ${isActive("/dashboard/masters") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+               `}
                         >
                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><LayoutGrid /></span>
                             <span>{t.masters}</span>
@@ -237,8 +375,8 @@ const DashboardLayout = () => {
                         <button
                             onClick={() => navigate("/dashboard/trash")}
                             className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
-                ${isActive("/dashboard/trash") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-              `}
+                 ${isActive("/dashboard/trash") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+               `}
                         >
                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><Trash /></span>
                             <span>{t.trash}</span>

@@ -20,6 +20,7 @@ import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
+import { usePermissions } from "../../Context/PermissionContext";
 
 /* ==========================================================
    ✅ Custom Select Component
@@ -57,6 +58,7 @@ const CustomSelect = ({ label, name, value, onChange, options = [], lang }) => {
 const OwnersLandlords = ({ openOwnerView }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const { can } = usePermissions();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [activeLang, setActiveLang] = useState("EN");
@@ -241,13 +243,15 @@ const OwnersLandlords = ({ openOwnerView }) => {
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-semibold">{t.owners}</h1>
-        <button
-          onClick={openAddModal}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-[#41398B] rounded-full shadow"
-        >
-          <Plus size={18} />
-          {language === "vi" ? "Chủ sở hữu mới" : "New Owner"}
-        </button>
+        {can("landlords", "add") && (
+          <button
+            onClick={openAddModal}
+            className="flex items-center gap-2 px-4 py-2 text-white bg-[#41398B] rounded-full shadow"
+          >
+            <Plus size={18} />
+            {language === "vi" ? "Chủ sở hữu mới" : "New Owner"}
+          </button>
+        )}
       </div>
 
       {/* SEARCH */}
@@ -289,28 +293,34 @@ const OwnersLandlords = ({ openOwnerView }) => {
                   {/* ACTIONS */}
                   <td className="px-6 py-4 text-center">
                     <div className="flex justify-center gap-2">
-                      <button
-                        onClick={() => navigate(`/dashboard/landlords/${item._id}`)}
-                        className="p-2 border rounded-full hover:bg-gray-200"
-                      >
-                        <Eye size={18} />
-                      </button>
+                      {can("landlords", "view") && (
+                        <button
+                          onClick={() => navigate(`/dashboard/landlords/${item._id}`)}
+                          className="p-2 border rounded-full hover:bg-gray-200"
+                        >
+                          <Eye size={18} />
+                        </button>
+                      )}
 
-                      <button
-                        onClick={() => openEditModal(item)}
-                        className="p-2 border rounded-full hover:bg-gray-200"
-                      >
-                        <Edit2 size={18} className="text-blue-500" />
-                      </button>
+                      {can("landlords", "edit") && (
+                        <button
+                          onClick={() => openEditModal(item)}
+                          className="p-2 border rounded-full hover:bg-gray-200"
+                        >
+                          <Edit2 size={18} className="text-blue-500" />
+                        </button>
+                      )}
 
-                      <button
-                        onClick={() =>
-                          setDeleteConfirm({ show: true, id: item._id })
-                        }
-                        className="p-2 border rounded-full hover:bg-gray-200"
-                      >
-                        <Trash2 size={18} className="text-red-500" />
-                      </button>
+                      {can("landlords", "delete") && (
+                        <button
+                          onClick={() =>
+                            setDeleteConfirm({ show: true, id: item._id })
+                          }
+                          className="p-2 border rounded-full hover:bg-gray-200"
+                        >
+                          <Trash2 size={18} className="text-red-500" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

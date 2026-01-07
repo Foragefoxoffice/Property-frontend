@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Phone,
   Bed,
@@ -12,10 +12,15 @@ import {
   ArrowLeft,
   ArrowRight,
   X,
-  PlayIcon, // Added X
+  PlayIcon,
+  Mail,
 } from "lucide-react";
-
-import { safeVal, safeArray, formatNumber } from "@/utils/display";
+import { FaWhatsapp } from "react-icons/fa";
+import { SiMessenger, SiZalo } from "react-icons/si";
+import { translations } from "../../Language/translations";
+import { safeVal, safeArray } from "@/utils/display";
+import { getAgent } from "../../Api/action";
+import { useLanguage } from "../../Language/LanguageContext";
 
 /* -------------------------------------------------------
    MEDIA PREVIEW MODAL
@@ -102,6 +107,8 @@ function SimpleSlider({ items, type = "image" }) {
 ------------------------------------------------------- */
 export default function PropertyDetailsSection({ property }) {
   // references for scrolling
+  const { language } = useLanguage();
+  const t = translations[language];
   const sectionRefs = {
     Overview: useRef(null),
     "Property Utility": useRef(null),
@@ -111,6 +118,26 @@ export default function PropertyDetailsSection({ property }) {
   };
 
   const [previewUrl, setPreviewUrl] = useState(null); // Preview state
+  const [agentData, setAgentData] = useState(null); // Agent CMS data
+  const [agentLoading, setAgentLoading] = useState(true); // Loading state
+
+  // Fetch agent data on mount
+  useEffect(() => {
+    const fetchAgentData = async () => {
+      try {
+        setAgentLoading(true);
+        const response = await getAgent();
+        const data = response.data.data;
+        setAgentData(data);
+      } catch (error) {
+        console.error('Error fetching agent data:', error);
+      } finally {
+        setAgentLoading(false);
+      }
+    };
+
+    fetchAgentData();
+  }, []);
 
   const scrollTo = (name) => {
     sectionRefs[name]?.current?.scrollIntoView({
@@ -154,7 +181,7 @@ export default function PropertyDetailsSection({ property }) {
   }
 
   return (
-    <div className="bg-[#F8F7FC]">
+    <div className="bg-[#F8F7FC] pb-40">
       {/* -------------------------------------------------------
          Tabs (UI preserved exactly)
       ------------------------------------------------------- */}
@@ -432,32 +459,105 @@ export default function PropertyDetailsSection({ property }) {
            RIGHT CONTACT CARD (UI preserved)
         ------------------------------------------------------- */}
         <div className="lg:col-span-1 sticky top-6 h-fit bg-white rounded-xl border p-6 shadow-md">
-          <h3 className="text-xl font-semibold mb-4">Contact</h3>
+          <h3 className="text-2xl text-[#41398B] font-semibold mb-4">{t.contact}</h3>
 
-          <div className="flex items-center gap-3 mb-4">
-            <img src="/placeholder.jpg" className="w-14 h-14 rounded-full" />
-            <div>
-              <p className="font-semibold">Agent</p>
-              <p className="text-sm text-gray-500">
-                {safeVal(p?.contactManagement?.contactManagementConsultant)}
-              </p>
+          {agentLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#41398B]"></div>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-3 mb-2">
+                <img
+                  src={
+                    agentData?.agentImage
+                      ? agentData.agentImage.startsWith('/')
+                        ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${agentData.agentImage}`
+                        : agentData.agentImage
+                      : "/placeholder.jpg"
+                  }
+                  className="w-[250px] h-full object-cover pb-0"
+                  alt="Agent"
+                />
+              </div>
 
-          <div className="flex items-center gap-2 text-gray-700 mb-5">
-            <Phone className="w-4 h-4" />
-            <span>
-              {safeVal(p?.contactManagement?.contactManagementConnectingPoint)}
-            </span>
-          </div>
+              <div>
+                <h3 className="text-xl text-[#41398B] font-semibold mb-4">{t.agent}</h3>
+              </div>
 
-          <button className="w-full bg-black text-white py-2 rounded-full mb-3">
-            Call
-          </button>
+              {/* Phone Numbers */}
+              {agentData?.agentNumber && Array.isArray(agentData.agentNumber) && agentData.agentNumber.length > 0 && (
+                <div className="mb-4">
+                  {agentData.agentNumber.map((phone, index) => (
+                    <div key={index} className="flex items-center gap-2 text-gray-700 mb-2">
+                      <Phone className="w-4 h-4" />
+                      <a href={`tel:${phone}`} className="hover:text-[#41398B] transition">
+                        {phone}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-          <button className="w-full bg-indigo-600 text-white py-2 rounded-full">
-            Book Viewing
-          </button>
+              {/* Email Addresses */}
+              {agentData?.agentEmail && Array.isArray(agentData.agentEmail) && agentData.agentEmail.length > 0 && (
+                <div className="mb-4">
+                  {agentData.agentEmail.map((email, index) => (
+                    <div key={index} className="flex items-center gap-2 text-gray-700 mb-2">
+                      <Mail className="w-4 h-4" />
+                      <a href={`mailto:${email}`} className="hover:text-[#41398B] transition text-sm">
+                        {email}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+
+              {/* Social Media Links */}
+              {(agentData?.agentZaloLink || agentData?.agentMessengerLink || agentData?.agentWhatsappLink) && (
+                <div className="border-t pt-4">
+                  <div className="flex gap-3 justify-center">
+                    {agentData?.agentZaloLink && (
+                      <a
+                        href={agentData.agentZaloLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white transition"
+                        title="Zalo"
+                      >
+                        <SiZalo className="w-5 h-5" />
+                      </a>
+                    )}
+
+                    {agentData?.agentMessengerLink && (
+                      <a
+                        href={agentData.agentMessengerLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center text-white transition"
+                        title="Messenger"
+                      >
+                        <SiMessenger className="w-5 h-5" />
+                      </a>
+                    )}
+
+                    {agentData?.agentWhatsappLink && (
+                      <a
+                        href={agentData.agentWhatsappLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white transition"
+                        title="WhatsApp"
+                      >
+                        <FaWhatsapp className="w-5 h-5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
 

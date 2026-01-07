@@ -50,6 +50,7 @@ API.interceptors.response.use(
 ========================================================= */
 export const loginUser = (data) => API.post("/auth/login", data);
 export const registerUser = (data) => API.post("/auth/register", data);
+export const userRegisterApi = (data) => API.post("/auth/user-register", data);
 export const forgotPassword = (data) => API.post("/auth/forgot-password", data);
 export const resetPassword = (data) => API.post("/auth/reset-password", data);
 export const getMe = () => API.get("/auth/me");
@@ -467,6 +468,35 @@ export const uploadFooterImage = (file) => {
     withCredentials: true,
   });
 };
+
+/* =========================================================
+   👤 AGENT CMS APIs
+========================================================= */
+export const getAgent = () => API.get("/agent/get-agent");
+export const updateAgent = (data) => API.put("/agent/update-agent", data);
+export const uploadAgentImage = (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/agent/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
+/* =========================================================
+   🛡️ ROLE MANAGEMENT APIs
+========================================================= */
+export const getRoles = () => API.get("/roles");
+export const getRoleById = (id) => API.get(`/roles/${id}`);
+export const createRole = (data) => API.post("/roles", data);
+export const updateRole = (id, data) => API.put(`/roles/${id}`, data);
+export const deleteRole = (id) => API.delete(`/roles/${id}`);
 
 /* =========================================================
    ✨ EXPORT DEFAULT

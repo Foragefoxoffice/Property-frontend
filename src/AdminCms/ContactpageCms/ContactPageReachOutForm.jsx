@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { usePermissions } from '../../Context/PermissionContext';
 import * as LucideIcons from 'lucide-react';
 import { uploadContactPageImage } from '../../Api/action';
 
@@ -30,6 +31,7 @@ export default function ContactPageReachOutForm({
     isOpen,
     onToggle
 }) {
+    const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
     const [iconUploading, setIconUploading] = useState(null);
 
@@ -633,19 +635,21 @@ export default function ContactPageReachOutForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {activeTab === 'vn'
-                                        ? (pageData ? 'Lưu Phần Liên Hệ' : 'Tạo Trang')
-                                        : (pageData ? 'Save Reach Out Section' : 'Create Page')
-                                    }
-                                </Button>
+                                {can('cms.contactUs', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {activeTab === 'vn'
+                                            ? (pageData ? 'Lưu Phần Liên Hệ' : 'Tạo Trang')
+                                            : (pageData ? 'Save Reach Out Section' : 'Create Page')
+                                        }
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

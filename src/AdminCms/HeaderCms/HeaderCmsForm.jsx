@@ -15,10 +15,12 @@ import {
 import { getHeader, updateHeader, uploadHeaderImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { useLanguage } from '../../Language/LanguageContext';
+import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
 
 export default function HeaderCmsForm() {
     const { language } = useLanguage();
+    const { can } = usePermissions();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [fetchLoading, setFetchLoading] = useState(true);
@@ -186,6 +188,7 @@ export default function HeaderCmsForm() {
                             form={form}
                             layout="vertical"
                             onFinish={handleSubmit}
+                            disabled={!can('cms.header', 'edit')}
                         >
                             <Form.Item
                                 label={
@@ -279,16 +282,18 @@ export default function HeaderCmsForm() {
                                         {t.cancelButton}
                                     </Button>
                                 )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
-                                >
-                                    {t.saveButton}
-                                </Button>
+                                {can('cms.header', 'edit') && (
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        size="large"
+                                        icon={<SaveOutlined />}
+                                        loading={loading}
+                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                    >
+                                        {t.saveButton}
+                                    </Button>
+                                )}
                             </div>
                         </Form>
                     </ConfigProvider>

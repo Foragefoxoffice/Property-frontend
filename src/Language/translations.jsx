@@ -49,6 +49,12 @@ export const translations = {
     seoInfo: "SEO Information",
     reviewPublish: "Review & Publish",
     blog: "Blog",
+    agent: "Property Consultant",
+    userManagement: "User Management",
+    userDetails: "User Details",
+    enquires: "Enquires",
+    manageStaffs: "Manage Staffs",
+    roles: "Roles"
   },
 
   vi: {
@@ -101,5 +107,11 @@ export const translations = {
     seoInfo: "Thông Tin SEO",
     reviewPublish: "Xem Lại & Xuất Bản",
     blog: "Bài Viết",
+    agent: "Tư vấn bất động sản",
+    userManagement: "Quản lý người dùng",
+    userDetails: "Chi tiết người dùng",
+    enquires: "hỏi thăm",
+    manageStaffs: "Quản lý nhân viên",
+    roles: "Vai trò"
   },
 };
