@@ -179,9 +179,11 @@ export default function Header({ showNavigation = true }) {
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
-          <div>
-            <Link className="font-medium text-[16px] hover:text-[#41398B]" to="/">Login/Register</Link>
-          </div>
+          {!localStorage.getItem("token") && (
+            <div>
+              <Link className="font-medium text-[16px] hover:text-[#41398B]" to="/">Login/Register</Link>
+            </div>
+          )}
           {/* Language Toggle */}
           <div className="inline-flex items-center gap-1 rounded-full bg-gray-100 p-1">
             {/* English Flag */}

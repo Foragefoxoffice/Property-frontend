@@ -28,10 +28,11 @@ export default function Login() {
         CommonToaster("Login Successfully!", "success");
 
         // Redirect based on user role
-        if (user?.role === "admin") {
-          navigate("/dashboard/lease");
-        } else {
+        if (user?.role === "user") {
           navigate("/home");
+        } else {
+          // Staff, Admin, or other roles go to dashboard
+          navigate("/dashboard/lease");
         }
       }
     } catch (err) {

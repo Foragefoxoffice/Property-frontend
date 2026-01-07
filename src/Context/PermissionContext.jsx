@@ -13,9 +13,10 @@ export const PermissionProvider = ({ children }) => {
     useEffect(() => {
         const fetchPermissions = async () => {
             const role = localStorage.getItem("userRole");
+            const token = localStorage.getItem("token");
             setUserRole(role);
 
-            if (role) {
+            if (role && token) {
                 try {
                     const res = await getRoles();
                     if (res?.data?.data) {
