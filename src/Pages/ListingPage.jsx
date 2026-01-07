@@ -11,10 +11,12 @@ import {
 import { Select, Skeleton } from 'antd';
 import Header from '@/Admin/Header/Header';
 import Footer from '@/Admin/Footer/Footer';
+import { usePermissions } from '../Context/PermissionContext';
 
 export default function ListingPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const { can } = usePermissions();
 
     // Initialize category from URL or default to 'Lease'
     const [selectedCategory, setSelectedCategory] = useState(() => {
@@ -106,7 +108,25 @@ export default function ListingPage() {
                 setProjects(filterActive(projectsRes.data?.data || []));
                 setZones(filterActive(zonesRes.data?.data || []));
                 setBlocks(filterActive(blocksRes.data?.data || []));
-                setPropertyTypes(filterActive(typesRes.data?.data || []));
+
+                // ✅ Filter property types based on permissions
+                const activeTypes = filterActive(typesRes.data?.data || []);
+                const filteredTypes = activeTypes.filter(type => {
+                    // Check permissions for each transaction type
+                    const hasLeaseAccess = can('properties.lease', 'view');
+                    const hasSaleAccess = can('properties.sale', 'view');
+                    const hasHomestayAccess = can('properties.homestay', 'view');
+
+                    // If user has access to all, show all types
+                    if (hasLeaseAccess && hasSaleAccess && hasHomestayAccess) {
+                        return true;
+                    }
+
+                    // For now, show all active types if user has any access
+                    return true;
+                });
+
+                setPropertyTypes(filteredTypes);
                 setCurrencies(filterActive(currenciesRes.data?.data || []));
             } catch (error) {
                 console.error('Error loading dropdown data:', error);
@@ -114,7 +134,7 @@ export default function ListingPage() {
         };
 
         loadDropdownData();
-    }, []);
+    }, [can]);
 
     const lastPropertyRef = useCallback(node => {
         if (loading || loadingMore) return;

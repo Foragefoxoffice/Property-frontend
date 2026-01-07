@@ -125,6 +125,7 @@ export default function AboutAgentForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.aboutUs', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -254,52 +255,56 @@ export default function AboutAgentForm({
                                                     alt="Agent"
                                                     className="w-full h-full object-cover"
                                                 />
-                                                <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setPreviewImage(agentImageUrl)}
-                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                        title="Preview"
-                                                    >
-                                                        <EyeOutlined className="text-[#41398B] text-lg" />
-                                                    </button>
-                                                    <Upload
-                                                        showUploadList={false}
-                                                        beforeUpload={handleBeforeUpload}
-                                                    >
+                                                {can('cms.aboutUs', 'edit') && (
+                                                    <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
                                                         <button
                                                             type="button"
+                                                            onClick={() => setPreviewImage(agentImageUrl)}
                                                             className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                            title="Change Image"
+                                                            title="Preview"
                                                         >
-                                                            <ReloadOutlined className="text-blue-600 text-lg" />
+                                                            <EyeOutlined className="text-[#41398B] text-lg" />
                                                         </button>
-                                                    </Upload>
-                                                    <button
-                                                        type="button"
-                                                        onClick={removeAgentImage}
-                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                        title="Delete"
-                                                    >
-                                                        <X className="text-red-500 w-5 h-5" />
-                                                    </button>
-                                                </div>
+                                                        <Upload
+                                                            showUploadList={false}
+                                                            beforeUpload={handleBeforeUpload}
+                                                        >
+                                                            <button
+                                                                type="button"
+                                                                className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                title="Change Image"
+                                                            >
+                                                                <ReloadOutlined className="text-blue-600 text-lg" />
+                                                            </button>
+                                                        </Upload>
+                                                        <button
+                                                            type="button"
+                                                            onClick={removeAgentImage}
+                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                            title="Delete"
+                                                        >
+                                                            <X className="text-red-500 w-5 h-5" />
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : (
-                                            <Upload
-                                                name="aboutAgentImage"
-                                                listType="picture-card"
-                                                className="agent-uploader"
-                                                showUploadList={false}
-                                                beforeUpload={handleBeforeUpload}
-                                            >
-                                                <div className="flex flex-col items-center justify-center h-full">
-                                                    <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
-                                                    <div className="text-sm text-gray-500 font-['Manrope']">
-                                                        {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                            can('cms.aboutUs', 'edit') && (
+                                                <Upload
+                                                    name="aboutAgentImage"
+                                                    listType="picture-card"
+                                                    className="agent-uploader"
+                                                    showUploadList={false}
+                                                    beforeUpload={handleBeforeUpload}
+                                                >
+                                                    <div className="flex flex-col items-center justify-center h-full">
+                                                        <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
+                                                        <div className="text-sm text-gray-500 font-['Manrope']">
+                                                            {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </Upload>
+                                                </Upload>
+                                            )
                                         )}
 
                                         <Form.Item name="aboutAgentImage" noStyle>

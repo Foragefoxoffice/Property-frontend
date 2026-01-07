@@ -85,6 +85,7 @@ export default function AboutPageWhyChooseForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.aboutUs', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -257,13 +258,15 @@ export default function AboutPageWhyChooseForm({
                                                     className="relative mb-6 p-6 bg-gradient-to-br from-blue-50/30 to-cyan-50/30 rounded-xl border-1 border-[#41398b1c]"
                                                 >
                                                     {/* Delete Button */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => remove(name)}
-                                                        className="absolute top-4 right-4 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all"
-                                                    >
-                                                        <DeleteOutlined className="text-lg" />
-                                                    </button>
+                                                    {can('cms.aboutUs', 'edit') && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => remove(name)}
+                                                            className="absolute top-4 right-4 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all"
+                                                        >
+                                                            <DeleteOutlined className="text-lg" />
+                                                        </button>
+                                                    )}
 
                                                     <div className="mb-4">
                                                         <span className="inline-block px-3 py-1 bg-[#41398B] text-white text-xs font-semibold rounded-full">
@@ -388,16 +391,18 @@ export default function AboutPageWhyChooseForm({
                                             ))}
 
                                             {/* Add Box Button */}
-                                            <Button
-                                                type="dashed"
-                                                onClick={() => add()}
-                                                block
-                                                icon={<PlusOutlined />}
-                                                size="large"
-                                                className="!border-[#41398B] !text-[#41398B] hover:!bg-purple-50 rounded-[10px] h-12 font-semibold font-['Manrope']"
-                                            >
-                                                {activeTab === 'en' ? 'Add Why Choose Box' : 'Thêm Hộp Lý Do'}
-                                            </Button>
+                                            {can('cms.aboutUs', 'edit') && (
+                                                <Button
+                                                    type="dashed"
+                                                    onClick={() => add()}
+                                                    block
+                                                    icon={<PlusOutlined />}
+                                                    size="large"
+                                                    className="!border-[#41398B] !text-[#41398B] hover:!bg-purple-50 rounded-[10px] h-12 font-semibold font-['Manrope']"
+                                                >
+                                                    {activeTab === 'en' ? 'Add Why Choose Box' : 'Thêm Hộp Lý Do'}
+                                                </Button>
+                                            )}
                                         </>
                                     )}
                                 </Form.List>

@@ -284,38 +284,48 @@ export default function AgentFormCms() {
                                                         >
                                                             <EyeOutlined className="text-[#41398B] text-lg" />
                                                         </button>
-                                                        <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                                        {can('cms.agent', 'edit') && (
+                                                            <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                                                <button
+                                                                    type="button"
+                                                                    className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                    title="Change Image"
+                                                                >
+                                                                    <ReloadOutlined className="text-blue-600 text-lg" />
+                                                                </button>
+                                                            </Upload>
+                                                        )}
+                                                        {can('cms.agent', 'edit') && (
                                                             <button
                                                                 type="button"
+                                                                onClick={removeImage}
                                                                 className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                title="Change Image"
+                                                                title="Delete"
                                                             >
-                                                                <ReloadOutlined className="text-blue-600 text-lg" />
+                                                                <X className="text-red-500 w-5 h-5" />
                                                             </button>
-                                                        </Upload>
-                                                        <button
-                                                            type="button"
-                                                            onClick={removeImage}
-                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                            title="Delete"
-                                                        >
-                                                            <X className="text-red-500 w-5 h-5" />
-                                                        </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <Upload
-                                                    name="agentImage"
-                                                    listType="picture-card"
-                                                    className="agent-image-uploader"
-                                                    showUploadList={false}
-                                                    beforeUpload={handleBeforeUpload}
-                                                >
-                                                    <div className="flex flex-col items-center justify-center h-full">
-                                                        <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
-                                                        <div className="text-sm text-gray-500 font-['Manrope']">{t.uploadPhoto}</div>
+                                                can('cms.agent', 'edit') ? (
+                                                    <Upload
+                                                        name="agentImage"
+                                                        listType="picture-card"
+                                                        className="agent-image-uploader"
+                                                        showUploadList={false}
+                                                        beforeUpload={handleBeforeUpload}
+                                                    >
+                                                        <div className="flex flex-col items-center justify-center h-full">
+                                                            <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
+                                                            <div className="text-sm text-gray-500 font-['Manrope']">{t.uploadPhoto}</div>
+                                                        </div>
+                                                    </Upload>
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center p-8 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl text-gray-400 w-64 h-64">
+                                                        No image uploaded
                                                     </div>
-                                                </Upload>
+                                                )
                                             )}
                                             <Form.Item name="agentImage" noStyle>
                                                 <input type="hidden" />
@@ -342,23 +352,27 @@ export default function AgentFormCms() {
                                                         >
                                                             <Input placeholder={t.phonePlaceholder} className="h-11 rounded-lg" />
                                                         </Form.Item>
-                                                        <Button
-                                                            danger
-                                                            onClick={() => remove(field.name)}
-                                                            icon={<DeleteOutlined />}
-                                                            className="h-11 w-11 flex items-center justify-center rounded-lg"
-                                                        />
+                                                        {can('cms.agent', 'edit') && (
+                                                            <Button
+                                                                danger
+                                                                onClick={() => remove(field.name)}
+                                                                icon={<DeleteOutlined />}
+                                                                className="h-11 w-11 flex items-center justify-center rounded-lg"
+                                                            />
+                                                        )}
                                                     </div>
                                                 ))}
-                                                <Button
-                                                    type="dashed"
-                                                    onClick={() => add()}
-                                                    block
-                                                    icon={<PlusOutlined />}
-                                                    className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope'] mb-6"
-                                                >
-                                                    {t.addPhoneNumber}
-                                                </Button>
+                                                {can('cms.agent', 'edit') && (
+                                                    <Button
+                                                        type="dashed"
+                                                        onClick={() => add()}
+                                                        block
+                                                        icon={<PlusOutlined />}
+                                                        className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope'] mb-6"
+                                                    >
+                                                        {t.addPhoneNumber}
+                                                    </Button>
+                                                )}
                                             </>
                                         )}
                                     </Form.List>
@@ -380,23 +394,27 @@ export default function AgentFormCms() {
                                                         >
                                                             <Input placeholder={t.emailPlaceholder} className="h-11 rounded-lg" />
                                                         </Form.Item>
-                                                        <Button
-                                                            danger
-                                                            onClick={() => remove(field.name)}
-                                                            icon={<DeleteOutlined />}
-                                                            className="h-11 w-11 flex items-center justify-center rounded-lg"
-                                                        />
+                                                        {can('cms.agent', 'edit') && (
+                                                            <Button
+                                                                danger
+                                                                onClick={() => remove(field.name)}
+                                                                icon={<DeleteOutlined />}
+                                                                className="h-11 w-11 flex items-center justify-center rounded-lg"
+                                                            />
+                                                        )}
                                                     </div>
                                                 ))}
-                                                <Button
-                                                    type="dashed"
-                                                    onClick={() => add()}
-                                                    block
-                                                    icon={<PlusOutlined />}
-                                                    className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope']"
-                                                >
-                                                    {t.addEmailAddress}
-                                                </Button>
+                                                {can('cms.agent', 'edit') && (
+                                                    <Button
+                                                        type="dashed"
+                                                        onClick={() => add()}
+                                                        block
+                                                        icon={<PlusOutlined />}
+                                                        className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope']"
+                                                    >
+                                                        {t.addEmailAddress}
+                                                    </Button>
+                                                )}
                                             </>
                                         )}
                                     </Form.List>

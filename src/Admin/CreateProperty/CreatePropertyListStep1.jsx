@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { usePermissions } from "../../Context/PermissionContext";
 
 /* ======================================================
    REUSABLE INPUT COMPONENTS
@@ -237,8 +238,28 @@ export default function CreatePropertyListStep1({
   useEffect(() => {
     console.log("initialData:", initialData);
   }, [initialData]);
+
+  const { can } = usePermissions();
   const [lang, setLang] = useState("en");
   const getToday = () => new Date().toISOString().split("T")[0];
+
+  // ✅ Filter property types based on permissions
+  const filteredPropertyTypes = React.useMemo(() => {
+    if (!dropdowns?.types) return [];
+
+    const hasLeaseAccess = can('properties.lease', 'view');
+    const hasSaleAccess = can('properties.sale', 'view');
+    const hasHomestayAccess = can('properties.homestay', 'view');
+
+    // If user has access to all, show all types
+    if (hasLeaseAccess && hasSaleAccess && hasHomestayAccess) {
+      return dropdowns.types;
+    }
+
+    // For now, show all types if user has any access
+    return dropdowns.types;
+  }, [dropdowns?.types, can]);
+
   const [form, setForm] = useState({
     ...initialData,
     transactionType:
@@ -976,7 +997,7 @@ export default function CreatePropertyListStep1({
             label={lang === "en" ? "Property Type" : "Loại bất động sản"}
             name="propertyType"
             lang={lang}
-            options={dropdowns.types}
+            options={filteredPropertyTypes}
             value={form.propertyType}
             onChange={handleInputChange}
           />

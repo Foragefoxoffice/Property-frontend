@@ -4,28 +4,35 @@ import {
   Search,
   Edit2,
   Trash2,
-  Upload,
   X,
   AlertTriangle,
-  MoveHorizontal,
   Phone,
-  Calendar,
   User,
   Mail,
-  Briefcase
+  Briefcase,
+  Languages
 } from "lucide-react";
 import {
-  getAllUsers,
-  createUser,
-  updateUser,
-  deleteUser,
+  createStaff,
+  updateStaff,
+  deleteStaff,
+  getAllStaffs,
   getRoles
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { usePermissions } from "../../Context/PermissionContext";
-import { Select, DatePicker } from "antd";
+import { Select } from "antd";
 import dayjs from "dayjs";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
 const CustomSelect = ({ label, value, onChange, options = [], placeholder }) => {
   const { Option } = Select;
@@ -54,6 +61,51 @@ const CustomSelect = ({ label, value, onChange, options = [], placeholder }) => 
   );
 };
 
+const CustomDatePicker = ({ label, value, onChange }) => {
+  const [date, setDate] = React.useState(value ? new Date(value.format("YYYY-MM-DD")) : null);
+
+  React.useEffect(() => {
+    if (value && (!date || new Date(value.format("YYYY-MM-DD")).getTime() !== date.getTime())) {
+      setDate(new Date(value.format("YYYY-MM-DD")));
+    }
+  }, [value]); // eslint-disable-line
+
+  const handleSelect = (selectedDate) => {
+    if (!selectedDate) return;
+    setDate(selectedDate);
+    onChange(dayjs(format(selectedDate, "yyyy-MM-dd")));
+  };
+
+  return (
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-700 mb-1.5">
+        {label}
+      </label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={`w-full justify-between text-left font-normal border border-gray-200 rounded-lg px-4 py-2.5 h-auto hover:bg-gray-50 ${!date && "text-muted-foreground"
+              }`}
+          >
+            {date ? format(date, "dd/MM/yyyy") : <span>Select date</span>}
+            <CalendarIcon className="h-4 w-4 text-gray-500" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={handleSelect}
+            modifiers={{ disabled: { after: new Date(2100, 0, 1) } }}
+            initialFocus={false}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+};
+
 export default function Staffs({ openStaffView }) {
   const { language } = useLanguage();
   const { can } = usePermissions();
@@ -67,19 +119,76 @@ export default function Staffs({ openStaffView }) {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("en"); // Language tab state
+
+  // Translations
+  const t = {
+    manageStaffs: language === "vi" ? "Quản Lý Nhân Viên" : "Manage Staffs",
+    newStaff: language === "vi" ? "Thêm Nhân Viên" : "New Staff",
+    searchPlaceholder: language === "vi" ? "Tìm kiếm theo tên, email, hoặc ID..." : "Search by name, email, or ID...",
+    noStaffsFound: language === "vi" ? "Không tìm thấy nhân viên. Nhấn \"Thêm Nhân Viên\" để thêm mới." : "No staffs found. Click \"New Staff\" to add one.",
+    editStaff: language === "vi" ? "Chỉnh Sửa Nhân Viên" : "Edit Staff",
+    addStaff: language === "vi" ? "Thêm Nhân Viên" : "Add Staff",
+    updateStaff: language === "vi" ? "Cập Nhật" : "Update Staff",
+    confirmDeletion: language === "vi" ? "Xác Nhận Xóa" : "Confirm Deletion",
+    deleteMessage: language === "vi" ? "Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác." : "Are you sure you want to delete this staff member? This action cannot be undone.",
+    cancel: language === "vi" ? "Hủy" : "Cancel",
+    delete: language === "vi" ? "Xóa" : "Delete",
+    personalDetails: language === "vi" ? "Thông Tin Cá Nhân" : "Personal Details",
+    dateOfBirth: language === "vi" ? "Ngày Sinh" : "Date of Birth",
+    gender: language === "vi" ? "Giới Tính" : "Gender",
+    selectGender: language === "vi" ? "Chọn Giới Tính" : "Select Gender",
+    dateOfJoining: language === "vi" ? "Ngày Vào Làm" : "Date of Joining",
+    status: language === "vi" ? "Trạng Thái" : "Status",
+    workInformation: language === "vi" ? "Thông Tin Công Việc" : "Work Information",
+    male: language === "vi" ? "Nam" : "Male",
+    female: language === "vi" ? "Nữ" : "Female",
+    other: language === "vi" ? "Khác" : "Other",
+    active: language === "vi" ? "Hoạt Động" : "Active",
+    inactive: language === "vi" ? "Ngưng Hoạt Động" : "Inactive",
+    department: language === "vi" ? "Phòng Ban" : "Department",
+    fillRequired: language === "vi" ? "Vui lòng điền tất cả các trường bắt buộc bằng cả hai ngôn ngữ" : "Please fill all required fields in both languages",
+    staffUpdated: language === "vi" ? "Cập nhật nhân viên thành công" : "Staff updated successfully",
+    staffCreated: language === "vi" ? "Tạo nhân viên thành công" : "Staff created successfully",
+    errorSaving: language === "vi" ? "Lỗi khi lưu nhân viên" : "Error saving staff",
+    staffDeleted: language === "vi" ? "Xóa nhân viên thành công" : "Staff deleted successfully",
+    errorDeleting: language === "vi" ? "Lỗi khi xóa nhân viên" : "Error deleting staff",
+    maxImageSize: language === "vi" ? "Kích thước ảnh tối đa là 2MB" : "Maximum image size is 2MB",
+    failedFetch: language === "vi" ? "Không thể tải dữ liệu" : "Failed to fetch data",
+  };
+
+  // Modal specific translations based on activeTab
+  const modalT = {
+    personalDetails: activeTab === "vi" ? "Thông Tin Cá Nhân" : "Personal Details",
+    workInformation: activeTab === "vi" ? "Thông Tin Công Việc" : "Work Information",
+    dateOfBirth: activeTab === "vi" ? "Ngày Sinh" : "Date of Birth",
+    gender: activeTab === "vi" ? "Giới Tính" : "Gender",
+    selectGender: activeTab === "vi" ? "Chọn Giới Tính" : "Select Gender",
+    dateOfJoining: activeTab === "vi" ? "Ngày Vào Làm" : "Date of Joining",
+    status: activeTab === "vi" ? "Trạng Thái" : "Status",
+    active: activeTab === "vi" ? "Hoạt Động" : "Active",
+    inactive: activeTab === "vi" ? "Ngưng Hoạt Động" : "Inactive",
+    male: activeTab === "vi" ? "Nam" : "Male",
+    female: activeTab === "vi" ? "Nữ" : "Female",
+    other: activeTab === "vi" ? "Khác" : "Other",
+    addStaff: activeTab === "vi" ? "Thêm Nhân Viên" : "Add Staff",
+    editStaff: activeTab === "vi" ? "Chỉnh Sửa Nhân Viên" : "Edit Staff",
+    updateStaff: activeTab === "vi" ? "Cập Nhật" : "Update Staff",
+    cancel: activeTab === "vi" ? "Hủy" : "Cancel",
+  };
 
   // Initial Form State
   const initialFormState = {
     profileImage: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
+    firstName: { en: "", vi: "" },
+    middleName: { en: "", vi: "" },
+    lastName: { en: "", vi: "" },
     email: "",
     employeeId: "",
     phone: "",
     role: null, // Dropdown ID/Name
-    department: "",
-    designation: "",
+    department: { en: "", vi: "" },
+    designation: { en: "", vi: "" },
     dob: null,
     gender: null,
     joiningDate: null,
@@ -95,19 +204,47 @@ export default function Staffs({ openStaffView }) {
   const fetchUsersAndRoles = async () => {
     try {
       setLoading(true);
-      const [usersRes, rolesRes] = await Promise.all([
-        getAllUsers(),
+      const [staffRes, rolesRes] = await Promise.all([
+        getAllStaffs(),
         getRoles()
       ]);
 
-      const allUsers = usersRes.data.data || [];
       const allRoles = rolesRes.data.data || [];
+      const allStaffs = staffRes.data.data || [];
+
+      // Map Staff API format to Frontend format
+      const mappedStaffs = allStaffs.map(s => {
+        // Simple name splitting for visual editing
+        const nameEn = s.staffsName?.en || "";
+        const nameVi = s.staffsName?.vi || "";
+        const partsEn = nameEn.split(" ");
+        const partsVi = nameVi.split(" ");
+
+        return {
+          _id: s._id,
+          profileImage: s.staffsImage,
+          firstName: { en: partsEn[0] || "", vi: partsVi[0] || "" },
+          middleName: { en: partsEn.length > 2 ? partsEn[1] : "", vi: partsVi.length > 2 ? partsVi[1] : "" },
+          lastName: { en: partsEn[partsEn.length - 1] || "", vi: partsVi[partsVi.length - 1] || "" },
+          email: s.staffsEmail,
+          employeeId: s.staffsId,
+          phone: s.staffsNumbers?.[0] || "",
+          role: s.staffsRole?.en || "", // Assuming role is same
+          department: { en: s.staffsDepartment?.en || "", vi: s.staffsDepartment?.vi || "" },
+          designation: { en: s.staffsDesignation?.en || "", vi: s.staffsDesignation?.vi || "" },
+          dob: s.staffsDob ? s.staffsDob : null,
+          gender: s.staffsGender,
+          joiningDate: s.staffsJoiningDate ? s.staffsJoiningDate : null,
+          status: s.status,
+          name: s.staffsName?.en // for quick search access
+        };
+      });
+
       setRoles(allRoles);
-      const staffUsers = allUsers.filter(u => u.role !== 'user');
-      setUsers(staffUsers);
+      setUsers(mappedStaffs);
 
     } catch {
-      CommonToaster("Failed to fetch data", "error");
+      CommonToaster(t.failedFetch, "error");
     } finally {
       setLoading(false);
     }
@@ -117,7 +254,7 @@ export default function Staffs({ openStaffView }) {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { // 2MB limit
-      CommonToaster("Maximum image size is 2MB", "error");
+      CommonToaster(t.maxImageSize, "error");
       return;
     }
     const reader = new FileReader();
@@ -134,15 +271,15 @@ export default function Staffs({ openStaffView }) {
       setEditingUser(user);
       setForm({
         profileImage: user.profileImage || "",
-        firstName: user.firstName || user.name?.split(" ")[0] || "", // Fallback if migrated
-        middleName: user.middleName || "",
-        lastName: user.lastName || "",
+        firstName: { en: user.firstName?.en || "", vi: user.firstName?.vi || "" },
+        middleName: { en: user.middleName?.en || "", vi: user.middleName?.vi || "" },
+        lastName: { en: user.lastName?.en || "", vi: user.lastName?.vi || "" },
         email: user.email || "",
         employeeId: user.employeeId || "",
         phone: user.phone || "",
         role: user.role,
-        department: user.department || "",
-        designation: user.designation || "",
+        department: { en: user.department?.en || "", vi: user.department?.vi || "" },
+        designation: { en: user.designation?.en || "", vi: user.designation?.vi || "" },
         dob: user.dob ? dayjs(user.dob) : null,
         gender: user.gender,
         joiningDate: user.joiningDate ? dayjs(user.joiningDate) : null,
@@ -155,69 +292,86 @@ export default function Staffs({ openStaffView }) {
       setForm(initialFormState);
       setPhotoPreview(null);
     }
+    setActiveTab("en"); // Reset to English tab
     setShowModal(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
-    if (!form.firstName || !form.email || !form.employeeId || !form.role) {
-      CommonToaster("Please fill all required fields", "error");
+    // Validation needs to check sub-fields
+    if (!form.firstName.en || !form.firstName.vi || !form.email || !form.employeeId || !form.role) {
+      CommonToaster(t.fillRequired, "error");
       return;
     }
 
+    // Construct full names
+    const fullNameEn = [form.firstName.en, form.middleName.en, form.lastName.en].filter(Boolean).join(" ");
+    const fullNameVi = [form.firstName.vi, form.middleName.vi, form.lastName.vi].filter(Boolean).join(" ");
+
     const payload = {
-      ...form,
-      // Convert dayjs objects to ISO strings
-      dob: form.dob ? form.dob.toISOString() : null,
-      joiningDate: form.joiningDate ? form.joiningDate.toISOString() : null,
-      // Default password for new staff
-      password: editMode ? undefined : "Admin@123"
+      staffsImage: form.profileImage,
+      staffsName_en: fullNameEn,
+      staffsName_vi: fullNameVi,
+      staffsId: form.employeeId,
+      staffsRole_en: form.role,
+      staffsRole_vi: form.role, // Assuming same for now
+      staffsDepartment_en: form.department.en,
+      staffsDepartment_vi: form.department.vi,
+      staffsDesignation_en: form.designation.en,
+      staffsDesignation_vi: form.designation.vi,
+      staffsEmail: form.email,
+      staffsNumbers: [form.phone],
+      staffsGender: form.gender,
+      staffsDob: form.dob ? form.dob.toISOString() : null,
+      staffsJoiningDate: form.joiningDate ? form.joiningDate.toISOString() : null,
+      staffsNotes_en: "",
+      staffsNotes_vi: "",
+      status: form.status
     };
 
     try {
       if (editMode && editingUser?._id) {
-        // Remove password from update payload to avoid overwriting if not intended
-        delete payload.password;
-
-        await updateUser(editingUser._id, payload);
-        CommonToaster("Staff updated successfully", "success");
+        await updateStaff(editingUser._id, payload);
+        CommonToaster(t.staffUpdated, "success");
       } else {
-        await createUser(payload);
-        CommonToaster("Staff created successfully", "success");
+        await createStaff(payload);
+        CommonToaster(t.staffCreated, "success");
       }
       setShowModal(false);
       fetchUsersAndRoles();
     } catch (err) {
-      CommonToaster(err.response?.data?.error || "Error saving staff", "error");
+      CommonToaster(err.response?.data?.error || t.errorSaving, "error");
     }
   };
 
   const handleDelete = async () => {
     try {
-      await deleteUser(deleteConfirm.id);
-      CommonToaster("Staff deleted successfully", "success");
+      await deleteStaff(deleteConfirm.id);
+      CommonToaster(t.staffDeleted, "success");
       setDeleteConfirm({ show: false, id: null });
       fetchUsersAndRoles();
     } catch {
-      CommonToaster("Error deleting staff", "error");
+      CommonToaster(t.errorDeleting, "error");
     }
   };
 
   const filtered = users.filter((u) => {
-    const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
-    return fullName.includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.employeeId.toLowerCase().includes(searchTerm.toLowerCase());
+    const fullNameEn = `${u.firstName?.en || ""} ${u.lastName?.en || ""}`.toLowerCase();
+    const fullNameVi = `${u.firstName?.vi || ""} ${u.lastName?.vi || ""}`.toLowerCase();
+    const search = searchTerm.toLowerCase();
+    return fullNameEn.includes(search) ||
+      fullNameVi.includes(search) ||
+      u.email.toLowerCase().includes(search) ||
+      u.employeeId.toLowerCase().includes(search);
   });
 
   return (
-    <div className="min-h-screen px-6 py-6 bg-gradient-to-b from-white to-[#f3f2ff]">
+    <div className="min-h-screen px-6 py-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
-          Manage Staffs
+          {t.manageStaffs}
         </h1>
         {can("menuStaffs.staffs", "add") && (
           <button
@@ -225,7 +379,7 @@ export default function Staffs({ openStaffView }) {
             className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition shadow-md"
           >
             <Plus size={18} />
-            New Staff
+            {t.newStaff}
           </button>
         )}
       </div>
@@ -235,7 +389,7 @@ export default function Staffs({ openStaffView }) {
         <Search className="absolute top-2.5 left-3 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder="Search by name, email, or ID..."
+          placeholder={t.searchPlaceholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
@@ -291,10 +445,10 @@ export default function Staffs({ openStaffView }) {
 
                 <div>
                   <h3 className="text-gray-900 font-bold text-lg leading-tight">
-                    {user.firstName} {user.lastName}
+                    {user.firstName?.[language] || user.firstName?.en || ""} {user.lastName?.[language] || user.lastName?.en || ""}
                   </h3>
                   <p className="text-sm text-[#41398B] font-medium mt-0.5">
-                    {user.designation || user.role}
+                    {user.designation?.[language] || user.designation?.en || user.role}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">ID: {user.employeeId}</p>
                 </div>
@@ -311,11 +465,11 @@ export default function Staffs({ openStaffView }) {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Briefcase size={14} className="text-gray-400" />
-                  <span>{user.department || "N/A"} Department</span>
+                  <span>{user.department?.[language] || user.department?.en || "N/A"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
-                    {user.status}
+                    {user.status === "Active" ? t.active : t.inactive}
                   </span>
                 </div>
               </div>
@@ -323,7 +477,7 @@ export default function Staffs({ openStaffView }) {
           ))
         ) : (
           <div className="col-span-full py-12 text-center text-gray-500">
-            No staffs found. Click "New Staff" to add one.
+            {t.noStaffsFound}
           </div>
         )}
       </div>
@@ -336,23 +490,23 @@ export default function Staffs({ openStaffView }) {
               <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
                 <AlertTriangle className="text-red-600 w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Confirm Deletion</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t.confirmDeletion}</h3>
             </div>
             <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-              Are you sure you want to delete this staff member? This action cannot be undone.
+              {t.deleteMessage}
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
                 className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"
               >
-                Cancel
+                {t.cancel}
               </button>
               <button
                 onClick={handleDelete}
                 className="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm font-medium shadow-sm"
               >
-                Delete
+                {t.delete}
               </button>
             </div>
           </div>
@@ -366,7 +520,7 @@ export default function Staffs({ openStaffView }) {
             {/* Header */}
             <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
               <h2 className="text-xl font-bold text-gray-900">
-                {editMode ? "Edit Staff" : "Add Staff"}
+                {editMode ? modalT.editStaff : modalT.addStaff}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -378,117 +532,263 @@ export default function Staffs({ openStaffView }) {
 
             {/* Form Content */}
             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar bg-[#F9FAFB]">
+              {/* Global Language Tabs */}
+              <div className="flex gap-2 mb-6 border-b border-gray-200 sticky top-0 bg-[#F9FAFB] z-10 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("en")}
+                  className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === "en"
+                    ? "text-[#41398B] border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
+                >
+                  <Languages size={16} />
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("vi")}
+                  className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === "vi"
+                    ? "text-[#41398B] border-b-2 border-[#41398B]"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
+                >
+                  <Languages size={16} />
+                  Tiếng Việt
+                </button>
+              </div>
+
               <form id="staffForm" onSubmit={handleSubmit} className="space-y-6">
 
-                {/* Top Section: Image & Basic Info */}
+                {/* Top Section: Basic Info */}
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                  <div className="flex flex-col md:flex-row gap-8 items-start">
-                    {/* Image Upload */}
-                    <div className="flex-shrink-0">
-                      <label className="relative cursor-pointer w-32 h-32 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition overflow-hidden group">
-                        {photoPreview ? (
-                          <img src={photoPreview} alt="preview" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="flex flex-col items-center text-gray-400">
-                            <Upload size={20} />
-                            <span className="mt-1 text-xs font-medium">Upload</span>
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                          <Edit2 className="text-white" size={20} />
+                  {/* English Fields */}
+                  {activeTab === "en" && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            First Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            placeholder="Enter First Name"
+                            type="text"
+                            required
+                            value={form.firstName.en}
+                            onChange={e => setForm({ ...form, firstName: { ...form.firstName, en: e.target.value } })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
                         </div>
-                        <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
-                      </label>
-                      <p className="text-xs text-gray-400 text-center mt-2">Max 2MB</p>
-                    </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Middle Name</label>
+                          <input
+                            placeholder="Enter Middle Name"
+                            type="text"
+                            value={form.middleName.en}
+                            onChange={e => setForm({ ...form, middleName: { ...form.middleName, en: e.target.value } })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Last Name</label>
+                          <input
+                            placeholder="Enter Last Name"
+                            type="text"
+                            value={form.lastName.en}
+                            onChange={e => setForm({ ...form, lastName: { ...form.lastName, en: e.target.value } })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
+                      </div>
 
-                    {/* Name Fields */}
-                    <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">First Name (English) <span className="text-red-500">*</span></label>
-                        <input type="text" required value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
-                      </div>
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Middle Name (English)</label>
-                        <input type="text" value={form.middleName} onChange={e => setForm({ ...form, middleName: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
-                      </div>
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Last Name (English)</label>
-                        <input type="text" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
-                      </div>
-
-                      {/* Email & EMP ID */}
-                      <div className="col-span-1 md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address <span className="text-red-500">*</span></label>
-                        <input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" placeholder="Login ID" />
-                      </div>
-                      <div className="col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Employee ID <span className="text-red-500">*</span></label>
-                        <input type="text" required value={form.employeeId} onChange={e => setForm({ ...form, employeeId: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Email Address <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            placeholder="Enter Email"
+                            type="email"
+                            required
+                            value={form.email}
+                            onChange={e => setForm({ ...form, email: e.target.value })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Employee ID <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            placeholder="Enter Employee ID"
+                            type="text"
+                            required
+                            value={form.employeeId}
+                            onChange={e => setForm({ ...form, employeeId: e.target.value })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* Vietnamese Fields */}
+                  {activeTab === "vi" && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Tên <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            placeholder="Nhập Tên"
+                            type="text"
+                            required
+                            value={form.firstName.vi}
+                            onChange={e => setForm({ ...form, firstName: { ...form.firstName, vi: e.target.value } })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Tên Đệm</label>
+                          <input
+                            placeholder="Nhập Tên Đệm"
+                            type="text"
+                            value={form.middleName.vi}
+                            onChange={e => setForm({ ...form, middleName: { ...form.middleName, vi: e.target.value } })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Họ</label>
+                          <input
+                            placeholder="Nhập Họ"
+                            type="text"
+                            value={form.lastName.vi}
+                            onChange={e => setForm({ ...form, lastName: { ...form.lastName, vi: e.target.value } })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Địa Chỉ Email <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            placeholder="Nhập Email"
+                            type="email"
+                            required
+                            value={form.email}
+                            onChange={e => setForm({ ...form, email: e.target.value })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Mã Nhân Viên <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            placeholder="Nhập Mã Nhân Viên"
+                            type="text"
+                            required
+                            value={form.employeeId}
+                            onChange={e => setForm({ ...form, employeeId: e.target.value })}
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Work Info */}
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b pb-2 border-gray-50">Work Information</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="col-span-1">
-                      <CustomSelect
-                        label="Role *"
-                        placeholder="Select Role"
-                        value={form.role}
-                        onChange={(val) => setForm({ ...form, role: val })}
-                        options={roles.map(r => ({ label: r.name, value: r.name }))} // Storing Role Name as value for simplicity, or ID if preferred
-                      />
+                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b pb-2 border-gray-50">{modalT.workInformation}</h3>
+
+                  {/* English Fields */}
+                  {activeTab === "en" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="col-span-1">
+                        <CustomSelect
+                          label="Role *"
+                          placeholder="Select Role"
+                          value={form.role}
+                          onChange={(val) => setForm({ ...form, role: val })}
+                          options={roles.map(r => ({ label: r.name, value: r.name }))}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Mobile</label>
+                        <input placeholder="Enter Mobile" type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
+                      </div>
+                      <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Department</label>
+                        <input placeholder="Enter Department" type="text" value={form.department.en} onChange={e => setForm({ ...form, department: { ...form.department, en: e.target.value } })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
+                      </div>
+                      <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Designation</label>
+                        <input placeholder="Enter Designation" type="text" value={form.designation.en} onChange={e => setForm({ ...form, designation: { ...form.designation, en: e.target.value } })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
+                      </div>
                     </div>
-                    <div className="col-span-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Mobile</label>
-                      <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
+                  )}
+
+                  {/* Vietnamese Fields */}
+                  {activeTab === "vi" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="col-span-1">
+                        <CustomSelect
+                          label="Vai Trò *"
+                          placeholder="Chọn Vai Trò"
+                          value={form.role}
+                          onChange={(val) => setForm({ ...form, role: val })}
+                          options={roles.map(r => ({ label: r.name, value: r.name }))}
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Số Điện Thoại</label>
+                        <input placeholder="Nhập Số Điện Thoại" type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
+                      </div>
+                      <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Phòng Ban</label>
+                        <input placeholder="Nhập Phòng Ban" type="text" value={form.department.vi} onChange={e => setForm({ ...form, department: { ...form.department, vi: e.target.value } })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
+                      </div>
+                      <div className="col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Chức Danh</label>
+                        <input placeholder="Nhập Chức Danh" type="text" value={form.designation.vi} onChange={e => setForm({ ...form, designation: { ...form.designation, vi: e.target.value } })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
+                      </div>
                     </div>
-                    <div className="col-span-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Department</label>
-                      <input type="text" value={form.department} onChange={e => setForm({ ...form, department: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
-                    </div>
-                    <div className="col-span-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Designation</label>
-                      <input type="text" value={form.designation} onChange={e => setForm({ ...form, designation: e.target.value })} className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none" />
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Personal Info */}
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b pb-2 border-gray-50">Personal Details</h3>
+                  <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4 border-b pb-2 border-gray-50">{modalT.personalDetails}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="col-span-1 flex flex-col">
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Date of Birth</label>
-                      <DatePicker
-                        className="w-full h-11 border-gray-200 rounded-lg text-sm"
-                        format="DD-MM-YYYY"
+                    <div className="col-span-1">
+                      <CustomDatePicker
+                        label={modalT.dateOfBirth}
                         value={form.dob}
                         onChange={(date) => setForm({ ...form, dob: date })}
                       />
                     </div>
                     <div className="col-span-1">
                       <CustomSelect
-                        label="Gender"
-                        placeholder="Select Gender"
+                        label={modalT.gender}
+                        placeholder={modalT.selectGender}
                         value={form.gender}
                         onChange={(val) => setForm({ ...form, gender: val })}
                         options={[
-                          { label: "Male", value: "Male" },
-                          { label: "Female", value: "Female" },
-                          { label: "Other", value: "Other" }
+                          { label: modalT.male, value: "Male" },
+                          { label: modalT.female, value: "Female" },
+                          { label: modalT.other, value: "Other" }
                         ]}
                       />
                     </div>
-                    <div className="col-span-1 flex flex-col">
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Date of Joining</label>
-                      <DatePicker
-                        className="w-full h-11 border-gray-200 rounded-lg text-sm"
-                        format="DD-MM-YYYY"
+                    <div className="col-span-1">
+                      <CustomDatePicker
+                        label={modalT.dateOfJoining}
                         value={form.joiningDate}
                         onChange={(date) => setForm({ ...form, joiningDate: date })}
                       />
@@ -497,13 +797,13 @@ export default function Staffs({ openStaffView }) {
 
                   <div className="mt-6">
                     <CustomSelect
-                      label="Status *"
-                      placeholder="Status"
+                      label={`${modalT.status} *`}
+                      placeholder={modalT.status}
                       value={form.status}
                       onChange={(val) => setForm({ ...form, status: val })}
                       options={[
-                        { label: "Active", value: "Active" },
-                        { label: "Inactive", value: "Inactive" }
+                        { label: modalT.active, value: "Active" },
+                        { label: modalT.inactive, value: "Inactive" }
                       ]}
                     />
                   </div>
@@ -517,14 +817,14 @@ export default function Staffs({ openStaffView }) {
                 onClick={() => setShowModal(false)}
                 className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition font-medium text-sm shadow-sm"
               >
-                Cancel
+                {modalT.cancel}
               </button>
               <button
                 type="submit"
                 form="staffForm"
                 className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md"
               >
-                {editMode ? "Update Staff" : "Add Staff"}
+                {editMode ? modalT.updateStaff : modalT.addStaff}
               </button>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Tags, User, UserCheck, UserLockIcon, PersonStanding, SettingsIcon, UserPlus2 } from "lucide-react";
+import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Tags, User, UserCheck, UserLockIcon, PersonStanding, SettingsIcon, UserPlus2, MessageSquare, Phone } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "../Header/Header";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -19,6 +19,7 @@ const DashboardLayout = () => {
     const [openBlogs, setOpenBlogs] = useState(false);
     const [openUserManagement, setOpenUserManagement] = useState(false);
     const [openManageStaffs, setOpenManageStaffs] = useState(false);
+    const [openOtherEnquiry, setOpenOtherEnquiry] = useState(false);
 
     const isActive = (path) => location.pathname.startsWith(path);
 
@@ -337,6 +338,43 @@ const DashboardLayout = () => {
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserPlus2 /> </span>
                                                 <span>{t.staffs}</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+
+                        {/* OTHER ENQUIRY DROPDOWN */}
+                        {(!isHidden("otherEnquiry.contactEnquiry")) && (
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenOtherEnquiry(!openOtherEnquiry)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-full
+                hover:bg-[#41398B] hover:text-white transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
+                                            <MessageSquare className="w-4 h-4" />
+                                        </span>
+                                        <span>{t.otherEnquiry}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openOtherEnquiry ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {openOtherEnquiry && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        {/* CONTACT ENQUIRY */}
+                                        {!isHidden("otherEnquiry.contactEnquiry") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/contact-enquiry")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/contact-enquiry") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Phone /> </span>
+                                                <span>{t.contactEnquiry}</span>
                                             </button>
                                         )}
                                     </div>

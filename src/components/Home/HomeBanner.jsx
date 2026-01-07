@@ -10,10 +10,12 @@ import {
 } from '../../Api/action';
 import { SlidersHorizontal } from 'lucide-react';
 import { useLanguage } from '../../Language/LanguageContext';
+import { usePermissions } from '../../Context/PermissionContext';
 
 export default function HomeBanner({ homePageData }) {
     const navigate = useNavigate();
     const { language } = useLanguage();
+    const { can } = usePermissions();
     const [selectedTab, setSelectedTab] = useState('For Rent');
     const [showMoreFilters, setShowMoreFilters] = useState(false);
 
@@ -57,7 +59,25 @@ export default function HomeBanner({ homePageData }) {
                 setProjects(filterActive(projectsRes.data?.data || []));
                 setZones(filterActive(zonesRes.data?.data || []));
                 setBlocks(filterActive(blocksRes.data?.data || []));
-                setPropertyTypes(filterActive(typesRes.data?.data || []));
+
+                // ✅ Filter property types based on permissions
+                const activeTypes = filterActive(typesRes.data?.data || []);
+                const filteredTypes = activeTypes.filter(type => {
+                    const typeName = (type.name?.en || '').toLowerCase();
+
+                    // Check permissions for each transaction type
+                    const hasLeaseAccess = can('properties.lease', 'view');
+                    const hasSaleAccess = can('properties.sale', 'view');
+                    const hasHomestayAccess = can('properties.homestay', 'view');
+
+                    // If user has access to all, show all types
+                    if (hasLeaseAccess && hasSaleAccess && hasHomestayAccess) {
+                        return true;
+                    }
+                    return true;
+                });
+
+                setPropertyTypes(filteredTypes);
                 setCurrencies(filterActive(currenciesRes.data?.data || []));
             } catch (error) {
                 console.error('Error loading dropdown data:', error);
@@ -65,7 +85,7 @@ export default function HomeBanner({ homePageData }) {
         };
 
         loadDropdownData();
-    }, []);
+    }, [can]);
 
     const getLocalizedValue = (value) => {
         if (!value) return '';

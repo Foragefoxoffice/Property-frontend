@@ -81,6 +81,7 @@ export default function ContactMapLink({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.contactUs', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}

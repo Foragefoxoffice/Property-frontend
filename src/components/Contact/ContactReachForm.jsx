@@ -1,11 +1,49 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Select } from "antd";
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Linkedin, Youtube, HelpCircle } from "lucide-react";
 import * as LucideIcons from 'lucide-react';
+import axios from "axios";
+import { toast } from "react-toastify";
 import { useLanguage } from '@/Language/LanguageContext';
 
 export default function ContactReachForm({ data }) {
     const { language } = useLanguage();
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        subject: "General Inquiry",
+        message: ""
+    });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await axios.post(`${import.meta.env.VITE_API_URL}/contact-enquiry`, formData);
+            toast.success(language === 'en' ? "Message sent successfully!" : "Gửi tin nhắn thành công!");
+            setFormData({
+                firstName: "",
+                lastName: "",
+                email: "",
+                phone: "",
+                subject: "General Inquiry",
+                message: ""
+            });
+        } catch (error) {
+            console.error(error);
+            toast.error(language === 'en' ? "Failed to send message." : "Gửi tin nhắn thất bại.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // CMS Data extraction with fallbacks
     const reachOutTitle = language === 'en'
@@ -182,7 +220,7 @@ export default function ContactReachForm({ data }) {
                             <p className="text-gray-500 font-light text-lg">{formDescription}</p>
                         </div>
 
-                        <form className="space-y-6">
+                        <form className="space-y-6" onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* First Name */}
                                 <div className="space-y-2">
@@ -193,6 +231,9 @@ export default function ContactReachForm({ data }) {
                                         type="text"
                                         id="firstName"
                                         placeholder={language === 'en' ? "First Name" : "Tên"}
+                                        value={formData.firstName}
+                                        onChange={handleChange}
+                                        required
                                         className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light"
                                     />
                                 </div>
@@ -205,6 +246,9 @@ export default function ContactReachForm({ data }) {
                                         type="text"
                                         id="lastName"
                                         placeholder={language === 'en' ? "Last Name" : "Họ"}
+                                        value={formData.lastName}
+                                        onChange={handleChange}
+                                        required
                                         className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light"
                                     />
                                 </div>
@@ -218,6 +262,9 @@ export default function ContactReachForm({ data }) {
                                         type="email"
                                         id="email"
                                         placeholder={language === 'en' ? "Enter your email address" : "Nhập địa chỉ email của bạn"}
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
                                         className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light"
                                     />
                                 </div>
@@ -230,8 +277,35 @@ export default function ContactReachForm({ data }) {
                                         type="tel"
                                         id="phone"
                                         placeholder={language === 'en' ? "Enter your phone number" : "Nhập số điện thoại của bạn"}
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        required
                                         className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light"
                                     />
+                                </div>
+                            </div>
+
+                            {/* Subject Select Field */}
+                            <div className="space-y-2">
+                                <label className="text-lg font-semibold text-black" htmlFor="subject">
+                                    {language === 'en' ? "Subject" : "Chủ đề"}
+                                </label>
+                                <div className="relative">
+                                    <Select
+                                        id="subject"
+                                        placeholder={language === 'en' ? "Select a Subject" : "Chọn chủ đề"}
+                                        className="custom-select w-full mt-2"
+                                        popupClassName="custom-dropdown"
+                                        value={formData.subject || undefined}
+                                        onChange={(value) => setFormData(prev => ({ ...prev, subject: value }))}
+                                        size="large"
+                                    >
+                                        <Select.Option value="General Inquiry">{language === 'en' ? "General Inquiry" : "Yêu cầu chung"}</Select.Option>
+                                        <Select.Option value="Property Viewing">{language === 'en' ? "Property Viewing" : "Xem bất động sản"}</Select.Option>
+                                        <Select.Option value="Partnership">{language === 'en' ? "Partnership" : "Hợp tác"}</Select.Option>
+                                        <Select.Option value="Support">{language === 'en' ? "Support" : "Hỗ trợ"}</Select.Option>
+                                        <Select.Option value="Other">{language === 'en' ? "Other" : "Khác"}</Select.Option>
+                                    </Select>
                                 </div>
                             </div>
 
@@ -244,6 +318,9 @@ export default function ContactReachForm({ data }) {
                                     id="message"
                                     rows="5"
                                     placeholder={language === 'en' ? "Your Message" : "Tin nhắn của bạn"}
+                                    value={formData.message}
+                                    onChange={handleChange}
+                                    required
                                     className="w-full px-4 py-3 mt-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-1 focus:ring-[#41398B] focus:border-[#41398B] transition-all placeholder:text-gray-400 font-light resize-none"
                                 ></textarea>
                             </div>
@@ -254,8 +331,9 @@ export default function ContactReachForm({ data }) {
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
                                 className="w-full bg-black text-white cursor-pointer hover:bg-[#333] font-medium py-3 rounded-lg transition-colors duration-300 mt-4"
+                                disabled={loading}
                             >
-                                {formButtonText}
+                                {loading ? (language === 'en' ? "Sending..." : "Đang gửi...") : formButtonText}
                             </motion.button>
                         </form>
                     </motion.div>

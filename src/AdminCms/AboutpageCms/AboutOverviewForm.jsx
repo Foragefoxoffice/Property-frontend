@@ -145,13 +145,13 @@ export default function AboutOverviewForm({
                                                     name="aboutOverviewTitle_en"
                                                     rules={[{ max: 200, message: 'Max 200 characters' }]}
                                                 >
-                                                    <Input placeholder="Company Overview" size="large" className="rounded-[10px]" />
+                                                    <Input placeholder="Company Overview" size="large" className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
                                                 </Form.Item>
                                                 <Form.Item
                                                     label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Description</span>}
                                                     name="aboutOverviewDescription_en"
                                                 >
-                                                    <TextArea placeholder="Description..." rows={4} className="rounded-[10px]" />
+                                                    <TextArea placeholder="Description..." rows={4} className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
                                                 </Form.Item>
                                             </>
                                         )
@@ -170,13 +170,13 @@ export default function AboutOverviewForm({
                                                     name="aboutOverviewTitle_vn"
                                                     rules={[{ max: 200, message: 'Tối đa 200 ký tự' }]}
                                                 >
-                                                    <Input placeholder="Tổng Quan Công Ty" size="large" className="rounded-[10px]" />
+                                                    <Input placeholder="Tổng Quan Công Ty" size="large" className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
                                                 </Form.Item>
                                                 <Form.Item
                                                     label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả</span>}
                                                     name="aboutOverviewDescription_vn"
                                                 >
-                                                    <TextArea placeholder="Mô tả..." rows={4} className="rounded-[10px]" />
+                                                    <TextArea placeholder="Mô tả..." rows={4} className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
                                                 </Form.Item>
                                             </>
                                         )
@@ -211,43 +211,49 @@ export default function AboutOverviewForm({
                                                 >
                                                     <EyeOutlined className="text-[#41398B] text-lg" />
                                                 </button>
-                                                <Upload
-                                                    showUploadList={false}
-                                                    beforeUpload={handleBeforeUpload}
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                        title="Change Image"
-                                                    >
-                                                        <ReloadOutlined className="text-blue-600 text-lg" />
-                                                    </button>
-                                                </Upload>
-                                                <button
-                                                    type="button"
-                                                    onClick={removeOverviewImage}
-                                                    className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                    title="Delete"
-                                                >
-                                                    <X className="text-red-500 w-5 h-5" />
-                                                </button>
+                                                {can('cms.aboutUs', 'edit') && (
+                                                    <>
+                                                        <Upload
+                                                            showUploadList={false}
+                                                            beforeUpload={handleBeforeUpload}
+                                                        >
+                                                            <button
+                                                                type="button"
+                                                                className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                title="Change Image"
+                                                            >
+                                                                <ReloadOutlined className="text-blue-600 text-lg" />
+                                                            </button>
+                                                        </Upload>
+                                                        <button
+                                                            type="button"
+                                                            onClick={removeOverviewImage}
+                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                            title="Delete"
+                                                        >
+                                                            <X className="text-red-500 w-5 h-5" />
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     ) : (
-                                        <Upload
-                                            name="aboutOverviewBg"
-                                            listType="picture-card"
-                                            className="overview-uploader"
-                                            showUploadList={false}
-                                            beforeUpload={handleBeforeUpload}
-                                        >
-                                            <div className="flex flex-col items-center justify-center h-full">
-                                                <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
-                                                <div className="text-sm text-gray-500 font-['Manrope']">
-                                                    {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                        can('cms.aboutUs', 'edit') && (
+                                            <Upload
+                                                name="aboutOverviewBg"
+                                                listType="picture-card"
+                                                className="overview-uploader"
+                                                showUploadList={false}
+                                                beforeUpload={handleBeforeUpload}
+                                            >
+                                                <div className="flex flex-col items-center justify-center h-full">
+                                                    <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
+                                                    <div className="text-sm text-gray-500 font-['Manrope']">
+                                                        {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </Upload>
+                                            </Upload>
+                                        )
                                     )}
 
                                     <Form.Item name="aboutOverviewBg" noStyle>

@@ -118,6 +118,7 @@ export default function AboutPageFindPropertyForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.aboutUs', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -149,6 +150,7 @@ export default function AboutPageFindPropertyForm({
                                                         placeholder="Find Your Dream Property"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -168,6 +170,7 @@ export default function AboutPageFindPropertyForm({
                                                         placeholder="Search through our extensive collection of properties to find the perfect match for you"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
                                                     />
                                                 </Form.Item>
                                             </>
@@ -198,6 +201,7 @@ export default function AboutPageFindPropertyForm({
                                                         placeholder="Tìm Bất Động Sản Mơ Ước Của Bạn"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -217,6 +221,7 @@ export default function AboutPageFindPropertyForm({
                                                         placeholder="Tìm kiếm trong bộ sưu tập bất động sản phong phú của chúng tôi để tìm sự lựa chọn hoàn hảo cho bạn"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
                                                     />
                                                 </Form.Item>
                                             </>
@@ -244,35 +249,37 @@ export default function AboutPageFindPropertyForm({
                                                 alt="Find Property Background"
                                                 className="w-full h-full object-cover"
                                             />
-                                            <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setPreviewImage(findBgUrl)}
-                                                    className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                    title="Preview"
-                                                >
-                                                    <EyeOutlined className="text-[#41398B] text-lg" />
-                                                </button>
-                                                <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                            {can('cms.aboutUs', 'edit') && (
+                                                <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
                                                     <button
                                                         type="button"
+                                                        onClick={() => setPreviewImage(findBgUrl)}
                                                         className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                        title="Change Image"
+                                                        title="Preview"
                                                     >
-                                                        <ReloadOutlined className="text-blue-600 text-lg" />
+                                                        <EyeOutlined className="text-[#41398B] text-lg" />
                                                     </button>
-                                                </Upload>
-                                                <button
-                                                    type="button"
-                                                    onClick={removeImage}
-                                                    className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                    title="Delete"
-                                                >
-                                                    <X className="text-red-500 w-5 h-5" />
-                                                </button>
-                                            </div>
+                                                    <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                                        <button
+                                                            type="button"
+                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                            title="Change Image"
+                                                        >
+                                                            <ReloadOutlined className="text-blue-600 text-lg" />
+                                                        </button>
+                                                    </Upload>
+                                                    <button
+                                                        type="button"
+                                                        onClick={removeImage}
+                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                        title="Delete"
+                                                    >
+                                                        <X className="text-red-500 w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
-                                    ) : (
+                                    ) : can('cms.aboutUs', 'edit') ? (
                                         <Upload
                                             name="aboutFindBg"
                                             listType="picture-card"
@@ -287,6 +294,12 @@ export default function AboutPageFindPropertyForm({
                                                 </div>
                                             </div>
                                         </Upload>
+                                    ) : (
+                                        <div className="w-48 h-36 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center">
+                                            <span className="text-gray-400 text-sm font-['Manrope']">
+                                                {activeTab === 'en' ? 'No image uploaded' : 'Chưa có hình ảnh'}
+                                            </span>
+                                        </div>
                                     )}
 
                                     <Form.Item

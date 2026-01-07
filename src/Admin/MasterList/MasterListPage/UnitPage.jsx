@@ -256,7 +256,7 @@ export default function UnitPage() {
   const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
+    <div className="p-8 min-h-screen relative">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">

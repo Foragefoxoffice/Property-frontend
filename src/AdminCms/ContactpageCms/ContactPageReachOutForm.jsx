@@ -112,6 +112,7 @@ export default function ContactPageReachOutForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.contactUs', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -447,32 +448,36 @@ export default function ContactPageReachOutForm({
                                                                                 className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                                             />
                                                                         </Form.Item>
-                                                                        <Button
-                                                                            type="text"
-                                                                            danger
-                                                                            icon={<DeleteOutlined />}
-                                                                            onClick={() => remove(field.name)}
-                                                                            className="flex items-center justify-center h-12 w-12"
-                                                                        />
+                                                                        {can('cms.contactUs', 'edit') && (
+                                                                            <Button
+                                                                                type="text"
+                                                                                danger
+                                                                                icon={<DeleteOutlined />}
+                                                                                onClick={() => remove(field.name)}
+                                                                                className="flex items-center justify-center h-12 w-12"
+                                                                            />
+                                                                        )}
                                                                     </div>
                                                                 ))}
-                                                                <Button
-                                                                    type="dashed"
-                                                                    onClick={() => add()}
-                                                                    block
-                                                                    icon={<PlusOutlined />}
-                                                                    size="large"
-                                                                    className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] h-12 font-['Manrope']"
-                                                                >
-                                                                    Add Phone Number
-                                                                </Button>
+                                                                {can('cms.contactUs', 'edit') && (
+                                                                    <Button
+                                                                        type="dashed"
+                                                                        onClick={() => add()}
+                                                                        block
+                                                                        icon={<PlusOutlined />}
+                                                                        size="large"
+                                                                        className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] h-12 font-['Manrope']"
+                                                                    >
+                                                                        Add Phone Number
+                                                                    </Button>
+                                                                )}
                                                             </>
                                                         )}
                                                     </Form.List>
                                                 </div>
 
                                                 {/* Email Addresses */}
-                                                <div className="bg-gray-50 p-4 rounded-xl mb-4">
+                                                < div className="bg-gray-50 p-4 rounded-xl mb-4" >
                                                     <h4 className="font-semibold text-gray-700 text-sm font-['Manrope'] mb-3">
                                                         Email Addresses
                                                     </h4>
@@ -496,25 +501,29 @@ export default function ContactPageReachOutForm({
                                                                                 className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                                             />
                                                                         </Form.Item>
-                                                                        <Button
-                                                                            type="text"
-                                                                            danger
-                                                                            icon={<DeleteOutlined />}
-                                                                            onClick={() => remove(field.name)}
-                                                                            className="flex items-center justify-center h-12 w-12"
-                                                                        />
+                                                                        {can('cms.contactUs', 'edit') && (
+                                                                            <Button
+                                                                                type="text"
+                                                                                danger
+                                                                                icon={<DeleteOutlined />}
+                                                                                onClick={() => remove(field.name)}
+                                                                                className="flex items-center justify-center h-12 w-12"
+                                                                            />
+                                                                        )}
                                                                     </div>
                                                                 ))}
-                                                                <Button
-                                                                    type="dashed"
-                                                                    onClick={() => add()}
-                                                                    block
-                                                                    icon={<PlusOutlined />}
-                                                                    size="large"
-                                                                    className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] h-12 font-['Manrope']"
-                                                                >
-                                                                    Add Email Address
-                                                                </Button>
+                                                                {can('cms.contactUs', 'edit') && (
+                                                                    <Button
+                                                                        type="dashed"
+                                                                        onClick={() => add()}
+                                                                        block
+                                                                        icon={<PlusOutlined />}
+                                                                        size="large"
+                                                                        className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] h-12 font-['Manrope']"
+                                                                    >
+                                                                        Add Email Address
+                                                                    </Button>
+                                                                )}
                                                             </>
                                                         )}
                                                     </Form.List>
@@ -547,6 +556,7 @@ export default function ContactPageReachOutForm({
                                                                                             name="icon"
                                                                                             listType="picture-card"
                                                                                             showUploadList={false}
+                                                                                            disabled={!can('cms.contactUs', 'edit')}
                                                                                             beforeUpload={(file) => handleBeforeIconUpload(file, index)}
                                                                                             className="w-[60px] h-[60px] flex-shrink-0 [&>.ant-upload]:!w-[60px] [&>.ant-upload]:!h-[60px] [&>.ant-upload]:!border-purple-200 [&>.ant-upload]:!bg-gray-50 [&>.ant-upload]:!rounded-lg overflow-hidden [&>.ant-upload]:!m-0"
                                                                                         >
@@ -595,25 +605,29 @@ export default function ContactPageReachOutForm({
                                                                             </Form.Item>
                                                                         </div>
 
-                                                                        <Button
-                                                                            type="text"
-                                                                            danger
-                                                                            icon={<DeleteOutlined />}
-                                                                            onClick={() => remove(field.name)}
-                                                                            className="mt-6 h-12 w-12 flex items-center justify-center"
-                                                                        />
+                                                                        {can('cms.contactUs', 'edit') && (
+                                                                            <Button
+                                                                                type="text"
+                                                                                danger
+                                                                                icon={<DeleteOutlined />}
+                                                                                onClick={() => remove(field.name)}
+                                                                                className="flex items-center justify-center h-12 w-12"
+                                                                            />
+                                                                        )}
                                                                     </div>
                                                                 ))}
-                                                                <Button
-                                                                    type="dashed"
-                                                                    onClick={() => add()}
-                                                                    block
-                                                                    icon={<PlusOutlined />}
-                                                                    size="large"
-                                                                    className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] h-12 font-['Manrope']"
-                                                                >
-                                                                    Add Social Media Icon
-                                                                </Button>
+                                                                {can('cms.contactUs', 'edit') && (
+                                                                    <Button
+                                                                        type="dashed"
+                                                                        onClick={() => add()}
+                                                                        block
+                                                                        icon={<PlusOutlined />}
+                                                                        size="large"
+                                                                        className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] h-12 font-['Manrope']"
+                                                                    >
+                                                                        Add Social Media Icon
+                                                                    </Button>
+                                                                )}
                                                             </>
                                                         )}
                                                     </Form.List>
@@ -651,10 +665,10 @@ export default function ContactPageReachOutForm({
                                     </Button>
                                 )}
                             </div>
-                        </Form>
-                    </ConfigProvider>
-                </div>
-            </div>
-        </div>
+                        </Form >
+                    </ConfigProvider >
+                </div >
+            </div >
+        </div >
     );
 }

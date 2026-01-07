@@ -393,19 +393,23 @@ export default function ManageProperty({
             {t.filter}
           </button>
 
-          {trashMode ? null : (
-            <button
-              onClick={() => navigate(`/dashboard/${transactionRoute}/bulk-upload`)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
-            >
-              <Upload className="w-4 h-4" />
-              {t.bulkUpload}
-            </button>
-          )}
 
           {trashMode ? null : (
-            // Conditionally render Add button. Assuming 'edit' permission implies ability to modify/add.
-            can(permissionKey, 'edit') && (
+            can(permissionKey, 'bulkUpload') && (
+              <button
+                onClick={() => navigate(`/dashboard/${transactionRoute}/bulk-upload`)}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
+              >
+                <Upload className="w-4 h-4" />
+                {t.bulkUpload}
+              </button>
+            )
+          )}
+
+
+          {trashMode ? null : (
+            // Conditionally render Add button based on 'add' permission
+            can(permissionKey, 'add') && (
               <button
                 onClick={() => navigate(`/dashboard/${transactionRoute}/create`)}
                 className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"

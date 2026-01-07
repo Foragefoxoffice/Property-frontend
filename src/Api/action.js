@@ -36,7 +36,12 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    // If 401 and NOT from the login endpoint itself, then redirect
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !error.config.url.includes("/auth/login")
+    ) {
       console.warn("Session expired. Please log in again.");
       localStorage.removeItem("token");
       window.location.href = "/";

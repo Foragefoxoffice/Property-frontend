@@ -123,6 +123,7 @@ export default function ContactPageBannerForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.contactUs', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -223,45 +224,51 @@ export default function ContactPageBannerForm({
                                                 </button>
 
                                                 {/* Re-upload Button */}
-                                                <Upload
-                                                    showUploadList={false}
-                                                    beforeUpload={handleBeforeUpload}
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                        title="Change Image"
+                                                {can('cms.contactUs', 'edit') && (
+                                                    <Upload
+                                                        showUploadList={false}
+                                                        beforeUpload={handleBeforeUpload}
                                                     >
-                                                        <ReloadOutlined className="text-blue-600 text-lg" />
-                                                    </button>
-                                                </Upload>
+                                                        <button
+                                                            type="button"
+                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                            title="Change Image"
+                                                        >
+                                                            <ReloadOutlined className="text-blue-600 text-lg" />
+                                                        </button>
+                                                    </Upload>
+                                                )}
 
                                                 {/* Delete Button */}
-                                                <button
-                                                    type="button"
-                                                    onClick={removeBannerImage}
-                                                    className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                    title="Delete"
-                                                >
-                                                    <X className="text-red-500 w-5 h-5" />
-                                                </button>
+                                                {can('cms.contactUs', 'edit') && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={removeBannerImage}
+                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                        title="Delete"
+                                                    >
+                                                        <X className="text-red-500 w-5 h-5" />
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     ) : (
-                                        <Upload
-                                            name="contactBannerBg"
-                                            listType="picture-card"
-                                            className="banner-uploader"
-                                            showUploadList={false}
-                                            beforeUpload={handleBeforeUpload}
-                                        >
-                                            <div className="flex flex-col items-center justify-center h-full">
-                                                <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-blue-600" />
-                                                <div className="text-sm text-gray-500 font-['Manrope']">
-                                                    {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                        can('cms.contactUs', 'edit') && (
+                                            <Upload
+                                                name="contactBannerBg"
+                                                listType="picture-card"
+                                                className="banner-uploader"
+                                                showUploadList={false}
+                                                beforeUpload={handleBeforeUpload}
+                                            >
+                                                <div className="flex flex-col items-center justify-center h-full">
+                                                    <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-blue-600" />
+                                                    <div className="text-sm text-gray-500 font-['Manrope']">
+                                                        {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </Upload>
+                                            </Upload>
+                                        )
                                     )}
 
                                     <Form.Item

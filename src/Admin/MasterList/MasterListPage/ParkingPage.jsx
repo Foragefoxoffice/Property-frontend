@@ -125,7 +125,7 @@ export default function ParkingPage({ goBack }) {
     };
 
     return (
-        <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
+        <div className="p-8 min-h-screen relative">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <button
@@ -207,8 +207,8 @@ export default function ParkingPage({ goBack }) {
                                         <td className="px-6 py-3">
                                             <span
                                                 className={`px-3 py-1 rounded-full text-xs font-medium ${row.status === "Active"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : "bg-red-100 text-red-600"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-red-100 text-red-600"
                                                     }`}
                                             >
                                                 {row.status}
@@ -290,8 +290,8 @@ export default function ParkingPage({ goBack }) {
                             <button
                                 onClick={() => setActiveLang("EN")}
                                 className={`px-4 py-2 font-medium ${activeLang === "EN"
-                                        ? "text-black border-b-2 border-black"
-                                        : "text-gray-500"
+                                    ? "text-black border-b-2 border-black"
+                                    : "text-gray-500"
                                     }`}
                             >
                                 English
@@ -299,8 +299,8 @@ export default function ParkingPage({ goBack }) {
                             <button
                                 onClick={() => setActiveLang("VI")}
                                 className={`px-4 py-2 font-medium ${activeLang === "VI"
-                                        ? "text-black border-b-2 border-black"
-                                        : "text-gray-500"
+                                    ? "text-black border-b-2 border-black"
+                                    : "text-gray-500"
                                     }`}
                             >
                                 Vietnamese

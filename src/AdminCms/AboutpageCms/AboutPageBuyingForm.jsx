@@ -142,6 +142,7 @@ export default function AboutPageBuyingForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.aboutUs', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -266,21 +267,23 @@ export default function AboutPageBuyingForm({
                                                     className="relative mb-6 p-6 bg-gradient-to-br from-purple-50/30 to-indigo-50/30 rounded-xl border-2 border-purple-100"
                                                 >
                                                     {/* Delete Button */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            remove(name);
-                                                            // Clean up image state
-                                                            setStepImages(prev => {
-                                                                const newImages = { ...prev };
-                                                                delete newImages[index];
-                                                                return newImages;
-                                                            });
-                                                        }}
-                                                        className="absolute top-4 right-4 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all"
-                                                    >
-                                                        <DeleteOutlined className="text-lg" />
-                                                    </button>
+                                                    {can('cms.aboutUs', 'edit') && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                remove(name);
+                                                                // Clean up image state
+                                                                setStepImages(prev => {
+                                                                    const newImages = { ...prev };
+                                                                    delete newImages[index];
+                                                                    return newImages;
+                                                                });
+                                                            }}
+                                                            className="absolute top-4 right-4 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-all"
+                                                        >
+                                                            <DeleteOutlined className="text-lg" />
+                                                        </button>
+                                                    )}
 
                                                     <div className="mb-4">
                                                         <span className="inline-block px-3 py-1 bg-[#41398B] text-white text-xs font-semibold rounded-full">
@@ -404,43 +407,48 @@ export default function AboutPageBuyingForm({
                                                                             <EyeOutlined className="text-[#41398B] text-lg" />
                                                                         </button>
 
-                                                                        {/* Re-upload Button */}
-                                                                        <Upload
-                                                                            showUploadList={false}
-                                                                            beforeUpload={(file) => handleBeforeUpload(file, index)}
-                                                                        >
-                                                                            <button
-                                                                                type="button"
-                                                                                className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                                title="Change Image"
-                                                                            >
-                                                                                <ReloadOutlined className="text-blue-600 text-lg" />
-                                                                            </button>
-                                                                        </Upload>
+                                                                        {/* Re-upload and Delete Buttons */}
+                                                                        {can('cms.aboutUs', 'edit') && (
+                                                                            <>
+                                                                                <Upload
+                                                                                    showUploadList={false}
+                                                                                    beforeUpload={(file) => handleBeforeUpload(file, index)}
+                                                                                >
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                                        title="Change Image"
+                                                                                    >
+                                                                                        <ReloadOutlined className="text-blue-600 text-lg" />
+                                                                                    </button>
+                                                                                </Upload>
 
-                                                                        {/* Delete Button */}
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => removeStepImage(index)}
-                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                            title="Delete"
-                                                                        >
-                                                                            <X className="text-red-500 w-5 h-5" />
-                                                                        </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => removeStepImage(index)}
+                                                                                    className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                                    title="Delete"
+                                                                                >
+                                                                                    <X className="text-red-500 w-5 h-5" />
+                                                                                </button>
+                                                                            </>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             ) : (
-                                                                <Upload
-                                                                    showUploadList={false}
-                                                                    beforeUpload={(file) => handleBeforeUpload(file, index)}
-                                                                >
-                                                                    <div className="w-48 h-36 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
-                                                                        <PlusOutlined className="text-2xl text-gray-400 mb-2" />
-                                                                        <span className="text-xs text-gray-500 font-['Manrope']">
-                                                                            {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
-                                                                        </span>
-                                                                    </div>
-                                                                </Upload>
+                                                                can('cms.aboutUs', 'edit') && (
+                                                                    <Upload
+                                                                        showUploadList={false}
+                                                                        beforeUpload={(file) => handleBeforeUpload(file, index)}
+                                                                    >
+                                                                        <div className="w-48 h-36 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
+                                                                            <PlusOutlined className="text-2xl text-gray-400 mb-2" />
+                                                                            <span className="text-xs text-gray-500 font-['Manrope']">
+                                                                                {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                                            </span>
+                                                                        </div>
+                                                                    </Upload>
+                                                                )
                                                             )}
                                                         </div>
 
@@ -456,16 +464,18 @@ export default function AboutPageBuyingForm({
                                             ))}
 
                                             {/* Add Step Button */}
-                                            <Button
-                                                type="dashed"
-                                                onClick={() => add()}
-                                                block
-                                                icon={<PlusOutlined />}
-                                                size="large"
-                                                className="!border-[#41398B] !text-[#41398B] hover:!bg-purple-50 rounded-[10px] h-12 font-semibold font-['Manrope']"
-                                            >
-                                                {activeTab === 'en' ? 'Add Process Step' : 'Thêm Bước Quy Trình'}
-                                            </Button>
+                                            {can('cms.aboutUs', 'edit') && (
+                                                <Button
+                                                    type="dashed"
+                                                    onClick={() => add()}
+                                                    block
+                                                    icon={<PlusOutlined />}
+                                                    size="large"
+                                                    className="!border-[#41398B] !text-[#41398B] hover:!bg-purple-50 rounded-[10px] h-12 font-semibold font-['Manrope']"
+                                                >
+                                                    {activeTab === 'en' ? 'Add Process Step' : 'Thêm Bước Quy Trình'}
+                                                </Button>
+                                            )}
                                         </>
                                     )}
                                 </Form.List>

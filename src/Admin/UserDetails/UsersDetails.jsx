@@ -67,7 +67,7 @@ export default function UsersDetails() {
             const res = await getAllUsers();
             // Adjust depending on actual API response structure (often res.data.data or res.data)
             const allData = res.data.data || res.data || [];
-            const filteredUsers = allData.filter(user => user.role !== 'admin');
+            const filteredUsers = allData.filter(user => user.role === 'user');
             setUsers(filteredUsers);
         } catch {
             CommonToaster(
@@ -196,7 +196,7 @@ export default function UsersDetails() {
     const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
     return (
-        <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
+        <div className="p-8 min-h-screen relative">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-3">
@@ -254,7 +254,7 @@ export default function UsersDetails() {
                                         {isVI ? "Vai trò" : "Role"}
                                     </th>
                                     <th className="px-6 py-4 text-center font-medium">
-                                        {isVI ? "Trạng thái" : "Verified"}
+                                        {isVI ? "Tích cực" : "Active"}
                                     </th>
                                     <th className="px-6 py-4 text-right font-medium">
                                         {isVI ? "Hành động" : "Actions"}
@@ -321,11 +321,11 @@ export default function UsersDetails() {
                                             <td className="px-6 py-4 text-center">
                                                 {row.isVerified ? (
                                                     <span className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <ShieldCheck size={14} /> {isVI ? "Đã xác minh" : "Verified"}
+                                                        <ShieldCheck size={14} /> {isVI ? "Tích cực" : "Active"}
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex items-center gap-1 text-amber-600 bg-amber-50 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <ShieldAlert size={14} /> {isVI ? "Chưa xác minh" : "Pending"}
+                                                    <span className="inline-flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded-full text-xs font-medium">
+                                                        <ShieldAlert size={14} /> {isVI ? "Không tích cực" : "Inactive"}
                                                     </span>
                                                 )}
                                             </td>
@@ -574,7 +574,7 @@ export default function UsersDetails() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        {isVI ? "Xác thực" : "Verification Status"}
+                                        {isVI ? "Trạng thái hoạt động" : "Active Status"}
                                     </label>
                                     <div className="flex items-center gap-2 mt-2">
                                         <input
@@ -585,7 +585,7 @@ export default function UsersDetails() {
                                             className="w-5 h-5 text-[#41398B] rounded focus:ring-[#41398B]"
                                         />
                                         <label htmlFor="isVerified" className="text-sm text-gray-700 cursor-pointer">
-                                            {form.isVerified ? (isVI ? "Đã xác minh" : "Verified") : (isVI ? "Chưa xác minh" : "Unverified")}
+                                            {form.isVerified ? (isVI ? "Tích cực" : "Active") : (isVI ? "Không tích cực" : "Inactive")}
                                         </label>
                                     </div>
                                 </div>

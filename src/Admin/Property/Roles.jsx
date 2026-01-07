@@ -19,11 +19,15 @@ import { CommonToaster } from "../../Common/CommonToaster";
 import { Switch, Collapse, Select } from "antd";
 import CommonSkeleton from "../../Common/CommonSkeleton";
 import { usePermissions } from "../../Context/PermissionContext";
+import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations";
 
 const { Panel } = Collapse;
 
 export default function Roles() {
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const [roles, setRoles] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -35,52 +39,59 @@ export default function Roles() {
     // Definition of the permission structure
     const permissionStructure = [
         {
-            label: "Properties",
+            label: t.properties,
             key: "properties",
             subModules: [
-                { key: "lease", label: "Lease", controls: ["hide", "view", "edit", "delete", "copy"] },
-                { key: "sale", label: "Sale", controls: ["hide", "view", "edit", "delete", "copy"] },
-                { key: "homestay", label: "Home Stay", controls: ["hide", "view", "edit", "delete", "copy"] }
+                { key: "lease", label: t.lease, controls: ["hide", "view", "add", "edit", "delete", "copy", "bulkUpload"] },
+                { key: "sale", label: t.sale, controls: ["hide", "view", "add", "edit", "delete", "copy", "bulkUpload"] },
+                { key: "homestay", label: t.homeStay, controls: ["hide", "view", "add", "edit", "delete", "copy", "bulkUpload"] }
             ]
         },
         {
-            label: "CMS Admin",
+            label: t.cmsAdmin,
             key: "cms",
             subModules: [
-                { key: "homePage", label: "Home Page", controls: ["hide", "edit"] },
-                { key: "aboutUs", label: "About Us", controls: ["hide", "edit"] },
-                { key: "contactUs", label: "Contact Us", controls: ["hide", "edit"] },
-                { key: "header", label: "Header", controls: ["hide", "edit"] },
-                { key: "footer", label: "Footer", controls: ["hide", "edit"] },
-                { key: "agent", label: "Property Consultant", controls: ["hide", "edit"] }
+                { key: "homePage", label: t.homePage, controls: ["hide", "edit"] },
+                { key: "aboutUs", label: t.aboutUs, controls: ["hide", "edit"] },
+                { key: "contactUs", label: t.contactUs, controls: ["hide", "edit"] },
+                { key: "header", label: t.header, controls: ["hide", "edit"] },
+                { key: "footer", label: t.footer, controls: ["hide", "edit"] },
+                { key: "agent", label: t.propertyConsultant, controls: ["hide", "edit"] }
             ]
         },
         {
-            label: "Blogs",
+            label: t.blogs,
             key: "blogs",
             subModules: [
-                { key: "category", label: "Category", controls: ["hide", "add", "edit", "delete"] },
-                { key: "blogCms", label: "Blog CMS", controls: ["hide", "view", "edit", "delete"] }
+                { key: "category", label: t.category, controls: ["hide", "add", "edit", "delete"] },
+                { key: "blogCms", label: t.blogCms, controls: ["hide", "view", "edit", "delete"] }
             ]
         },
         {
-            label: "User Management",
+            label: t.userManagement,
             key: "userManagement",
             subModules: [
-                { key: "userDetails", label: "User Details", controls: ["hide", "add", "edit", "delete"] },
-                { key: "enquires", label: "Enquires", controls: ["hide"] }
+                { key: "userDetails", label: t.userDetails, controls: ["hide", "add", "edit", "delete"] },
+                { key: "enquires", label: t.enquires, controls: ["hide"] }
             ]
         },
         {
-            label: "Manage Staffs",
+            label: t.manageStaffs,
             key: "menuStaffs",
             subModules: [
-                { key: "roles", label: "Roles", controls: ["hide", "add", "edit", "delete"] },
-                { key: "staffs", label: "Staffs", controls: ["hide", "view", "add", "edit", "delete"] }
+                { key: "roles", label: t.roles, controls: ["hide", "add", "edit", "delete"] },
+                { key: "staffs", label: t.staffs, controls: ["hide", "view", "add", "edit", "delete"] }
             ]
         },
         {
-            label: "Landlords",
+            label: t.otherEnquiry,
+            key: "otherEnquiry",
+            subModules: [
+                { key: "contactEnquiry", label: t.contactEnquiry, controls: ["hide"] }
+            ]
+        },
+        {
+            label: t.landlords,
             key: "landlords",
             isDirect: true, // No submodules
             controls: ["hide", "view", "add", "edit", "delete"]
@@ -231,7 +242,7 @@ export default function Roles() {
         return (
             <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg mb-1 border border-gray-200">
                 <span className="text-gray-700 capitalize text-sm font-medium">
-                    {control === 'hide' ? 'Hide Tab' : control.charAt(0).toUpperCase() + control.slice(1)}
+                    {control === 'hide' ? t.hideTab : control === 'bulkUpload' ? t.bulkUpload : control === 'view' ? t.view : control === 'add' ? t.add : control === 'edit' ? t.edit : control === 'delete' ? t.deletePermission : control === 'copy' ? t.copy : control.charAt(0).toUpperCase() + control.slice(1)}
                 </span>
                 <Switch
                     size="small"
@@ -244,16 +255,16 @@ export default function Roles() {
     };
 
     return (
-        <div className="min-h-screen px-6 py-6 bg-gradient-to-b from-white to-[#f3f2ff]">
+        <div className="min-h-screen px-6 py-6">
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-2xl font-bold text-gray-900">Role Management</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{t.roleManagement}</h1>
                 <div className="flex gap-4">
                     <div className="relative">
                         <Search className="absolute top-2.5 left-3 text-gray-400 w-4 h-4" />
                         <input
                             type="text"
-                            placeholder="Search roles..."
+                            placeholder={t.searchRoles}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
@@ -265,7 +276,7 @@ export default function Roles() {
                             onClick={() => openModal()}
                             className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition shadow-md"
                         >
-                            <Plus size={18} /> Add Role
+                            <Plus size={18} /> {t.addRole}
                         </button>
                     )}
                 </div>
@@ -281,9 +292,9 @@ export default function Roles() {
                             <thead className="bg-gray-50 border-b border-gray-100">
                                 <tr>
                                     <th className="px-6 py-4 font-semibold text-sm text-gray-600">#</th>
-                                    <th className="px-6 py-4 font-semibold text-sm text-gray-600">Name</th>
-                                    <th className="px-6 py-4 font-semibold text-sm text-gray-600">Status</th>
-                                    <th className="px-6 py-4 font-semibold text-sm text-gray-600 text-right">Action</th>
+                                    <th className="px-6 py-4 font-semibold text-sm text-gray-600">{t.roleName}</th>
+                                    <th className="px-6 py-4 font-semibold text-sm text-gray-600">{t.status}</th>
+                                    <th className="px-6 py-4 font-semibold text-sm text-gray-600 text-right">{t.action}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -293,7 +304,7 @@ export default function Roles() {
                                         <td className="px-6 py-4 font-semibold text-gray-800">{role.name}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${role.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
-                                                {role.status}
+                                                {role.status === 'Active' ? t.active : t.inactive}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 flex justify-end gap-2">
@@ -313,7 +324,7 @@ export default function Roles() {
                                 {roles.length === 0 && (
                                     <tr>
                                         <td colSpan="4" className="py-12 text-center text-gray-500">
-                                            No roles found. Click "Add Role" to create one.
+                                            {t.noRolesFound}
                                         </td>
                                     </tr>
                                 )}
@@ -329,7 +340,7 @@ export default function Roles() {
                     <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
                         <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
                             <h2 className="text-xl font-bold text-gray-900">
-                                {editMode ? "Edit Role" : "Add Role"}
+                                {editMode ? t.editRole : t.addRole}
                             </h2>
                             <button onClick={() => setShowModal(false)} className="bg-gray-100 p-1.5 rounded-full text-gray-500 hover:bg-gray-200 transition">
                                 <X size={20} />
@@ -341,26 +352,26 @@ export default function Roles() {
                                 {/* Basic Info */}
                                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm grid grid-cols-2 gap-4">
                                     <div className="col-span-1">
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Role Name <span className="text-red-500">*</span></label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">{t.roleName} <span className="text-red-500">*</span></label>
                                         <input
                                             type="text"
                                             required
-                                            placeholder="Enter role name"
+                                            placeholder={t.enterRoleName}
                                             value={form.name}
                                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                                             className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 focus:ring-2 focus:ring-[#41398B] focus:border-[#41398B] outline-none transition"
                                         />
                                     </div>
                                     <div className="col-span-1">
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Status <span className="text-red-500">*</span></label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">{t.status} <span className="text-red-500">*</span></label>
                                         <Select
                                             value={form.status}
                                             onChange={(value) => setForm({ ...form, status: value })}
                                             className="w-full h-11 custom-select"
                                             popupClassName="custom-dropdown"
                                         >
-                                            <Select.Option value="Active">Active</Select.Option>
-                                            <Select.Option value="Inactive">Inactive</Select.Option>
+                                            <Select.Option value="Active">{t.active}</Select.Option>
+                                            <Select.Option value="Inactive">{t.inactive}</Select.Option>
                                         </Select>
                                     </div>
                                 </div>
@@ -368,7 +379,7 @@ export default function Roles() {
                                 {/* Permissions */}
                                 <div>
                                     <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider flex items-center gap-2">
-                                        Permissions Matrix
+                                        {t.permissionsMatrix}
                                     </h3>
 
                                     <div className="space-y-6">
@@ -417,14 +428,14 @@ export default function Roles() {
                                 onClick={() => setShowModal(false)}
                                 className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition font-medium shadow-sm"
                             >
-                                Cancel
+                                {t.cancel}
                             </button>
                             <button
                                 type="submit"
                                 form="roleForm"
                                 className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium shadow-md"
                             >
-                                {editMode ? "Update Role" : "Create Role"}
+                                {editMode ? t.updateRole : t.createRole}
                             </button>
                         </div>
                     </div>
@@ -438,13 +449,13 @@ export default function Roles() {
                         <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
                             <Trash2 size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">Delete Role?</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">{t.deleteRole}</h3>
                         <p className="text-gray-500 text-sm mb-6 text-center leading-relaxed">
-                            Are you sure you want to delete this role? This action cannot be undone.
+                            {t.deleteRoleConfirm}
                         </p>
                         <div className="flex justify-center gap-3">
-                            <button onClick={() => setDeleteConfirm({ show: false, id: null })} className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">Cancel</button>
-                            <button onClick={handleDelete} className="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium shadow-sm">Delete</button>
+                            <button onClick={() => setDeleteConfirm({ show: false, id: null })} className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">{t.cancel}</button>
+                            <button onClick={handleDelete} className="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium shadow-sm">{t.delete}</button>
                         </div>
                     </div>
                 </div>

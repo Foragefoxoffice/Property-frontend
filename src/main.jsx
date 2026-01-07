@@ -71,6 +71,7 @@ import AgentFormCms from "./AdminCms/AgentCms/AgentFormCms.jsx";
 import Register from "./Login/Register.jsx";
 import UsersDetails from "./Admin/UserDetails/UsersDetails.jsx";
 import Roles from "./Admin/Property/Roles.jsx";
+import ContactEnquiry from "./Admin/Enquiry/ContactEnquiry.jsx";
 
 
 createRoot(document.getElementById("root")).render(
@@ -161,8 +162,10 @@ createRoot(document.getElementById("root")).render(
             />
 
             {/* USERMANAGEMENT PAGES */}
-
             <Route path="user-details" element={<UsersDetails />} />
+
+            {/* ENQUIRY PAGES */}
+            <Route path="contact-enquiry" element={<ContactEnquiry />} />
 
             {/* ---------- MASTER ROUTES ---------- */}
             <Route path="masters" element={<Masters />} />

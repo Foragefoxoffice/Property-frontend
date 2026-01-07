@@ -199,7 +199,7 @@ export default function LegalDocumentPage() {
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
+    <div className="p-8 min-h-screen relative">
       {/* ✅ Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -470,8 +470,8 @@ export default function LegalDocumentPage() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium ${activeLang === "EN"
-                    ? "border-b-2 border-[#41398B] text-black"
-                    : "text-gray-500 hover:text-black"
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -480,8 +480,8 @@ export default function LegalDocumentPage() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium ${activeLang === "VI"
-                    ? "border-b-2 border-[#41398B] text-black"
-                    : "text-gray-500 hover:text-black"
+                  ? "border-b-2 border-[#41398B] text-black"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

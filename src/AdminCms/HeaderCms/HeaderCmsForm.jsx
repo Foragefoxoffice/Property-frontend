@@ -220,46 +220,54 @@ export default function HeaderCmsForm() {
                                                     <EyeOutlined className="text-[#41398B] text-lg" />
                                                 </button>
 
-                                                {/* Re-upload Button */}
-                                                <Upload
-                                                    showUploadList={false}
-                                                    beforeUpload={handleBeforeUpload}
-                                                >
+                                                {can('cms.header', 'edit') && (
+                                                    <Upload
+                                                        showUploadList={false}
+                                                        beforeUpload={handleBeforeUpload}
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                            title="Change Logo"
+                                                        >
+                                                            <ReloadOutlined className="text-blue-600 text-lg" />
+                                                        </button>
+                                                    </Upload>
+                                                )}
+
+                                                {can('cms.header', 'edit') && (
                                                     <button
                                                         type="button"
+                                                        onClick={removeLogo}
                                                         className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                        title="Change Logo"
+                                                        title="Delete"
                                                     >
-                                                        <ReloadOutlined className="text-blue-600 text-lg" />
+                                                        <X className="text-red-500 w-5 h-5" />
                                                     </button>
-                                                </Upload>
-
-                                                {/* Delete Button */}
-                                                <button
-                                                    type="button"
-                                                    onClick={removeLogo}
-                                                    className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                    title="Delete"
-                                                >
-                                                    <X className="text-red-500 w-5 h-5" />
-                                                </button>
+                                                )}
                                             </div>
                                         </div>
                                     ) : (
-                                        <Upload
-                                            name="headerLogo"
-                                            listType="picture-card"
-                                            className="logo-uploader"
-                                            showUploadList={false}
-                                            beforeUpload={handleBeforeUpload}
-                                        >
-                                            <div className="flex flex-col items-center justify-center h-full">
-                                                <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
-                                                <div className="text-sm text-gray-500 font-['Manrope']">
-                                                    {t.uploadImage}
+                                        can('cms.header', 'edit') ? (
+                                            <Upload
+                                                name="headerLogo"
+                                                listType="picture-card"
+                                                className="logo-uploader"
+                                                showUploadList={false}
+                                                beforeUpload={handleBeforeUpload}
+                                            >
+                                                <div className="flex flex-col items-center justify-center h-full">
+                                                    <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
+                                                    <div className="text-sm text-gray-500 font-['Manrope']">
+                                                        {t.uploadImage}
+                                                    </div>
                                                 </div>
+                                            </Upload>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center p-8 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl text-gray-400">
+                                                No logo uploaded
                                             </div>
-                                        </Upload>
+                                        )
                                     )}
 
                                     <Form.Item

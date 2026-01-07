@@ -125,6 +125,7 @@ export default function ContactPageSeoForm({
                             layout="vertical"
                             onFinish={handleFormSubmit}
                             onFinishFailed={onFormFinishFailed}
+                            disabled={!can('cms.contactUs', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -156,6 +157,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Enter meta title for SEO"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -175,6 +177,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Enter meta description for SEO"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -196,13 +199,15 @@ export default function ContactPageSeoForm({
                                                                     className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
                                                                 >
                                                                     <span className="text-sm">{kw}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="text-red-300 hover:text-red-100"
-                                                                        onClick={() => removeKeyword('en', i)}
-                                                                    >
-                                                                        <X size={14} />
-                                                                    </button>
+                                                                    {can('cms.contactUs', 'edit') && (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="text-red-300 hover:text-red-100"
+                                                                            onClick={() => removeKeyword('en', i)}
+                                                                        >
+                                                                            <X size={14} />
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -211,6 +216,7 @@ export default function ContactPageSeoForm({
                                                             placeholder="Type keyword & press Enter"
                                                             onKeyDown={(e) => handleKeywordKeyDown(e, 'en')}
                                                             className="outline-none w-full text-[15px] font-['Manrope']"
+                                                            disabled={!can('cms.contactUs', 'edit')}
                                                         />
                                                     </div>
                                                 </Form.Item>
@@ -228,6 +234,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="contact"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -244,6 +251,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="https://example.com/contact"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -260,6 +268,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Select Schema Type"
                                                         size="large"
                                                         className="w-full"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                         options={[
                                                             { label: 'ContactPage', value: 'ContactPage' },
                                                             { label: 'LocalBusiness', value: 'LocalBusiness' },
@@ -283,6 +292,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Enter Open Graph title"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -299,6 +309,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Enter Open Graph description"
                                                         rows={3}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
                                             </>
@@ -329,6 +340,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Nhập tiêu đề meta cho SEO"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -348,6 +360,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Nhập mô tả meta cho SEO"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -369,13 +382,15 @@ export default function ContactPageSeoForm({
                                                                     className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
                                                                 >
                                                                     <span className="text-sm">{kw}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="text-red-300 hover:text-red-100"
-                                                                        onClick={() => removeKeyword('vn', i)}
-                                                                    >
-                                                                        <X size={14} />
-                                                                    </button>
+                                                                    {can('cms.contactUs', 'edit') && (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="text-red-300 hover:text-red-100"
+                                                                            onClick={() => removeKeyword('vn', i)}
+                                                                        >
+                                                                            <X size={14} />
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -384,6 +399,7 @@ export default function ContactPageSeoForm({
                                                             placeholder="Nhập từ khóa & nhấn Enter"
                                                             onKeyDown={(e) => handleKeywordKeyDown(e, 'vn')}
                                                             className="outline-none w-full text-[15px] font-['Manrope']"
+                                                            disabled={!can('cms.contactUs', 'edit')}
                                                         />
                                                     </div>
                                                 </Form.Item>
@@ -401,6 +417,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="lien-he"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -417,6 +434,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="https://example.com/vn/lien-he"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -433,6 +451,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Chọn loại Schema"
                                                         size="large"
                                                         className="w-full"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                         options={[
                                                             { label: 'ContactPage', value: 'ContactPage' },
                                                             { label: 'LocalBusiness', value: 'LocalBusiness' },
@@ -456,6 +475,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Nhập tiêu đề Open Graph"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -472,6 +492,7 @@ export default function ContactPageSeoForm({
                                                         placeholder="Nhập mô tả Open Graph"
                                                         rows={3}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.contactUs', 'edit')}
                                                     />
                                                 </Form.Item>
                                             </>
@@ -491,7 +512,7 @@ export default function ContactPageSeoForm({
                                 valuePropName="checked"
                                 initialValue={true}
                             >
-                                <Switch />
+                                <Switch disabled={!can('cms.contactUs', 'edit')} />
                             </Form.Item>
 
                             {/* OG Images - Common for both languages */}
@@ -509,38 +530,42 @@ export default function ContactPageSeoForm({
                                             className="relative w-40 h-40 rounded-xl overflow-hidden border bg-gray-50 group"
                                         >
                                             <img src={img} className="w-full h-full object-cover" alt={`OG ${i + 1}`} />
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setPreviewImage(img)}
-                                                    className="bg-white rounded-full p-2 shadow hover:bg-gray-100"
-                                                >
-                                                    <EyeOutlined className="text-[#41398B]" />
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeOgImage(i)}
-                                                    className="bg-white rounded-full p-2 shadow hover:bg-red-50"
-                                                >
-                                                    <DeleteOutlined className="text-red-500" />
-                                                </button>
-                                            </div>
+                                            {can('cms.contactUs', 'edit') && (
+                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setPreviewImage(img)}
+                                                        className="bg-white rounded-full p-2 shadow hover:bg-gray-100"
+                                                    >
+                                                        <EyeOutlined className="text-[#41398B]" />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeOgImage(i)}
+                                                        className="bg-white rounded-full p-2 shadow hover:bg-red-50"
+                                                    >
+                                                        <DeleteOutlined className="text-red-500" />
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
 
                                     {/* Upload Box */}
-                                    <Upload
-                                        accept="image/*"
-                                        showUploadList={false}
-                                        beforeUpload={handleOgImageUpload}
-                                    >
-                                        <div className="w-40 h-40 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
-                                            <PlusOutlined className="text-2xl text-gray-400 mb-2" />
-                                            <span className="text-xs text-gray-500 font-['Manrope']">
-                                                {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
-                                            </span>
-                                        </div>
-                                    </Upload>
+                                    {can('cms.contactUs', 'edit') && (
+                                        <Upload
+                                            accept="image/*"
+                                            showUploadList={false}
+                                            beforeUpload={handleOgImageUpload}
+                                        >
+                                            <div className="w-40 h-40 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
+                                                <PlusOutlined className="text-2xl text-gray-400 mb-2" />
+                                                <span className="text-xs text-gray-500 font-['Manrope']">
+                                                    {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                </span>
+                                            </div>
+                                        </Upload>
+                                    )}
                                 </div>
                             </Form.Item>
 

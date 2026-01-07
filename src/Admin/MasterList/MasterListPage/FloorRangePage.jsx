@@ -191,7 +191,7 @@ export default function FloorRange() {
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
+    <div className="p-8 min-h-screen relative">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -267,8 +267,8 @@ export default function FloorRange() {
                     <td className="px-6 py-3">
                       <span
                         className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                            ? "bg-[#E8FFF0] text-[#12B76A]"
-                            : "bg-[#FFE8E8] text-[#F04438]"
+                          ? "bg-[#E8FFF0] text-[#12B76A]"
+                          : "bg-[#FFE8E8] text-[#F04438]"
                           }`}
                       >
                         {isVI
@@ -450,8 +450,8 @@ export default function FloorRange() {
               <button
                 onClick={() => setActiveLang("EN")}
                 className={`py-3 font-medium transition-all ${activeLang === "EN"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 English (EN)
@@ -459,8 +459,8 @@ export default function FloorRange() {
               <button
                 onClick={() => setActiveLang("VI")}
                 className={`py-3 font-medium transition-all ${activeLang === "VI"
-                    ? "text-black border-b-2 border-[#41398B]"
-                    : "text-gray-500 hover:text-black"
+                  ? "text-black border-b-2 border-[#41398B]"
+                  : "text-gray-500 hover:text-black"
                   }`}
               >
                 Tiếng Việt (VI)

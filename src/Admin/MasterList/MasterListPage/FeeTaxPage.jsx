@@ -218,7 +218,7 @@ export default function FeeTaxPage() {
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff] relative">
+    <div className="p-8 min-h-screen relative">
       {/* ✅ Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

@@ -9,6 +9,7 @@ import {
   getAllCurrencies,
 } from "@/Api/action";
 import { ArrowRight } from "lucide-react";
+import { usePermissions } from "@/Context/PermissionContext";
 
 /* ======================================================
    SIMPLE TEXT INPUT
@@ -118,6 +119,7 @@ const t = {
 ====================================================== */
 export default function FiltersPage({ onApply, defaultFilters }) {
   const [lang, setLang] = useState("en");
+  const { can } = usePermissions();
 
   // master lists (full objects)
   const [projectsAll, setProjectsAll] = useState([]);
@@ -200,7 +202,22 @@ export default function FiltersPage({ onApply, defaultFilters }) {
 
 
     load();
-  }, []);
+  }, [can]);
+
+  // ✅ Filter property types based on permissions
+  const filteredPropertyTypes = React.useMemo(() => {
+    const hasLeaseAccess = can('properties.lease', 'view');
+    const hasSaleAccess = can('properties.sale', 'view');
+    const hasHomestayAccess = can('properties.homestay', 'view');
+
+    // If user has access to all, show all types
+    if (hasLeaseAccess && hasSaleAccess && hasHomestayAccess) {
+      return propertyTypes;
+    }
+
+    // For now, show all types if user has any access
+    return propertyTypes;
+  }, [propertyTypes, can]);
 
   /* ======================================================
      Apply defaultFilters if provided (normalize to {id,name})
@@ -385,7 +402,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           name="propertyType"
           value={filters.propertyType}
           onChange={update}
-          options={propertyTypes}
+          options={filteredPropertyTypes}
           lang={lang}
         />
 

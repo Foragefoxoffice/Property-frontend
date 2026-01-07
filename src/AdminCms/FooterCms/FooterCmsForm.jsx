@@ -271,10 +271,10 @@ export default function FooterCmsForm() {
                             onFinish={handleSubmit}
                             onFinishFailed={onFormFinishFailed}
                             initialValues={{
-                                footerIcons: [],
                                 footerNumber: [],
                                 footerEmail: []
                             }}
+                            disabled={!can('cms.footer', 'edit')}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -467,38 +467,48 @@ export default function FooterCmsForm() {
                                                                         >
                                                                             <EyeOutlined className="text-[#41398B] text-lg" />
                                                                         </button>
-                                                                        <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                                                        {can('cms.footer', 'edit') && (
+                                                                            <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                                    title="Change Logo"
+                                                                                >
+                                                                                    <ReloadOutlined className="text-blue-600 text-lg" />
+                                                                                </button>
+                                                                            </Upload>
+                                                                        )}
+                                                                        {can('cms.footer', 'edit') && (
                                                                             <button
                                                                                 type="button"
+                                                                                onClick={removeLogo}
                                                                                 className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                                title="Change Logo"
+                                                                                title="Delete"
                                                                             >
-                                                                                <ReloadOutlined className="text-blue-600 text-lg" />
+                                                                                <X className="text-red-500 w-5 h-5" />
                                                                             </button>
-                                                                        </Upload>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={removeLogo}
-                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                            title="Delete"
-                                                                        >
-                                                                            <X className="text-red-500 w-5 h-5" />
-                                                                        </button>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             ) : (
-                                                                <Upload
-                                                                    name="footerLogo"
-                                                                    listType="picture-card"
-                                                                    className="logo-uploader"
-                                                                    showUploadList={false}
-                                                                    beforeUpload={handleBeforeUpload}
-                                                                >
-                                                                    <div className="flex flex-col items-center justify-center h-full">
-                                                                        <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
-                                                                        <div className="text-sm text-gray-500 font-['Manrope']">Upload Logo</div>
+                                                                can('cms.footer', 'edit') ? (
+                                                                    <Upload
+                                                                        name="footerLogo"
+                                                                        listType="picture-card"
+                                                                        className="logo-uploader"
+                                                                        showUploadList={false}
+                                                                        beforeUpload={handleBeforeUpload}
+                                                                    >
+                                                                        <div className="flex flex-col items-center justify-center h-full">
+                                                                            <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
+                                                                            <div className="text-sm text-gray-500 font-['Manrope']">Upload Logo</div>
+                                                                        </div>
+                                                                    </Upload>
+                                                                ) : (
+                                                                    <div className="flex flex-col items-center justify-center p-8 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl text-gray-400">
+                                                                        No logo uploaded
                                                                     </div>
-                                                                </Upload>
+                                                                )
                                                             )}
                                                             <Form.Item name="footerLogo" noStyle>
                                                                 <input type="hidden" />
@@ -526,23 +536,27 @@ export default function FooterCmsForm() {
                                                                         >
                                                                             <Input placeholder="contact@example.com" className="h-11 rounded-lg" />
                                                                         </Form.Item>
-                                                                        <Button
-                                                                            danger
-                                                                            onClick={() => remove(field.name)}
-                                                                            icon={<DeleteOutlined />}
-                                                                            className="h-11 w-11 flex items-center justify-center rounded-lg"
-                                                                        />
+                                                                        {can('cms.footer', 'edit') && (
+                                                                            <Button
+                                                                                danger
+                                                                                onClick={() => remove(field.name)}
+                                                                                icon={<DeleteOutlined />}
+                                                                                className="h-11 w-11 flex items-center justify-center rounded-lg"
+                                                                            />
+                                                                        )}
                                                                     </div>
                                                                 ))}
-                                                                <Button
-                                                                    type="dashed"
-                                                                    onClick={() => add()}
-                                                                    block
-                                                                    icon={<PlusOutlined />}
-                                                                    className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope'] mb-6"
-                                                                >
-                                                                    Add Email Address
-                                                                </Button>
+                                                                {can('cms.footer', 'edit') && (
+                                                                    <Button
+                                                                        type="dashed"
+                                                                        onClick={() => add()}
+                                                                        block
+                                                                        icon={<PlusOutlined />}
+                                                                        className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope'] mb-6"
+                                                                    >
+                                                                        Add Email Address
+                                                                    </Button>
+                                                                )}
                                                             </>
                                                         )}
                                                     </Form.List>
@@ -560,23 +574,27 @@ export default function FooterCmsForm() {
                                                                         >
                                                                             <Input placeholder="+1 234 567 8900" className="h-11 rounded-lg" />
                                                                         </Form.Item>
-                                                                        <Button
-                                                                            danger
-                                                                            onClick={() => remove(field.name)}
-                                                                            icon={<DeleteOutlined />}
-                                                                            className="h-11 w-11 flex items-center justify-center rounded-lg"
-                                                                        />
+                                                                        {can('cms.footer', 'edit') && (
+                                                                            <Button
+                                                                                danger
+                                                                                onClick={() => remove(field.name)}
+                                                                                icon={<DeleteOutlined />}
+                                                                                className="h-11 w-11 flex items-center justify-center rounded-lg"
+                                                                            />
+                                                                        )}
                                                                     </div>
                                                                 ))}
-                                                                <Button
-                                                                    type="dashed"
-                                                                    onClick={() => add()}
-                                                                    block
-                                                                    icon={<PlusOutlined />}
-                                                                    className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope']"
-                                                                >
-                                                                    Add Phone Number
-                                                                </Button>
+                                                                {can('cms.footer', 'edit') && (
+                                                                    <Button
+                                                                        type="dashed"
+                                                                        onClick={() => add()}
+                                                                        block
+                                                                        icon={<PlusOutlined />}
+                                                                        className="h-11 rounded-lg border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 font-['Manrope']"
+                                                                    >
+                                                                        Add Phone Number
+                                                                    </Button>
+                                                                )}
                                                             </>
                                                         )}
                                                     </Form.List>
@@ -607,6 +625,7 @@ export default function FooterCmsForm() {
                                                                                             name="icon"
                                                                                             listType="picture-card"
                                                                                             showUploadList={false}
+                                                                                            disabled={!can('cms.footer', 'edit')}
                                                                                             beforeUpload={(file) => handleBeforeIconUpload(file, index)}
                                                                                             className="w-[60px] h-[60px] flex-shrink-0 [&>.ant-upload]:!w-[60px] [&>.ant-upload]:!h-[60px] [&>.ant-upload]:!border-purple-200 [&>.ant-upload]:!bg-gray-50 [&>.ant-upload]:!rounded-lg overflow-hidden [&>.ant-upload]:!m-0"
                                                                                         >
@@ -653,22 +672,26 @@ export default function FooterCmsForm() {
                                                                         </Form.Item>
 
                                                                         {/* Remove Button */}
-                                                                        <Button
-                                                                            danger
-                                                                            type="text"
-                                                                            onClick={() => remove(field.name)}
-                                                                            className="h-[36px] px-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg border border-red-100 font-medium text-sm flex items-center gap-2"
-                                                                        >
-                                                                            <DeleteOutlined /> Remove
-                                                                        </Button>
+                                                                        {can('cms.footer', 'edit') && (
+                                                                            <Button
+                                                                                danger
+                                                                                type="text"
+                                                                                onClick={() => remove(field.name)}
+                                                                                className="h-[36px] px-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg border border-red-100 font-medium text-sm flex items-center gap-2"
+                                                                            >
+                                                                                <DeleteOutlined /> Remove
+                                                                            </Button>
+                                                                        )}
                                                                     </div>
                                                                 ))}
-                                                                <Button
-                                                                    onClick={() => add()}
-                                                                    className="h-[58px] px-6 py-5 rounded-xl bg-[#41398B] text-white border-none font-bold text-[15px] mt-2 w-full flex items-center justify-center gap-2 shadow-md shadow-indigo-100 transition-all hover:scale-[1.01]"
-                                                                >
-                                                                    <PlusOutlined /> Add Social Icon
-                                                                </Button>
+                                                                {can('cms.footer', 'edit') && (
+                                                                    <Button
+                                                                        onClick={() => add()}
+                                                                        className="h-[58px] px-6 py-5 rounded-xl bg-[#41398B] text-white border-none font-bold text-[15px] mt-2 w-full flex items-center justify-center gap-2 shadow-md shadow-indigo-100 transition-all hover:scale-[1.01]"
+                                                                    >
+                                                                        <PlusOutlined /> Add Social Icon
+                                                                    </Button>
+                                                                )}
                                                             </>
                                                         )}
                                                     </Form.List>
