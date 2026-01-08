@@ -521,5 +521,7 @@ export const deleteSubscription = (id) => API.delete(`/subscription/${id}`);
 export const addFavorite = (propertyId) => API.post("/favorites/add", { propertyId });
 export const removeFavorite = (propertyId) => API.delete(`/favorites/remove/${propertyId}`);
 export const getFavorites = () => API.get("/favorites");
+export const getAllEnquiries = () => API.get("/favorites/admin/all");
+export const markEnquiryAsRead = (id, isRead) => API.put(`/favorites/admin/mark-read/${id}`, { isRead });
 
 export default API;

@@ -8,16 +8,21 @@ import {
     getAllPropertyTypes,
     getAllCurrencies
 } from '../Api/action';
-import { Select, Skeleton } from 'antd';
+import { Select, Skeleton, Tooltip } from 'antd';
 import Header from '@/Admin/Header/Header';
 import Footer from '@/Admin/Footer/Footer';
 import { usePermissions } from '../Context/PermissionContext';
 import Loader from '@/components/Loader/Loader';
+import { Heart } from 'lucide-react';
+import { useLanguage } from '@/Language/LanguageContext';
+import { useFavorites } from '../Context/FavoritesContext';
 
 export default function ListingPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
     // Initialize category from URL or default to 'Lease'
     const [selectedCategory, setSelectedCategory] = useState(() => {
@@ -31,6 +36,15 @@ export default function ListingPage() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
+
+    const handleToggleFavorite = async (e, propertyId) => {
+        e.stopPropagation();
+        if (isFavorite(propertyId)) {
+            await removeFavorite(propertyId);
+        } else {
+            await addFavorite(propertyId);
+        }
+    };
 
     // Dropdown data
     const [projects, setProjects] = useState([]);
@@ -598,13 +612,28 @@ export default function ListingPage() {
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="wishlist"><div className="hover-tooltip tooltip-left box-icon"><span className="icon icon-Heart"></span><span className="tooltip">Add to Wishlist</span></div></div>
+                                                        {/* Favorite Button */}
+                                                        <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                            <button
+                                                                onClick={(e) => handleToggleFavorite(e, property._id)}
+                                                                className="p-1 bg-white rounded-md shadow-sm text-[#000] hover:scale-105 transition-transform cursor-pointer"
+                                                            >
+                                                                <Tooltip title={isFavorite(property._id)
+                                                                    ? (language === 'vi' ? 'Xóa khỏi Yêu thích' : 'Remove from Favorites')
+                                                                    : (language === 'vi' ? 'Thêm vào Yêu thích' : 'Add to Favorites')}>
+                                                                    <Heart
+                                                                        size={16}
+                                                                        className={`${isFavorite(property._id) ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-[#2a2a2a]'}`}
+                                                                    />
+                                                                </Tooltip>
+                                                            </button>
+                                                        </div>
                                                     </div>
 
                                                     {/* Content */}
-                                                    <div className="pt-5 pb-5 px-2">
+                                                    <div className="pt-2 pb-5 px-2">
                                                         {/* Price */}
-                                                        <div className="flex items-baseline gap-0 mb-2">
+                                                        <div className="flex items-baseline gap-0 mb-0">
                                                             {(() => {
                                                                 const type = getLocalizedValue(property.listingInformation?.listingInformationTransactionType);
                                                                 const priceSale = property.financialDetails?.financialDetailsPrice;
@@ -637,7 +666,7 @@ export default function ListingPage() {
 
                                                                 return (
                                                                     <>
-                                                                        <span className="text-2xl font-bold text-[#2a2a2a]">{displayPrice}</span>
+                                                                        <span className="text-[22px] font-bold text-[#2a2a2a]">{displayPrice}</span>
                                                                         {displaySuffix && <span className="text-sm text-gray-500 font-medium">{displaySuffix}</span>}
                                                                     </>
                                                                 );

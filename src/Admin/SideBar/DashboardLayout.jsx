@@ -295,9 +295,9 @@ const DashboardLayout = () => {
                                         {/* ENQUIRES */}
                                         {!isHidden("userManagement.enquires") && (
                                             <button
-                                                onClick={() => navigate("/dashboard/cms/enquires")}
+                                                onClick={() => navigate("/dashboard/enquiry")}
                                                 className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
-                      ${isActive("/dashboard/cms/enquires") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                      ${isActive("/dashboard/enquiry") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <FaQuestionCircle /> </span>

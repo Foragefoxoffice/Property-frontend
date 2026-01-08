@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, ChevronDown } from "lucide-react";
+import { LogOut, ChevronDown, Heart } from "lucide-react";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { getHeader } from "../../Api/action";
 import AnimatedNavLink from "../../components/AnimatedNavLink";
+import { useFavorites } from "../../Context/FavoritesContext";
+import { Tooltip } from "antd";
 
 export default function Header({ showNavigation = true }) {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ export default function Header({ showNavigation = true }) {
   const [showPropertiesDropdown, setShowPropertiesDropdown] = useState(false);
   const [headerLogo, setHeaderLogo] = useState("/images/login/logo.png");
   const { language, toggleLanguage } = useLanguage();
+  const { favorites } = useFavorites();
 
   const labels = {
     logout: { en: "Logout", vi: "Đăng xuất" },
@@ -179,6 +182,23 @@ export default function Header({ showNavigation = true }) {
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
+
+          {/* Favorites Indicator */}
+          <Tooltip title={language === 'vi' ? 'Mục yêu thích' : 'Favorites'}>
+            <button
+              onClick={() => navigate("/favorites")}
+              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors group"
+              title={language === 'vi' ? 'Mục yêu thích' : 'Favorites'}
+            >
+              <Heart size={20} className="text-gray-600 group-hover:text-[#41398B] transition-colors cursor-pointer" />
+              {favorites.length > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white transform translate-x-1 -translate-y-1">
+                  {favorites.length}
+                </span>
+              )}
+            </button>
+          </Tooltip>
+
           {!localStorage.getItem("token") && (
             <div>
               <Link className="font-medium text-[16px] hover:text-[#41398B]" to="/">Login/Register</Link>

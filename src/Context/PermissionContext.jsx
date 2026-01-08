@@ -10,29 +10,32 @@ export const PermissionProvider = ({ children }) => {
     const [userRole, setUserRole] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchPermissions = async () => {
-            const role = localStorage.getItem("userRole");
-            const token = localStorage.getItem("token");
-            setUserRole(role);
+    const fetchPermissions = async () => {
+        const role = localStorage.getItem("userRole");
+        const token = localStorage.getItem("token");
+        setUserRole(role);
 
-            if (role && token) {
-                try {
-                    const res = await getRoles();
-                    if (res?.data?.data) {
-                        const rolesData = res.data.data;
-                        const currentRole = rolesData.find(r => r.name === role);
-                        if (currentRole) {
-                            setPermissions(currentRole.permissions);
-                        }
+        if (role && token) {
+            try {
+                const res = await getRoles();
+                if (res?.data?.data) {
+                    const rolesData = res.data.data;
+                    const currentRole = rolesData.find(r => r.name === role);
+                    if (currentRole) {
+                        setPermissions(currentRole.permissions);
                     }
-                } catch (error) {
-                    console.error("Error fetching permissions:", error);
                 }
+            } catch (error) {
+                console.error("Error fetching permissions:", error);
             }
-            setLoading(false);
-        };
+        } else {
+            setPermissions(null);
+            setUserRole(null);
+        }
+        setLoading(false);
+    };
 
+    useEffect(() => {
         fetchPermissions();
     }, []);
 
@@ -77,7 +80,7 @@ export const PermissionProvider = ({ children }) => {
     };
 
     return (
-        <PermissionContext.Provider value={{ isHidden, can, userRole, loading }}>
+        <PermissionContext.Provider value={{ isHidden, can, userRole, loading, refreshPermissions: fetchPermissions }}>
             {children}
         </PermissionContext.Provider>
     );

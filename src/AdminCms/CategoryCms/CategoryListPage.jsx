@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space, Modal, Form, Input, Tabs, ConfigProvider, Spin, Select } from "antd";
-import { Search, Plus, Edit2, Trash2, X, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Calendar, Languages } from "lucide-react";
+import { Select } from "antd";
+import { Search, Plus, Trash2, X, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Calendar, Languages } from "lucide-react";
 import { getCategories, deleteCategory, createCategory, updateCategory } from "../../Api/action";
 import { useLanguage } from "../../Language/LanguageContext";
 import { usePermissions } from "../../Context/PermissionContext";
 import { CommonToaster } from "@/Common/CommonToaster";
+import { translations } from "../../Language/translations";
+import CommonSkeleton from "../../Common/CommonSkeleton";
 
 export default function CategoryListPage() {
     const { language } = useLanguage();
+    const t = translations[language];
     const { can } = usePermissions();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,7 +41,7 @@ export default function CategoryListPage() {
             setCategories(res.data.data);
         } catch (error) {
             console.error(error);
-            CommonToaster("Failed to fetch categories", "error");
+            CommonToaster(t.errorFetching || "Failed to fetch categories", "error");
         } finally {
             setLoading(false);
         }
@@ -54,13 +57,13 @@ export default function CategoryListPage() {
         setSubmitLoading(true);
         try {
             await deleteCategory(deleteId);
-            CommonToaster("Category deleted successfully", "success");
+            CommonToaster(t.categoryDeleted, "success");
             fetchCategories();
             setIsDeleteModalOpen(false);
             setDeleteId(null);
         } catch (error) {
             console.error("Delete Error:", error);
-            CommonToaster(error.response?.data?.error || "Failed to delete category", "error");
+            CommonToaster(error.response?.data?.error || t.errorDeletingCategory, "error");
         } finally {
             setSubmitLoading(false);
         }
@@ -101,64 +104,20 @@ export default function CategoryListPage() {
         try {
             if (editingCategory) {
                 await updateCategory(editingCategory._id, payload);
-                CommonToaster("Category updated successfully", "success");
+                CommonToaster(t.categoryUpdated, "success");
             } else {
                 await createCategory(payload);
-                CommonToaster("Category created successfully", "success");
+                CommonToaster(t.categoryCreated, "success");
             }
             handleCloseModal();
             fetchCategories();
         } catch (error) {
             console.error(error);
-            CommonToaster(error.response?.data?.error || "Failed to save category", "error");
+            CommonToaster(error.response?.data?.error || t.errorSavingCategory, "error");
         } finally {
             setSubmitLoading(false);
         }
     };
-
-    // Translation object
-    const translations = {
-        en: {
-            pageTitle: "Categories",
-            pageDescription: "Manage blog categories",
-            addCategory: "Add Category",
-            name: "Name",
-            slug: "Slug",
-            createdAt: "Created At",
-            actions: "Actions",
-            editCategory: "Edit Category",
-            addNewCategory: "Add New Category",
-            cancel: "Cancel",
-            update: "Update",
-            create: "Create",
-            deleteCategory: "Delete Category?",
-            deleteConfirmation: "Are you sure you want to delete this category? This action cannot be undone.",
-            yesDelete: "Yes, Delete",
-            noName: "No Name",
-        },
-        vi: {
-            pageTitle: "Danh mục",
-            pageDescription: "Quản lý danh mục blog",
-            addCategory: "Thêm danh mục",
-            name: "Tên",
-            slug: "Đường dẫn",
-            createdAt: "Ngày tạo",
-            actions: "Hành động",
-            editCategory: "Chỉnh sửa danh mục",
-            addNewCategory: "Thêm danh mục mới",
-            cancel: "Hủy",
-            update: "Cập nhật",
-            create: "Tạo mới",
-            deleteCategory: "Xóa danh mục?",
-            deleteConfirmation: "Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.",
-            yesDelete: "Có, Xóa",
-            noName: "Không có tên",
-        }
-    };
-
-    const t = translations[language];
-
-
 
     // Filter & Pagination Logic
     const filteredCategories = categories.filter((cat) => {
@@ -179,15 +138,6 @@ export default function CategoryListPage() {
         if (totalRows > 0 && currentPage === 0) setCurrentPage(1);
     }, [totalRows, totalPages, currentPage]);
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <ConfigProvider theme={{ token: { colorPrimary: '#41398B' } }}>
-                    <Spin size="large" />
-                </ConfigProvider>
-            </div>
-        );
-    }
 
     const goToFirst = () => setCurrentPage(1);
     const goToLast = () => setCurrentPage(totalPages);
@@ -195,16 +145,13 @@ export default function CategoryListPage() {
     const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
     return (
-        <div className="min-h-screen px-6 py-6 font-primary relative">
+        <div className="min-h-screen px-2 py-2 font-primary relative">
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        {t.pageTitle}
+                    <h1 className="text-3xl font-semibold text-gray-900">
+                        {t.categoriesTitle}
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
-                        {t.pageDescription}
-                    </p>
                 </div>
                 {can('blogs.category', 'add') && (
                     <button
@@ -218,162 +165,149 @@ export default function CategoryListPage() {
             </div>
 
             {/* Search */}
-            <div className="relative mb-6 max-w-md">
-                <Search className="absolute top-2.5 left-3 text-gray-400 w-5 h-5" />
+            <div className="relative mb-6 max-w-sm">
+                <Search className="absolute top-3 left-3 text-gray-400 w-5 h-5" />
                 <input
                     type="text"
-                    placeholder="Search by name..."
+                    placeholder={`${t.search}...`}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
                 />
             </div>
 
             {/* Table */}
             <div className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-                    <table className="w-full text-sm border-collapse">
-                        <thead className="bg-gray-50 text-gray-700">
-                            <tr>
-                                <th className="px-6 py-4 text-left font-medium">{t.name}</th>
-                                <th className="px-6 py-4 text-left font-medium">{t.slug}</th>
-                                <th className="px-6 py-4 text-left font-medium">{t.createdAt}</th>
-                                <th className="px-6 py-4 text-right font-medium">{t.actions}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {visibleData.length === 0 ? (
+                {loading ? (
+                    <div className="p-6 bg-white rounded-2xl border border-gray-100">
+                        <CommonSkeleton rows={5} />
+                    </div>
+                ) : (
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+                        <table className="w-full text-sm border-collapse">
+                            <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
                                 <tr>
-                                    <td colSpan="4" className="text-center py-12 text-gray-500">
-                                        No categories found.
-                                    </td>
+                                    <th className="px-6 py-4 text-left font-medium text-[#111111]">{t.name}</th>
+                                    <th className="px-6 py-4 text-left font-medium text-[#111111]">{t.slug}</th>
+                                    <th className="px-6 py-4 text-left font-medium text-[#111111]">{t.createdAt}</th>
+                                    <th className="px-6 py-4 text-right font-medium text-[#111111]">{t.actions}</th>
                                 </tr>
-                            ) : (
-                                visibleData.map((category, i) => (
-                                    <tr
-                                        key={category._id}
-                                        className="border-b last:border-0 border-gray-100 hover:bg-gray-50 transition-colors"
-                                    >
-                                        <td className="px-6 py-4 font-semibold text-gray-700">
-                                            {category.name?.[language] || category.name?.en || category.name?.vi || t.noName}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-500">
-                                            {category.slug?.[language] || category.slug?.en || category.slug?.vi || '-'}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-500">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar size={14} className="text-gray-400" />
-                                                {new Date(category.createdAt).toLocaleDateString()}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 text-right relative">
-                                            <button
-                                                className="p-2 rounded-full hover:bg-gray-200 transition text-gray-500"
-                                                onClick={() => setOpenMenuIndex(openMenuIndex === i ? null : i)}
-                                            >
-                                                <MoreVertical size={18} />
-                                            </button>
-
-                                            {/* Dropdown Menu */}
-                                            {openMenuIndex === i && (
-                                                <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
-                                                    {can('blogs.category', 'edit') && (
-                                                        <button
-                                                            onClick={() => {
-                                                                handleOpenModal(category);
-                                                                setOpenMenuIndex(null);
-                                                            }}
-                                                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group"
-                                                        >
-                                                            <span className="w-8 flex justify-center">
-                                                                <Pencil size={15} className="text-blue-600 group-hover:scale-110 transition" />
-                                                            </span>
-                                                            {t.editCategory}
-                                                        </button>
-                                                    )}
-                                                    {can('blogs.category', 'delete') && (
-                                                        <button
-                                                            onClick={() => {
-                                                                confirmDelete(category._id);
-                                                                setOpenMenuIndex(null);
-                                                            }}
-                                                            className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition group"
-                                                        >
-                                                            <span className="w-8 flex justify-center">
-                                                                <Trash2 size={15} className="group-hover:scale-110 transition" />
-                                                            </span>
-                                                            {t.yesDelete.replace("Yes, ", "")}
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            )}
+                            </thead>
+                            <tbody>
+                                {visibleData.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="4" className="text-center py-12 text-gray-500">
+                                            No categories found.
                                         </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                ) : (
+                                    visibleData.map((category, i) => (
+                                        <tr
+                                            key={category._id}
+                                            className={`border-b last:border-0 border-gray-100 transition-colors ${i % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+                                        >
+                                            <td className="px-6 py-4 font-semibold text-gray-700">
+                                                {category.name?.[language] || category.name?.en || category.name?.vi || t.noName}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-500">
+                                                {category.slug?.[language] || category.slug?.en || category.slug?.vi || '-'}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-500">
+                                                <div className="flex items-center gap-2">
+                                                    <Calendar size={14} className="text-gray-400" />
+                                                    {new Date(category.createdAt).toLocaleDateString()}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-right relative">
+                                                <button
+                                                    className="p-2 rounded-full hover:bg-gray-200 transition text-gray-500"
+                                                    onClick={() => setOpenMenuIndex(openMenuIndex === i ? null : i)}
+                                                >
+                                                    <MoreVertical size={18} />
+                                                </button>
+
+                                                {/* Dropdown Menu */}
+                                                {openMenuIndex === i && (
+                                                    <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
+                                                        {can('blogs.category', 'edit') && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    handleOpenModal(category);
+                                                                    setOpenMenuIndex(null);
+                                                                }}
+                                                                className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group"
+                                                            >
+                                                                <span className="w-8 flex justify-center">
+                                                                    <Pencil size={15} className="text-blue-600 group-hover:scale-110 transition" />
+                                                                </span>
+                                                                {t.editCategory}
+                                                            </button>
+                                                        )}
+                                                        {can('blogs.category', 'delete') && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    confirmDelete(category._id);
+                                                                    setOpenMenuIndex(null);
+                                                                }}
+                                                                className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition group"
+                                                            >
+                                                                <span className="w-8 flex justify-center">
+                                                                    <Trash2 size={15} className="group-hover:scale-110 transition" />
+                                                                </span>
+                                                                {t.yesDelete.replace("Yes, ", "")}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
 
             {/* Pagination Bar */}
-            <div className="flex justify-end items-center px-6 py-2 bg-white rounded-xl text-sm text-gray-700 mt-4 border border-gray-100 shadow-sm">
-                <div className="flex items-center gap-6">
+            {!loading && totalRows > 0 && (
+                <div className="flex justify-between items-center px-6 py-4 text-sm text-gray-600 border-t bg-gray-50 mt-4 rounded-b-2xl">
                     <div className="flex items-center gap-2">
-                        <span>{language === "vi" ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
-                        <Select
-                            value={rowsPerPage}
-                            onChange={(val) => {
-                                setRowsPerPage(val);
-                                setCurrentPage(1);
-                            }}
-                            className="w-16 h-8"
-                            suffixIcon={null}
-                        >
-                            {[5, 10, 20, 50].map((n) => (
-                                <Select.Option key={n} value={n}>
-                                    {n}
-                                </Select.Option>
+                        <span>{t.rowsPerPage}:</span>
+                        <select value={rowsPerPage} onChange={(e) => {
+                            setRowsPerPage(Number(e.target.value));
+                            setCurrentPage(1);
+                        }} className="border rounded-md text-gray-700 focus:outline-none px-2 py-1">
+                            {[5, 10, 20, 25, 50].map((num) => (
+                                <option key={num} value={num}>
+                                    {num}
+                                </option>
                             ))}
-                        </Select>
+                        </select>
                     </div>
-                    <span className="font-medium text-gray-600">
-                        {totalRows === 0
-                            ? "0–0"
-                            : `${startIndex + 1}–${endIndex} ${language === "vi" ? "trên" : "of"} ${totalRows}`}
-                    </span>
-                    <div className="flex items-center gap-1">
-                        <button
-                            onClick={goToFirst}
-                            disabled={currentPage === 1}
-                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
-                        >
-                            <ChevronsLeft size={18} />
-                        </button>
+                    <div className="flex items-center gap-3">
+                        <p>
+                            {totalRows === 0
+                                ? `0–0 ${t.of} 0`
+                                : `${startIndex + 1}–${endIndex} ${t.of} ${totalRows}`}
+                        </p>
                         <button
                             onClick={goToPrev}
                             disabled={currentPage === 1}
-                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+                            className={`p-1 px-2 rounded ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}
                         >
-                            <ChevronLeft size={18} />
+                            &lt;
                         </button>
                         <button
                             onClick={goToNext}
                             disabled={currentPage === totalPages || totalRows === 0}
-                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+                            className={`p-1 px-2 rounded ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}
                         >
-                            <ChevronRight size={18} />
-                        </button>
-                        <button
-                            onClick={goToLast}
-                            disabled={currentPage === totalPages || totalRows === 0}
-                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
-                        >
-                            <ChevronsRight size={18} />
+                            &gt;
                         </button>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Create/Edit Modal */}
             {isModalOpen && (
@@ -467,28 +401,30 @@ export default function CategoryListPage() {
             {/* Delete Confirmation Modal */}
             {
                 isDeleteModalOpen && (
-                    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 animate-in zoom-in-95 duration-200">
                             <div className="flex items-center mb-3">
-                                <AlertTriangle className="text-red-600 mr-2" />
+                                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                    <AlertTriangle className="text-red-600 w-5 h-5" />
+                                </div>
                                 <h3 className="font-semibold text-gray-800">
-                                    {t.deleteCategory}
+                                    {t.deleteCategoryQuestion}
                                 </h3>
                             </div>
                             <p className="text-sm text-gray-600 mb-5">
-                                {t.deleteConfirmation}
+                                {t.deleteCategoryConfirm}
                             </p>
                             <div className="flex justify-end gap-3">
                                 <button
                                     onClick={() => setIsDeleteModalOpen(false)}
-                                    className="px-5 py-2 border rounded-full hover:bg-gray-100"
+                                    className="px-5 py-2.5 border rounded-lg hover:bg-gray-50 text-sm font-medium"
                                 >
                                     {t.cancel}
                                 </button>
                                 <button
                                     onClick={handleDelete}
                                     disabled={submitLoading}
-                                    className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 disabled:opacity-50"
+                                    className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 text-sm font-medium shadow-sm"
                                 >
                                     {submitLoading ? (language === 'vi' ? 'Đang xóa...' : 'Deleting...') : t.yesDelete}
                                 </button>

@@ -29,6 +29,7 @@ import {
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations"; // Import global translations
 import { usePermissions } from "../../Context/PermissionContext";
 import { Select } from "antd";
 import dayjs from "dayjs";
@@ -116,6 +117,7 @@ const CustomDatePicker = ({ label, value, onChange }) => {
 
 export default function Staffs({ openStaffView }) {
   const { language } = useLanguage();
+  const t = translations[language]; // Use global translations
   const { can } = usePermissions();
 
   const [users, setUsers] = useState([]);
@@ -134,43 +136,7 @@ export default function Staffs({ openStaffView }) {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Translations
-  const t = {
-    manageStaffs: language === "vi" ? "Quản Lý Nhân Viên" : "Manage Staffs",
-    newStaff: language === "vi" ? "Thêm Nhân Viên" : "New Staff",
-    searchPlaceholder: language === "vi" ? "Tìm kiếm theo tên, email, hoặc ID..." : "Search by name, email, or ID...",
-    noStaffsFound: language === "vi" ? "Không tìm thấy nhân viên. Nhấn \"Thêm Nhân Viên\" để thêm mới." : "No staffs found. Click \"New Staff\" to add one.",
-    editStaff: language === "vi" ? "Chỉnh Sửa Nhân Viên" : "Edit Staff",
-    addStaff: language === "vi" ? "Thêm Nhân Viên" : "Add Staff",
-    updateStaff: language === "vi" ? "Cập Nhật" : "Update Staff",
-    confirmDeletion: language === "vi" ? "Xác Nhận Xóa" : "Confirm Deletion",
-    deleteMessage: language === "vi" ? "Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác." : "Are you sure you want to delete this staff member? This action cannot be undone.",
-    cancel: language === "vi" ? "Hủy" : "Cancel",
-    delete: language === "vi" ? "Xóa" : "Delete",
-    personalDetails: language === "vi" ? "Thông Tin Cá Nhân" : "Personal Details",
-    dateOfBirth: language === "vi" ? "Ngày Sinh" : "Date of Birth",
-    gender: language === "vi" ? "Giới Tính" : "Gender",
-    selectGender: language === "vi" ? "Chọn Giới Tính" : "Select Gender",
-    dateOfJoining: language === "vi" ? "Ngày Vào Làm" : "Date of Joining",
-    status: language === "vi" ? "Trạng Thái" : "Status",
-    workInformation: language === "vi" ? "Thông Tin Công Việc" : "Work Information",
-    male: language === "vi" ? "Nam" : "Male",
-    female: language === "vi" ? "Nữ" : "Female",
-    other: language === "vi" ? "Khác" : "Other",
-    active: language === "vi" ? "Hoạt Động" : "Active",
-    inactive: language === "vi" ? "Ngưng Hoạt Động" : "Inactive",
-    department: language === "vi" ? "Phòng Ban" : "Department",
-    fillRequired: language === "vi" ? "Vui lòng điền tất cả các trường bắt buộc bằng cả hai ngôn ngữ" : "Please fill all required fields in both languages",
-    staffUpdated: language === "vi" ? "Cập nhật nhân viên thành công" : "Staff updated successfully",
-    staffCreated: language === "vi" ? "Tạo nhân viên thành công" : "Staff created successfully",
-    errorSaving: language === "vi" ? "Lỗi khi lưu nhân viên" : "Error saving staff",
-    staffDeleted: language === "vi" ? "Xóa nhân viên thành công" : "Staff deleted successfully",
-    errorDeleting: language === "vi" ? "Lỗi khi xóa nhân viên" : "Error deleting staff",
-    maxImageSize: language === "vi" ? "Kích thước ảnh tối đa là 2MB" : "Maximum image size is 2MB",
-    failedFetch: language === "vi" ? "Không thể tải dữ liệu" : "Failed to fetch data",
-  };
-
-  // Modal specific translations based on activeTab
+  // Modal specific translations based on activeTab (internal to form)
   const modalT = {
     personalDetails: activeTab === "vi" ? "Thông Tin Cá Nhân" : "Personal Details",
     workInformation: activeTab === "vi" ? "Thông Tin Công Việc" : "Work Information",
@@ -257,7 +223,7 @@ export default function Staffs({ openStaffView }) {
       setUsers(mappedStaffs);
 
     } catch {
-      CommonToaster(t.failedFetch, "error");
+      CommonToaster(t.failedFetch || "Failed to fetch data", "error");
     } finally {
       setLoading(false);
     }
@@ -267,7 +233,7 @@ export default function Staffs({ openStaffView }) {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { // 2MB limit
-      CommonToaster(t.maxImageSize, "error");
+      CommonToaster(t.maxImageSize || "Max image size 2MB", "error");
       return;
     }
     const reader = new FileReader();
@@ -314,7 +280,7 @@ export default function Staffs({ openStaffView }) {
 
     // Validation needs to check sub-fields
     if (!form.firstName.en || !form.firstName.vi || !form.email || !form.employeeId || !form.role) {
-      CommonToaster(t.fillRequired, "error");
+      CommonToaster("Please fill all required fields in both languages", "error");
       return;
     }
 
@@ -346,26 +312,26 @@ export default function Staffs({ openStaffView }) {
     try {
       if (editMode && editingUser?._id) {
         await updateStaff(editingUser._id, payload);
-        CommonToaster(t.staffUpdated, "success");
+        CommonToaster(t.staffUpdated || "Staff updated successfully", "success");
       } else {
         await createStaff(payload);
-        CommonToaster(t.staffCreated, "success");
+        CommonToaster(t.staffCreated || "Staff created successfully", "success");
       }
       setShowModal(false);
       fetchUsersAndRoles();
     } catch (err) {
-      CommonToaster(err.response?.data?.error || t.errorSaving, "error");
+      CommonToaster(err.response?.data?.error || t.errorSaving || "Error saving staff", "error");
     }
   };
 
   const handleDelete = async () => {
     try {
       await deleteStaff(deleteConfirm.id);
-      CommonToaster(t.staffDeleted, "success");
+      CommonToaster(t.staffDeleted || "Staff deleted successfully", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchUsersAndRoles();
     } catch {
-      CommonToaster(t.errorDeleting, "error");
+      CommonToaster(t.errorDeleting || "Error deleting staff", "error");
     }
   };
 
@@ -396,10 +362,10 @@ export default function Staffs({ openStaffView }) {
   const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
   return (
-    <div className="min-h-screen px-6 py-6 font-primary relative">
+    <div className="min-h-screen px-2 py-2">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-3xl font-semibold text-gray-900">
           {t.manageStaffs}
         </h1>
         {can("menuStaffs.staffs", "add") && (
@@ -414,14 +380,14 @@ export default function Staffs({ openStaffView }) {
       </div>
 
       {/* Search */}
-      <div className="relative mb-6 max-w-md">
-        <Search className="absolute top-2.5 left-3 text-gray-400 w-5 h-5" />
+      <div className="relative mb-6 max-w-sm">
+        <Search className="absolute top-3 left-3 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder={t.searchPlaceholder}
+          placeholder={`${t.search}...`}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
+          className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
         />
       </div>
 
@@ -435,24 +401,24 @@ export default function Staffs({ openStaffView }) {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <table className="w-full text-sm border-collapse">
-              <thead className="bg-gray-50 text-gray-700">
+              <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
                 <tr>
-                  <th className="px-6 py-4 text-left font-medium">
-                    {language === "vi" ? "Nhân viên" : "Staff Info"}
+                  <th className="px-6 py-4 text-left font-medium text-[#111111]">
+                    {t.staffInfo}
                   </th>
-                  <th className="px-6 py-4 text-left font-medium">
-                    {language === "vi" ? "Liên hệ" : "Contact"}
+                  <th className="px-6 py-4 text-left font-medium text-[#111111]">
+                    {t.contact}
                   </th>
-                  <th className="px-6 py-4 text-center font-medium">
-                    {language === "vi" ? "Phòng ban / Vai trò" : "Dept / Role"}
+                  <th className="px-6 py-4 text-center font-medium text-[#111111]">
+                    {t.deptRole}
                   </th>
-                  <th className="px-6 py-4 text-center font-medium">
-                    {language === "vi" ? "Trạng thái" : "Status"}
+                  <th className="px-6 py-4 text-center font-medium text-[#111111]">
+                    {t.status}
                   </th>
-                  <th className="px-6 py-4 text-right font-medium">
-                    {language === "vi" ? "Hành động" : "Actions"}
+                  <th className="px-6 py-4 text-right font-medium text-[#111111]">
+                    {t.action}
                   </th>
                 </tr>
               </thead>
@@ -467,7 +433,7 @@ export default function Staffs({ openStaffView }) {
                   visibleData.map((user, i) => (
                     <tr
                       key={user._id}
-                      className="border-b last:border-0 border-gray-100 hover:bg-gray-50 transition-colors"
+                      className={`border-b last:border-0 border-gray-100 transition-colors ${i % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
                     >
                       {/* Staff Info */}
                       <td className="px-6 py-4">
@@ -556,7 +522,7 @@ export default function Staffs({ openStaffView }) {
                                 <span className="w-8 flex justify-center">
                                   <Pencil size={15} className="text-blue-600 group-hover:scale-110 transition" />
                                 </span>
-                                {modalT.editStaff}
+                                {t.editStaff}
                               </button>
                             )}
 
@@ -586,64 +552,40 @@ export default function Staffs({ openStaffView }) {
         )}
       </div>
 
-      {/* Pagination Bar */}
-      <div className="flex justify-end items-center px-6 py-2 bg-white rounded-xl text-sm text-gray-700 mt-4 border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-6">
+      {/* Pagination */}
+      {!loading && totalRows > 0 && (
+        <div className="flex justify-between items-center px-6 py-4 text-sm text-gray-600 border-t bg-gray-50 mt-4 rounded-b-2xl">
           <div className="flex items-center gap-2">
-            <span>{language === "vi" ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
-            <Select
-              value={rowsPerPage}
-              onChange={(val) => {
-                setRowsPerPage(val);
-                setCurrentPage(1);
-              }}
-              className="w-16 h-8"
-              suffixIcon={null}
-            >
-              {[5, 10, 20, 50].map((n) => (
-                <Select.Option key={n} value={n}>
-                  {n}
-                </Select.Option>
+            <span>{t.rowsPerPage}:</span>
+            <select value={rowsPerPage} onChange={(e) => {
+              setRowsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }} className="border rounded-md text-gray-700 focus:outline-none px-2 py-1">
+              {[5, 10, 20, 25, 50].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
               ))}
-            </Select>
+            </select>
           </div>
-          <span className="font-medium text-gray-600">
-            {totalRows === 0
-              ? "0–0"
-              : `${startIndex + 1}–${endIndex} ${language === "vi" ? "trên" : "of"} ${totalRows}`}
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={goToFirst}
-              disabled={currentPage === 1}
-              className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
-            >
-              <ChevronsLeft size={18} />
+
+          <div className="flex items-center gap-3">
+            <p>
+              {totalRows === 0
+                ? `0–0 ${t.of} 0`
+                : `${(currentPage - 1) * rowsPerPage + 1}–${Math.min((currentPage * rowsPerPage), totalRows)
+                } ${t.of} ${totalRows}`}
+            </p>
+
+            <button onClick={goToPrev} disabled={currentPage === 1} className={`p-1 px-2 rounded ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}>
+              &lt;
             </button>
-            <button
-              onClick={goToPrev}
-              disabled={currentPage === 1}
-              className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              onClick={goToNext}
-              disabled={currentPage === totalPages || totalRows === 0}
-              className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
-            >
-              <ChevronRight size={18} />
-            </button>
-            <button
-              onClick={goToLast}
-              disabled={currentPage === totalPages || totalRows === 0}
-              className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
-            >
-              <ChevronsRight size={18} />
+            <button onClick={goToNext} disabled={currentPage === totalPages} className={`p-1 px-2 rounded ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}>
+              &gt;
             </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Delete Confirmation */}
       {deleteConfirm.show && (
@@ -683,7 +625,7 @@ export default function Staffs({ openStaffView }) {
             {/* Header */}
             <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
               <h2 className="text-xl font-bold text-gray-900">
-                {editMode ? modalT.editStaff : modalT.addStaff}
+                {editMode ? t.editStaff : t.newStaff}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -980,14 +922,14 @@ export default function Staffs({ openStaffView }) {
                 onClick={() => setShowModal(false)}
                 className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition font-medium text-sm shadow-sm"
               >
-                {modalT.cancel}
+                {t.cancel}
               </button>
               <button
                 type="submit"
                 form="staffForm"
                 className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md"
               >
-                {editMode ? modalT.updateStaff : modalT.addStaff}
+                {editMode ? t.updateStaff : t.addStaff}
               </button>
             </div>
           </div>

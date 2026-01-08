@@ -3,9 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2, User, Phone } from "lucide-react";
 import { userRegisterApi } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
+import { usePermissions } from "../Context/PermissionContext";
+import { useFavorites } from "../Context/FavoritesContext";
 
 export default function Register() {
     const navigate = useNavigate();
+    const { refreshPermissions } = usePermissions();
+    const { fetchFavorites } = useFavorites();
     const [formData, setFormData] = useState({
         name: "",
         mobile: "",
@@ -39,8 +43,10 @@ export default function Register() {
                 localStorage.setItem("token", res.data.token);
                 localStorage.setItem("userName", user?.name || "");
                 localStorage.setItem("userRole", user?.role || "user");
+                await refreshPermissions();
+                await fetchFavorites();
                 CommonToaster("Registration Successful!", "success");
-                navigate("/home");
+                navigate("/");
             }
         } catch (err) {
             setError(

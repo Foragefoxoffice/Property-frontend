@@ -190,6 +190,14 @@ body {
   transform: scale(1.1);
 }
 
+.ant-switch.ant-switch-checked {
+  background: #41398B;
+}
+
+.ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
+  background: #41398B;
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;

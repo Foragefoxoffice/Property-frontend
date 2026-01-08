@@ -12,6 +12,7 @@ import DashboardLayout from "./Admin/SideBar/DashboardLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { LanguageProvider } from "./Language/LanguageContext.jsx";
 import { PermissionProvider } from "./Context/PermissionContext.jsx";
+import { FavoritesProvider } from "./Context/FavoritesContext.jsx";
 import PublicLayout from "./components/Layout/PublicLayout.jsx";
 
 import ManageProperty from "./Admin/Property/ManageProperty.jsx";
@@ -74,6 +75,7 @@ import Roles from "./Admin/Property/Roles.jsx";
 import ContactEnquiry from "./Admin/Enquiry/ContactEnquiry.jsx";
 import Subscription from "./Admin/Subscription/Subscription.jsx";
 import Favorites from "./Pages/Favorites.jsx";
+import Enquires from "./Admin/Enquiry/Enquires.jsx";
 
 
 createRoot(document.getElementById("root")).render(
@@ -91,163 +93,166 @@ createRoot(document.getElementById("root")).render(
 
     <LanguageProvider>
       <PermissionProvider>
-        <Routes>
-          {/* ---------- PUBLIC ROUTES ---------- */}
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+        <FavoritesProvider>
+          <Routes>
+            {/* ---------- PUBLIC ROUTES ---------- */}
+            <Route path="/" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* ---------- ADMIN + PROTECTED ROUTES ---------- */}
-          <Route
-            path="/dashboard/*"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            {/* ---------- PROPERTY LIST PAGES ---------- */}
+            {/* ---------- ADMIN + PROTECTED ROUTES ---------- */}
             <Route
-              path="lease"
-              element={<PropertyManager propertyTypeFilter="Lease" />}
-            />
-            <Route
-              path="sale"
-              element={<PropertyManager propertyTypeFilter="Sale" />}
-            />
-            <Route
-              path="homestay"
-              element={<PropertyManager propertyTypeFilter="HomeStay" />}
-            />
-
-            {/* CREATE / EDIT PROPERTY */}
-            <Route
-              path="lease/create"
-              element={<CreatePropertyPage defaultTransactionType="Lease" />}
-            />
-            <Route
-              path="sale/create"
-              element={<CreatePropertyPage defaultTransactionType="Sale" />}
-            />
-            <Route
-              path="homestay/create"
-              element={<CreatePropertyPage defaultTransactionType="HomeStay" />}
-            />
-
-            <Route
-              path="lease/edit/:id"
+              path="/dashboard/*"
               element={
-                <CreatePropertyPage isEditMode defaultTransactionType="Lease" />
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
               }
-            />
-            <Route
-              path="sale/edit/:id"
-              element={
-                <CreatePropertyPage isEditMode defaultTransactionType="Sale" />
-              }
-            />
-            <Route
-              path="homestay/edit/:id"
-              element={
-                <CreatePropertyPage
-                  isEditMode
-                  defaultTransactionType="HomeStay"
-                />
-              }
-            />
+            >
+              {/* ---------- PROPERTY LIST PAGES ---------- */}
+              <Route
+                path="lease"
+                element={<PropertyManager propertyTypeFilter="Lease" />}
+              />
+              <Route
+                path="sale"
+                element={<PropertyManager propertyTypeFilter="Sale" />}
+              />
+              <Route
+                path="homestay"
+                element={<PropertyManager propertyTypeFilter="HomeStay" />}
+              />
 
-            {/* BULK UPLOAD ROUTES */}
-            <Route
-              path=":type/bulk-upload"
-              element={<BulkUpload />}
-            />
+              {/* CREATE / EDIT PROPERTY */}
+              <Route
+                path="lease/create"
+                element={<CreatePropertyPage defaultTransactionType="Lease" />}
+              />
+              <Route
+                path="sale/create"
+                element={<CreatePropertyPage defaultTransactionType="Sale" />}
+              />
+              <Route
+                path="homestay/create"
+                element={<CreatePropertyPage defaultTransactionType="HomeStay" />}
+              />
 
-            {/* USERMANAGEMENT PAGES */}
-            <Route path="user-details" element={<UsersDetails />} />
+              <Route
+                path="lease/edit/:id"
+                element={
+                  <CreatePropertyPage isEditMode defaultTransactionType="Lease" />
+                }
+              />
+              <Route
+                path="sale/edit/:id"
+                element={
+                  <CreatePropertyPage isEditMode defaultTransactionType="Sale" />
+                }
+              />
+              <Route
+                path="homestay/edit/:id"
+                element={
+                  <CreatePropertyPage
+                    isEditMode
+                    defaultTransactionType="HomeStay"
+                  />
+                }
+              />
 
-            {/* ENQUIRY PAGES */}
-            <Route path="contact-enquiry" element={<ContactEnquiry />} />
+              {/* BULK UPLOAD ROUTES */}
+              <Route
+                path=":type/bulk-upload"
+                element={<BulkUpload />}
+              />
 
-            {/* Subscription PAGES */}
-            <Route path="subscription" element={<Subscription />} />
+              {/* USERMANAGEMENT PAGES */}
+              <Route path="user-details" element={<UsersDetails />} />
+              <Route path="enquiry" element={<Enquires />} />
 
-            {/* ---------- MASTER ROUTES ---------- */}
-            <Route path="masters" element={<Masters />} />
-            <Route path="masters/property-master" element={<PropertyMaster />} />
-            <Route path="masters/property" element={<PropertyPage />} />
-            <Route path="masters/zone-sub-area" element={<ZoneSubAreaPage />} />
-            <Route path="masters/block" element={<BlockPage />} />
-            <Route path="masters/property-type" element={<PropertTypePage />} />
-            <Route
-              path="masters/availability-status"
-              element={<AvailabilityStatusPage />}
-            />
-            <Route path="masters/unit" element={<UnitPage />} />
-            <Route path="masters/furnishing" element={<FurnishingPage />} />
-            <Route path="masters/parking" element={<ParkingPage />} />
-            <Route path="masters/pet-policy" element={<PetPolicyPage />} />
-            <Route path="masters/deposit" element={<DepositPage />} />
-            <Route path="masters/payment" element={<PaymentPage />} />
-            <Route path="masters/fee-tax" element={<FeeTaxPage />} />
-            <Route
-              path="masters/legal-document"
-              element={<LegalDocumentPage />}
-            />
-            <Route path="masters/floor-range" element={<FloorRange />} />
-            <Route path="masters/currency" element={<Currency />} />
+              {/* ENQUIRY PAGES */}
+              <Route path="contact-enquiry" element={<ContactEnquiry />} />
 
-            {/* ---------- LANDLORD ROUTES ---------- */}
-            <Route path="landlords" element={<OwnersLandlords />} />
-            <Route path="landlords/:id" element={<OwnerView />} />
+              {/* Subscription PAGES */}
+              <Route path="subscription" element={<Subscription />} />
 
-            {/* ROLES */}
-            <Route path="roles" element={<Roles />} />
+              {/* ---------- MASTER ROUTES ---------- */}
+              <Route path="masters" element={<Masters />} />
+              <Route path="masters/property-master" element={<PropertyMaster />} />
+              <Route path="masters/property" element={<PropertyPage />} />
+              <Route path="masters/zone-sub-area" element={<ZoneSubAreaPage />} />
+              <Route path="masters/block" element={<BlockPage />} />
+              <Route path="masters/property-type" element={<PropertTypePage />} />
+              <Route
+                path="masters/availability-status"
+                element={<AvailabilityStatusPage />}
+              />
+              <Route path="masters/unit" element={<UnitPage />} />
+              <Route path="masters/furnishing" element={<FurnishingPage />} />
+              <Route path="masters/parking" element={<ParkingPage />} />
+              <Route path="masters/pet-policy" element={<PetPolicyPage />} />
+              <Route path="masters/deposit" element={<DepositPage />} />
+              <Route path="masters/payment" element={<PaymentPage />} />
+              <Route path="masters/fee-tax" element={<FeeTaxPage />} />
+              <Route
+                path="masters/legal-document"
+                element={<LegalDocumentPage />}
+              />
+              <Route path="masters/floor-range" element={<FloorRange />} />
+              <Route path="masters/currency" element={<Currency />} />
 
-            {/* ---------- STAFF ROUTES ---------- */}
-            <Route path="staffs" element={<Staffs />} />
-            <Route path="staffs/:id" element={<StaffView />} />
+              {/* ---------- LANDLORD ROUTES ---------- */}
+              <Route path="landlords" element={<OwnersLandlords />} />
+              <Route path="landlords/:id" element={<OwnerView />} />
 
-            {/* ---------- TRASH ---------- */}
-            <Route path="trash" element={<ManageTrashProperty />} />
+              {/* ROLES */}
+              <Route path="roles" element={<Roles />} />
 
-            {/* CMS ROUTES */}
-            <Route path="cms/home" element={<HomepageForm />} />
-            <Route path="cms/about" element={<AboutPageForm />} />
-            <Route path="cms/contact" element={<ContactPageForm />} />
-            <Route path="cms/blogs" element={<BlogListPage />} />
-            <Route path="cms/blogs/create" element={<BlogCmsForm />} />
-            <Route path="cms/blogs/edit/:id" element={<BlogCmsForm />} />
+              {/* ---------- STAFF ROUTES ---------- */}
+              <Route path="staffs" element={<Staffs />} />
+              <Route path="staffs/:id" element={<StaffView />} />
 
-            <Route path="cms/categories" element={<CategoryListPage />} />
-            <Route path="cms/header" element={<HeaderCmsForm />} />
-            <Route path="cms/footer" element={<FooterCmsForm />} />
-            <Route path="cms/agent" element={<AgentFormCms />} />
-            <Route path="cms/:section" element={<CMSPlaceholder />} />
-          </Route>
+              {/* ---------- TRASH ---------- */}
+              <Route path="trash" element={<ManageTrashProperty />} />
 
-          {/* OTHER NON-DASHBOARD PAGES */}
-          <Route path="/manage-property" element={<ManageProperty />} />
-          <Route path="/filters" element={<FiltersPage />} />
+              {/* CMS ROUTES */}
+              <Route path="cms/home" element={<HomepageForm />} />
+              <Route path="cms/about" element={<AboutPageForm />} />
+              <Route path="cms/contact" element={<ContactPageForm />} />
+              <Route path="cms/blogs" element={<BlogListPage />} />
+              <Route path="cms/blogs/create" element={<BlogCmsForm />} />
+              <Route path="cms/blogs/edit/:id" element={<BlogCmsForm />} />
+
+              <Route path="cms/categories" element={<CategoryListPage />} />
+              <Route path="cms/header" element={<HeaderCmsForm />} />
+              <Route path="cms/footer" element={<FooterCmsForm />} />
+              <Route path="cms/agent" element={<AgentFormCms />} />
+              <Route path="cms/:section" element={<CMSPlaceholder />} />
+            </Route>
+
+            {/* OTHER NON-DASHBOARD PAGES */}
+            <Route path="/manage-property" element={<ManageProperty />} />
+            <Route path="/filters" element={<FiltersPage />} />
 
 
-          {/* Pages with Public Layout */}
-          <Route element={<PublicLayout />}>
-            <Route path="/listing" element={<ListingPage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/blogs" element={<BlogPage />} />
-            <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+            {/* Pages with Public Layout */}
+            <Route element={<PublicLayout />}>
+              <Route path="/listing" element={<ListingPage />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/blogs" element={<BlogPage />} />
+              <Route path="/blogs/:slug" element={<BlogDetailPage />} />
 
-            <Route path="/property-showcase/:id" element={<PropertyShowcasePage />} />
-            <Route path="/favorites" element={<Favorites />} />
+              <Route path="/property-showcase/:id" element={<PropertyShowcasePage />} />
+              <Route path="/favorites" element={<Favorites />} />
 
-          </Route>
+            </Route>
 
-          {/* CMS Dashboard */}
+            {/* CMS Dashboard */}
 
-        </Routes>
+          </Routes>
+        </FavoritesProvider>
       </PermissionProvider>
     </LanguageProvider>
   </BrowserRouter>

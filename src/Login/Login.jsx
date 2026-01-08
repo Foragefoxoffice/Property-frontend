@@ -3,9 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { loginUser } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
+import { usePermissions } from "../Context/PermissionContext";
+import { useFavorites } from "../Context/FavoritesContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { refreshPermissions } = usePermissions();
+  const { fetchFavorites } = useFavorites();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +29,8 @@ export default function Login() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userName", user?.name || "");
         localStorage.setItem("userRole", user?.role || "user");
+        await refreshPermissions();
+        await fetchFavorites();
         CommonToaster("Login Successfully!", "success");
 
         // Redirect based on user role

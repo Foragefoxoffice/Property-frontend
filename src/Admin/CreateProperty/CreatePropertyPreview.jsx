@@ -179,6 +179,7 @@ export default function CreatePropertyPreview({
     connectingPoint: { en: "Connecting Point", vi: "Điểm liên hệ" },
     connectingNotes: { en: "Connecting Notes", vi: "Ghi chú liên hệ" },
     internalNotes: { en: "Internal Notes", vi: "Ghi chú nội bộ" },
+    publishing: { en: "Publishing", vi: "Đang xuất bản" },
   };
 
 
@@ -614,7 +615,7 @@ export default function CreatePropertyPreview({
           <div className="flex flex-col items-center gap-4">
             <div className="w-14 h-14 border-4 border-white border-t-[#41398B] rounded-full animate-spin"></div>
             <p className="text-white text-lg tracking-wide font-medium">
-              Publishing...
+              {labels.publishing[lang]}
             </p>
           </div>
         </div>

@@ -1,20 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getListingProperties, addFavorite, removeFavorite, getFavorites } from '@/Api/action';
-import { Skeleton } from 'antd';
+import { getListingProperties } from '@/Api/action';
+import { Skeleton, Tooltip } from 'antd';
 import { useLanguage } from '@/Language/LanguageContext';
 import { Heart } from 'lucide-react';
-import { CommonToaster } from '@/Common/CommonToaster';
+import { useFavorites } from '@/Context/FavoritesContext';
 
 export default function HomeFeaturedProperties({ homePageData }) {
     const navigate = useNavigate();
     const { language } = useLanguage();
+    const { isFavorite, addFavorite, removeFavorite } = useFavorites();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
-
-    const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
         const fetchFeaturedProperties = async () => {
@@ -41,49 +40,15 @@ export default function HomeFeaturedProperties({ homePageData }) {
             }
         };
 
-        const fetchUserFavorites = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const res = await getFavorites();
-                    if (res.data.success) {
-                        // Extract property IDs
-                        const favIds = res.data.data.map(fav => fav.property._id || fav.property);
-                        setFavorites(favIds);
-                    }
-                } catch (error) {
-                    console.error('Error fetching favorites:', error);
-                }
-            }
-        };
-
         fetchFeaturedProperties();
-        fetchUserFavorites();
     }, []);
 
     const handleToggleFavorite = async (e, propertyId) => {
         e.stopPropagation(); // Prevent card click
-        const token = localStorage.getItem('token');
-        if (!token) {
-            CommonToaster('Please login to add favorites', 'error');
-            return;
-        }
-
-        try {
-            if (favorites.includes(propertyId)) {
-                await removeFavorite(propertyId);
-                setFavorites(prev => prev.filter(id => id !== propertyId));
-                CommonToaster('Removed from favorites', 'error');
-            } else {
-                await addFavorite(propertyId);
-                setFavorites(prev => [...prev, propertyId]);
-                CommonToaster('Added to favorites', 'success');
-            }
-        } catch (error) {
-            console.error('Error toggling favorite:', error);
-            // If error explains why (e.g., duplicate), toast it, else generic error
-            const msg = error.response?.data?.error || 'Failed to update favorite';
-            CommonToaster(msg, 'error');
+        if (isFavorite(propertyId)) {
+            await removeFavorite(propertyId);
+        } else {
+            await addFavorite(propertyId);
         }
     };
 
@@ -216,12 +181,16 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <button
                                             onClick={(e) => handleToggleFavorite(e, property._id)}
-                                            className="p-2 bg-white rounded-md shadow-sm hover:scale-105 transition-transform cursor-pointer"
+                                            className="p-1 bg-white rounded-md shadow-sm text-[#000] hover:scale-105 transition-transform cursor-pointer"
                                         >
-                                            <Heart
-                                                size={20}
-                                                className={`${favorites.includes(property._id) ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-gray-400'}`}
-                                            />
+                                            <Tooltip title={isFavorite(property._id)
+                                                ? (language === 'vi' ? 'Xóa khỏi Yêu thích' : 'Remove from Favorites')
+                                                : (language === 'vi' ? 'Thêm vào Yêu thích' : 'Add to Favorites')}>
+                                                <Heart
+                                                    size={16}
+                                                    className={`${isFavorite(property._id) ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-[#2a2a2a]'}`}
+                                                />
+                                            </Tooltip>
                                         </button>
                                     </div>
                                 </div>
