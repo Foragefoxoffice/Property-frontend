@@ -213,7 +213,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="absolute top-3 right-3 z-20">
+                                    <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <button
                                             onClick={(e) => handleToggleFavorite(e, property._id)}
                                             className="p-2 bg-white rounded-md shadow-sm hover:scale-105 transition-transform cursor-pointer"

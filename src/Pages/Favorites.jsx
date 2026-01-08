@@ -124,9 +124,9 @@ export default function Favorites() {
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         {/* Table Header */}
                         <div className="grid grid-cols-12 gap-4 border-b border-gray-100 bg-gray-50/50 px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            <div className="col-span-12 font-bold text-[14px] md:col-span-6">Listing</div>
-                            <div className="col-span-6 md:col-span-3 font-bold text-[14px] text-center hidden md:block">Date Published</div>
-                            <div className="col-span-6 md:col-span-3 font-bold text-[14px] text-right">Action</div>
+                            <div className="col-span-12 font-bold text-[14px] md:col-span-6">{t.listing}</div>
+                            <div className="col-span-6 md:col-span-3 font-bold text-[14px] text-center hidden md:block">{t.datePublished}</div>
+                            <div className="col-span-6 md:col-span-3 font-bold text-[14px] text-right">{t.action}</div>
                         </div>
 
                         {loading ? (
@@ -187,7 +187,7 @@ export default function Favorites() {
                                                 </Link>
                                                 <div className="flex flex-col justify-center gap-1">
                                                     <h3 className="font-bold text-gray-900 text-base line-clamp-1">
-                                                        <Link to={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`} className="hover:text-[#41398B] transition-colors text-[24px]">
+                                                        <Link to={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`} className="hover:text-[#41398B] transition-colors text-[20px]">
                                                             {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || t.untitledProperty}
                                                         </Link>
                                                     </h3>
