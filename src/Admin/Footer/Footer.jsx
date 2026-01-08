@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '@/Language/LanguageContext';
-import { getFooter } from '@/Api/action';
+import { getFooter, createSubscription } from '@/Api/action';
+import { toast } from 'react-toastify';
 
 const staticTranslations = {
     propertyForSale: {
@@ -58,6 +59,25 @@ const staticTranslations = {
 export default function Footer() {
     const { language } = useLanguage();
     const [footerData, setFooterData] = useState(null);
+    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleSubscribe = async () => {
+        if (!email) {
+            toast.error(language === 'vi' ? "Vui lòng nhập email" : "Please enter email");
+            return;
+        }
+        try {
+            setLoading(true);
+            await createSubscription({ email });
+            toast.success(language === 'vi' ? "Đăng ký thành công!" : "Subscribed successfully!");
+            setEmail("");
+        } catch (error) {
+            toast.error(error.response?.data?.error || (language === 'vi' ? "Đăng ký thất bại" : "Subscription failed"));
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -91,8 +111,6 @@ export default function Footer() {
     const st = (key) => {
         return staticTranslations[key][language] || staticTranslations[key]['en'];
     };
-
-
 
     const baseURL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/v1', '') : '';
 
@@ -179,10 +197,16 @@ export default function Footer() {
                         <div className="relative mb-8">
                             <input
                                 type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder={st('emailPlaceholder')}
                                 className="w-full h-11 pl-5 pr-12 rounded-full bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-[15px]"
                             />
-                            <button className="absolute right-1 top-1 w-9 h-9 bg-black rounded-full flex items-center justify-center text-white hover:bg-gray-800 transition-colors">
+                            <button
+                                onClick={handleSubscribe}
+                                disabled={loading}
+                                className="absolute right-1 top-1 w-9 h-9 bg-black rounded-full flex items-center justify-center text-white hover:bg-gray-800 transition-colors disabled:opacity-50"
+                            >
                                 <ArrowUpRight size={18} />
                             </button>
                         </div>

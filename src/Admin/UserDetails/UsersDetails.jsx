@@ -342,7 +342,7 @@ export default function UsersDetails() {
                                                 </button>
 
                                                 {openMenuIndex === i && (
-                                                    <div className="absolute right-8 top-12 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-48 py-2 animate-in fade-in zoom-in-95 duration-200">
+                                                    <div className="absolute right-8 top-12 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-48 py-2">
                                                         {can("userManagement.userDetails", "edit") && (
                                                             <button
                                                                 className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -463,7 +463,7 @@ export default function UsersDetails() {
             {/* ✅ Add/Edit Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
                         {/* Header */}
                         <div className="flex justify-between items-center px-6 py-5 border-b border-gray-100">
                             <h2 className="text-lg font-semibold text-gray-900">

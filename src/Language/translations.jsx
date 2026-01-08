@@ -88,7 +88,10 @@ export const translations = {
     blogCms: "Blog CMS",
     landlords: "Landlords",
     otherEnquiry: "Other Enquiry",
-    contactEnquiry: "Contact Enquiry"
+    contactEnquiry: "Contact Enquiry",
+    subscription: "Subscription",
+    email: "Email",
+    subscribedAt: "Subscribed At"
   },
 
   vi: {
@@ -180,6 +183,9 @@ export const translations = {
     blogCms: "Quản Lý Blog",
     landlords: "Chủ Nhà",
     otherEnquiry: "Hỏi đáp khác",
-    contactEnquiry: "Hỏi đáp liên hệ"
+    contactEnquiry: "Hỏi đáp liên hệ",
+    subscription: "Đăng ký",
+    email: "E-mail",
+    subscribedAt: "Đã đăng ký tại"
   },
 };

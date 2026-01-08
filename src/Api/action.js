@@ -506,6 +506,13 @@ export const updateRole = (id, data) => API.put(`/roles/${id}`, data);
 export const deleteRole = (id) => API.delete(`/roles/${id}`);
 
 /* =========================================================
+   📧 SUBSCRIPTION APIs
+========================================================= */
+export const createSubscription = (data) => API.post("/subscription", data);
+export const getSubscriptions = () => API.get("/subscription");
+export const deleteSubscription = (id) => API.delete(`/subscription/${id}`);
+
+/* =========================================================
    ✨ EXPORT DEFAULT
 ========================================================= */
 export default API;

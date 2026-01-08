@@ -72,6 +72,7 @@ import Register from "./Login/Register.jsx";
 import UsersDetails from "./Admin/UserDetails/UsersDetails.jsx";
 import Roles from "./Admin/Property/Roles.jsx";
 import ContactEnquiry from "./Admin/Enquiry/ContactEnquiry.jsx";
+import Subscription from "./Admin/Subscription/Subscription.jsx";
 
 
 createRoot(document.getElementById("root")).render(
@@ -166,6 +167,9 @@ createRoot(document.getElementById("root")).render(
 
             {/* ENQUIRY PAGES */}
             <Route path="contact-enquiry" element={<ContactEnquiry />} />
+
+            {/* Subscription PAGES */}
+            <Route path="subscription" element={<Subscription />} />
 
             {/* ---------- MASTER ROUTES ---------- */}
             <Route path="masters" element={<Masters />} />

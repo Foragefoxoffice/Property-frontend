@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Tags, User, UserCheck, UserLockIcon, PersonStanding, SettingsIcon, UserPlus2, MessageSquare, Phone } from "lucide-react";
+import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Tags, User, UserCheck, UserLockIcon, PersonStanding, SettingsIcon, UserPlus2, MessageSquare, Phone, CheckCheck } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "../Header/Header";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -199,7 +199,7 @@ const DashboardLayout = () => {
                         )}
 
                         {/* BLOGS DROPDOWN */}
-                        {(!isHidden("blogs.category") || !isHidden("blogs.blogCms")) && (
+                        {(!isHidden("blogs.category") || !isHidden("blogs.blogCms") || !isHidden("blogs.subscription")) && (
                             <div className="w-full">
                                 <button
                                     onClick={() => setOpenBlogs(!openBlogs)}
@@ -240,6 +240,19 @@ const DashboardLayout = () => {
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder /> </span>
                                                 <span>{t.addBlog || "Blog Cms"}</span>
+                                            </button>
+                                        )}
+
+                                        {/* SUBSCRIPTION */}
+                                        {!isHidden("blogs.subscription") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/subscription")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/subscription") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <CheckCheck /> </span>
+                                                <span>{t.subscription}</span>
                                             </button>
                                         )}
                                     </div>

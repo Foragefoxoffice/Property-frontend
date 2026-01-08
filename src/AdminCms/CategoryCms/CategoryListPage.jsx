@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Space, Modal, Form, Input, Tabs, ConfigProvider, Spin } from "antd";
-import { Edit, Trash, Plus, AlertTriangle } from "lucide-react";
+import { Table, Button, Space, Modal, Form, Input, Tabs, ConfigProvider, Spin, Select } from "antd";
+import { Search, Plus, Edit2, Trash2, X, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Calendar, Languages } from "lucide-react";
 import { getCategories, deleteCategory, createCategory, updateCategory } from "../../Api/action";
 import { useLanguage } from "../../Language/LanguageContext";
 import { usePermissions } from "../../Context/PermissionContext";
@@ -13,8 +13,17 @@ export default function CategoryListPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
-    const [form] = Form.useForm();
     const [submitLoading, setSubmitLoading] = useState(false);
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [openMenuIndex, setOpenMenuIndex] = useState(null);
+    const [activeTab, setActiveTab] = useState("en");
+
+    const [formData, setFormData] = useState({
+        name: { en: "", vi: "" }
+    });
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
@@ -60,29 +69,41 @@ export default function CategoryListPage() {
     const handleOpenModal = (category = null) => {
         setEditingCategory(category);
         if (category) {
-            // Populate form for edit
-            form.setFieldsValue(category);
+            setFormData({
+                name: {
+                    en: category.name?.en || "",
+                    vi: category.name?.vi || ""
+                }
+            });
         } else {
-            // Reset for new
-            form.resetFields();
+            setFormData({
+                name: { en: "", vi: "" }
+            });
         }
+        setActiveTab("en");
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setEditingCategory(null);
-        form.resetFields();
+        setFormData({ name: { en: "", vi: "" } });
     };
 
-    const onFinish = async (values) => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         setSubmitLoading(true);
+
+        const payload = {
+            name: formData.name
+        };
+
         try {
             if (editingCategory) {
-                await updateCategory(editingCategory._id, values);
+                await updateCategory(editingCategory._id, payload);
                 CommonToaster("Category updated successfully", "success");
             } else {
-                await createCategory(values);
+                await createCategory(payload);
                 CommonToaster("Category created successfully", "success");
             }
             handleCloseModal();
@@ -137,34 +158,26 @@ export default function CategoryListPage() {
 
     const t = translations[language];
 
-    const tabItems = [
-        {
-            key: 'en',
-            label: 'English',
-            children: (
-                <Form.Item
-                    name={['name', 'en']}
-                    label={<span className="font-semibold text-gray-700">Category Name (EN)</span>}
-                    rules={[{ required: true, message: "Please enter category name" }]}
-                >
-                    <Input size="large" placeholder="e.g. Real Estate" className="rounded-lg" />
-                </Form.Item>
-            ),
-        },
-        {
-            key: 'vi',
-            label: 'Vietnamese',
-            children: (
-                <Form.Item
-                    name={['name', 'vi']}
-                    label={<span className="font-semibold text-gray-700">Category Name (VI)</span>}
-                    rules={[{ required: true, message: "Please enter category name" }]}
-                >
-                    <Input size="large" placeholder="e.g. Bất động sản" className="rounded-lg" />
-                </Form.Item>
-            ),
-        },
-    ];
+
+
+    // Filter & Pagination Logic
+    const filteredCategories = categories.filter((cat) => {
+        const nameEn = cat.name?.en || "";
+        const nameVi = cat.name?.vi || "";
+        const search = searchTerm.toLowerCase();
+        return nameEn.toLowerCase().includes(search) || nameVi.toLowerCase().includes(search);
+    });
+
+    const totalRows = filteredCategories.length;
+    const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
+    const visibleData = filteredCategories.slice(startIndex, endIndex);
+
+    useEffect(() => {
+        if (currentPage > totalPages) setCurrentPage(totalPages);
+        if (totalRows > 0 && currentPage === 0) setCurrentPage(1);
+    }, [totalRows, totalPages, currentPage]);
 
     if (loading) {
         return (
@@ -176,120 +189,280 @@ export default function CategoryListPage() {
         );
     }
 
-    const columns = [
-        {
-            title: t.name,
-            dataIndex: "name",
-            key: "name",
-            render: (name) => <span className="font-semibold text-gray-700">{name?.[language] || name?.en || name?.vi || t.noName}</span>,
-        },
-        {
-            title: t.slug,
-            dataIndex: "slug",
-            key: "slug",
-            render: (slug) => <span className="text-gray-500">{slug?.[language] || slug?.en || slug?.vi || '-'}</span>,
-        },
-        {
-            title: t.createdAt,
-            dataIndex: "createdAt",
-            key: "createdAt",
-            render: (date) => new Date(date).toLocaleDateString(),
-        },
-        {
-            title: t.actions,
-            key: "actions",
-            render: (_, record) => (
-                <Space size="middle">
-                    {can('blogs.category', 'edit') && (
-                        <Button
-                            type="text"
-                            icon={<Edit className="w-4 h-4 text-blue-600" />}
-                            className="flex items-center justify-center hover:bg-blue-50"
-                            onClick={() => handleOpenModal(record)}
-                        />
-                    )}
-                    {can('blogs.category', 'delete') && (
-                        <Button
-                            type="text"
-                            danger
-                            icon={<Trash className="w-4 h-4" />}
-                            onClick={() => confirmDelete(record._id)}
-                            className="flex items-center justify-center hover:bg-red-50"
-                        />
-                    )}
-                </Space>
-            ),
-        },
-    ];
+    const goToFirst = () => setCurrentPage(1);
+    const goToLast = () => setCurrentPage(totalPages);
+    const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
+    const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="min-h-screen px-6 py-6 font-primary relative">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800 font-['Manrope']">
+                    <h1 className="text-2xl font-bold text-gray-900">
                         {t.pageTitle}
                     </h1>
-                    <p className="text-sm text-gray-500 font-['Manrope']">
+                    <p className="text-sm text-gray-500 mt-1">
                         {t.pageDescription}
                     </p>
                 </div>
                 {can('blogs.category', 'add') && (
-                    <Button
-                        style={{ backgroundColor: '#41398B' }}
-                        type="primary"
-                        icon={<Plus className="w-4 h-4" />}
-                        size="large"
-                        className="bg-[#41398B] hover:!bg-[#352e7a] border-none font-['Manrope'] flex items-center gap-2"
+                    <button
                         onClick={() => handleOpenModal(null)}
+                        className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition shadow-md cursor-pointer"
                     >
+                        <Plus size={18} />
                         {t.addCategory}
-                    </Button>
+                    </button>
                 )}
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <Table
-                    columns={columns}
-                    dataSource={categories}
-                    rowKey="_id"
-                    loading={loading}
-                    pagination={{ pageSize: 10 }}
-                    className="font-['Manrope']"
+            {/* Search */}
+            <div className="relative mb-6 max-w-md">
+                <Search className="absolute top-2.5 left-3 text-gray-400 w-5 h-5" />
+                <input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
                 />
             </div>
 
-            {/* Create/Edit Modal */}
-            <Modal
-                title={editingCategory ? t.editCategory : t.addNewCategory}
-                open={isModalOpen}
-                onCancel={handleCloseModal}
-                footer={null}
-                destroyOnClose
-            >
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={onFinish}
-                    className="pt-4"
-                >
-                    <Tabs defaultActiveKey="en" items={tabItems} />
+            {/* Table */}
+            <div className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <table className="w-full text-sm border-collapse">
+                        <thead className="bg-gray-50 text-gray-700">
+                            <tr>
+                                <th className="px-6 py-4 text-left font-medium">{t.name}</th>
+                                <th className="px-6 py-4 text-left font-medium">{t.slug}</th>
+                                <th className="px-6 py-4 text-left font-medium">{t.createdAt}</th>
+                                <th className="px-6 py-4 text-right font-medium">{t.actions}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {visibleData.length === 0 ? (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-12 text-gray-500">
+                                        No categories found.
+                                    </td>
+                                </tr>
+                            ) : (
+                                visibleData.map((category, i) => (
+                                    <tr
+                                        key={category._id}
+                                        className="border-b last:border-0 border-gray-100 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <td className="px-6 py-4 font-semibold text-gray-700">
+                                            {category.name?.[language] || category.name?.en || category.name?.vi || t.noName}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-500">
+                                            {category.slug?.[language] || category.slug?.en || category.slug?.vi || '-'}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-500">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar size={14} className="text-gray-400" />
+                                                {new Date(category.createdAt).toLocaleDateString()}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right relative">
+                                            <button
+                                                className="p-2 rounded-full hover:bg-gray-200 transition text-gray-500"
+                                                onClick={() => setOpenMenuIndex(openMenuIndex === i ? null : i)}
+                                            >
+                                                <MoreVertical size={18} />
+                                            </button>
 
-                    <div className="flex justify-end gap-3 mt-6">
-                        <Button onClick={handleCloseModal}>
-                            {t.cancel}
-                        </Button>
-                        <Button
-                            style={{ backgroundColor: '#41398B' }}
-                            type="primary"
-                            htmlType="submit"
-                            loading={submitLoading}
-                            className="bg-[#41398B] hover:!bg-[#352e7a]"
+                                            {/* Dropdown Menu */}
+                                            {openMenuIndex === i && (
+                                                <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
+                                                    {can('blogs.category', 'edit') && (
+                                                        <button
+                                                            onClick={() => {
+                                                                handleOpenModal(category);
+                                                                setOpenMenuIndex(null);
+                                                            }}
+                                                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group"
+                                                        >
+                                                            <span className="w-8 flex justify-center">
+                                                                <Pencil size={15} className="text-blue-600 group-hover:scale-110 transition" />
+                                                            </span>
+                                                            {t.editCategory}
+                                                        </button>
+                                                    )}
+                                                    {can('blogs.category', 'delete') && (
+                                                        <button
+                                                            onClick={() => {
+                                                                confirmDelete(category._id);
+                                                                setOpenMenuIndex(null);
+                                                            }}
+                                                            className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition group"
+                                                        >
+                                                            <span className="w-8 flex justify-center">
+                                                                <Trash2 size={15} className="group-hover:scale-110 transition" />
+                                                            </span>
+                                                            {t.yesDelete.replace("Yes, ", "")}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Pagination Bar */}
+            <div className="flex justify-end items-center px-6 py-2 bg-white rounded-xl text-sm text-gray-700 mt-4 border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <span>{language === "vi" ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
+                        <Select
+                            value={rowsPerPage}
+                            onChange={(val) => {
+                                setRowsPerPage(val);
+                                setCurrentPage(1);
+                            }}
+                            className="w-16 h-8"
+                            suffixIcon={null}
                         >
-                            {editingCategory ? t.update : t.create}
-                        </Button>
+                            {[5, 10, 20, 50].map((n) => (
+                                <Select.Option key={n} value={n}>
+                                    {n}
+                                </Select.Option>
+                            ))}
+                        </Select>
                     </div>
-                </Form>
-            </Modal>
+                    <span className="font-medium text-gray-600">
+                        {totalRows === 0
+                            ? "0–0"
+                            : `${startIndex + 1}–${endIndex} ${language === "vi" ? "trên" : "of"} ${totalRows}`}
+                    </span>
+                    <div className="flex items-center gap-1">
+                        <button
+                            onClick={goToFirst}
+                            disabled={currentPage === 1}
+                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+                        >
+                            <ChevronsLeft size={18} />
+                        </button>
+                        <button
+                            onClick={goToPrev}
+                            disabled={currentPage === 1}
+                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+                        >
+                            <ChevronLeft size={18} />
+                        </button>
+                        <button
+                            onClick={goToNext}
+                            disabled={currentPage === totalPages || totalRows === 0}
+                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+                        >
+                            <ChevronRight size={18} />
+                        </button>
+                        <button
+                            onClick={goToLast}
+                            disabled={currentPage === totalPages || totalRows === 0}
+                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+                        >
+                            <ChevronsRight size={18} />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Create/Edit Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+                        {/* Header */}
+                        <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
+                            <h2 className="text-xl font-bold text-gray-900">
+                                {editingCategory ? t.editCategory : t.addNewCategory}
+                            </h2>
+                            <button
+                                onClick={handleCloseModal}
+                                className="bg-gray-100 p-1.5 rounded-full text-gray-500 hover:bg-gray-200 transition"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Form Content */}
+                        <div className="p-6 bg-[#F9FAFB]">
+                            {/* Global Language Tabs */}
+                            <div className="flex gap-2 mb-6 border-b border-gray-200 bg-[#F9FAFB]">
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab("en")}
+                                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === "en"
+                                        ? "text-[#41398B] border-b-2 border-[#41398B]"
+                                        : "text-gray-500 hover:text-gray-700"
+                                        }`}
+                                >
+                                    <Languages size={16} />
+                                    English
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab("vi")}
+                                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === "vi"
+                                        ? "text-[#41398B] border-b-2 border-[#41398B]"
+                                        : "text-gray-500 hover:text-gray-700"
+                                        }`}
+                                >
+                                    <Languages size={16} />
+                                    Tiếng Việt
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="bg-white">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                                        {activeTab === 'en' ? 'Category Name' : 'Tên Danh Mục'} <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder={activeTab === 'en' ? "e.g. Real Estate" : "VD: Bất động sản"}
+                                        value={activeTab === 'en' ? formData.name.en : formData.name.vi}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            name: {
+                                                ...formData.name,
+                                                [activeTab]: e.target.value
+                                            }
+                                        })}
+                                        className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                                    />
+                                </div>
+
+                                {/* Footer */}
+                                <div className="flex justify-end gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={handleCloseModal}
+                                        className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium transition bg-white"
+                                    >
+                                        {t.cancel}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={submitLoading}
+                                        className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white text-sm font-medium shadow-md transition disabled:opacity-70"
+                                    >
+                                        {submitLoading ? (language === 'vi' ? 'Đang lưu...' : 'Saving...') : (editingCategory ? t.update : t.create)}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Delete Confirmation Modal */}
             {

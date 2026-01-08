@@ -10,7 +10,15 @@ import {
   User,
   Mail,
   Briefcase,
-  Languages
+  Languages,
+  MoreVertical,
+  Pencil,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
+  ShieldCheck,
+  ShieldAlert
 } from "lucide-react";
 import {
   createStaff,
@@ -120,6 +128,11 @@ export default function Staffs({ openStaffView }) {
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("en"); // Language tab state
+  const [openMenuIndex, setOpenMenuIndex] = useState(null);
+
+  // Pagination
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Translations
   const t = {
@@ -366,8 +379,24 @@ export default function Staffs({ openStaffView }) {
       u.employeeId.toLowerCase().includes(search);
   });
 
+  const totalRows = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
+  const visibleData = filtered.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+    if (totalRows > 0 && currentPage === 0) setCurrentPage(1); // Ensure at least page 1 if data exists
+  }, [totalRows, totalPages, currentPage]);
+
+  const goToFirst = () => setCurrentPage(1);
+  const goToLast = () => setCurrentPage(totalPages);
+  const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
+  const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
+
   return (
-    <div className="min-h-screen px-6 py-6">
+    <div className="min-h-screen px-6 py-6 font-primary relative">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
@@ -376,7 +405,7 @@ export default function Staffs({ openStaffView }) {
         {can("menuStaffs.staffs", "add") && (
           <button
             onClick={() => openModal()}
-            className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition shadow-md"
+            className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition shadow-md cursor-pointer"
           >
             <Plus size={18} />
             {t.newStaff}
@@ -396,90 +425,224 @@ export default function Staffs({ openStaffView }) {
         />
       </div>
 
-      {/* Cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Table */}
+      <div className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
         {loading ? (
           // Simple Skeleton
-          Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 animate-pulse h-48"></div>
-          ))
-        ) : filtered.length > 0 ? (
-          filtered.map((user) => (
-            <div
-              key={user._id}
-              className="relative bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition group"
-            >
-              {/* Actions */}
-              <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                {can("menuStaffs.staffs", "edit") && (
-                  <button
-                    onClick={() => openModal(user)}
-                    className="p-1.5 bg-gray-100 hover:bg-[#41398B] hover:text-white rounded-full transition text-gray-600"
-                  >
-                    <Edit2 size={14} />
-                  </button>
-                )}
-                {can("menuStaffs.staffs", "delete") && (
-                  <button
-                    onClick={() => setDeleteConfirm({ show: true, id: user._id })}
-                    className="p-1.5 bg-gray-100 hover:bg-red-600 hover:text-white rounded-full transition text-gray-600"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                )}
-              </div>
-
-              {/* Top Section */}
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-100">
-                  {user.profileImage ? (
-                    <img
-                      src={user.profileImage}
-                      alt="profile"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <User size={24} className="text-gray-400" />
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="text-gray-900 font-bold text-lg leading-tight">
-                    {user.firstName?.[language] || user.firstName?.en || ""} {user.lastName?.[language] || user.lastName?.en || ""}
-                  </h3>
-                  <p className="text-sm text-[#41398B] font-medium mt-0.5">
-                    {user.designation?.[language] || user.designation?.en || user.role}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-0.5">ID: {user.employeeId}</p>
-                </div>
-              </div>
-
-              <div className="space-y-2 mt-4 pt-4 border-t border-gray-50">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Mail size={14} className="text-gray-400" />
-                  <span className="truncate">{user.email}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Phone size={14} className="text-gray-400" />
-                  <span>{user.phone || "N/A"}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Briefcase size={14} className="text-gray-400" />
-                  <span>{user.department?.[language] || user.department?.en || "N/A"}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
-                    {user.status === "Active" ? t.active : t.inactive}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))
+          <div className="space-y-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse"></div>
+            ))}
+          </div>
         ) : (
-          <div className="col-span-full py-12 text-center text-gray-500">
-            {t.noStaffsFound}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table className="w-full text-sm border-collapse">
+              <thead className="bg-gray-50 text-gray-700">
+                <tr>
+                  <th className="px-6 py-4 text-left font-medium">
+                    {language === "vi" ? "Nhân viên" : "Staff Info"}
+                  </th>
+                  <th className="px-6 py-4 text-left font-medium">
+                    {language === "vi" ? "Liên hệ" : "Contact"}
+                  </th>
+                  <th className="px-6 py-4 text-center font-medium">
+                    {language === "vi" ? "Phòng ban / Vai trò" : "Dept / Role"}
+                  </th>
+                  <th className="px-6 py-4 text-center font-medium">
+                    {language === "vi" ? "Trạng thái" : "Status"}
+                  </th>
+                  <th className="px-6 py-4 text-right font-medium">
+                    {language === "vi" ? "Hành động" : "Actions"}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleData.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-12 text-gray-500">
+                      {t.noStaffsFound}
+                    </td>
+                  </tr>
+                ) : (
+                  visibleData.map((user, i) => (
+                    <tr
+                      key={user._id}
+                      className="border-b last:border-0 border-gray-100 hover:bg-gray-50 transition-colors"
+                    >
+                      {/* Staff Info */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0 border border-gray-200">
+                            {user.profileImage ? (
+                              <img
+                                src={user.profileImage}
+                                alt="profile"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <User size={20} className="text-gray-400" />
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900 leading-tight">
+                              {user.firstName?.[language] || user.firstName?.en || ""} {user.lastName?.[language] || user.lastName?.en || ""}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-0.5">ID: {user.employeeId}</div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Contact */}
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Mail size={14} />
+                            <span className="truncate max-w-[150px]" title={user.email}>
+                              {user.email}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Phone size={14} />
+                            <span>{user.phone || "N/A"}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Dept / Role */}
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex flex-col items-center">
+                          <span className="font-medium text-gray-800">
+                            {user.department?.[language] || user.department?.en || "N/A"}
+                          </span>
+                          <span className="text-xs text-[#41398B] bg-[#41398B]/10 px-2 py-0.5 rounded-full mt-1">
+                            {user.role}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-6 py-4 text-center">
+                        {user.status === "Active" ? (
+                          <span className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2.5 py-1 rounded-full text-xs font-medium border border-green-100">
+                            <ShieldCheck size={13} /> {t.active}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-red-600 bg-red-50 px-2.5 py-1 rounded-full text-xs font-medium border border-red-100">
+                            <ShieldAlert size={13} /> {t.inactive}
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-4 text-right relative">
+                        <button
+                          className="p-2 rounded-full hover:bg-gray-200 transition text-gray-500"
+                          onClick={() => setOpenMenuIndex(openMenuIndex === i ? null : i)}
+                        >
+                          <MoreVertical size={18} />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {openMenuIndex === i && (
+                          <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
+                            {can("menuStaffs.staffs", "edit") && (
+                              <button
+                                onClick={() => {
+                                  openModal(user);
+                                  setOpenMenuIndex(null);
+                                }}
+                                className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group"
+                              >
+                                <span className="w-8 flex justify-center">
+                                  <Pencil size={15} className="text-blue-600 group-hover:scale-110 transition" />
+                                </span>
+                                {modalT.editStaff}
+                              </button>
+                            )}
+
+                            {can("menuStaffs.staffs", "delete") && (
+                              <button
+                                onClick={() => {
+                                  setDeleteConfirm({ show: true, id: user._id });
+                                  setOpenMenuIndex(null);
+                                }}
+                                className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition group"
+                              >
+                                <span className="w-8 flex justify-center">
+                                  <Trash2 size={15} className="group-hover:scale-110 transition" />
+                                </span>
+                                {t.delete}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         )}
+      </div>
+
+      {/* Pagination Bar */}
+      <div className="flex justify-end items-center px-6 py-2 bg-white rounded-xl text-sm text-gray-700 mt-4 border border-gray-100 shadow-sm">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span>{language === "vi" ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
+            <Select
+              value={rowsPerPage}
+              onChange={(val) => {
+                setRowsPerPage(val);
+                setCurrentPage(1);
+              }}
+              className="w-16 h-8"
+              suffixIcon={null}
+            >
+              {[5, 10, 20, 50].map((n) => (
+                <Select.Option key={n} value={n}>
+                  {n}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+          <span className="font-medium text-gray-600">
+            {totalRows === 0
+              ? "0–0"
+              : `${startIndex + 1}–${endIndex} ${language === "vi" ? "trên" : "of"} ${totalRows}`}
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={goToFirst}
+              disabled={currentPage === 1}
+              className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+            >
+              <ChevronsLeft size={18} />
+            </button>
+            <button
+              onClick={goToPrev}
+              disabled={currentPage === 1}
+              className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={goToNext}
+              disabled={currentPage === totalPages || totalRows === 0}
+              className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+            >
+              <ChevronRight size={18} />
+            </button>
+            <button
+              onClick={goToLast}
+              disabled={currentPage === totalPages || totalRows === 0}
+              className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
+            >
+              <ChevronsRight size={18} />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Delete Confirmation */}
@@ -516,7 +679,7 @@ export default function Staffs({ openStaffView }) {
       {/* Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             {/* Header */}
             <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
               <h2 className="text-xl font-bold text-gray-900">

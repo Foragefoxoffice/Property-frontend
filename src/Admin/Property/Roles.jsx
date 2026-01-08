@@ -64,7 +64,8 @@ export default function Roles() {
             key: "blogs",
             subModules: [
                 { key: "category", label: t.category, controls: ["hide", "add", "edit", "delete"] },
-                { key: "blogCms", label: t.blogCms, controls: ["hide", "view", "edit", "delete"] }
+                { key: "blogCms", label: t.blogCms, controls: ["hide", "view", "edit", "delete"] },
+                { key: "subscription", label: t.subscription, controls: ["hide"] }
             ]
         },
         {
@@ -291,7 +292,7 @@ export default function Roles() {
                         <table className="w-full text-left">
                             <thead className="bg-gray-50 border-b border-gray-100">
                                 <tr>
-                                    <th className="px-6 py-4 font-semibold text-sm text-gray-600">#</th>
+                                    <th className="px-6 py-4 font-semibold text-sm text-gray-600">S.NO</th>
                                     <th className="px-6 py-4 font-semibold text-sm text-gray-600">{t.roleName}</th>
                                     <th className="px-6 py-4 font-semibold text-sm text-gray-600">{t.status}</th>
                                     <th className="px-6 py-4 font-semibold text-sm text-gray-600 text-right">{t.action}</th>
@@ -300,7 +301,7 @@ export default function Roles() {
                             <tbody className="divide-y divide-gray-100">
                                 {roles.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase())).map((role, index) => (
                                     <tr key={role._id} className="hover:bg-gray-50 transition">
-                                        <td className="px-6 py-4 text-gray-500 font-medium">#{index + 1}</td>
+                                        <td className="px-6 py-4 text-gray-500 font-medium">{index + 1}.</td>
                                         <td className="px-6 py-4 font-semibold text-gray-800">{role.name}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${role.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
@@ -337,7 +338,7 @@ export default function Roles() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
                         <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
                             <h2 className="text-xl font-bold text-gray-900">
                                 {editMode ? t.editRole : t.addRole}
