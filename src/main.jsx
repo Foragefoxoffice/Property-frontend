@@ -73,7 +73,7 @@ import UsersDetails from "./Admin/UserDetails/UsersDetails.jsx";
 import Roles from "./Admin/Property/Roles.jsx";
 import ContactEnquiry from "./Admin/Enquiry/ContactEnquiry.jsx";
 import Subscription from "./Admin/Subscription/Subscription.jsx";
-import Favorites from "./components/Favorites/Favorites.jsx";
+import Favorites from "./Pages/Favorites.jsx";
 
 
 createRoot(document.getElementById("root")).render(
