@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getListingProperties } from '@/Api/action';
+import { getListingProperties, addFavorite, removeFavorite, getFavorites } from '@/Api/action';
 import { Skeleton } from 'antd';
 import { useLanguage } from '@/Language/LanguageContext';
+import { Heart } from 'lucide-react';
+import { CommonToaster } from '@/Common/CommonToaster';
 
 export default function HomeFeaturedProperties({ homePageData }) {
     const navigate = useNavigate();
@@ -11,6 +13,8 @@ export default function HomeFeaturedProperties({ homePageData }) {
     const [loading, setLoading] = useState(true);
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
+
+    const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
         const fetchFeaturedProperties = async () => {
@@ -37,8 +41,51 @@ export default function HomeFeaturedProperties({ homePageData }) {
             }
         };
 
+        const fetchUserFavorites = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const res = await getFavorites();
+                    if (res.data.success) {
+                        // Extract property IDs
+                        const favIds = res.data.data.map(fav => fav.property._id || fav.property);
+                        setFavorites(favIds);
+                    }
+                } catch (error) {
+                    console.error('Error fetching favorites:', error);
+                }
+            }
+        };
+
         fetchFeaturedProperties();
+        fetchUserFavorites();
     }, []);
+
+    const handleToggleFavorite = async (e, propertyId) => {
+        e.stopPropagation(); // Prevent card click
+        const token = localStorage.getItem('token');
+        if (!token) {
+            CommonToaster('Please login to add favorites', 'error');
+            return;
+        }
+
+        try {
+            if (favorites.includes(propertyId)) {
+                await removeFavorite(propertyId);
+                setFavorites(prev => prev.filter(id => id !== propertyId));
+                CommonToaster('Removed from favorites', 'error');
+            } else {
+                await addFavorite(propertyId);
+                setFavorites(prev => [...prev, propertyId]);
+                CommonToaster('Added to favorites', 'success');
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+            // If error explains why (e.g., duplicate), toast it, else generic error
+            const msg = error.response?.data?.error || 'Failed to update favorite';
+            CommonToaster(msg, 'error');
+        }
+    };
 
     // Intersection Observer for scroll animations
     useEffect(() => {
@@ -166,7 +213,17 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="wishlist"><div className="hover-tooltip tooltip-left box-icon"><span className="icon icon-Heart"></span><span className="tooltip">Add to Wishlist</span></div></div>
+                                    <div className="absolute top-3 right-3 z-20">
+                                        <button
+                                            onClick={(e) => handleToggleFavorite(e, property._id)}
+                                            className="p-2 bg-white rounded-md shadow-sm hover:scale-105 transition-transform cursor-pointer"
+                                        >
+                                            <Heart
+                                                size={20}
+                                                className={`${favorites.includes(property._id) ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-gray-400'}`}
+                                            />
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* Content */}

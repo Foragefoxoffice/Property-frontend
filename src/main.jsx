@@ -73,6 +73,7 @@ import UsersDetails from "./Admin/UserDetails/UsersDetails.jsx";
 import Roles from "./Admin/Property/Roles.jsx";
 import ContactEnquiry from "./Admin/Enquiry/ContactEnquiry.jsx";
 import Subscription from "./Admin/Subscription/Subscription.jsx";
+import Favorites from "./components/Favorites/Favorites.jsx";
 
 
 createRoot(document.getElementById("root")).render(
@@ -238,7 +239,9 @@ createRoot(document.getElementById("root")).render(
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/blogs" element={<BlogPage />} />
             <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+
             <Route path="/property-showcase/:id" element={<PropertyShowcasePage />} />
+            <Route path="/favorites" element={<Favorites />} />
 
           </Route>
 

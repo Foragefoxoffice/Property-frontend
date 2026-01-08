@@ -12,6 +12,7 @@ import { Select, Skeleton } from 'antd';
 import Header from '@/Admin/Header/Header';
 import Footer from '@/Admin/Footer/Footer';
 import { usePermissions } from '../Context/PermissionContext';
+import Loader from '@/components/Loader/Loader';
 
 export default function ListingPage() {
     const navigate = useNavigate();
@@ -558,14 +559,7 @@ export default function ListingPage() {
                         {/* Property Grid */}
                         <main>
                             {loading ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                    {[1, 2, 3, 4, 5, 6].map((item) => (
-                                        <div key={item} className="bg-white rounded-2xl overflow-hidden p-4">
-                                            <Skeleton.Image active className="!w-full !h-56 rounded-2xl mb-4" />
-                                            <Skeleton active paragraph={{ rows: 3 }} />
-                                        </div>
-                                    ))}
-                                </div>
+                                <Loader />
                             ) : properties.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-20 bg-white/50 rounded-2xl">
                                     <svg className="w-24 h-24 text-purple-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
