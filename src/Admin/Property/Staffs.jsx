@@ -401,7 +401,7 @@ export default function Staffs({ openStaffView }) {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
             <table className="w-full text-sm border-collapse">
               <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
                 <tr>

@@ -41,6 +41,12 @@ export const FavoritesProvider = ({ children }) => {
     };
 
     const addFavorite = async (property) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            CommonToaster(language === 'vi' ? 'Vui lòng đăng nhập để thêm vào yêu thích' : 'Please login to add to favorites', 'error');
+            return false;
+        }
+
         if (!property) return false;
         if (typeof property === 'string') {
             console.error("addFavorite requires a property object, not an ID");
@@ -124,8 +130,17 @@ export const FavoritesProvider = ({ children }) => {
         });
     };
 
+    const clearFavorites = () => {
+        setFavorites([]);
+        try {
+            localStorage.removeItem('localFavorites');
+        } catch (e) {
+            console.error("Error clearing favorites from localStorage", e);
+        }
+    };
+
     return (
-        <FavoritesContext.Provider value={{ favorites, loading, addFavorite, removeFavorite, isFavorite, fetchFavorites, sendEnquiry }}>
+        <FavoritesContext.Provider value={{ favorites, loading, addFavorite, removeFavorite, isFavorite, fetchFavorites, sendEnquiry, clearFavorites }}>
             {children}
             {actionLoading && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[9999]">

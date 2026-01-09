@@ -17,7 +17,7 @@ export default function Header({ showNavigation = true }) {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [headerLogo, setHeaderLogo] = useState("/images/login/logo.png");
   const { language, toggleLanguage } = useLanguage();
-  const { favorites } = useFavorites();
+  const { favorites, clearFavorites } = useFavorites();
 
   const labels = {
     logout: { en: "Logout", vi: "Đăng xuất" },
@@ -31,7 +31,9 @@ export default function Header({ showNavigation = true }) {
     blog: { en: "Blog", vi: "Blog" },
     contacts: { en: "Contact Us", vi: "Liên hệ" },
     loginRegister: { en: "Login/Register", vi: "Đăng nhập/Đăng ký" },
-    changePassword: { en: "Change Password", vi: "Đổi mật khẩu" }
+    changePassword: { en: "Change Password", vi: "Đổi mật khẩu" },
+    dashboard: { en: "Dashboard", vi: "Trang tổng quan" },
+    myFavorites: { en: "My Favorites", vi: "Yêu thích của tôi" },
   };
 
   // Fetch header logo from CMS
@@ -54,6 +56,9 @@ export default function Header({ showNavigation = true }) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userRole");
+    clearFavorites();
     CommonToaster(labels.loggedOut[language], "error");
     navigate("/");
   };
@@ -330,46 +335,80 @@ export default function Header({ showNavigation = true }) {
           </div>
 
           {/* Login/Register or Profile */}
-          <div
-            className="relative"
-            onMouseEnter={() => setShowLogout(true)}
-            onMouseLeave={() => setShowLogout(false)}
-          >
+          {localStorage.getItem("token") && (
             <div
-              className="w-9 h-9 rounded-full bg-[#41398B] text-white 
+              className="relative"
+              onMouseEnter={() => setShowLogout(true)}
+              onMouseLeave={() => setShowLogout(false)}
+            >
+              <div
+                className="w-9 h-9 rounded-full bg-[#41398B] text-white 
                flex items-center justify-center text-sm font-bold 
                cursor-pointer shadow-sm hover:bg-[#352e7a] transition-colors"
-            >
-              {initials}
+                onClick={() => {
+                  const role = localStorage.getItem("userRole");
+                  if (role === "user") {
+                    navigate("/user-dashboard");
+                  } else {
+                    navigate("/dashboard/lease");
+                  }
+                }}
+              >
+                {initials}
+              </div>
+              <AnimatePresence>
+                {showLogout && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: -5 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                    transition={{ duration: 0.18, ease: "easeOut" }}
+                    className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-20 origin-top-right overflow-hidden"
+                  >
+                    <button
+                      onClick={() => {
+                        const role = localStorage.getItem("userRole");
+                        if (role === "user") {
+                          navigate("/user-dashboard/profile");
+                        } else {
+                          navigate("/dashboard/lease");
+                        }
+                        setShowLogout(false);
+                      }}
+                      className="flex items-center gap-3 w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-50 hover:text-[#41398B] transition font-medium border-b border-gray-50 cursor-pointer"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>
+                      {labels.dashboard[language]}
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        const role = localStorage.getItem("userRole");
+                        if (role === "user") {
+                          navigate("/user-dashboard");
+                        } else {
+                          navigate("/favorites");
+                        }
+                        setShowLogout(false);
+                      }}
+                      className="flex items-center gap-3 w-full text-left px-4 py-2 text-[14px] text-gray-700 hover:bg-gray-50 hover:text-[#41398B] transition font-medium border-b border-gray-50 cursor-pointer"
+                    >
+                      <Heart size={16} />
+                      {labels.myFavorites[language]}
+                    </button>
+
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 w-full text-left px-4 py-2 text-[14px] text-red-600 hover:bg-red-50 transition cursor-pointer font-medium"
+                    >
+                      <LogOut size={16} /> {labels.logout[language]}
+                    </button>
+
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <AnimatePresence>
-              {showLogout && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, y: -5 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -5 }}
-                  transition={{ duration: 0.18, ease: "easeOut" }}
-                  className="absolute right-0 mt-2 w-46 bg-white border border-gray-200 rounded-lg shadow-lg z-20 origin-top-right"
-                >
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-1.5 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 transition cursor-pointer font-medium"
-                  >
-                    <LogOut size={16} /> {labels.logout[language]}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowLogout(false);
-                      setShowChangePasswordModal(true);
-                    }}
-                    className="flex items-center gap-1.5 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition cursor-pointer font-medium border-t border-gray-100"
-                  >
-                    <Lock size={16} /> {labels.changePassword[language]}
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          )}
         </div>
       </div>
     </header>

@@ -1,6 +1,6 @@
 import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
 import App from "./App.jsx";
 import "./index.css";
@@ -14,6 +14,8 @@ import { LanguageProvider } from "./Language/LanguageContext.jsx";
 import { PermissionProvider } from "./Context/PermissionContext.jsx";
 import { FavoritesProvider } from "./Context/FavoritesContext.jsx";
 import PublicLayout from "./components/Layout/PublicLayout.jsx";
+import UserDashboardLayout from "./components/Layout/UserDashboardLayout.jsx";
+import UserProfile from "./Pages/UserProfile.jsx";
 
 import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage.jsx";
@@ -228,6 +230,21 @@ createRoot(document.getElementById("root")).render(
               <Route path="cms/footer" element={<FooterCmsForm />} />
               <Route path="cms/agent" element={<AgentFormCms />} />
               <Route path="cms/:section" element={<CMSPlaceholder />} />
+              <Route path="profile" element={<UserProfile />} />
+            </Route>
+
+            {/* ---------- USER DASHBOARD ---------- */}
+            <Route
+              path="/user-dashboard"
+              element={
+                <ProtectedRoute allowUser={true}>
+                  <UserDashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="favorites" element={<Favorites isDashboard={true} />} />
+              <Route path="profile" element={<UserProfile />} />
+              <Route index element={<Favorites isDashboard={true} />} />
             </Route>
 
             {/* OTHER NON-DASHBOARD PAGES */}

@@ -35,6 +35,17 @@ const DashboardLayout = () => {
                 {/* SIDEBAR */}
                 <div className="w-[280px] flex flex-col items-center py-6 h-full overflow-y-auto scrollbar-hide">
                     <div className="flex flex-col w-full gap-4 px-4">
+                        {/* MY PROFILE */}
+                        <button
+                            onClick={() => navigate("/dashboard/profile")}
+                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                 ${isActive("/dashboard/profile") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+               `}
+                        >
+                            <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white"><User className="w-4 h-4" /></span>
+                            <span className="text-sm font-medium">{t.myProfile}</span>
+                        </button>
+
                         {/* PROPERTIES DROPDOWN */}
                         {(!isHidden("properties.lease") || !isHidden("properties.sale") || !isHidden("properties.homestay")) && (
                             <div className="w-full">
