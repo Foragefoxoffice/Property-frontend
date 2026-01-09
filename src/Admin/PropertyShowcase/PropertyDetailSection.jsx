@@ -23,6 +23,11 @@ import { safeVal, safeArray } from "@/utils/display";
 import { getAgent, addFavorite } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
+import { useNavigate } from 'react-router-dom';
+import { getListingProperties } from '../../Api/action';
+import { Skeleton, Tooltip } from 'antd';
+import { Heart } from 'lucide-react';
+import { useFavorites } from '../../Context/FavoritesContext';
 
 /* -------------------------------------------------------
    MEDIA PREVIEW MODAL
@@ -109,7 +114,39 @@ function SimpleSlider({ items, type = "image" }) {
 ------------------------------------------------------- */
 export default function PropertyDetailsSection({ property }) {
   // references for scrolling
+  /* -------------------------------------------------------
+     SAFE data extraction using helpers
+  ------------------------------------------------------- */
+  const p = property || {};
+  const info = p.propertyInformation || {};
+  const list = p.listingInformation || {};
+  const fin = p.financialDetails || {};
+  const what = p.whatNearby || {};
+
+  const type = safeVal(list?.listingInformationTransactionType);
+
+  const videos = safeArray(p?.imagesVideos?.propertyVideo);
+  const floorplans = safeArray(p?.imagesVideos?.floorPlan);
+  const utilities = safeArray(p?.propertyUtility);
+
+  const visList = p.listingInformationVisibility || {};
+  const visProp = p.propertyInformationVisibility || {};
+  const visFin = p.financialVisibility || {};
+  const visDec = p.descriptionVisibility || {};
+  const visVideo = p.videoVisibility || {};
+  const visFloor = p.floorImageVisibility || {};
   const { language } = useLanguage();
+  const { isFavorite, addFavorite: addFavoriteContext, removeFavorite } = useFavorites();
+  const navigate = useNavigate();
+  const [recentProperties, setRecentProperties] = useState([]);
+  const [loadingRecent, setLoadingRecent] = useState(true);
+
+  // Helper for localized values
+  const getLocalizedValue = (value) => {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    return value.en || value.vi || '';
+  };
   const t = translations[language];
   const sectionRefs = {
     Overview: useRef(null),
@@ -123,6 +160,30 @@ export default function PropertyDetailsSection({ property }) {
   const [agentData, setAgentData] = useState(null); // Agent CMS data
   const [agentLoading, setAgentLoading] = useState(true); // Loading state
   const [sending, setSending] = useState(false); // Sending state
+  const [message, setMessage] = useState(''); // Message state
+
+  useEffect(() => {
+    const fetchRecentProperties = async () => {
+      try {
+        setLoadingRecent(true);
+        const res = await getListingProperties({ page: 1, limit: 4, sortBy: 'newest' });
+        let props = res.data?.data || [];
+
+        // Filter out current property if present
+        if (p._id || list.listingInformationPropertyId) {
+          const currentId = p._id || list.listingInformationPropertyId;
+          props = props.filter(item => (item._id !== currentId && item.listingInformation?.listingInformationPropertyId !== currentId));
+        }
+
+        setRecentProperties(props.slice(0, 3));
+      } catch (error) {
+        console.error('Error fetching recent properties:', error);
+      } finally {
+        setLoadingRecent(false);
+      }
+    };
+    fetchRecentProperties();
+  }, [p._id, list.listingInformationPropertyId]);
 
   // Fetch agent data on mount
   useEffect(() => {
@@ -157,9 +218,10 @@ export default function PropertyDetailsSection({ property }) {
         return;
       }
 
-      const res = await addFavorite(propId);
+      const res = await addFavorite(propId, message);
       if (res.data.success) {
         CommonToaster('Request sent successfully', 'success');
+        setMessage(''); // Clear message after success
       } else {
         CommonToaster('Failed to send request', 'error');
       }
@@ -183,27 +245,7 @@ export default function PropertyDetailsSection({ property }) {
     });
   };
 
-  /* -------------------------------------------------------
-     SAFE data extraction using helpers
-  ------------------------------------------------------- */
-  const p = property || {};
-  const info = p.propertyInformation || {};
-  const list = p.listingInformation || {};
-  const fin = p.financialDetails || {};
-  const what = p.whatNearby || {};
 
-  const type = safeVal(list?.listingInformationTransactionType);
-
-  const videos = safeArray(p?.imagesVideos?.propertyVideo);
-  const floorplans = safeArray(p?.imagesVideos?.floorPlan);
-  const utilities = safeArray(p?.propertyUtility);
-
-  const visList = p.listingInformationVisibility || {};
-  const visProp = p.propertyInformationVisibility || {};
-  const visFin = p.financialVisibility || {};
-  const visDec = p.descriptionVisibility || {};
-  const visVideo = p.videoVisibility || {};
-  const visFloor = p.floorImageVisibility || {};
 
   const show = (flag) => flag === false || flag === undefined;
 
@@ -246,7 +288,7 @@ export default function PropertyDetailsSection({ property }) {
         ------------------------------------------------------- */}
         <div
           id="scrollContainer"
-          className="lg:col-span-2 overflow-y-auto lg:h-[75vh] pr-2"
+          className="lg:col-span-2 overflow-y-auto lg:h-[75vh] pr-2 custom-scrollbar"
         >
           {/* -------------------------------------------------------
              OVERVIEW
@@ -598,11 +640,24 @@ export default function PropertyDetailsSection({ property }) {
             )}
           </div>
           <div>
+            {/* Message Field */}
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {language === 'vi' ? 'Tin nhắn' : 'Message'}
+              </label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={language === 'vi' ? 'Nhập tin nhắn của bạn...' : 'Enter your message...'}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] transition-all resize-none h-32 text-sm"
+              />
+            </div>
+
             {/* Send Request Button */}
             <button
               onClick={handleSendRequest}
               disabled={sending}
-              className={`w-full mt-6  text-white cursor-pointer py-3 rounded-xl font-bold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${sending ? "bg-gray-400 cursor-not-allowed" : "bg-[#41398B] hover:bg-[#352e7a]"
+              className={`w-full mt-4 text-white cursor-pointer py-3 rounded-xl font-bold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${sending ? "bg-gray-400 cursor-not-allowed" : "bg-[#41398B] hover:bg-[#352e7a]"
                 }`}
             >
               {sending ? (
@@ -622,15 +677,165 @@ export default function PropertyDetailsSection({ property }) {
 
       </div>
 
+      {/* -------------------------------------------------------
+         RECENT PROPERTIES SECTION
+      ------------------------------------------------------- */}
+      <div className="max-w-[1320px] mx-auto mt-16 px-4 md:px-0">
+        <h2 className="text-3xl font-semibold mb-8 text-[#1f1f1f]">
+          {language === 'vi' ? 'Bất động sản gần đây' : 'Recent Properties'}
+        </h2>
+
+        {loadingRecent ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((item) => (
+              <div key={item} className="bg-white rounded-2xl overflow-hidden p-4">
+                <Skeleton.Image active className="!w-full !h-56 rounded-2xl mb-4" />
+                <Skeleton active paragraph={{ rows: 3 }} />
+              </div>
+            ))}
+          </div>
+        ) : recentProperties.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">
+            {language === 'vi' ? 'Không có bất động sản nào gần đây' : 'No recent properties found'}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
+            {recentProperties.map((prop, index) => (
+              <div
+                key={prop._id}
+                className="card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-700 cursor-pointer shadow-sm hover:shadow-lg"
+                onClick={() => {
+                  navigate(`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`);
+                  window.scrollTo(0, 0);
+                }}
+              >
+                {/* Image */}
+                <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl m-3">
+                  <img
+                    style={{ width: "100%" }}
+                    src={prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
+                    alt={prop.listingInformation?.listingInformationBlockName}
+                    className="w-full h-full object-cover rounded-2xl transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {/* Badges */}
+                  <div className="absolute top-3 left-3 flex gap-2">
+                    <span className={`px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-sm shadow-lg text-white ${(getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || '').toLowerCase().includes('sale') ? 'bg-[#eb4d4d]' :
+                      (getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || '').toLowerCase().includes('lease') ? 'bg-[#058135]' : 'bg-[#055381]'
+                      }`}>
+                      {getLocalizedValue(prop.listingInformation?.listingInformationTransactionType)}
+                    </span>
+                  </div>
+                  <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const pid = prop._id || prop.listingInformation?.listingInformationPropertyId;
+                        if (isFavorite(pid)) removeFavorite(pid);
+                        else addFavoriteContext(prop);
+                      }}
+                      className="p-1.5 bg-white rounded-md shadow-sm text-[#000] hover:scale-105 transition-transform cursor-pointer"
+                    >
+                      <Tooltip title={isFavorite(prop._id || prop.listingInformation?.listingInformationPropertyId)
+                        ? (language === 'vi' ? 'Xóa khỏi Yêu thích' : 'Remove from Favorites')
+                        : (language === 'vi' ? 'Thêm vào Yêu thích' : 'Add to Favorites')}>
+                        <Heart
+                          size={18}
+                          className={`${isFavorite(prop._id || prop.listingInformation?.listingInformationPropertyId) ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-[#2a2a2a]'}`}
+                        />
+                      </Tooltip>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="pb-5 px-5">
+                  {/* Price */}
+                  <div className="flex items-baseline gap-1 mb-2">
+                    {(() => {
+                      const type = getLocalizedValue(prop.listingInformation?.listingInformationTransactionType);
+                      const priceSale = prop.financialDetails?.financialDetailsPrice;
+                      const priceLease = prop.financialDetails?.financialDetailsLeasePrice;
+                      const priceNight = prop.financialDetails?.financialDetailsPricePerNight;
+                      const genericPrice = prop.financialDetails?.financialDetailsPrice;
+
+                      let displayPrice = 'Contact for Price';
+                      let displaySuffix = null;
+
+                      if (type === 'Sale' && priceSale) {
+                        displayPrice = `₫ ${Number(priceSale).toLocaleString()}`;
+                      } else if (type === 'Lease' && priceLease) {
+                        displayPrice = `₫ ${Number(priceLease).toLocaleString()}`;
+                        displaySuffix = ' / month';
+                      } else if (type === 'Home Stay' && priceNight) {
+                        displayPrice = `$ ${Number(priceNight).toLocaleString()}`;
+                        displaySuffix = ' / night';
+                      } else if (genericPrice) {
+                        displayPrice = `₫ ${Number(genericPrice).toLocaleString()}`;
+                      }
+
+                      return (
+                        <>
+                          <span className="text-xl font-bold text-[#2a2a2a]">{displayPrice}</span>
+                          {displaySuffix && <span className="text-sm text-gray-500 font-medium">{displaySuffix}</span>}
+                        </>
+                      );
+                    })()}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-[#41398B] transition-colors">
+                    {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) ||
+                      getLocalizedValue(prop.listingInformation?.listingInformationBlockName) ||
+                      getLocalizedValue(prop.listingInformation?.listingInformationProjectCommunity) ||
+                      'Untitled Property'}
+                  </h3>
+
+                  {/* Location */}
+                  <p className="text-sm text-gray-500 mb-4 line-clamp-1">
+                    {getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
+                      getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                      'Location not specified'}
+                  </p>
+
+                  {/* Details */}
+                  <div className="flex items-center pt-3 border-t border-gray-200 justify-between">
+                    {prop.propertyInformation?.informationBedrooms > 0 && (
+                      <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                        <Bed size={18} className="text-[#41398B]" />
+                        <span className="font-medium">{prop.propertyInformation.informationBedrooms} Beds</span>
+                      </div>
+                    )}
+                    {prop.propertyInformation?.informationBathrooms > 0 && (
+                      <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                        <Bath size={18} className="text-[#41398B]" />
+                        <span className="font-medium">{prop.propertyInformation.informationBathrooms} Baths</span>
+                      </div>
+                    )}
+                    {prop.propertyInformation?.informationUnitSize > 0 && (
+                      <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                        <Ruler size={18} className="text-[#41398B]" />
+                        <span className="font-medium">{prop.propertyInformation.informationUnitSize.toLocaleString()} m²</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Modal for Video Preview */}
-      {previewUrl && (
-        <MediaPreviewModal
-          url={previewUrl}
-          type="video"
-          onClose={() => setPreviewUrl(null)}
-        />
-      )}
-    </div>
+      {
+        previewUrl && (
+          <MediaPreviewModal
+            url={previewUrl}
+            type="video"
+            onClose={() => setPreviewUrl(null)}
+          />
+        )
+      }
+    </div >
   );
 }
 

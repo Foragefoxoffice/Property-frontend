@@ -145,6 +145,7 @@ export default function Enquires() {
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.number}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.addedOn}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.listing}</th>
+                                        <th className="px-6 py-3 font-medium text-[#111111]">{t.message || "Message"}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111] text-center">{t.status}</th>
                                     </tr>
                                 </thead>
@@ -195,6 +196,11 @@ export default function Enquires() {
                                                     </button>
                                                 </div>
                                             </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className="block max-w-[150px] truncate text-gray-500 text-xs" title={item.message}>
+                                                    {item.message || "-"}
+                                                </span>
+                                            </td>
                                             <td className="px-6 py-4 text-center whitespace-nowrap">
                                                 <button
                                                     onClick={() => handleMarkRead(item._id, item.isRead)}
@@ -218,7 +224,7 @@ export default function Enquires() {
                                     ))}
                                     {currentRows.length === 0 && (
                                         <tr>
-                                            <td colSpan="5" className="py-16 text-center text-gray-500">
+                                            <td colSpan="7" className="py-16 text-center text-gray-500">
                                                 {t.noEnquiriesFound}
                                             </td>
                                         </tr>

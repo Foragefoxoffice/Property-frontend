@@ -85,7 +85,9 @@ export const FavoritesProvider = ({ children }) => {
     };
 
     // New function to send enquiry (Sync to Backend)
-    const sendEnquiry = async () => {
+    const sendEnquiry = async (messageProp = "") => {
+        const message = typeof messageProp === 'string' ? messageProp : "";
+
         if (favorites.length === 0) {
             CommonToaster('No favorites to send', 'warning');
             return;
@@ -111,7 +113,7 @@ export const FavoritesProvider = ({ children }) => {
                 return;
             }
 
-            await apiAddFavorite(propertyIds);
+            await apiAddFavorite(propertyIds, message); // Pass message to API
             CommonToaster('Enquiry sent successfully', 'success');
 
         } catch (error) {

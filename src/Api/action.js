@@ -519,7 +519,10 @@ export const deleteSubscription = (id) => API.delete(`/subscription/${id}`);
 /* =========================================================
    ❤️ FAVORITES APIs
 ========================================================= */
-export const addFavorite = (data) => API.post("/favorites/add", Array.isArray(data) ? { propertyIds: data } : { propertyIds: [data] });
+export const addFavorite = (data, message = "") => API.post("/favorites/add", {
+  propertyIds: Array.isArray(data) ? data : [data],
+  message
+});
 export const removeFavorite = (propertyId) => API.delete(`/favorites/remove/${propertyId}`);
 export const getFavorites = () => API.get("/favorites");
 export const getAllEnquiries = () => API.get("/favorites/admin/all");

@@ -11,6 +11,14 @@ export default function Favorites({ isDashboard = false }) {
     const { language } = useLanguage();
     const { favorites, loading, removeFavorite, sendEnquiry } = useFavorites();
     const [deleteId, setDeleteId] = useState(null);
+    const [showEnquiryModal, setShowEnquiryModal] = useState(false);
+    const [message, setMessage] = useState('');
+
+    const handleSendEnquiry = async () => {
+        await sendEnquiry(message);
+        setShowEnquiryModal(false);
+        setMessage('');
+    };
 
     const t = language === 'en' ? {
         pageTitle: "My Favorites",
@@ -61,11 +69,8 @@ export default function Favorites({ isDashboard = false }) {
         try {
             const success = await removeFavorite(deleteId);
             if (success) {
-                // CommonToaster(t.removedSuccess, 'success'); // Context already shows toast
                 setDeleteId(null);
             } else {
-                // If context returned false, maybe show error, but context might have toasted already.
-                // Assuming context toast handles errors.
             }
         } catch (error) {
             console.error(error);
@@ -103,7 +108,7 @@ export default function Favorites({ isDashboard = false }) {
                     </span>
                     {favorites.length > 0 && (
                         <button
-                            onClick={sendEnquiry}
+                            onClick={() => setShowEnquiryModal(true)}
                             className="ml-auto bg-[#41398B] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#352e7a] transition-colors shadow-lg hover:shadow-xl"
                         >
                             {t.sendEnquiry}
@@ -241,9 +246,52 @@ export default function Favorites({ isDashboard = false }) {
                     </div>
                 </div>
             )}
+
+            {/* Send Enquiry Modal */}
+            {showEnquiryModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+                        <div className="flex flex-col mb-4">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                {language === 'vi' ? 'Gửi Yêu Cầu' : 'Send Enquiry'}
+                            </h3>
+                            <p className="text-gray-500 text-sm mb-4">
+                                {language === 'vi'
+                                    ? 'Gửi yêu cầu cho tất cả các bất động sản trong danh sách yêu thích của bạn.'
+                                    : 'Send an enquiry for all properties in your favorites list.'}
+                            </p>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                {language === 'vi' ? 'Tin nhắn (Tùy chọn)' : 'Message (Optional)'}
+                            </label>
+                            <textarea
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder={language === 'vi' ? 'Nhập tin nhắn...' : 'Enter your message...'}
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] transition-all resize-none h-32 text-sm"
+                            />
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowEnquiryModal(false);
+                                    setMessage('');
+                                }}
+                                className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleSendEnquiry}
+                                className="flex-1 px-4 py-2.5 bg-[#41398B] text-white font-semibold rounded-xl hover:bg-[#352e7a] transition-colors shadow-lg"
+                            >
+                                {language === 'vi' ? 'Gửi' : 'Send'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
-
     if (isDashboard) return content;
 
     return (
