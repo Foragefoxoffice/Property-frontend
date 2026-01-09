@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Heart, Trash2, Calendar, MapPin, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from 'antd';
-import { CommonToaster } from '@/Common/CommonToaster';
 import Header from '@/Admin/Header/Header';
 import Footer from '@/Admin/Footer/Footer';
 import { useLanguage } from '@/Language/LanguageContext';
@@ -10,7 +9,7 @@ import { useFavorites } from '@/Context/FavoritesContext';
 
 export default function Favorites() {
     const { language } = useLanguage();
-    const { favorites, loading, removeFavorite } = useFavorites();
+    const { favorites, loading, removeFavorite, sendEnquiry } = useFavorites();
     const [deleteId, setDeleteId] = useState(null);
 
     const t = language === 'en' ? {
@@ -32,7 +31,8 @@ export default function Favorites() {
         untitledProperty: "Untitled Property",
         removedSuccess: "Removed from favorites",
         removeFail: "Failed to remove favorite",
-        removeProperty: "Remove Property"
+        removeProperty: "Remove Property",
+        sendEnquiry: "Send Enquiry"
     } : {
         pageTitle: "Mục Yêu Thích",
         listing: "Danh Sách",
@@ -52,7 +52,8 @@ export default function Favorites() {
         untitledProperty: "Bất động sản chưa có tên",
         removedSuccess: "Đã xóa khỏi danh sách yêu thích",
         removeFail: "Xóa thất bại",
-        removeProperty: "Xóa Bất Động Sản"
+        removeProperty: "Xóa Bất Động Sản",
+        sendEnquiry: "Gửi Yêu Cầu"
     };
 
     const handleDelete = async () => {
@@ -102,6 +103,14 @@ export default function Favorites() {
                         <span className="ml-3 bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
                             {favorites.length}
                         </span>
+                        {favorites.length > 0 && (
+                            <button
+                                onClick={sendEnquiry}
+                                className="ml-auto bg-[#41398B] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#352e7a] transition-colors shadow-lg hover:shadow-xl"
+                            >
+                                {t.sendEnquiry}
+                            </button>
+                        )}
                     </div>
 
                     {loading ? (

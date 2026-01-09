@@ -43,12 +43,13 @@ export default function HomeFeaturedProperties({ homePageData }) {
         fetchFeaturedProperties();
     }, []);
 
-    const handleToggleFavorite = async (e, propertyId) => {
+    const handleToggleFavorite = async (e, property) => {
         e.stopPropagation(); // Prevent card click
+        const propertyId = property._id || property.listingInformation?.listingInformationPropertyId;
         if (isFavorite(propertyId)) {
             await removeFavorite(propertyId);
         } else {
-            await addFavorite(propertyId);
+            await addFavorite(property);
         }
     };
 
@@ -180,7 +181,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     </div>
                                     <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <button
-                                            onClick={(e) => handleToggleFavorite(e, property._id)}
+                                            onClick={(e) => handleToggleFavorite(e, property)}
                                             className="p-1 bg-white rounded-md shadow-sm text-[#000] hover:scale-105 transition-transform cursor-pointer"
                                         >
                                             <Tooltip title={isFavorite(property._id)

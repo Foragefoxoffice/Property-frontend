@@ -349,7 +349,7 @@ export default function Header({ showNavigation = true }) {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -5 }}
                   transition={{ duration: 0.18, ease: "easeOut" }}
-                  className="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-20 origin-top-right"
+                  className="absolute right-0 mt-2 w-46 bg-white border border-gray-200 rounded-lg shadow-lg z-20 origin-top-right"
                 >
                   <button
                     onClick={handleLogout}

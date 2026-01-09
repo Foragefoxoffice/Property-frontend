@@ -186,12 +186,14 @@ export default function Enquires() {
                                                 {formatDate(item.createdAt)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <button
-                                                    onClick={() => setSelectedProperty(item.property)}
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#41398B] bg-[#41398B]/5 hover:bg-[#41398B]/10 rounded-lg transition-colors border border-[#41398B]/10"
-                                                >
-                                                    {t.viewProperty} <ArrowRight size={12} />
-                                                </button>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => setSelectedProperty(item)}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#41398B] bg-[#41398B]/5 hover:bg-[#41398B]/10 rounded-lg transition-colors border border-[#41398B]/10"
+                                                    >
+                                                        {t.viewProperty} <ArrowRight size={12} />
+                                                    </button>
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-center whitespace-nowrap">
                                                 <button
@@ -286,101 +288,109 @@ export default function Enquires() {
                         </div>
 
                         {/* Content */}
-                        <div className="overflow-y-auto p-6">
-                            <div className="flex flex-col md:flex-row gap-6 items-center">
-                                {/* Image */}
-                                <div className="w-full md:w-1/2">
-                                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 shadow-sm border border-gray-100">
-                                        <img
-                                            src={selectedProperty.imagesVideos?.propertyImages?.[0] || 'https://via.placeholder.com/600x400'}
-                                            alt="Property"
-                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                                        />
-                                        <div className="absolute top-3 left-3">
-                                            <span className="bg-white/90 backdrop-blur-md text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-sm border border-white/50 uppercase tracking-wide">
-                                                {getLocalizedValue(selectedProperty.listingInformation?.listingInformationTransactionType) || 'Property'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="overflow-y-auto p-6 scrollbar-hide">
+                            <h4 className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-4">
+                                {selectedProperty.properties?.length || 0} {t.properties || "Properties"} in this Enquiry
+                            </h4>
 
-                                {/* Details */}
-                                <div className="w-full md:w-1/2 flex flex-col">
-                                    <div className="">
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
-                                            {getLocalizedValue(selectedProperty.listingInformation?.listingInformationPropertyTitle) || "Untitled Property"}
-                                        </h2>
-
-                                        <div className="flex items-start gap-2 text-gray-500 mb-2">
-                                            <MapPin size={16} className="mt-0.5 text-[#41398B] flex-shrink-0" />
-                                            <span className="text-sm font-medium">
-                                                {getLocalizedValue(selectedProperty.listingInformation?.listingInformationZoneSubArea) || "Location Not Available"}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex flex-wrap gap-3 mb-0">
-                                            {selectedProperty.propertyInformation?.informationBedrooms > 0 && (
-                                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100">
-                                                    <Bed size={14} className="text-gray-400" />
-                                                    <span className="text-xs font-semibold text-gray-700">
-                                                        {selectedProperty.propertyInformation.informationBedrooms} {t.beds}
+                            <div className="space-y-8">
+                                {selectedProperty.properties?.map((prop, idx) => (
+                                    <div key={prop._id || idx} className="flex flex-col md:flex-row gap-6 items-start border-b border-gray-100 pb-8 last:border-0 last:pb-0">
+                                        {/* Image */}
+                                        <div className="w-full md:w-5/12 flex-shrink-0">
+                                            <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 shadow-sm border border-gray-100">
+                                                <img
+                                                    src={prop.imagesVideos?.propertyImages?.[0] || 'https://via.placeholder.com/600x400'}
+                                                    alt="Property"
+                                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                                                />
+                                                <div className="absolute top-3 left-3">
+                                                    <span className="bg-white/90 backdrop-blur-md text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-sm border border-white/50 uppercase tracking-wide">
+                                                        {getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || 'Property'}
                                                     </span>
                                                 </div>
-                                            )}
-                                            {selectedProperty.propertyInformation?.informationBathrooms > 0 && (
-                                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100">
-                                                    <Bath size={14} className="text-gray-400" />
-                                                    <span className="text-xs font-semibold text-gray-700">
-                                                        {selectedProperty.propertyInformation.informationBathrooms} {t.baths}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {selectedProperty.propertyInformation?.informationUnitSize > 0 && (
-                                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100">
-                                                    <Maximize size={14} className="text-gray-400" />
-                                                    <span className="text-xs font-semibold text-gray-700">
-                                                        {selectedProperty.propertyInformation.informationUnitSize} m²
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Footer Section */}
-                                    <div className="pt-3">
-                                        <div className="flex items-end justify-between mb-2">
-                                            <div>
-                                                <p className="text-md text-[#2a2a2a] uppercase tracking-wider font-semibold mb-1">{t.price}</p>
-                                                <p className="text-[#41398B] font-bold text-2xl tracking-tight">
-                                                    {selectedProperty.financialDetails?.financialDetailsPrice ?
-                                                        `₫ ${Number(selectedProperty.financialDetails?.financialDetailsPrice).toLocaleString()}` :
-                                                        (selectedProperty.financialDetails?.financialDetailsLeasePrice ?
-                                                            `₫ ${Number(selectedProperty.financialDetails?.financialDetailsLeasePrice).toLocaleString()} / month` :
-                                                            "Contact for Price")
-                                                    }
-                                                </p>
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center justify-between mt-4">
-                                            {formatDate(selectedProperty.listingInformation?.listingInformationDateListed || selectedProperty.createdAt) && (
-                                                <div className="flex items-center text-[13px] text-gray-400 bg-gray-50 px-2 py-1 rounded">
-                                                    <Calendar size={12} className="mr-1.5" />
-                                                    {t.posted} {formatDate(selectedProperty.listingInformation?.listingInformationDateListed || selectedProperty.createdAt)}
-                                                </div>
-                                            )}
+                                        {/* Details */}
+                                        <div className="w-full md:w-7/12 flex flex-col">
+                                            <div className="">
+                                                <h2 className="text-xl font-bold text-gray-900 mb-2 leading-tight">
+                                                    {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || "Untitled Property"}
+                                                </h2>
 
-                                            <a
-                                                href={`/property-showcase/${selectedProperty.listingInformation?.listingInformationPropertyId}`}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="inline-flex items-center gap-2 px-4 py-2 bg-[#41398B] text-white text-sm font-semibold rounded-lg hover:bg-[#352e7a] transition-all shadow-sm hover:shadow-md"
-                                            >
-                                                {t.viewFullDetails} <ExternalLink size={14} />
-                                            </a>
+                                                <div className="flex items-start gap-2 text-gray-500 mb-3">
+                                                    <MapPin size={16} className="mt-0.5 text-[#41398B] flex-shrink-0" />
+                                                    <span className="text-sm font-medium line-clamp-1">
+                                                        {getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) || "Location Not Available"}
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex flex-wrap gap-3 mb-4">
+                                                    {prop.propertyInformation?.informationBedrooms > 0 && (
+                                                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100">
+                                                            <Bed size={14} className="text-gray-400" />
+                                                            <span className="text-xs font-semibold text-gray-700">
+                                                                {prop.propertyInformation.informationBedrooms} {t.beds}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    {prop.propertyInformation?.informationBathrooms > 0 && (
+                                                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100">
+                                                            <Bath size={14} className="text-gray-400" />
+                                                            <span className="text-xs font-semibold text-gray-700">
+                                                                {prop.propertyInformation.informationBathrooms} {t.baths}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    {prop.propertyInformation?.informationUnitSize > 0 && (
+                                                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100">
+                                                            <Maximize size={14} className="text-gray-400" />
+                                                            <span className="text-xs font-semibold text-gray-700">
+                                                                {prop.propertyInformation.informationUnitSize} m²
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Footer Section */}
+                                            <div className="mt-auto">
+                                                <div className="flex items-end justify-between mb-3">
+                                                    <div>
+                                                        <p className="text-xs text-[#2a2a2a] uppercase tracking-wider font-semibold mb-1">{t.price}</p>
+                                                        <p className="text-[#41398B] font-bold text-xl tracking-tight">
+                                                            {prop.financialDetails?.financialDetailsPrice ?
+                                                                `₫ ${Number(prop.financialDetails?.financialDetailsPrice).toLocaleString()}` :
+                                                                (prop.financialDetails?.financialDetailsLeasePrice ?
+                                                                    `₫ ${Number(prop.financialDetails?.financialDetailsLeasePrice).toLocaleString()} / month` :
+                                                                    "Contact for Price")
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                                    {formatDate(prop.listingInformation?.listingInformationDateListed || prop.createdAt) && (
+                                                        <div className="flex items-center text-[12px] text-gray-400 bg-gray-50 px-2 py-1 rounded">
+                                                            <Calendar size={12} className="mr-1.5" />
+                                                            {t.posted} {formatDate(prop.listingInformation?.listingInformationDateListed || prop.createdAt)}
+                                                        </div>
+                                                    )}
+
+                                                    <a
+                                                        href={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId}`}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#41398B] text-white text-xs font-semibold rounded-lg hover:bg-[#352e7a] transition-all shadow-sm hover:shadow-md"
+                                                    >
+                                                        {t.viewFullDetails} <ExternalLink size={12} />
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </div>
