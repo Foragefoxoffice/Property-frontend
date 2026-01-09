@@ -25,7 +25,7 @@ import { translations } from "../../Language/translations";
 const { Panel } = Collapse;
 
 export default function Roles() {
-    const { can } = usePermissions();
+    const { can, refreshPermissions } = usePermissions();
     const { language } = useLanguage();
     const t = translations[language];
     const [roles, setRoles] = useState([]);
@@ -214,6 +214,7 @@ export default function Roles() {
                 await createRole(form);
                 CommonToaster("Role create successfully", "success");
             }
+            await refreshPermissions();
             setShowModal(false);
             fetchRoles();
         } catch (err) {
@@ -225,11 +226,32 @@ export default function Roles() {
         try {
             await deleteRole(deleteConfirm.id);
             CommonToaster("Role deleted successfully", "success");
+            await refreshPermissions();
             setDeleteConfirm({ show: false, id: null });
             fetchRoles();
-        } catch {
-            CommonToaster("Error deleting role", "error");
+        } catch (err) {
+            CommonToaster(err.response?.data?.error || "Error deleting role", "error");
         }
+    };
+
+    const toggleSection = (sectionKey, isHidden) => {
+        setForm(prev => {
+            const newPerms = { ...prev.permissions };
+            const section = permissionStructure.find(s => s.key === sectionKey);
+
+            if (section && !section.isDirect) {
+                section.subModules.forEach(sub => {
+                    if (!newPerms[sectionKey][sub.key]) {
+                        newPerms[sectionKey][sub.key] = {};
+                    }
+                    newPerms[sectionKey][sub.key] = {
+                        ...newPerms[sectionKey][sub.key],
+                        hide: isHidden
+                    };
+                });
+            }
+            return { ...prev, permissions: newPerms };
+        });
     };
 
     const renderToggle = (mainKey, subKey, control) => {
@@ -384,41 +406,65 @@ export default function Roles() {
                                     </h3>
 
                                     <div className="space-y-6">
-                                        {permissionStructure.map((section) => (
-                                            <div key={section.key} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-                                                <div className="px-4 py-3 bg-[#f8f9fa] border-b border-gray-100 flex items-center gap-2">
-                                                    <div className="w-1.5 h-5 bg-[#41398B] rounded-full"></div>
-                                                    <span className="font-bold text-gray-800">{section.label}</span>
-                                                </div>
+                                        {permissionStructure.map((section) => {
+                                            // Check if all submodules in this section are hidden
+                                            const isSectionHidden = !section.isDirect && section.subModules.every(
+                                                sub => form.permissions[section.key]?.[sub.key]?.hide
+                                            );
 
-                                                <div className="p-4">
-                                                    {section.isDirect ? (
-                                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                                                            {section.controls.map(control => (
-                                                                <div key={control}>
-                                                                    {renderToggle(section.key, null, control)}
-                                                                </div>
-                                                            ))}
+                                            return (
+                                                <div key={section.key} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                                    <div className="px-4 py-3 bg-[#f8f9fa] border-b border-gray-100 flex items-center justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-1.5 h-5 bg-[#41398B] rounded-full"></div>
+                                                            <span className="font-bold text-gray-800">{section.label}</span>
                                                         </div>
-                                                    ) : (
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                            {section.subModules.map(sub => (
-                                                                <div key={sub.key} className="bg-gray-50/50 rounded-lg p-3 border border-gray-100">
-                                                                    <h4 className="font-semibold text-gray-700 mb-3 text-sm">{sub.label}</h4>
-                                                                    <div className="grid grid-cols-2 gap-2">
-                                                                        {sub.controls.map(control => (
-                                                                            <div key={control}>
-                                                                                {renderToggle(section.key, sub.key, control)}
-                                                                            </div>
-                                                                        ))}
+
+                                                        {/* Master Hide Toggle for Section */}
+                                                        {!section.isDirect && (
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-sm font-medium text-gray-600">
+                                                                    {t.hideTab || "Hide"}
+                                                                </span>
+                                                                <Switch
+                                                                    size="small"
+                                                                    checked={isSectionHidden}
+                                                                    onChange={(val) => toggleSection(section.key, val)}
+                                                                    className={`${isSectionHidden ? 'bg-[#41398B]' : 'bg-gray-300'}`}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="p-4">
+                                                        {section.isDirect ? (
+                                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                                                                {section.controls.map(control => (
+                                                                    <div key={control}>
+                                                                        {renderToggle(section.key, null, control)}
                                                                     </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                                {section.subModules.map(sub => (
+                                                                    <div key={sub.key} className="bg-gray-50/50 rounded-lg p-3 border border-gray-100">
+                                                                        <h4 className="font-semibold text-gray-700 mb-3 text-sm">{sub.label}</h4>
+                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                            {sub.controls.map(control => (
+                                                                                <div key={control}>
+                                                                                    {renderToggle(section.key, sub.key, control)}
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </form>

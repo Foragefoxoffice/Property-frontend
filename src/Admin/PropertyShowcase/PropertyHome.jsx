@@ -1,12 +1,15 @@
-// PropertyHome.jsx
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Share2 } from "lucide-react";
 import { safeVal, safeArray, formatNumber } from "@/utils/display";
 import { CommonToaster } from "@/Common/CommonToaster";
+import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations";
 
 export default function PropertyHome({ property }) {
   const [current, setCurrent] = useState(0);
+  const { language } = useLanguage();
+  const t = translations[language];
 
   // Safe extraction
   const images = safeArray(property?.imagesVideos?.propertyImages).filter(Boolean);
@@ -27,9 +30,18 @@ export default function PropertyHome({ property }) {
 
   const getShowcasePrice = () => {
     if (type === "Sale" && priceSale) return `${formatNumber(priceSale)} ${property?.financialDetails?.financialDetailsCurrency}`;
-    if (type === "Lease" && priceLease) return `${formatNumber(priceLease)} ${property?.financialDetails?.financialDetailsCurrency} / month`;
-    if (type === "Home Stay" && priceNight) return `${formatNumber(priceNight)} ${property?.financialDetails?.financialDetailsCurrency} / night`;
+    if (type === "Lease" && priceLease) return `${formatNumber(priceLease)} ${property?.financialDetails?.financialDetailsCurrency} ${t.monthSuffix}`;
+    if (type === "Home Stay" && priceNight) return `${formatNumber(priceNight)} ${property?.financialDetails?.financialDetailsCurrency} ${t.nightSuffix}`;
     return "-";
+  };
+
+  const getLocalizedType = (typeVal) => {
+    if (!typeVal) return "—";
+    const lower = typeVal.toLowerCase();
+    if (lower === "sale") return t.sale;
+    if (lower === "lease") return t.lease;
+    if (lower === "home stay" || lower === "homestay") return t.homeStay;
+    return typeVal;
   };
 
   const getTypeColor = () => {
@@ -43,8 +55,8 @@ export default function PropertyHome({ property }) {
 
   const handleShare = async () => {
     const shareData = {
-      title: title || "Property",
-      text: `Check out this property: ${title}`,
+      title: title || t.property,
+      text: `${t.checkOutProperty} ${title}`,
       url: window.location.href,
     };
 
@@ -57,10 +69,10 @@ export default function PropertyHome({ property }) {
     } else {
       try {
         await navigator.clipboard.writeText(window.location.href);
-        CommonToaster("Link copied to clipboard", "success");
+        CommonToaster(t.linkCopied, "success");
       } catch (err) {
         console.error("Failed to copy:", err);
-        CommonToaster("Failed to copy link", "error");
+        CommonToaster(t.failedCopy, "error");
       }
     }
   };
@@ -75,7 +87,7 @@ export default function PropertyHome({ property }) {
               className="text-black text-md px-3 py-1 rounded-full font-semibold"
               style={{ backgroundColor: getTypeColor() }}
             >
-              For {type || "—"}
+              {t.for} {getLocalizedType(type)}
             </span>
             <span className="bg-[#F8F7F3] text-black text-md px-3 py-1 rounded-full font-semibold">
               {propertyType || "—"}
@@ -83,7 +95,7 @@ export default function PropertyHome({ property }) {
           </div>
 
           <h1 className="text-3xl sm:text-4xl font-semibold leading-snug mb-4">
-            {title || "Untitled property"}
+            {title || t.untitledProperty}
           </h1>
 
           <button
@@ -91,12 +103,12 @@ export default function PropertyHome({ property }) {
             className="flex items-center gap-2 text-gray-700 border border-gray-300 px-3 py-2 rounded-full cursor-pointer w-fit hover:bg-gray-50 transition-colors"
           >
             <Share2 className="w-5 h-5" />
-            Share
+            {t.share}
           </button>
         </div>
 
         <div>
-          <p className="text-gray-700 mb-2">Price:</p>
+          <p className="text-gray-700 mb-2">{t.price}:</p>
           <div className="flex items-end gap-2">
             <span className="text-3xl font-bold">{getShowcasePrice()}</span>
           </div>
@@ -124,7 +136,7 @@ export default function PropertyHome({ property }) {
             </AnimatePresence>
           ) : (
             <div className="w-full h-[50vh] flex items-center justify-center bg-gray-200">
-              <span className="text-gray-600">No images available</span>
+              <span className="text-gray-600">{t.noImages}</span>
             </div>
           )}
         </div>

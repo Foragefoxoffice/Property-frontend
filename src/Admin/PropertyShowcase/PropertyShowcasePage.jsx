@@ -8,12 +8,16 @@ import PropertyDetailsSection from "./PropertyDetailSection";
 import Loader from "@/components/Loader/Loader";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
+import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations";
 
 export default function PropertyShowcasePage() {
   const { id } = useParams(); // id is the property id in URL
   const [loading, setLoading] = useState(true);
   const [property, setProperty] = useState(null);
   const [error, setError] = useState(null);
+  const { language } = useLanguage();
+  const t = translations[language];
 
   useEffect(() => {
     let mounted = true;
@@ -56,8 +60,8 @@ export default function PropertyShowcasePage() {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2">Property not found</h2>
-          <p className="text-gray-500">No property data available for id: <strong>{id}</strong></p>
+          <h2 className="text-2xl font-semibold mb-2">{t.propertyNotFound}</h2>
+          <p className="text-gray-500">{t.noPropertyData} <strong>{id}</strong></p>
         </div>
       </div>
     );

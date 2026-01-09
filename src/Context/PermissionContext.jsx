@@ -20,9 +20,14 @@ export const PermissionProvider = ({ children }) => {
                 const res = await getRoles();
                 if (res?.data?.data) {
                     const rolesData = res.data.data;
-                    const currentRole = rolesData.find(r => r.name === role);
+                    // Robust matching: trim and lowercase
+                    const currentRole = rolesData.find(r => r.name?.trim().toLowerCase() === role.trim().toLowerCase());
+
                     if (currentRole) {
                         setPermissions(currentRole.permissions);
+                    } else {
+                        console.warn(`PermissionContext: Role '${role}' not found in DB. Available:`, rolesData.map(r => r.name));
+                        setPermissions(null);
                     }
                 }
             } catch (error) {
@@ -55,11 +60,13 @@ export const PermissionProvider = ({ children }) => {
                 return false;
             }
         }
-        return current.hide === true;
+        return current.hide === true || current.hide === "true";
     };
 
     const can = (path, action) => {
         if (!userRole) return false;
+
+        if (userRole.toLowerCase() === 'admin' && !permissions) return true;
 
         if (!permissions) return false;
 
@@ -69,14 +76,12 @@ export const PermissionProvider = ({ children }) => {
             if (current && current[part]) {
                 current = current[part];
             } else {
-                return false;
+                return true;
             }
         }
 
-
-        // User requested inverted logic: if 'edit' is true, it means HIDE edit.
-        // So allow action only if permission is NOT true.
-        return current[action] !== true;
+        const value = current[action];
+        return value !== true && value !== "true";
     };
 
     return (

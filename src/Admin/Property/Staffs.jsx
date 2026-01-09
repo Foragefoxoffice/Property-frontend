@@ -330,8 +330,8 @@ export default function Staffs({ openStaffView }) {
       CommonToaster(t.staffDeleted || "Staff deleted successfully", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchUsersAndRoles();
-    } catch {
-      CommonToaster(t.errorDeleting || "Error deleting staff", "error");
+    } catch (err) {
+      CommonToaster(err.response?.data?.error || t.errorDeleting || "Error deleting staff", "error");
     }
   };
 
