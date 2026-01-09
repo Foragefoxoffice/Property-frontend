@@ -61,6 +61,7 @@ export const userRegisterApi = (data) => API.post("/auth/user-register", data);
 export const forgotPassword = (data) => API.post("/auth/forgot-password", data);
 export const resetPassword = (data) => API.post("/auth/reset-password", data);
 export const getMe = () => API.get("/auth/me");
+export const updatePassword = (data) => API.put("/auth/update-password", data);
 
 /* =========================================================
    👤 USER APIs

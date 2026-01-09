@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, ChevronDown, Heart } from "lucide-react";
+import { LogOut, ChevronDown, Heart, Lock } from "lucide-react";
+import ChangePasswordModal from "./ChangePasswordModal";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { getHeader } from "../../Api/action";
@@ -13,6 +14,7 @@ export default function Header({ showNavigation = true }) {
   const navigate = useNavigate();
   const [showLogout, setShowLogout] = useState(false);
   const [showPropertiesDropdown, setShowPropertiesDropdown] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [headerLogo, setHeaderLogo] = useState("/images/login/logo.png");
   const { language, toggleLanguage } = useLanguage();
   const { favorites } = useFavorites();
@@ -28,7 +30,8 @@ export default function Header({ showNavigation = true }) {
     aboutus: { en: "About Us", vi: "Về chúng tôi" },
     blog: { en: "Blog", vi: "Blog" },
     contacts: { en: "Contact Us", vi: "Liên hệ" },
-    loginRegister: { en: "Login/Register", vi: "Đăng nhập/Đăng ký" }
+    loginRegister: { en: "Login/Register", vi: "Đăng nhập/Đăng ký" },
+    changePassword: { en: "Change Password", vi: "Đổi mật khẩu" }
   };
 
   // Fetch header logo from CMS
@@ -72,6 +75,10 @@ export default function Header({ showNavigation = true }) {
 
   return (
     <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <ChangePasswordModal
+        isOpen={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+      />
       <div className="max-w-[1400px] mx-auto px-6 py-5 flex items-center justify-between">
         {/* Left Logo */}
         <div className="flex items-center">
@@ -346,9 +353,18 @@ export default function Header({ showNavigation = true }) {
                 >
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 w-full text-left px-4 py-2 text-sm bg-red-600 text-white rounded-lg transition cursor-pointer hover:bg-red-700"
+                    className="flex items-center gap-1.5 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50 transition cursor-pointer font-medium"
                   >
                     <LogOut size={16} /> {labels.logout[language]}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowLogout(false);
+                      setShowChangePasswordModal(true);
+                    }}
+                    className="flex items-center gap-1.5 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition cursor-pointer font-medium border-t border-gray-100"
+                  >
+                    <Lock size={16} /> {labels.changePassword[language]}
                   </button>
                 </motion.div>
               )}
