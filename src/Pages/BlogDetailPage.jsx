@@ -101,7 +101,7 @@ export default function BlogDetailPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                         {/* Main Content Column */}
                         <div className="lg:col-span-8">
-                            <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 ring-1 ring-black/5 overflow-auto">
+                            <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 ring-1 ring-black/5">
                                 {/* Share Buttons (Mobile Top) */}
                                 <div className="flex lg:hidden gap-4 mb-8 pb-8 border-b border-gray-100 justify-center">
                                     <button className="p-3 rounded-full bg-gray-50 hover:bg-[#1DA1F2] hover:text-white text-gray-500 transition-all duration-300"><Twitter size={20} /></button>
@@ -111,7 +111,7 @@ export default function BlogDetailPage() {
                                 </div>
 
                                 {/* Blog Content */}
-                                <article style={{ lineHeight: '2.1' }} className="prose prose-lg max-w-none 
+                                <article style={{ lineHeight: '2.1' }} className="prose prose-lg max-w-none w-full break-words
                                 prose-headings:font-bold prose-headings:text-gray-900 
                                 prose-h1:text-4xl prose-h2:text-3xl prose-h2:text-[#41398B] prose-h3:text-2xl 
                                 prose-p:text-gray-600 prose-p:leading-relaxed 
