@@ -297,7 +297,13 @@ export const uploadPropertyMedia = (file, type) => {
   formData.append("type", type); // 'image', 'video', or 'floor'
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  // Ensure we strip trailing slash if present
+  const envURL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, "") : null;
+  const baseURL = envURL || "https://dev.placetest.in/api/v1";
+
+  console.log("🚀 Uploading Media...");
+  console.log("📍 Target URL:", `${baseURL}/upload/property-media`);
+  console.log("🌐 Env VITE_API_URL:", import.meta.env.VITE_API_URL);
 
   return axios.post(`${baseURL}/upload/property-media`, formData, {
     headers: {
