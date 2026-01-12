@@ -32,7 +32,8 @@ export default function BlogSidebar() {
                 ]);
 
                 // Get last 5 posts
-                setRecentPosts(blogsRes.data.data.slice(0, 5));
+                const publishedBlogs = blogsRes.data.data.filter(blog => blog.published);
+                setRecentPosts(publishedBlogs.slice(0, 5));
 
                 // Get categories
                 setCategories(catsRes.data.data);

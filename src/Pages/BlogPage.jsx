@@ -26,9 +26,10 @@ export default function BlogPage() {
         const categorySlug = params.get('category');
         const searchTerm = params.get('search');
 
-        let filtered = blogs;
+        // Only show published blogs
+        let filtered = blogs.filter(blog => blog.published);
 
-        if (categorySlug && blogs.length > 0) {
+        if (categorySlug && filtered.length > 0) {
             filtered = filtered.filter(blog =>
                 blog.category?.slug?.[language] === categorySlug ||
                 blog.category?.slug?.en === categorySlug ||
@@ -36,7 +37,7 @@ export default function BlogPage() {
             );
         }
 
-        if (searchTerm && blogs.length > 0) {
+        if (searchTerm && filtered.length > 0) {
             const term = searchTerm.toLowerCase();
             filtered = filtered.filter(blog => {
                 const titleEn = blog.title?.en?.toLowerCase() || '';

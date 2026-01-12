@@ -87,9 +87,9 @@ export default function BlogCmsForm() {
                     title: blog.title,
                     content: blog.content,
                     author: blog.author,
-                    category: blog.category,
+                    category: blog.category?._id || blog.category,
                     mainImage: blog.mainImage,
-                    tags: blog.tags,
+                    tags: blog.tags || { en: [], vi: [] },
                     published: blog.published !== undefined ? blog.published : true,
                 });
 
@@ -138,7 +138,8 @@ export default function BlogCmsForm() {
 
             const finalPayload = {
                 ...(blogData && getPreservedData(blogData)),
-                ...values
+                ...values,
+                published: !!values.published
             };
 
             if (blogData) {

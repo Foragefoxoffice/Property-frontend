@@ -194,12 +194,12 @@ export default function ManageTrashProperty() {
   const handleRestore = async (id) => {
     try {
       await restoreProperty(id);
-      CommonToaster("Restored successfully", "success");
+      CommonToaster(t.restoredSuccess, "success");
 
       setProperties((prev) => prev.filter((p) => p._id !== id));
       setTotalRows((prev) => Math.max(prev - 1, 0));
     } catch (err) {
-      CommonToaster("Failed to restore", "error");
+      CommonToaster(t.restoredFailed, "error");
     }
   };
 
@@ -210,12 +210,12 @@ export default function ManageTrashProperty() {
     try {
       await permanentlyDeleteProperty(deleteConfirm.id);
 
-      CommonToaster("Property permanently deleted", "success");
+      CommonToaster(t.deleteSuccess, "success");
 
       setProperties((prev) => prev.filter((p) => p._id !== deleteConfirm.id));
       setTotalRows((prev) => Math.max(prev - 1, 0));
     } catch (err) {
-      CommonToaster("Delete failed", "error");
+      CommonToaster(t.deleteFailed, "error");
     } finally {
       setDeleteConfirm({ show: false, id: null });
     }
@@ -228,12 +228,12 @@ export default function ManageTrashProperty() {
     try {
       setLoading(true);
       await Promise.all(selectedRowKeys.map(id => permanentlyDeleteProperty(id)));
-      CommonToaster("Selected properties deleted permanently", "success");
+      CommonToaster(t.bulkDeleteSuccess, "success");
       setSelectedRowKeys([]);
       fetchProperties();
     } catch (err) {
       console.error(err);
-      CommonToaster("Bulk delete failed", "error");
+      CommonToaster(t.bulkDeleteFailed, "error");
     } finally {
       setLoading(false);
       setBulkDeleteConfirm(false);
@@ -265,7 +265,7 @@ export default function ManageTrashProperty() {
 
       {/* PAGE HEADER */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-semibold text-gray-900">Trash</h1>
+        <h1 className="text-3xl font-semibold text-gray-900">{t.trash}</h1>
 
         {/* Dropdown + Filters */}
         <div className="flex items-center gap-4">
@@ -279,10 +279,10 @@ export default function ManageTrashProperty() {
               className="min-w-[140px]"
               size="large"
               options={[
-                { value: "All", label: "All Types" },
-                { value: "Sale", label: "Sale" },
-                { value: "Lease", label: "Lease" },
-                { value: "Home Stay", label: "Home Stay" },
+                { value: "All", label: t.allTypes },
+                { value: "Sale", label: t.sale },
+                { value: "Lease", label: t.lease },
+                { value: "Home Stay", label: t.homeStay },
               ]}
             />
           </ConfigProvider>
@@ -292,7 +292,7 @@ export default function ManageTrashProperty() {
             className="flex items-center gap-2 px-4 py-2 border rounded-full hover:bg-gray-100"
           >
             <SlidersHorizontal className="w-4 h-4" />
-            Filter
+            {t.filter}
           </button>
         </div>
       </div>
@@ -302,7 +302,7 @@ export default function ManageTrashProperty() {
         <Search className="absolute top-3 left-3 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder="Search..."
+          placeholder={`${t.search}...`}
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
@@ -316,7 +316,7 @@ export default function ManageTrashProperty() {
       {selectedRowKeys.length > 0 && (
         <div className="flex items-center gap-4 mb-4 bg-purple-50 p-4 rounded-xl border border-purple-100 animate-in fade-in slide-in-from-top-2">
           <span className="text-sm font-semibold text-[#41398B]">
-            {selectedRowKeys.length} selected
+            {selectedRowKeys.length} {t.selected}
           </span>
           <div className="h-4 w-px bg-purple-200"></div>
           <button
@@ -324,7 +324,7 @@ export default function ManageTrashProperty() {
             className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-medium transition-colors"
           >
             <Trash2 className="w-4 h-4" />
-            Delete Selected
+            {t.deleteSelected}
           </button>
         </div>
       )}
@@ -344,11 +344,11 @@ export default function ManageTrashProperty() {
                     onChange={onSelectAll}
                   />
                 </th>
-                <th className="px-6 py-3">Property ID</th>
-                <th className="px-6 py-3">Property No</th>
-                <th className="px-6 py-3">Type</th>
+                <th className="px-6 py-3">{t.propertyId}</th>
+                <th className="px-6 py-3">{t.propertyNo}</th>
+                <th className="px-6 py-3">{t.propertyType}</th>
 
-                <th className="px-6 py-3">Status</th>
+                <th className="px-6 py-3">{t.status}</th>
                 <th className="px-6 py-3 text-right"></th>
               </tr>
             </thead>
@@ -378,10 +378,8 @@ export default function ManageTrashProperty() {
                     </td>
 
                     <td className="px-6 py-4">
-                      {info?.listingInformationPropertyType?.en || "—"}
+                      {info?.listingInformationPropertyType?.[language] || info?.listingInformationPropertyType?.en || "—"}
                     </td>
-
-
 
                     <td className="px-6 py-4">
                       <span className="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
@@ -427,7 +425,7 @@ export default function ManageTrashProperty() {
               {currentRows.length === 0 && (
                 <tr>
                   <td colSpan="6" className="text-center py-6 text-gray-500">
-                    No trashed properties
+                    {t.noTrashProperties}
                   </td>
                 </tr>
               )}
@@ -440,7 +438,7 @@ export default function ManageTrashProperty() {
       {!loading && totalRows > 0 && (
         <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-t mt-4 rounded-b-2xl">
           <div className="flex items-center gap-2">
-            <span>Rows per page:</span>
+            <span>{t.rowsPerPage}:</span>
             <select
               value={rowsPerPage}
               onChange={(e) => {
@@ -457,7 +455,7 @@ export default function ManageTrashProperty() {
 
           <div className="flex items-center gap-3">
             <p>
-              {startIndex}-{endIndex} of {totalRows}
+              {startIndex}-{endIndex} {t.of} {totalRows}
             </p>
 
             <button
@@ -486,11 +484,11 @@ export default function ManageTrashProperty() {
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
             <h2 className="text-lg font-semibold mb-4">
-              Permanently delete this property?
+              {t.confirmPermanentDelete}
             </h2>
 
             <p className="text-gray-600 mb-6">
-              This cannot be undone. The property will be permanently removed.
+              {t.permanentDeleteWarning}
             </p>
 
             <div className="flex justify-end gap-3">
@@ -498,14 +496,14 @@ export default function ManageTrashProperty() {
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
                 className="px-5 py-2 border rounded-full"
               >
-                Cancel
+                {t.cancel}
               </button>
 
               <button
                 onClick={handleDelete}
                 className="px-6 py-2 bg-red-600 text-white rounded-full"
               >
-                Delete Permanently
+                {t.deletePermanently}
               </button>
             </div>
           </div>
@@ -540,22 +538,22 @@ export default function ManageTrashProperty() {
       {bulkDeleteConfirm && (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">Delete {selectedRowKeys.length} properties?</h2>
+            <h2 className="text-lg font-semibold mb-4">{t.confirmBulkDelete?.replace('{count}', selectedRowKeys.length)}</h2>
             <p className="text-gray-600 mb-6">
-              This action cannot be undone. These properties will be permanently removed.
+              {t.permanentDeleteWarning}
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setBulkDeleteConfirm(false)}
                 className="px-5 py-2 border rounded-full"
               >
-                Cancel
+                {t.cancel}
               </button>
               <button
                 onClick={handleBulkDelete}
                 className="px-6 py-2 bg-red-600 text-white rounded-full"
               >
-                Delete All
+                {t.deleteAll}
               </button>
             </div>
           </div>

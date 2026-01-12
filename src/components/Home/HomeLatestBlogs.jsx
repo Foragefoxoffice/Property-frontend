@@ -20,6 +20,7 @@ export default function HomeLatestBlogs({ homePageData }) {
                 if (res.data?.success) {
                     // Sort by newest and take top 3
                     const sortedBlogs = (res.data.data || [])
+                        .filter(blog => blog.published)
                         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                         .slice(0, 3);
                     setBlogs(sortedBlogs);

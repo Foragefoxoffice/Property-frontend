@@ -36,7 +36,7 @@ export default function AgentFormCms() {
     // Translation object
     const translations = {
         en: {
-            pageTitle: 'Agent Management',
+            pageTitle: 'Property Consultant',
             pageDescription: 'Manage your agent contact information',
             saveButton: 'Save Agent Info',
             cancelButton: 'Cancel',
@@ -76,7 +76,7 @@ export default function AgentFormCms() {
             validUrl: 'Please enter a valid URL',
         },
         vi: {
-            pageTitle: 'Quản lý Đại lý',
+            pageTitle: 'Chuyên viên tư vấn bất động sản',
             pageDescription: 'Quản lý thông tin liên hệ đại lý',
             saveButton: 'Lưu Thông tin Đại lý',
             cancelButton: 'Hủy',

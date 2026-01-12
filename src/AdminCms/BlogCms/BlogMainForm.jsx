@@ -349,17 +349,21 @@ export default function BlogMainForm({
                                                                 Publishing Status
                                                             </span>
                                                         }
-                                                        name="published"
-                                                        valuePropName="checked"
                                                     >
                                                         <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200">
                                                             <span className="font-semibold text-gray-700 font-['Manrope']">
                                                                 Visibility Status
                                                             </span>
-                                                            <Switch
-                                                                checkedChildren="Published"
-                                                                unCheckedChildren="Draft"
-                                                            />
+                                                            <Form.Item
+                                                                name="published"
+                                                                valuePropName="checked"
+                                                                noStyle
+                                                            >
+                                                                <Switch
+                                                                    checkedChildren="Published"
+                                                                    unCheckedChildren="Draft"
+                                                                />
+                                                            </Form.Item>
                                                         </div>
                                                     </Form.Item>
 
