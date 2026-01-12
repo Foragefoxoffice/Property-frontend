@@ -74,7 +74,7 @@ export default function Roles() {
             key: "userManagement",
             subModules: [
                 { key: "userDetails", label: t.userDetails, controls: ["hide", "add", "edit", "delete"] },
-                { key: "enquires", label: t.enquires, controls: ["hide"] }
+                { key: "enquires", label: t.enquires, controls: ["hide", "delete"] }
             ]
         },
         {

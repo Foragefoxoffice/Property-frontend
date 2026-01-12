@@ -337,8 +337,8 @@ export default function ListingPage() {
                 <div className="max-w-7xl mx-auto py-10">
                     <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
                         {/* Sidebar */}
-                        <aside className="lg:sticky lg:top-28 h-fit">
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-purple-100/50 max-h-[calc(100vh-140px)] overflow-y-auto scrollbar-hide">
+                        <aside className="lg:sticky lg:top-24 h-fit self-start">
+                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-purple-100/50">
                                 {/* Category */}
                                 <div className="mb-3">
                                     <div className="space-y-2">
@@ -687,7 +687,7 @@ export default function ListingPage() {
                                                         <p className="text-[16px] text-gray-500 mb-4 line-clamp-3">
                                                             {getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
                                                                 getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
-                                                                'Location not specified'}
+                                                                'Description not specified'}
                                                         </p>
 
                                                         {/* Details */}

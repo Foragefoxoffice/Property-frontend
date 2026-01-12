@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getBlogBySlug } from '../Api/action';
 import BlogSidebar from '../components/Blog/BlogSidebar';
-import { Twitter, Facebook, Linkedin, Link as LinkIcon, Calendar, Clock } from 'lucide-react';
+import { Twitter, Facebook, Linkedin, Link as LinkIcon, Calendar, Clock, Share2 } from 'lucide-react';
 import { useLanguage } from '../Language/LanguageContext';
 
 import { getImageUrl } from '../utils/imageHelper';
@@ -30,6 +30,36 @@ export default function BlogDetailPage() {
 
         fetchBlog();
     }, [slug]);
+
+    // Share functionality
+    const handleShare = async () => {
+        const shareData = {
+            title: blog?.title?.[language] || blog?.title?.en || 'Blog Post',
+            text: `Check out this blog: ${blog?.title?.[language] || blog?.title?.en}`,
+            url: window.location.href
+        };
+
+        try {
+            // Try to use Web Share API if available
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                // Fallback: Copy link to clipboard
+                await navigator.clipboard.writeText(window.location.href);
+                alert(language === 'vi' ? 'Đã sao chép liên kết!' : 'Link copied to clipboard!');
+            }
+        } catch (error) {
+            // If user cancels or error occurs, try clipboard fallback
+            if (error.name !== 'AbortError') {
+                try {
+                    await navigator.clipboard.writeText(window.location.href);
+                    alert(language === 'vi' ? 'Đã sao chép liên kết!' : 'Link copied to clipboard!');
+                } catch (clipboardError) {
+                    console.error('Failed to share:', clipboardError);
+                }
+            }
+        }
+    };
 
     if (loading) {
         return <Loader />;
@@ -122,67 +152,48 @@ export default function BlogDetailPage() {
                                 prose-li:marker:text-[#41398B]">
                                     <div dangerouslySetInnerHTML={{ __html: getLocalized(blog.content) }} />
                                 </article>
-
-                                {/* Tags */}
-                                {blog.tags?.[language]?.length > 0 && (
-                                    <div className="mt-12 pt-8 border-t border-gray-100">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <span className="font-bold text-gray-800">Tags:</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {blog.tags[language].map((tag, index) => (
-                                                <span key={index} className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium hover:bg-[#41398B] hover:text-white transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md">
-                                                    #{tag}
-                                                </span>
-                                            ))}
-                                        </div>
+                                <div className='flex justify-between'>
+                                    <div>
+                                        {/* Tags */}
+                                        {blog.tags?.[language]?.length > 0 && (
+                                            <div className="mt-12 pt-8 border-t border-gray-100">
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <span className="font-bold text-gray-800">Tags:</span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {blog.tags[language].map((tag, index) => (
+                                                        <span key={index} className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium hover:bg-[#41398B] hover:text-white transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md">
+                                                            #{tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-
-                                {/* Author Bio Box */}
-                                <div className="mt-12 p-8 bg-gradient-to-br from-gray-50 to-white border border-gray-100 rounded-2xl flex flex-col sm:flex-row items-center sm:items-start gap-6 shadow-inner">
-                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#41398B] to-purple-600 flex-shrink-0 flex items-center justify-center text-white text-3xl font-bold shadow-lg ring-4 ring-white">
-                                        {blog.author?.charAt(0)}
-                                    </div>
-                                    <div className="text-center sm:text-left">
-                                        <h3 className="font-bold text-gray-900 text-lg mb-1 flex items-center justify-center sm:justify-start gap-2">
-                                            About {blog.author}
-                                            <span className="text-xs bg-[#41398B]/10 text-[#41398B] px-2 py-0.5 rounded-full border border-[#41398B]/20">Author</span>
-                                        </h3>
-                                        <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                                            Real estate expert and content contributor. Sharing insights on market trends, property management, and investment strategies to help you make informed decisions.
-                                        </p>
-                                        <div className="flex items-center justify-center sm:justify-start gap-3">
-                                            <button className="text-gray-400 hover:text-[#1DA1F2] transition-colors"><Twitter size={18} /></button>
-                                            <button className="text-gray-400 hover:text-[#0077b5] transition-colors"><Linkedin size={18} /></button>
+                                    <div>
+                                        <div className="mt-12 pt-8 border-t border-gray-100">
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <span className="font-bold text-gray-800">Share This Blog:</span>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                <button
+                                                    onClick={handleShare}
+                                                    className="flex items-center gap-2 text-gray-700 border border-gray-300 px-4 py-2 rounded-full cursor-pointer w-fit hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300 shadow-sm hover:shadow-md"
+                                                >
+                                                    <Share2 size={18} />
+                                                    {language === 'vi' ? 'Chia sẻ' : 'Share'}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
 
                         {/* Sidebar Column */}
                         <div className="lg:col-span-4">
                             <div className="sticky top-24 space-y-8">
-                                {/* Share Widget (Desktop) */}
-                                <div className="hidden lg:flex bg-white rounded-2xl shadow-sm p-6 border border-gray-100 items-center justify-between">
-                                    <span className="font-bold text-gray-700">Share Article</span>
-                                    <div className="flex gap-2">
-                                        <button className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#1DA1F2] hover:text-white transition-all duration-300 transform hover:-translate-y-1">
-                                            <Twitter size={18} />
-                                        </button>
-                                        <button className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#4267B2] hover:text-white transition-all duration-300 transform hover:-translate-y-1">
-                                            <Facebook size={18} />
-                                        </button>
-                                        <button className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-[#0077b5] hover:text-white transition-all duration-300 transform hover:-translate-y-1">
-                                            <Linkedin size={18} />
-                                        </button>
-                                        <button className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-800 hover:text-white transition-all duration-300 transform hover:-translate-y-1">
-                                            <LinkIcon size={18} />
-                                        </button>
-                                    </div>
-                                </div>
-
                                 {/* Blog Sidebar Component */}
                                 <BlogSidebar />
                             </div>

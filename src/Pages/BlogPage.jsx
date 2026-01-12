@@ -96,13 +96,16 @@ export default function BlogPage() {
                                     {filteredBlogs.map((blog) => (
                                         <Link to={`/blogs/${blog.slug?.[language] || blog.slug?.en}`} key={blog._id} className="group">
                                             <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col group-hover:-translate-y-1">
-                                                <div className="aspect-w-16 aspect-h-9 overflow-hidden">
-                                                    <img
-                                                        src={getImageUrl(blog.mainImage)}
-                                                        alt={blog.title?.[language] || blog.title?.en}
-                                                        className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500"
-                                                    />
-                                                </div>
+                                                {/* Only show main image if it exists */}
+                                                {blog.mainImage && (
+                                                    <div className="aspect-w-16 aspect-h-9 overflow-hidden">
+                                                        <img
+                                                            src={getImageUrl(blog.mainImage)}
+                                                            alt={blog.title?.[language] || blog.title?.en}
+                                                            className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                                        />
+                                                    </div>
+                                                )}
                                                 <div className="p-6 flex-1 flex flex-col">
                                                     <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
                                                         <span className="bg-purple-50 text-[#41398B] px-3 py-1 rounded-full font-semibold text-xs">
@@ -113,10 +116,18 @@ export default function BlogPage() {
                                                     <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#41398B] transition-colors">
                                                         {blog.title?.[language] || blog.title?.en}
                                                     </h3>
-                                                    <div
-                                                        className="text-gray-600 line-clamp-3 mb-4 text-sm flex-1"
-                                                        dangerouslySetInnerHTML={{ __html: blog.content?.[language] || blog.content?.en }}
-                                                    />
+                                                    {/* Show plain text excerpt limited to 150 characters */}
+                                                    <p className="text-gray-600 mb-4 text-sm flex-1 line-clamp-3">
+                                                        {(() => {
+                                                            const content = blog.content?.[language] || blog.content?.en || '';
+                                                            // Strip HTML tags and get plain text
+                                                            const plainText = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+                                                            // Limit to 150 characters
+                                                            return plainText.length > 150
+                                                                ? plainText.substring(0, 150) + '...'
+                                                                : plainText;
+                                                        })()}
+                                                    </p>
                                                     <div className="text-[#41398B] font-semibold flex items-center gap-2 mt-auto">
                                                         {language === 'vi' ? 'Đọc thêm' : 'Read More'}
                                                         <span className="group-hover:translate-x-1 transition-transform">→</span>

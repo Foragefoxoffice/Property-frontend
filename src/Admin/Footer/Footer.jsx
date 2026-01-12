@@ -121,7 +121,7 @@ export default function Footer() {
                     {/* Left Column - Contact Info */}
                     <div className="lg:col-span-4 space-y-8">
                         {footerData?.footerLogo && (
-                            <Link to="/home" className="block mb-4">
+                            <Link to="/" className="block mb-4">
                                 <img
                                     src={footerData.footerLogo.startsWith('/') ? `${baseURL}${footerData.footerLogo}` : footerData.footerLogo}
                                     alt="Logo"
@@ -225,7 +225,7 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-[#898989] text-[14px]">
-                        &copy; {new Date().getFullYear()} <Link to="/home" className="text-white hover:text-[#7f75d5] transition-all">{t('footerCopyRight') || '183 Housing Solutions'}</Link>. {st('allRightsReserved')}
+                        &copy; {new Date().getFullYear()} <Link to="/" className="text-white hover:text-[#7f75d5] transition-all">{t('footerCopyRight') || '183 Housing Solutions'}</Link>. {st('allRightsReserved')}
                     </p>
 
                     <div className="flex items-center gap-4">

@@ -13,23 +13,28 @@ import {
     Bath,
     Maximize,
     ExternalLink,
-    Eye
+    Eye,
+    Trash2,
+    AlertTriangle
 } from "lucide-react";
-import { getAllEnquiries, markEnquiryAsRead } from "../../Api/action";
+import { getAllEnquiries, markEnquiryAsRead, deleteEnquiry } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import CommonSkeleton from "../../Common/CommonSkeleton";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { usePermissions } from "../../Context/PermissionContext";
 
 export default function Enquires() {
     const [enquiries, setEnquiries] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [selectedProperty, setSelectedProperty] = useState(null);
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
     // Language
     const { language } = useLanguage();
     const t = translations[language];
+    const { can } = usePermissions();
 
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
@@ -63,6 +68,22 @@ export default function Enquires() {
         } catch (error) {
             console.error(error);
             CommonToaster("Failed to update status", "error");
+        }
+    };
+
+    const confirmDelete = (id) => {
+        setDeleteConfirm({ show: true, id });
+    };
+
+    const handleDelete = async () => {
+        try {
+            await deleteEnquiry(deleteConfirm.id);
+            setEnquiries(prev => prev.filter(item => item._id !== deleteConfirm.id));
+            setDeleteConfirm({ show: false, id: null });
+            CommonToaster("Enquiry deleted successfully", "success");
+        } catch (error) {
+            console.error(error);
+            CommonToaster("Failed to delete enquiry", "error");
         }
     };
 
@@ -147,6 +168,7 @@ export default function Enquires() {
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.listing}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.message || "Message"}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111] text-center">{t.status}</th>
+                                        <th className="px-6 py-3 font-medium text-[#111111] text-center">{t.actions || "Actions"}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -220,11 +242,22 @@ export default function Enquires() {
                                                     )}
                                                 </button>
                                             </td>
+                                            <td className="px-6 py-4 text-center whitespace-nowrap">
+                                                {can("userManagement.enquires", "delete") && (
+                                                    <button
+                                                        onClick={() => confirmDelete(item._id)}
+                                                        className="p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                        title="Delete Enquiry"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                )}
+                                            </td>
                                         </tr>
                                     ))}
                                     {currentRows.length === 0 && (
                                         <tr>
-                                            <td colSpan="7" className="py-16 text-center text-gray-500">
+                                            <td colSpan="8" className="py-16 text-center text-gray-500">
                                                 {t.noEnquiriesFound}
                                             </td>
                                         </tr>
@@ -398,6 +431,39 @@ export default function Enquires() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Modal */}
+            {deleteConfirm.show && (
+                <div className="fixed inset-0 border border-gray-200 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center mb-4">
+                            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                <AlertTriangle className="text-red-600 w-6 h-6" />
+                            </div>
+                            <h3 className="font-semibold text-lg text-gray-800">
+                                {t.deleteEnquiryQuestion}
+                            </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                            {t.deleteEnquiryConfirm}
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setDeleteConfirm({ show: false, id: null })}
+                                className="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm transition"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition"
+                            >
+                                {t.delete}
+                            </button>
                         </div>
                     </div>
                 </div>

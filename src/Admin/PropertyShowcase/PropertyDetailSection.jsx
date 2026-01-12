@@ -796,7 +796,7 @@ export default function PropertyDetailsSection({ property }) {
                   <p className="text-sm text-gray-500 mb-4 line-clamp-1">
                     {getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
                       getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
-                      'Location not specified'}
+                      'Description not specified'}
                   </p>
 
                   {/* Details */}

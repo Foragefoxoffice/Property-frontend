@@ -39,7 +39,7 @@ export default function AboutBanner({ data }) {
 
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-white/80 text-sm md:text-base animate-slideUpFade animation-delay-200">
-                    <Link to="/home" className="hover:text-white transition-colors">
+                    <Link to="/" className="hover:text-white transition-colors">
                         {language === 'en' ? 'Home' : 'Trang Chủ'}
                     </Link>
                     <span>&gt;</span>

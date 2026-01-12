@@ -46,7 +46,7 @@ API.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("userName");
       localStorage.removeItem("userRole");
-      window.location.href = "/";
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
@@ -533,5 +533,6 @@ export const removeFavorite = (propertyId) => API.delete(`/favorites/remove/${pr
 export const getFavorites = () => API.get("/favorites");
 export const getAllEnquiries = () => API.get("/favorites/admin/all");
 export const markEnquiryAsRead = (id, isRead) => API.put(`/favorites/admin/mark-read/${id}`, { isRead });
+export const deleteEnquiry = (id) => API.delete(`/favorites/admin/delete/${id}`);
 
 export default API;

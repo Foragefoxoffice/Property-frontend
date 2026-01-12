@@ -35,7 +35,7 @@ export default function Login() {
 
         // Redirect based on user role
         if (user?.role === "user") {
-          navigate("/home");
+          navigate("/");
         } else {
           // Staff, Admin, or other roles go to dashboard
           navigate("/dashboard/lease");

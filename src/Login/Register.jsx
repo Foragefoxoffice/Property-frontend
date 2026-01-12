@@ -46,7 +46,7 @@ export default function Register() {
                 await refreshPermissions();
                 await fetchFavorites();
                 CommonToaster("Registration Successful!", "success");
-                navigate("/");
+                navigate("/login");
             }
         } catch (err) {
             setError(
@@ -223,7 +223,7 @@ export default function Register() {
                         <p className="text-sm text-gray-600">
                             Already have an account?{" "}
                             <Link
-                                to="/"
+                                to="/login"
                                 className="text-[#4A3AFF] hover:text-[#41398B] font-semibold transition"
                             >
                                 Login here

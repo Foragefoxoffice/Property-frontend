@@ -33,7 +33,7 @@ import { usePermissions } from "../../Context/PermissionContext";
 
 export default function UsersDetails() {
     const navigate = useNavigate();
-    const goBack = () => navigate(-1);
+    // const goBack = () => navigate(-1);
     const { language } = useLanguage();
     const { can } = usePermissions();
     const isVI = language === "vi";
@@ -200,12 +200,12 @@ export default function UsersDetails() {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-3">
-                    <button
+                    {/* <button
                         onClick={goBack}
                         className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                    </button>
+                    </button> */}
                     <h2 className="text-2xl font-semibold text-gray-900">
                         {isVI ? "Chi tiết người dùng" : "User Details"}
                     </h2>
@@ -556,39 +556,23 @@ export default function UsersDetails() {
                                 </div>
                             )}
 
-                            <div className="grid grid-cols-2 gap-4 items-center">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        {isVI ? "Vai trò" : "Role"}
-                                    </label>
-                                    <Select
-                                        value={form.role}
-                                        onChange={(value) => setForm({ ...form, role: value })}
-                                        className="w-full h-11 custom-select"
-                                        popupClassName="custom-dropdown"
-                                    >
-                                        <Select.Option value="user">User</Select.Option>
-                                        <Select.Option value="admin">Admin</Select.Option>
-                                    </Select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        {isVI ? "Trạng thái hoạt động" : "Active Status"}
-                                    </label>
-                                    <div className="flex items-center gap-2 mt-2">
-                                        <input
-                                            type="checkbox"
-                                            id="isVerified"
-                                            checked={form.isVerified}
-                                            onChange={(e) => setForm({ ...form, isVerified: e.target.checked })}
-                                            className="w-5 h-5 text-[#41398B] rounded focus:ring-[#41398B]"
-                                        />
-                                        <label htmlFor="isVerified" className="text-sm text-gray-700 cursor-pointer">
-                                            {form.isVerified ? (isVI ? "Tích cực" : "Active") : (isVI ? "Không tích cực" : "Inactive")}
-                                        </label>
-                                    </div>
-                                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {isVI ? "Trạng thái hoạt động" : "Active Status"}
+                                </label>
+                                <Select
+                                    value={form.isVerified ? "active" : "inactive"}
+                                    onChange={(value) => setForm({ ...form, isVerified: value === "active" })}
+                                    className="w-full h-11 custom-select"
+                                    popupClassName="custom-dropdown"
+                                >
+                                    <Select.Option value="active">
+                                        {isVI ? "Tích cực" : "Active"}
+                                    </Select.Option>
+                                    <Select.Option value="inactive">
+                                        {isVI ? "Không tích cực" : "Inactive"}
+                                    </Select.Option>
+                                </Select>
                             </div>
 
                         </div>

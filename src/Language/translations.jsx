@@ -221,6 +221,8 @@ export const translations = {
     blogSeoSettingsDesc: "Manage blog SEO and meta information",
     createNewBlogPost: "Create New Blog Post",
     editBlogPost: "Edit Blog Post",
+    deleteEnquiryQuestion: "Delete Enquiry",
+    deleteEnquiryConfirm: "Are you sure you want to delete this enquiry? This action cannot be undone.",
   },
 
   vi: {
@@ -445,5 +447,7 @@ export const translations = {
     blogSeoSettingsDesc: "Quản lý SEO blog và thông tin meta",
     createNewBlogPost: "Tạo Bài Viết Mới",
     editBlogPost: "Chỉnh Sửa Bài Viết",
+    deleteEnquiryQuestion: "Xóa yêu cầu",
+    deleteEnquiryConfirm: "Bạn có chắc chắn muốn xóa yêu cầu này? Hành động này không thể hoàn tác.",
   },
 };

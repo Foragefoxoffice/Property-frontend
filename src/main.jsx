@@ -99,7 +99,7 @@ createRoot(document.getElementById("root")).render(
         <FavoritesProvider>
           <Routes>
             {/* ---------- PUBLIC ROUTES ---------- */}
-            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
@@ -257,7 +257,7 @@ createRoot(document.getElementById("root")).render(
             {/* Pages with Public Layout */}
             <Route element={<PublicLayout />}>
               <Route path="/listing" element={<ListingPage />} />
-              <Route path="/home" element={<HomePage />} />
+              <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/blogs" element={<BlogPage />} />
