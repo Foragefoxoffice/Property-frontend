@@ -147,11 +147,40 @@ export default function CreatePropertyListStep2({
     },
   });
 
-  const transactionType =
-    form.transactionType?.en ||
-    form.transactionType ||
-    initialData.transactionType?.en ||
-    "Sale";
+  /* 
+   * ✅ Robust Transaction Type Resolver 
+   * Handles {en, vi} objects, strings, and localized variants (e.g. "Homestay", "Bán")
+   */
+  const getNormalizedTransactionType = () => {
+    // 1. Try to get explicit English value
+    let val = form.transactionType?.en || initialData.transactionType?.en;
+
+    // 2. If no English, try fallback to string or Vietnamese
+    if (!val) {
+      if (typeof form.transactionType === "string") {
+        val = form.transactionType;
+      } else if (form.transactionType?.vi) {
+        val = form.transactionType.vi;
+      } else if (typeof initialData.transactionType === "string") {
+        val = initialData.transactionType;
+      } else if (initialData.transactionType?.vi) {
+        val = initialData.transactionType.vi;
+      }
+    }
+
+    // Default
+    if (!val) return "Sale";
+
+    // 3. Normalize known localized strings to Standard English Keys
+    const lower = val.toLowerCase().trim();
+    if (lower === "homestay" || lower === "home stay") return "Home Stay";
+    if (lower === "bán" || lower === "sale") return "Sale";
+    if (lower === "cho thuê" || lower === "lease") return "Lease";
+
+    return val;
+  };
+
+  const transactionType = getNormalizedTransactionType();
 
 
   const [images, setImages] = useState(initialData.propertyImages || []);

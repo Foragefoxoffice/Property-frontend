@@ -202,6 +202,15 @@ export default function CreatePropertyPreview({
 
   const safe = (v) => (typeof v === "object" ? v[lang] || v.en || "" : v || "");
 
+  const getTransType = () => {
+    const raw = safe(li.listingInformationTransactionType).toLowerCase().trim();
+    if (raw === "homestay" || raw === "home stay") return "home stay";
+    if (raw === "bán" || raw === "sale") return "sale";
+    if (raw === "cho thuê" || raw === "lease") return "lease";
+    return raw;
+  };
+  const currentTransType = getTransType();
+
   /* helper to find owner/staff object by localized name */
   const findOwnerByForm = (ownerForm) => {
     if (!ownerForm) return null;
@@ -290,8 +299,7 @@ export default function CreatePropertyPreview({
               label={labels.dateListed[lang]}
               value={formatDMY(li.listingInformationDateListed)}
             />
-            {safe(li.listingInformationTransactionType).toLowerCase() ===
-              "home stay" ? (
+            {currentTransType === "home stay" ? (
               ""
             ) : (
               <>
@@ -407,91 +415,88 @@ export default function CreatePropertyPreview({
             />
 
             {/* ✅ SALE */}
-            {safe(li.listingInformationTransactionType).toLowerCase() ===
-              "sale" && (
-                <>
-                  <Field
-                    label={labels.price[lang]}
-                    value={fd.financialDetailsPrice}
-                  />
-                  <Field
-                    label={labels.deposit[lang]}
-                    value={safe(fd.financialDetailsDeposit)}
-                  />
-                  <Field
-                    label={labels.paymentTerms[lang]}
-                    value={safe(fd.financialDetailsMainFee)}
-                  />
-                  <Field
-                    label={labels.contractTerms[lang]}
-                    value={safe(fd.financialDetailsContractTerms)}
-                  />
-                  <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
-                  <Field
-                    label="Fee / Tax"
-                    value={safe(fd.financialDetailsFeeTax)}
-                  />
-                  <Field
-                    label="Legal Documents"
-                    value={safe(fd.financialDetailsLegalDoc)}
-                  />
-                </>
-              )}
+            {currentTransType === "sale" && (
+              <>
+                <Field
+                  label={labels.price[lang]}
+                  value={fd.financialDetailsPrice}
+                />
+                <Field
+                  label={labels.deposit[lang]}
+                  value={safe(fd.financialDetailsDeposit)}
+                />
+                <Field
+                  label={labels.paymentTerms[lang]}
+                  value={safe(fd.financialDetailsMainFee)}
+                />
+                <Field
+                  label={labels.contractTerms[lang]}
+                  value={safe(fd.financialDetailsContractTerms)}
+                />
+                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                <Field
+                  label="Fee / Tax"
+                  value={safe(fd.financialDetailsFeeTax)}
+                />
+                <Field
+                  label="Legal Documents"
+                  value={safe(fd.financialDetailsLegalDoc)}
+                />
+              </>
+            )}
 
             {/* ✅ LEASE */}
-            {safe(li.listingInformationTransactionType).toLowerCase() ===
-              "lease" && (
-                <>
-                  <Field
-                    label={labels.leasePrice[lang]}
-                    value={fd.financialDetailsLeasePrice}
-                  />
-                  <Field
-                    label={labels.contractLength[lang]}
-                    value={fd.financialDetailsContractLength}
-                  />
-                  <Field
-                    label={labels.deposit[lang]}
-                    value={safe(fd.financialDetailsDeposit)}
-                  />
-                  <Field
-                    label={labels.paymentTerms[lang]}
-                    value={safe(fd.financialDetailsMainFee)}
-                  />
-                  <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
-                  <Field
-                    label="Agent Payment Agenda"
-                    value={safe(fd.financialDetailsAgentPaymentAgenda)}
-                  />
-                </>
-              )}
+            {currentTransType === "lease" && (
+              <>
+                <Field
+                  label={labels.leasePrice[lang]}
+                  value={fd.financialDetailsLeasePrice}
+                />
+                <Field
+                  label={labels.contractLength[lang]}
+                  value={fd.financialDetailsContractLength}
+                />
+                <Field
+                  label={labels.deposit[lang]}
+                  value={safe(fd.financialDetailsDeposit)}
+                />
+                <Field
+                  label={labels.paymentTerms[lang]}
+                  value={safe(fd.financialDetailsMainFee)}
+                />
+                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                <Field
+                  label="Agent Payment Agenda"
+                  value={safe(fd.financialDetailsAgentPaymentAgenda)}
+                />
+              </>
+            )}
 
             {/* ✅ HOME STAY */}
-            {safe(li.listingInformationTransactionType).toLowerCase() ===
-              "home stay" && (
-                <>
-                  <Field
-                    label={labels.pricePerNight[lang]}
-                    value={fd.financialDetailsPricePerNight}
-                  />
-                  <Field
-                    label={labels.checkIn[lang]}
-                    value={fd.financialDetailsCheckIn}
-                  />
-                  <Field
-                    label={labels.checkOut[lang]}
-                    value={fd.financialDetailsCheckOut}
-                  />
-                  <Field
-                    label={labels.deposit[lang]}
-                    value={safe(fd.financialDetailsDeposit)}
-                  />
-                  <Field
-                    label={labels.paymentTerms[lang]}
-                    value={safe(fd.financialDetailsMainFee)}
-                  />
-                </>
-              )}
+            {currentTransType === "home stay" && (
+              <>
+                <Field
+                  label={labels.pricePerNight[lang]}
+                  value={fd.financialDetailsPricePerNight}
+                />
+                <Field
+                  label={labels.checkIn[lang]}
+                  value={fd.financialDetailsCheckIn}
+                />
+                <Field
+                  label={labels.checkOut[lang]}
+                  value={fd.financialDetailsCheckOut}
+                />
+                <Field
+                  label={labels.deposit[lang]}
+                  value={safe(fd.financialDetailsDeposit)}
+                />
+                <Field
+                  label={labels.paymentTerms[lang]}
+                  value={safe(fd.financialDetailsMainFee)}
+                />
+              </>
+            )}
           </Grid3>
         </Section>
 
