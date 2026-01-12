@@ -49,11 +49,11 @@ export default function AgentFormCms() {
             invalidFileType: 'You can only upload image files!',
             fileSizeError: 'Image must be smaller than 5MB!',
             // Section Titles
-            agentImageSection: 'Agent Image',
+            agentImageSection: 'Property Consultant Image',
             contactInfoSection: 'Contact Information',
             socialMediaSection: 'Social Media Links',
             // Labels
-            uploadAgentPhoto: 'Upload Agent Photo',
+            uploadAgentPhoto: 'Upload Property Consultant Photo',
             uploadPhoto: 'Upload Photo',
             phoneNumbers: 'Phone Numbers',
             emailAddresses: 'Email Addresses',
@@ -89,11 +89,11 @@ export default function AgentFormCms() {
             invalidFileType: 'Bạn chỉ có thể tải lên file hình ảnh!',
             fileSizeError: 'Hình ảnh phải nhỏ hơn 5MB!',
             // Section Titles
-            agentImageSection: 'Hình Ảnh Đại Lý',
+            agentImageSection: 'Hình ảnh chuyên viên tư vấn bất động sản',
             contactInfoSection: 'Thông Tin Liên Hệ',
             socialMediaSection: 'Liên Kết Mạng Xã Hội',
             // Labels
-            uploadAgentPhoto: 'Tải Lên Ảnh Đại Lý',
+            uploadAgentPhoto: 'Tải ảnh của chuyên viên tư vấn bất động sản',
             uploadPhoto: 'Tải Lên Ảnh',
             phoneNumbers: 'Số Điện Thoại',
             emailAddresses: 'Địa Chỉ Email',
