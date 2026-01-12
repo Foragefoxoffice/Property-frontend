@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getBlogs, getCategories } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
 import { getImageUrl } from '../../utils/imageHelper';
@@ -8,8 +8,20 @@ import { getImageUrl } from '../../utils/imageHelper';
 export default function BlogSidebar() {
     const [recentPosts, setRecentPosts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
     const { language } = useLanguage();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const search = params.get('search');
+        if (search) {
+            setSearchTerm(search);
+        } else {
+            setSearchTerm('');
+        }
+    }, [location.search]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,6 +57,13 @@ export default function BlogSidebar() {
                         type="text"
                         placeholder={language === 'vi' ? 'Tìm kiếm...' : 'Search...'}
                         className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] transition-all"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                navigate(`/blogs?search=${searchTerm}`);
+                            }
+                        }}
                     />
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 </div>
@@ -58,7 +77,7 @@ export default function BlogSidebar() {
                 </h3>
                 <div className="space-y-6">
                     {recentPosts.map((post) => (
-                        <Link to={`/blogs/${post.slug?.[language] || post.slug?.en} `} key={post._id} className="flex gap-4 group">
+                        <Link to={`/blogs/${post.slug?.[language] || post.slug?.en}`} key={post._id} className="flex gap-4 group">
                             <img
                                 src={getImageUrl(post.mainImage)}
                                 alt={post.title?.[language] || post.title?.en}
@@ -85,7 +104,7 @@ export default function BlogSidebar() {
                     {categories.map((cat) => (
                         <li key={cat._id}>
                             <Link
-                                to={`/ blogs ? category = ${cat.slug?.[language] || cat.slug?.en} `}
+                                to={`/blogs?category=${cat.slug?.[language] || cat.slug?.en}`}
                                 className="flex items-center justify-between text-gray-600 hover:text-[#41398B] transition-colors py-2 border-b border-gray-50 last:border-0"
                             >
                                 <span>{cat.name?.[language] || cat.name?.en}</span>

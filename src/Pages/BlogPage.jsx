@@ -24,17 +24,28 @@ export default function BlogPage() {
         // Filter logic
         const params = new URLSearchParams(location.search);
         const categorySlug = params.get('category');
+        const searchTerm = params.get('search');
+
+        let filtered = blogs;
 
         if (categorySlug && blogs.length > 0) {
-            const filtered = blogs.filter(blog =>
+            filtered = filtered.filter(blog =>
                 blog.category?.slug?.[language] === categorySlug ||
                 blog.category?.slug?.en === categorySlug ||
                 blog.category?.slug?.vi === categorySlug
             );
-            setFilteredBlogs(filtered);
-        } else {
-            setFilteredBlogs(blogs);
         }
+
+        if (searchTerm && blogs.length > 0) {
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter(blog => {
+                const titleEn = blog.title?.en?.toLowerCase() || '';
+                const titleVi = blog.title?.vi?.toLowerCase() || '';
+                return titleEn.includes(term) || titleVi.includes(term);
+            });
+        }
+
+        setFilteredBlogs(filtered);
     }, [location.search, blogs, language]);
 
     const [blogPageData, setBlogPageData] = useState(null);

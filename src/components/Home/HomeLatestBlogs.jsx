@@ -100,27 +100,24 @@ export default function HomeLatestBlogs({ homePageData }) {
                             <Link
                                 to={`/blogs/${blog.slug?.[language] || blog.slug?.en}`}
                                 key={blog._id}
-                                className={`group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                                className={`group flex flex-col h-full bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
                                 style={{ transitionDelay: `${200 + index * 100}ms` }}
                             >
-                                <div className="aspect-w-16 aspect-h-9 overflow-hidden relative">
-                                    <img
-                                        src={getImageUrl(blog.mainImage)}
-                                        alt={blog.title?.[language] || blog.title?.en}
-                                        className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                    <div className="absolute top-4 left-4">
-                                        <span className="bg-white/90 backdrop-blur-sm text-[#41398B] px-3 py-1.5 rounded-lg font-semibold text-xs shadow-lg">
-                                            {blog.category?.name?.[language] || blog.category?.name?.en || 'News'}
-                                        </span>
+                                {blog.mainImage && (
+                                    <div className="aspect-w-16 aspect-h-9 overflow-hidden">
+                                        <img
+                                            src={getImageUrl(blog.mainImage)}
+                                            alt={blog.title?.[language] || blog.title?.en}
+                                            className="w-full h-48 object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                        />
                                     </div>
-                                </div>
+                                )}
 
                                 <div className="p-6 flex-1 flex flex-col">
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                                        <svg className="w-4 h-4 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
+                                    <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
+                                        <span className="bg-purple-50 text-[#41398B] px-3 py-1 rounded-full font-semibold text-xs">
+                                            {blog.category?.name?.[language] || blog.category?.name?.en || 'News'}
+                                        </span>
                                         <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
                                     </div>
 
@@ -128,10 +125,15 @@ export default function HomeLatestBlogs({ homePageData }) {
                                         {blog.title?.[language] || blog.title?.en}
                                     </h3>
 
-                                    <div
-                                        className="text-gray-600 line-clamp-3 mb-6 flex-1 text-sm leading-relaxed"
-                                        dangerouslySetInnerHTML={{ __html: blog.content?.[language] || blog.content?.en }}
-                                    />
+                                    <p className="text-gray-600 mb-4 text-sm flex-1 line-clamp-3">
+                                        {(() => {
+                                            const content = blog.content?.[language] || blog.content?.en || '';
+                                            const plainText = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+                                            return plainText.length > 150
+                                                ? plainText.substring(0, 150) + '...'
+                                                : plainText;
+                                        })()}
+                                    </p>
 
                                     <div className="text-[#41398B] font-bold text-sm flex items-center gap-2 mt-auto group/btn">
                                         {language === 'vi' ? 'Đọc thêm' : 'Read More'}
