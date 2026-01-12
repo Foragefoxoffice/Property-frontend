@@ -5,6 +5,7 @@ import {
     createAboutPage,
     updateAboutPage,
 } from '../../Api/action';
+import { useLanguage } from '../../Language/LanguageContext';
 import { CommonToaster } from '@/Common/CommonToaster';
 import AboutPageBannerForm from './AboutPageBannerForm';
 import AboutPageHistoryForm from './AboutPageHistoryForm';
@@ -66,6 +67,9 @@ export default function AboutPageForm() {
     const [overviewLoading, setOverviewLoading] = useState(false);
     const [findLoading, setFindLoading] = useState(false);
     const [seoLoading, setSeoLoading] = useState(false);
+
+    const { language } = useLanguage();
+    const headerLang = language === 'vi' ? 'vn' : 'en';
 
     // Helper to get preserved data
     const getPreservedData = (data) => {
@@ -606,7 +610,7 @@ export default function AboutPageForm() {
                 marginBottom: '18px',
                 fontFamily: 'Manrope, sans-serif'
             }}>
-                About Us Page Sections
+                {headerLang === 'en' ? 'About Us Page Sections' : 'Các Phần Trang Giới Thiệu'}
             </h2>
 
             <div className="space-y-6">
@@ -619,6 +623,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.banner}
                     onToggle={() => toggleAccordion('banner')}
+                    headerLang={headerLang}
                 />
 
                 {/* Overview Section */}
@@ -630,6 +635,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.overview}
                     onToggle={() => toggleAccordion('overview')}
+                    headerLang={headerLang}
                 />
 
                 {/* Vision & Mission Section */}
@@ -641,6 +647,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.visionMission}
                     onToggle={() => toggleAccordion('visionMission')}
+                    headerLang={headerLang}
                 />
 
                 {/* History Section */}
@@ -652,6 +659,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.history}
                     onToggle={() => toggleAccordion('history')}
+                    headerLang={headerLang}
                 />
 
                 {/* Why Choose Us Section */}
@@ -663,6 +671,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.whyChoose}
                     onToggle={() => toggleAccordion('whyChoose')}
+                    headerLang={headerLang}
                 />
 
                 {/* Buying Process Section */}
@@ -674,6 +683,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.buying}
                     onToggle={() => toggleAccordion('buying')}
+                    headerLang={headerLang}
                 />
 
                 {/* Agent Section */}
@@ -685,6 +695,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.agent}
                     onToggle={() => toggleAccordion('agent')}
+                    headerLang={headerLang}
                 />
 
                 {/* Find Property Section */}
@@ -696,6 +707,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.find}
                     onToggle={() => toggleAccordion('find')}
+                    headerLang={headerLang}
                 />
 
                 {/* SEO Section */}
@@ -707,6 +719,7 @@ export default function AboutPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.seo}
                     onToggle={() => toggleAccordion('seo')}
+                    headerLang={headerLang}
                 />
             </div>
         </div>

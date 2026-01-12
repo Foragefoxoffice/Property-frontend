@@ -29,10 +29,17 @@ export default function AboutAgentForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
     const [agentImageUrl, setAgentImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
@@ -102,10 +109,10 @@ export default function AboutAgentForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'About Our Agents' : 'Về Đội Ngũ Của Chúng Tôi'}
+                            {headerLang === 'en' ? 'About Our Agents' : 'Về Đội Ngũ Của Chúng Tôi'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage agent section content' : 'Quản lý nội dung phần đội ngũ'}
+                            {headerLang === 'en' ? 'Manage agent section content' : 'Quản lý nội dung phần đội ngũ'}
                         </p>
                     </div>
                 </div>

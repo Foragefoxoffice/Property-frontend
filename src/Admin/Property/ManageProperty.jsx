@@ -517,20 +517,22 @@ export default function ManageProperty({
         </div>
       )}
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Table - Added overflow-x-auto for horizontal scrolling */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto thin-scrollbar">
         {loading ? (
           <SkeletonLoader />
         ) : (
-          <table className="w-full text-sm text-gray-700">
+          <table className="w-full text-sm text-gray-700 min-w-[1000px]">
             <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
               <tr>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.propertyId}</th>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.propertyNo}</th>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.propertyType}</th>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.availabilitystatus}</th>
-                <th className="px-6 py-3 font-medium text-[#111111]">{t.publishTheWebsite}</th>
-                <th className="px-6 py-3 font-medium text-[#111111] text-right"></th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyId}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyNo}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyType}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.actionBy}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.sentBy}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.availabilitystatus}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.publishTheWebsite}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] text-right whitespace-nowrap"></th>
               </tr>
             </thead>
 
@@ -557,9 +559,9 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition align-middle`}
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">
                           {info.listingInformationPropertyId || "—"}
@@ -567,16 +569,31 @@ export default function ManageProperty({
                       </div>
                     </td>
 
-                    <td className="px-6 py-6 capitalize">{propertyNo}</td>
+                    <td className="px-6 py-6 capitalize whitespace-nowrap">{propertyNo}</td>
 
-                    <td className="px-6 py-4">{propertyType}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{propertyType}</td>
 
-                    <td className="px-6 py-4">{blockName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {p.status === "Published" && (p.approvedByName || p.approvedBy) ? (
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-green-600 uppercase tracking-wider font-bold mb-0.5">{t.approvedBy}</span>
+                          <span className="text-sm font-medium text-gray-900">{p.approvedByName || p.approvedBy?.name || "—"}</span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
+                    </td>
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm font-medium text-gray-900">{p.createdByName || p.createdBy?.name || "—"}</span>
+                    </td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">{blockName}</td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-6 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
+                          className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
                             ? "bg-green-100 text-green-700"
                             : p.status === "Draft"
                               ? "bg-[#FFF3DE] text-[#FFA600]"

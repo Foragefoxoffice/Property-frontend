@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -29,10 +29,17 @@ export default function ContactPageReachOutForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
     const [iconUploading, setIconUploading] = useState(null);
 
     const handleIconUpload = async (file, index) => {
@@ -89,10 +96,10 @@ export default function ContactPageReachOutForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Reach Out Section' : 'Phần Liên Hệ'}
+                            {headerLang === 'en' ? 'Reach Out Section' : 'Phần Liên Hệ'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage contact information and social media' : 'Quản lý thông tin liên hệ và mạng xã hội'}
+                            {headerLang === 'en' ? 'Manage contact information and social media' : 'Quản lý thông tin liên hệ và mạng xã hội'}
                         </p>
                     </div>
                 </div>

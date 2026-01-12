@@ -467,3 +467,27 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #352e7a;
 }
+
+/* --- Thin Scrollbar (2px) --- */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 2px;
+  height: 4px;
+  border-radius: 30px;
+  /* Horizontal scrollbar thickness */
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: #41398B;
+  border-radius: 0;
+  /* Sharp for such a thin line or slightly rounded */
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #352e7a;
+  height: 4px;
+  /* Expand on hover for usability */
+}

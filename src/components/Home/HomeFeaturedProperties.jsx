@@ -112,6 +112,25 @@ export default function HomeFeaturedProperties({ homePageData }) {
         : (homePageData?.homeFeatureButtonText_vn || 'Xem Bất Động Sản');
     const buttonLink = homePageData?.homeFeatureButtonLink || '/listing';
 
+    const handleButtonClick = () => {
+        if (!buttonLink) return;
+
+        if (buttonLink.startsWith('http://') || buttonLink.startsWith('https://')) {
+            try {
+                const url = new URL(buttonLink);
+                if (url.origin === window.location.origin) {
+                    navigate(url.pathname + url.search + url.hash);
+                } else {
+                    window.location.href = buttonLink;
+                }
+            } catch (e) {
+                navigate(buttonLink);
+            }
+        } else {
+            navigate(buttonLink);
+        }
+    };
+
     return (
         <section ref={sectionRef} className="py-16 px-6 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff]">
             <div className="max-w-7xl mx-auto">
@@ -293,7 +312,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                 {!loading && properties.length > 0 && (
                     <div className="text-center mt-8">
                         <button
-                            onClick={() => navigate(buttonLink)}
+                            onClick={handleButtonClick}
                             className="mt-4 cursor-pointer px-8 py-3.5 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:translate-y-0 transform opacity-100 translate-y-0"
                         >
                             {buttonText}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -21,10 +21,18 @@ export default function HomePageFeatureForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang // Receive the global language prop
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    // Sync activeTab with headerLang whenever headerLang changes
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
 
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -41,10 +49,10 @@ export default function HomePageFeatureForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Features Section' : 'Phần Tính Năng'}
+                            {headerLang === 'en' ? 'Features Section' : 'Phần Tính Năng'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage your features content' : 'Quản lý nội dung tính năng'}
+                            {headerLang === 'en' ? 'Manage your features content' : 'Quản lý nội dung tính năng'}
                         </p>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -29,10 +29,19 @@ export default function HomePageBannerForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang // Receive the global language prop
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    // Sync activeTab with headerLang whenever headerLang changes
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
+
     const [bannerImageUrl, setBannerImageUrl] = useState(pageData?.backgroundImage || '');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
@@ -95,10 +104,10 @@ export default function HomePageBannerForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Hero / Banner Section' : 'Phần Hero / Banner'}
+                            {headerLang === 'en' ? 'Hero / Banner Section' : 'Phần Hero / Banner'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage your homepage hero banner' : 'Quản lý banner trang chủ'}
+                            {headerLang === 'en' ? 'Manage your homepage hero banner' : 'Quản lý banner trang chủ'}
                         </p>
                     </div>
                 </div>

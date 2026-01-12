@@ -207,6 +207,10 @@ export const translations = {
     agent: "Agent",
     monthSuffix: "/ month",
     nightSuffix: "/ night",
+    actionBy: "Action By",
+    sentBy: "Sent By",
+    requestedBy: "Requested by",
+    approvedBy: "Approved by",
   },
 
   vi: {
@@ -417,5 +421,9 @@ export const translations = {
     agent: "Tư vấn viên",
     monthSuffix: "/ tháng",
     nightSuffix: "/ đêm",
+    actionBy: "Người thực hiện",
+    sentBy: "Gửi bởi",
+    requestedBy: "Yêu cầu bởi",
+    approvedBy: "Được duyệt bởi",
   },
 };

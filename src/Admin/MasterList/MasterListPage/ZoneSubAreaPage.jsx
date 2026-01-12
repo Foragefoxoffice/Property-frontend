@@ -78,12 +78,26 @@ export default function ZoneSubAreaPage() {
     fetchZones();
   }, []);
 
+  // ✅ Sort zones by Project/Community Name for grouping
+  const sortedZones = [...zones].sort((a, b) => {
+    const projA = (isVI ? a.property?.name?.vi : a.property?.name?.en) || "";
+    const projB = (isVI ? b.property?.name?.vi : b.property?.name?.en) || "";
+
+    if (projA < projB) return -1;
+    if (projA > projB) return 1;
+
+    // If project is same, sort by Zone Name
+    const zoneA = (isVI ? a.name.vi : a.name.en) || "";
+    const zoneB = (isVI ? b.name.vi : b.name.en) || "";
+    return zoneA.localeCompare(zoneB);
+  });
+
   // Pagination
-  const totalRows = zones.length;
+  const totalRows = sortedZones.length;
   const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
-  const visibleData = zones.slice(startIndex, endIndex);
+  const visibleData = sortedZones.slice(startIndex, endIndex);
 
   useEffect(() => {
     if (currentPage > totalPages) setCurrentPage(totalPages);
@@ -252,9 +266,6 @@ export default function ZoneSubAreaPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left font-medium">
-                  {isVI ? "Mã" : "Code"}
-                </th>
-                <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Dự án / Cộng đồng" : "Project / Community "}
                 </th>
                 <th className="px-6 py-3 text-left font-medium">
@@ -276,92 +287,113 @@ export default function ZoneSubAreaPage() {
                   </td>
                 </tr>
               ) : (
-                visibleData.map((row, i) => (
-                  <tr
-                    key={i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100`}
-                  >
-                    <td className="px-6 py-3">
-                      {isVI ? row.code.vi : row.code.en}
-                    </td>
-                    <td className="px-6 py-3">
-                      {isVI ? row.property?.name?.vi : row.property?.name?.en}
-                    </td>
-                    <td className="px-6 py-3">
-                      {isVI ? row.name.vi : row.name.en}
-                    </td>
+                visibleData.map((row, i) => {
+                  const currentProject = isVI
+                    ? row.property?.name?.vi
+                    : row.property?.name?.en;
+                  const prevProject =
+                    i > 0
+                      ? isVI
+                        ? visibleData[i - 1].property?.name?.vi
+                        : visibleData[i - 1].property?.name?.en
+                      : null;
+                  const showProject = i === 0 || currentProject !== prevProject;
 
-                    {/* ✅ Translated Status */}
-                    <td className="px-6 py-3">
-                      <span
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
-                          ? "bg-[#E8FFF0] text-[#12B76A]"
-                          : "bg-[#FFE8E8] text-[#F04438]"
-                          }`}
-                      >
-                        {isVI
-                          ? row.status === "Active"
-                            ? "Đang hoạt động"
-                            : "Không hoạt động"
-                          : row.status}
-                      </span>
-                    </td>
+                  const currentZone = isVI ? row.name.vi : row.name.en;
 
-                    {/* Actions */}
-                    <td className="px-6 py-3 text-right relative">
-                      <button
-                        className="p-2 rounded-full hover:bg-gray-100"
-                        onClick={() =>
-                          setOpenMenuId(openMenuId === i ? null : i)
-                        }
-                      >
-                        <MoreVertical size={16} className="text-gray-600" />
-                      </button>
+                  // We always show the zone name (no grouping on zone name itself within the same project unless explicitly asked, 
+                  // but user image shows typical list. However, user asked "if property community having same name show one time in that name how many zone area created show that".
+                  // This means: Group by Project, but show ALL zones for that project.
+                  // The previous code had `showZone` logic that might hide zone name if it was duplicate. 
+                  // Let's simplified it: Always show Zone Name. Only Project Name is grouped.
 
-                      {openMenuId === i && (
-                        <div className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2">
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
-                            onClick={() => {
-                              openEditModal(row);
-                              setOpenMenuId(null);
-                            }}
-                          >
-                            <Pencil size={14} className="mr-2" />{" "}
-                            {isVI ? "Chỉnh sửa" : "Edit"}
-                          </button>
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
-                            onClick={() => {
-                              handleToggleStatus(row);
-                              setOpenMenuId(null);
-                            }}
-                          >
-                            <Eye size={14} className="mr-2" />{" "}
-                            {row.status === "Active"
-                              ? isVI
-                                ? "Đánh dấu là không hoạt động"
-                                : "Mark as Inactive"
-                              : isVI
-                                ? "Đánh dấu là hoạt động"
-                                : "Mark as Active"}
-                          </button>
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
-                            onClick={() => {
-                              confirmDelete(row._id);
-                              setOpenMenuId(null);
-                            }}
-                          >
-                            <Trash2 size={14} className="mr-2 text-[#F04438]" />{" "}
-                            {isVI ? "Xóa" : "Delete"}
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))
+                  return (
+                    <tr
+                      key={i}
+                      className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        } hover:bg-gray-100`}
+                    >
+                      <td className="px-6 py-3">
+                        {showProject ? currentProject : ""}
+                      </td>
+                      <td className="px-6 py-3">
+                        {currentZone}
+                      </td>
+
+                      {/* ✅ Translated Status */}
+                      <td className="px-6 py-3">
+                        <span
+                          className={`px-4 py-1.5 rounded-full text-xs font-medium ${row.status === "Active"
+                            ? "bg-[#E8FFF0] text-[#12B76A]"
+                            : "bg-[#FFE8E8] text-[#F04438]"
+                            }`}
+                        >
+                          {isVI
+                            ? row.status === "Active"
+                              ? "Đang hoạt động"
+                              : "Không hoạt động"
+                            : row.status}
+                        </span>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-6 py-3 text-right relative">
+                        <button
+                          className="p-2 rounded-full hover:bg-gray-100"
+                          onClick={() =>
+                            setOpenMenuId(openMenuId === i ? null : i)
+                          }
+                        >
+                          <MoreVertical size={16} className="text-gray-600" />
+                        </button>
+
+                        {openMenuId === i && (
+                          <div className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2">
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                              onClick={() => {
+                                openEditModal(row);
+                                setOpenMenuId(null);
+                              }}
+                            >
+                              <Pencil size={14} className="mr-2" />{" "}
+                              {isVI ? "Chỉnh sửa" : "Edit"}
+                            </button>
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                              onClick={() => {
+                                handleToggleStatus(row);
+                                setOpenMenuId(null);
+                              }}
+                            >
+                              <Eye size={14} className="mr-2" />{" "}
+                              {row.status === "Active"
+                                ? isVI
+                                  ? "Đánh dấu là không hoạt động"
+                                  : "Mark as Inactive"
+                                : isVI
+                                  ? "Đánh dấu là hoạt động"
+                                  : "Mark as Active"}
+                            </button>
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
+                              onClick={() => {
+                                confirmDelete(row._id);
+                                setOpenMenuId(null);
+                              }}
+                            >
+                              <Trash2
+                                size={14}
+                                className="mr-2 text-[#F04438]"
+                              />{" "}
+                              {isVI ? "Xóa" : "Delete"}
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -29,10 +29,17 @@ export default function AboutPageFindPropertyForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
     const [findBgUrl, setFindBgUrl] = useState(pageData?.aboutFindBg || '');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
@@ -95,10 +102,10 @@ export default function AboutPageFindPropertyForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Find Property Section' : 'Phần Tìm Bất Động Sản'}
+                            {headerLang === 'en' ? 'Find Property Section' : 'Phần Tìm Bất Động Sản'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage about page find property content' : 'Quản lý nội dung tìm bất động sản'}
+                            {headerLang === 'en' ? 'Manage about page find property content' : 'Quản lý nội dung tìm bất động sản'}
                         </p>
                     </div>
                 </div>

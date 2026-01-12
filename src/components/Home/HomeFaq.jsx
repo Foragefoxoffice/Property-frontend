@@ -32,6 +32,25 @@ export default function HomeFaq({ homePageData }) {
         : (homePageData?.homeFaqImageButtonText_vn || 'Đặt Lịch Tư Vấn');
     const buttonLink = homePageData?.homeFaqImageButtonLink || '/contact';
 
+    const handleButtonClick = () => {
+        if (!buttonLink) return;
+
+        if (buttonLink.startsWith('http://') || buttonLink.startsWith('https://')) {
+            try {
+                const url = new URL(buttonLink);
+                if (url.origin === window.location.origin) {
+                    navigate(url.pathname + url.search + url.hash);
+                } else {
+                    window.location.href = buttonLink;
+                }
+            } catch (e) {
+                navigate(buttonLink);
+            }
+        } else {
+            navigate(buttonLink);
+        }
+    };
+
     // Resolve image URL: if CMS has value, process it; else use frontend fallback
     const cardImage = homePageData?.homeFaqBg
         ? getImageUrl(homePageData.homeFaqBg)
@@ -123,7 +142,7 @@ export default function HomeFaq({ homePageData }) {
                             {cardDescription}
                         </p>
                         <button
-                            onClick={() => navigate(buttonLink)}
+                            onClick={handleButtonClick}
                             className="mt-4 px-8 py-3.5 bg-black cursor-pointer text-white font-semibold rounded-md hover:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:translate-y-0 transform opacity-100 translate-y-0"
                         >
                             {buttonText}

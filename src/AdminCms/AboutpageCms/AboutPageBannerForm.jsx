@@ -27,10 +27,18 @@ export default function AboutPageBannerForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
+
     const [bannerImageUrl, setBannerImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
@@ -100,10 +108,10 @@ export default function AboutPageBannerForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'About Us Banner' : 'Banner Về Chúng Tôi'}
+                            {headerLang === 'en' ? 'About Us Banner' : 'Banner Về Chúng Tôi'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage your about page banner section' : 'Quản lý phần banner trang giới thiệu'}
+                            {headerLang === 'en' ? 'Manage your about page banner section' : 'Quản lý phần banner trang giới thiệu'}
                         </p>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -22,10 +22,17 @@ export default function AboutPageVisionMissionForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
 
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -43,10 +50,10 @@ export default function AboutPageVisionMissionForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Vision & Mission' : 'Tầm Nhìn & Sứ Mệnh'}
+                            {headerLang === 'en' ? 'Vision & Mission' : 'Tầm Nhìn & Sứ Mệnh'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage your vision and mission statements' : 'Quản lý tầm nhìn và sứ mệnh của bạn'}
+                            {headerLang === 'en' ? 'Manage your vision and mission statements' : 'Quản lý tầm nhìn và sứ mệnh của bạn'}
                         </p>
                     </div>
                 </div>

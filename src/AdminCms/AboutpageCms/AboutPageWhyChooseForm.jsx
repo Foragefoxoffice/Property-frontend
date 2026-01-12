@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -34,10 +34,17 @@ export default function AboutPageWhyChooseForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
 
     // Render icon preview
     const renderIcon = (iconName) => {
@@ -62,10 +69,10 @@ export default function AboutPageWhyChooseForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Why Choose Us' : 'Tại Sao Chọn Chúng Tôi'}
+                            {headerLang === 'en' ? 'Why Choose Us' : 'Tại Sao Chọn Chúng Tôi'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage why choose us section' : 'Quản lý phần tại sao chọn chúng tôi'}
+                            {headerLang === 'en' ? 'Manage why choose us section' : 'Quản lý phần tại sao chọn chúng tôi'}
                         </p>
                     </div>
                 </div>

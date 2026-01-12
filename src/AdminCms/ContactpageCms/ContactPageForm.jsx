@@ -11,6 +11,7 @@ import ContactPageReachOutForm from './ContactPageReachOutForm';
 import ContactMapLink from './ContactMapLink';
 import ContactPageSeoForm from './ContactPageSeoForm';
 import { validateVietnameseFields } from '@/utils/formValidation';
+import { useLanguage } from '../../Language/LanguageContext';
 
 export default function ContactPageForm() {
     const [bannerForm] = Form.useForm();
@@ -19,6 +20,8 @@ export default function ContactPageForm() {
     const [seoForm] = Form.useForm();
     const [pageData, setPageData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const { language } = useLanguage();
+    const headerLang = language === 'vi' ? 'vn' : 'en';
 
     // Accordion state
     const [openAccordions, setOpenAccordions] = useState({
@@ -338,7 +341,7 @@ export default function ContactPageForm() {
                 marginBottom: '18px',
                 fontFamily: 'Manrope, sans-serif'
             }}>
-                Contact Us Page Sections
+                {headerLang === 'en' ? 'Contact Us Page Sections' : 'Các Phần Trang Liên Hệ'}
             </h2>
 
             <div className="space-y-6">
@@ -351,6 +354,7 @@ export default function ContactPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.banner}
                     onToggle={() => toggleAccordion('banner')}
+                    headerLang={headerLang}
                 />
 
                 {/* Reach Out Section */}
@@ -362,6 +366,7 @@ export default function ContactPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.reachOut}
                     onToggle={() => toggleAccordion('reachOut')}
+                    headerLang={headerLang}
                 />
 
                 {/* Map Section */}
@@ -373,6 +378,7 @@ export default function ContactPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.map}
                     onToggle={() => toggleAccordion('map')}
+                    headerLang={headerLang}
                 />
 
                 {/* SEO Section */}
@@ -384,6 +390,7 @@ export default function ContactPageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.seo}
                     onToggle={() => toggleAccordion('seo')}
+                    headerLang={headerLang}
                 />
             </div>
         </div>

@@ -4,6 +4,7 @@ import HomeAbout from "@/components/Home/HomeAbout";
 import HomeFeaturedProperties from "@/components/Home/HomeFeaturedProperties";
 import HomeFaq from "@/components/Home/HomeFaq";
 import HomeFindProperty from "@/components/Home/HomeFindProperty";
+import HomeLatestBlogs from "@/components/Home/HomeLatestBlogs";
 import SmoothScroll from "@/components/SmoothScroll";
 import { getHomePage } from "@/Api/action";
 import Loader from "@/components/Loader/Loader";
@@ -45,6 +46,7 @@ export default function HomePage() {
             <HomeFeaturedProperties homePageData={homePageData} />
             <HomeFaq homePageData={homePageData} />
             <HomeFindProperty homePageData={homePageData} />
+            <HomeLatestBlogs homePageData={homePageData} />
             <Footer />
         </div>
     );

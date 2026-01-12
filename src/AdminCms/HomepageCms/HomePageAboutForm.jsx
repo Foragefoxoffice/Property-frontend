@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -21,11 +21,19 @@ export default function HomePageAboutForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang // Receive the global language prop
 }) {
 
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    // Sync activeTab with headerLang whenever headerLang changes
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
 
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -42,9 +50,9 @@ export default function HomePageAboutForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Who We Are Section' : 'Phần Về Chúng Tôi'}
+                            {headerLang === 'en' ? 'Who We Are Section' : 'Phần Về Chúng Tôi'}
                         </h3>
-                        <p className="text-sm text-gray-500 font-['Manrope']">Manage your about us content</p>
+                        <p className="text-sm text-gray-500 font-['Manrope']">{headerLang === 'en' ? 'Manage your about us content' : 'Quản lý nội dung về chúng tôi'}</p>
                     </div>
                 </div>
                 <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
@@ -80,6 +88,21 @@ export default function HomePageAboutForm({
                                         ),
                                         children: (
                                             <>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">About Sub Title</span>}
+                                                    name="homeAboutSubTitle_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter about sub title in English' },
+                                                        { max: 100, message: 'Maximum 100 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="ABOUT US"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
                                                 <Form.Item
                                                     label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">About Title</span>}
                                                     name="homeAboutTitle_en"
@@ -217,6 +240,21 @@ export default function HomePageAboutForm({
                                         ),
                                         children: (
                                             <>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Phụ Về Chúng Tôi</span>}
+                                                    name="homeAboutSubTitle_vn"
+                                                    rules={[
+                                                        { required: true, message: 'Vui lòng nhập tiêu đề phụ' },
+                                                        { max: 100, message: 'Tối đa 100 ký tự' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="VỀ CHÚNG TÔI"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
                                                 <Form.Item
                                                     label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Về Chúng Tôi</span>}
                                                     name="homeAboutTitle_vn"

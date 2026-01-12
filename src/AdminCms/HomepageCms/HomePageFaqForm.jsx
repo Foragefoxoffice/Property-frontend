@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -32,11 +32,20 @@ export default function HomePageFaqForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang // Receive the global language prop
 }) {
 
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    // Sync activeTab with headerLang whenever headerLang changes
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
+
     const [faqBgUrl, setFaqBgUrl] = useState(pageData?.homeFaqBg || '');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
@@ -99,10 +108,10 @@ export default function HomePageFaqForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'FAQ Section' : 'Phần FAQ'}
+                            {headerLang === 'en' ? 'FAQ Section' : 'Phần FAQ'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage your FAQ content and questions' : 'Quản lý nội dung và câu hỏi thường gặp'}
+                            {headerLang === 'en' ? 'Manage your FAQ content and questions' : 'Quản lý nội dung và câu hỏi thường gặp'}
                         </p>
                     </div>
                 </div>

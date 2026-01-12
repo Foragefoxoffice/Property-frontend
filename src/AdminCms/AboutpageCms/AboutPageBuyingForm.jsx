@@ -29,10 +29,17 @@ export default function AboutPageBuyingForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
     const [stepImages, setStepImages] = useState({});
     const [previewImage, setPreviewImage] = useState(null);
     const [uploading, setUploading] = useState({});
@@ -119,10 +126,10 @@ export default function AboutPageBuyingForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Buying Process' : 'Quy Trình Mua'}
+                            {headerLang === 'en' ? 'Buying Process' : 'Quy Trình Mua'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage homebuying steps and process' : 'Quản lý các bước mua nhà'}
+                            {headerLang === 'en' ? 'Manage homebuying steps and process' : 'Quản lý các bước mua nhà'}
                         </p>
                     </div>
                 </div>

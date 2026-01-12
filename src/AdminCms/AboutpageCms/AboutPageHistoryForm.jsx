@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Form,
     Input,
@@ -24,10 +24,17 @@ export default function AboutPageHistoryForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
 
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -44,10 +51,10 @@ export default function AboutPageHistoryForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Our History' : 'Lịch Sử Của Chúng Tôi'}
+                            {headerLang === 'en' ? 'Our History' : 'Lịch Sử Của Chúng Tôi'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage company history and timeline' : 'Quản lý lịch sử và dòng thời gian công ty'}
+                            {headerLang === 'en' ? 'Manage company history and timeline' : 'Quản lý lịch sử và dòng thời gian công ty'}
                         </p>
                     </div>
                 </div>
@@ -208,29 +215,28 @@ export default function AboutPageHistoryForm({
                                                         </span>
                                                     </div>
 
-                                                    {/* Date Field (Common for both languages) */}
-                                                    <Form.Item
-                                                        {...restField}
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                {activeTab === 'en' ? 'Year/Date' : 'Năm/Ngày'}
-                                                            </span>
-                                                        }
-                                                        name={[name, 'date']}
-                                                        rules={[
-                                                            { max: 50, message: activeTab === 'en' ? 'Maximum 50 characters' : 'Tối đa 50 ký tự' }
-                                                        ]}
-                                                    >
-                                                        <Input
-                                                            placeholder={activeTab === 'en' ? '2024' : '2024'}
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-
                                                     {/* English Fields */}
                                                     {activeTab === 'en' && (
                                                         <>
+                                                            <Form.Item
+                                                                {...restField}
+                                                                label={
+                                                                    <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                        Year/Date
+                                                                    </span>
+                                                                }
+                                                                name={[name, 'date_en']}
+                                                                rules={[
+                                                                    { max: 50, message: 'Maximum 50 characters' }
+                                                                ]}
+                                                            >
+                                                                <Input
+                                                                    placeholder="2024"
+                                                                    size="large"
+                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                />
+                                                            </Form.Item>
+
                                                             <Form.Item
                                                                 {...restField}
                                                                 label={
@@ -274,6 +280,25 @@ export default function AboutPageHistoryForm({
                                                     {/* Vietnamese Fields */}
                                                     {activeTab === 'vn' && (
                                                         <>
+                                                            <Form.Item
+                                                                {...restField}
+                                                                label={
+                                                                    <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                        Năm/Ngày
+                                                                    </span>
+                                                                }
+                                                                name={[name, 'date_vn']}
+                                                                rules={[
+                                                                    { max: 50, message: 'Tối đa 50 ký tự' }
+                                                                ]}
+                                                            >
+                                                                <Input
+                                                                    placeholder="Năm 2024"
+                                                                    size="large"
+                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                />
+                                                            </Form.Item>
+
                                                             <Form.Item
                                                                 {...restField}
                                                                 label={

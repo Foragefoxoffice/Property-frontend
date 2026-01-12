@@ -28,10 +28,17 @@ export default function AboutPageSeoForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    headerLang
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+
+    useEffect(() => {
+        if (headerLang) {
+            setActiveTab(headerLang);
+        }
+    }, [headerLang]);
     const [previewImage, setPreviewImage] = useState(null);
     const [ogImages, setOgImages] = useState([]);
 
@@ -102,10 +109,10 @@ export default function AboutPageSeoForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'SEO Settings' : 'Cài Đặt SEO'}
+                            {headerLang === 'en' ? 'SEO Settings' : 'Cài Đặt SEO'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage about page SEO and meta information' : 'Quản lý SEO trang giới thiệu và thông tin meta'}
+                            {headerLang === 'en' ? 'Manage about page SEO and meta information' : 'Quản lý SEO trang giới thiệu và thông tin meta'}
                         </p>
                     </div>
                 </div>

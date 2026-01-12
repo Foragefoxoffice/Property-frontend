@@ -5,6 +5,7 @@ import {
     createHomePage,
     updateHomePage,
 } from '../../Api/action';
+import { useLanguage } from '../../Language/LanguageContext';
 import { CommonToaster } from '@/Common/CommonToaster';
 import HomePageBannerForm from './HomePageBannerForm';
 import HomePageAboutForm from './HomePageAboutForm';
@@ -56,6 +57,9 @@ export default function HomepageForm() {
     const [blogLoading, setBlogLoading] = useState(false);
     const [seoLoading, setSeoLoading] = useState(false);
 
+    const { language } = useLanguage();
+    const headerLang = language === 'vi' ? 'vn' : 'en';
+
     // Fetch the home page data
     const fetchPageData = async () => {
         try {
@@ -77,6 +81,8 @@ export default function HomepageForm() {
 
                 // Set About Form
                 aboutForm.setFieldsValue({
+                    homeAboutSubTitle_en: page.homeAboutSubTitle_en,
+                    homeAboutSubTitle_vn: page.homeAboutSubTitle_vn,
                     homeAboutTitle_en: page.homeAboutTitle_en,
                     homeAboutTitle_vn: page.homeAboutTitle_vn,
                     homeAboutDescription_en: page.homeAboutDescription_en,
@@ -104,6 +110,9 @@ export default function HomepageForm() {
                     homeFeatureTitle_vn: page.homeFeatureTitle_vn,
                     homeFeatureDescription_en: page.homeFeatureDescription_en,
                     homeFeatureDescription_vn: page.homeFeatureDescription_vn,
+                    homeFeatureButtonText_en: page.homeFeatureButtonText_en,
+                    homeFeatureButtonText_vn: page.homeFeatureButtonText_vn,
+                    homeFeatureButtonLink: page.homeFeatureButtonLink,
                 });
 
                 // Set FAQ Form
@@ -204,6 +213,8 @@ export default function HomepageForm() {
                 ...values,
                 // Include existing about data
                 ...(pageData && {
+                    homeAboutSubTitle_en: pageData.homeAboutSubTitle_en,
+                    homeAboutSubTitle_vn: pageData.homeAboutSubTitle_vn,
                     homeAboutTitle_en: pageData.homeAboutTitle_en,
                     homeAboutTitle_vn: pageData.homeAboutTitle_vn,
                     homeAboutDescription_en: pageData.homeAboutDescription_en,
@@ -227,6 +238,9 @@ export default function HomepageForm() {
                     homeFeatureTitle_vn: pageData.homeFeatureTitle_vn,
                     homeFeatureDescription_en: pageData.homeFeatureDescription_en,
                     homeFeatureDescription_vn: pageData.homeFeatureDescription_vn,
+                    homeFeatureButtonText_en: pageData.homeFeatureButtonText_en,
+                    homeFeatureButtonText_vn: pageData.homeFeatureButtonText_vn,
+                    homeFeatureButtonLink: pageData.homeFeatureButtonLink,
                 })
             };
 
@@ -313,6 +327,8 @@ export default function HomepageForm() {
                     heroTitle_vn: pageData.heroTitle_vn,
                     heroDescription_vn: pageData.heroDescription_vn,
                     backgroundImage: pageData.backgroundImage,
+                    homeAboutSubTitle_en: pageData.homeAboutSubTitle_en,
+                    homeAboutSubTitle_vn: pageData.homeAboutSubTitle_vn,
                     homeAboutTitle_en: pageData.homeAboutTitle_en,
                     homeAboutTitle_vn: pageData.homeAboutTitle_vn,
                     homeAboutDescription_en: pageData.homeAboutDescription_en,
@@ -374,6 +390,8 @@ export default function HomepageForm() {
                     heroTitle_vn: pageData.heroTitle_vn,
                     heroDescription_vn: pageData.heroDescription_vn,
                     backgroundImage: pageData.backgroundImage,
+                    homeAboutSubTitle_en: pageData.homeAboutSubTitle_en,
+                    homeAboutSubTitle_vn: pageData.homeAboutSubTitle_vn,
                     homeAboutTitle_en: pageData.homeAboutTitle_en,
                     homeAboutTitle_vn: pageData.homeAboutTitle_vn,
                     homeAboutDescription_en: pageData.homeAboutDescription_en,
@@ -440,6 +458,8 @@ export default function HomepageForm() {
                     heroTitle_vn: pageData.heroTitle_vn,
                     heroDescription_vn: pageData.heroDescription_vn,
                     backgroundImage: pageData.backgroundImage,
+                    homeAboutSubTitle_en: pageData.homeAboutSubTitle_en,
+                    homeAboutSubTitle_vn: pageData.homeAboutSubTitle_vn,
                     homeAboutTitle_en: pageData.homeAboutTitle_en,
                     homeAboutTitle_vn: pageData.homeAboutTitle_vn,
                     homeAboutDescription_en: pageData.homeAboutDescription_en,
@@ -518,6 +538,8 @@ export default function HomepageForm() {
                     heroTitle_vn: pageData.heroTitle_vn,
                     heroDescription_vn: pageData.heroDescription_vn,
                     backgroundImage: pageData.backgroundImage,
+                    homeAboutSubTitle_en: pageData.homeAboutSubTitle_en,
+                    homeAboutSubTitle_vn: pageData.homeAboutSubTitle_vn,
                     homeAboutTitle_en: pageData.homeAboutTitle_en,
                     homeAboutTitle_vn: pageData.homeAboutTitle_vn,
                     homeAboutDescription_en: pageData.homeAboutDescription_en,
@@ -601,6 +623,8 @@ export default function HomepageForm() {
                     heroTitle_vn: pageData.heroTitle_vn,
                     heroDescription_vn: pageData.heroDescription_vn,
                     backgroundImage: pageData.backgroundImage,
+                    homeAboutSubTitle_en: pageData.homeAboutSubTitle_en,
+                    homeAboutSubTitle_vn: pageData.homeAboutSubTitle_vn,
                     homeAboutTitle_en: pageData.homeAboutTitle_en,
                     homeAboutTitle_vn: pageData.homeAboutTitle_vn,
                     homeAboutDescription_en: pageData.homeAboutDescription_en,
@@ -683,6 +707,8 @@ export default function HomepageForm() {
         );
     }
 
+    // ... (rest of the component logic)
+
     return (
         <div className="">
             <h2 style={{
@@ -693,7 +719,7 @@ export default function HomepageForm() {
                 marginBottom: '18px',
                 fontFamily: 'Manrope, sans-serif'
             }}>
-                Home Page Sections
+                {headerLang === 'en' ? 'Home Page Sections' : 'Các Phần Trang Chủ'}
             </h2>
 
             <div className="space-y-6">
@@ -706,6 +732,7 @@ export default function HomepageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.banner}
                     onToggle={() => toggleAccordion('banner')}
+                    headerLang={headerLang}
                 />
 
                 {/* About Section */}
@@ -717,6 +744,7 @@ export default function HomepageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.about}
                     onToggle={() => toggleAccordion('about')}
+                    headerLang={headerLang}
                 />
 
                 {/* Feature Section */}
@@ -728,6 +756,7 @@ export default function HomepageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.feature}
                     onToggle={() => toggleAccordion('feature')}
+                    headerLang={headerLang}
                 />
 
                 {/* FAQ Section */}
@@ -739,6 +768,7 @@ export default function HomepageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.faq}
                     onToggle={() => toggleAccordion('faq')}
+                    headerLang={headerLang}
                 />
 
                 {/* Find Property Section */}
@@ -750,6 +780,7 @@ export default function HomepageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.findProperty}
                     onToggle={() => toggleAccordion('findProperty')}
+                    headerLang={headerLang}
                 />
 
                 {/* Blog Section */}
@@ -761,6 +792,7 @@ export default function HomepageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.blog}
                     onToggle={() => toggleAccordion('blog')}
+                    headerLang={headerLang}
                 />
 
                 {/* SEO Section */}
@@ -772,6 +804,7 @@ export default function HomepageForm() {
                     onCancel={fetchPageData}
                     isOpen={openAccordions.seo}
                     onToggle={() => toggleAccordion('seo')}
+                    headerLang={headerLang}
                 />
             </div>
         </div>

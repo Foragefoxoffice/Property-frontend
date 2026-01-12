@@ -17,35 +17,40 @@ export default function AboutHistory({ data }) {
 
     const timelineData = data?.aboutHistoryTimeline?.length > 0 ? data.aboutHistoryTimeline : [
         {
-            date: "2009",
+            date_en: "2009",
+            date_vn: "Năm 2009",
             title_en: "HUMBLE BEGINNINGS",
             title_vn: "KHỞI ĐẦU KHIÊM TỐN",
             description_en: "We started as a small, local agency with a clear mission: helping people find homes with honesty and care.",
             description_vn: "Chúng tôi bắt đầu như một đại lý nhỏ, địa phương với sứ mệnh rõ ràng: giúp mọi người tìm nhà với sự trung thực và quan tâm."
         },
         {
-            date: "2015",
+            date_en: "2015",
+            date_vn: "Năm 2015",
             title_en: "A TRUSTED NAME",
             title_vn: "TÊN ĐÁNG TIN CẬY",
             description_en: "Gained recognition for reliable service and built long-term relationships with clients and partners.",
             description_vn: "Được công nhận về dịch vụ đáng tin cậy và xây dựng mối quan hệ lâu dài với khách hàng và đối tác."
         },
         {
-            date: "2018",
+            date_en: "2018",
+            date_vn: "Năm 2018",
             title_en: "EMBRACING INNOVATION",
             title_vn: "ÁP DỤNG ĐỔI MỚI",
             description_en: "Adopted new technologies to streamline the property search and improve customer experience.",
             description_vn: "Áp dụng công nghệ mới để đơn giản hóa tìm kiếm bất động sản và cải thiện trải nghiệm khách hàng."
         },
         {
-            date: "2021",
+            date_en: "2021",
+            date_vn: "Năm 2021",
             title_en: "OVER 1,000 HOMES SOLD",
             title_vn: "HƠN 1.000 NGÔI NHÀ ĐÃ BÁN",
             description_en: "Reached a major milestone with over a thousand successful property transactions completed.",
             description_vn: "Đạt được cột mốc quan trọng với hơn một nghìn giao dịch bất động sản thành công được hoàn thành."
         },
         {
-            date: "2024",
+            date_en: "2024",
+            date_vn: "Năm 2024",
             title_en: "MOVING FORWARD TOGETHER",
             title_vn: "TIẾN LÊN CÙNG NHAU",
             description_en: "Continuing to grow with a dedicated team, modern tools, and a renewed vision for the future.",
@@ -106,7 +111,7 @@ export default function AboutHistory({ data }) {
                             >
                                 {/* Date */}
                                 <h3 className="text-4xl md:text-5xl font-semibold text-[#1a1a1a] mb-2 group-hover:text-[#41398B] transition-colors duration-300">
-                                    {item.date}
+                                    {language === 'en' ? (item.date_en || item.date) : (item.date_vn || item.date_en || item.date)}
                                 </h3>
 
                                 {/* Title */}
