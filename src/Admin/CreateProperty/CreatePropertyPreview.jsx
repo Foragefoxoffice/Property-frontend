@@ -8,6 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { Select as AntdSelect } from "antd";
+import { usePermissions } from "../../Context/PermissionContext";
 
 /* 💜 Skeleton Loader Component */
 const SkeletonLoader = () => (
@@ -87,6 +88,8 @@ export default function CreatePropertyPreview({
   const [publishing, setPublishing] = useState(false);
 
   console.log("💾 PREVIEW RECEIVED DATA:", propertyData);
+
+  const { isApprover } = usePermissions();
 
   const [lang, setLang] = useState("en");
   const [loading, setLoading] = useState(false);
@@ -180,6 +183,8 @@ export default function CreatePropertyPreview({
     connectingNotes: { en: "Connecting Notes", vi: "Ghi chú liên hệ" },
     internalNotes: { en: "Internal Notes", vi: "Ghi chú nội bộ" },
     publishing: { en: "Publishing", vi: "Đang xuất bản" },
+    sendForApproval: { en: "Send for Approval", vi: "Gửi phê duyệt" },
+    readyForApproval: { en: "Ready for Approval", vi: "Sẵn sàng phê duyệt" },
   };
 
 
@@ -548,23 +553,30 @@ export default function CreatePropertyPreview({
             </label>
 
             <div className="relative">
-              <AntdSelect
-                showSearch
-                allowClear
-                placeholder={labels.select[lang]}
-                value={status || undefined}
-                onChange={(value) => setStatus(value || "")}
-                className="w-full custom-select"
-                popupClassName="custom-dropdown"
-                options={[
-                  { label: labels.draft[lang], value: "Draft" },
-                  { label: labels.published[lang], value: "Published" },
-                ]}
-              />
+              {!isApprover ? (
+                <div className="w-full bg-gray-50 border border-gray-200 text-gray-500 rounded-lg px-3 py-2.5 cursor-not-allowed">
+                  {labels.readyForApproval[lang]}
+                </div>
+              ) : (
+                <AntdSelect
+                  showSearch
+                  allowClear
+                  placeholder={labels.select[lang]}
+                  value={status || undefined}
+                  onChange={(value) => setStatus(value || "")}
+                  className="w-full custom-select"
+                  popupClassName="custom-dropdown"
+                  options={[
+                    { label: labels.draft[lang], value: "Draft" },
+                    { label: labels.published[lang], value: "Published" },
+                  ]}
+                />
+              )}
             </div>
           </div>
         </div>
 
+        {/* Buttons */}
         <div className="flex justify-between pt-10">
           <button
             onClick={onPrev}
@@ -572,61 +584,70 @@ export default function CreatePropertyPreview({
           >
             <ArrowLeft size={18} /> {labels.previous[lang]}
           </button>
+
           <button
             onClick={async () => {
               setPublishing(true);
-              await onPublish(status);
+              const finalStatus = isApprover ? status : "Pending";
+              await onPublish(finalStatus);
               setPublishing(false);
             }}
             className="px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition flex items-center justify-center gap-2 w-full sm:w-auto cursor-pointer"
           >
-            {labels.completed[lang]}
+            {isApprover ? labels.completed[lang] : labels.sendForApproval[lang]}
           </button>
         </div>
       </div>
-
       {/* Popups */}
-      {showOwnerPopup && selectedOwner && (
-        <OwnerPopupCard
-          onClose={() => setShowOwnerPopup(false)}
-          data={selectedOwner}
-          lang={lang}
-        />
-      )}
+      {
+        showOwnerPopup && selectedOwner && (
+          <OwnerPopupCard
+            onClose={() => setShowOwnerPopup(false)}
+            data={selectedOwner}
+            lang={lang}
+          />
+        )
+      }
 
-      {showStaffPopup && selectedStaff && (
-        <StaffPopupCard
-          onClose={() => setShowStaffPopup(false)}
-          data={selectedStaff}
-          lang={lang}
-          title={labels.connectingPoint[lang]}
-        />
-      )}
+      {
+        showStaffPopup && selectedStaff && (
+          <StaffPopupCard
+            onClose={() => setShowStaffPopup(false)}
+            data={selectedStaff}
+            lang={lang}
+            title={labels.connectingPoint[lang]}
+          />
+        )
+      }
 
       {/* Media Preview Modal */}
-      {previewUrl && (
-        <MediaPreviewModal
-          url={previewUrl}
-          type={previewType}
-          onClose={() => {
-            setPreviewUrl(null);
-            setPreviewType(null);
-          }}
-        />
-      )}
+      {
+        previewUrl && (
+          <MediaPreviewModal
+            url={previewUrl}
+            type={previewType}
+            onClose={() => {
+              setPreviewUrl(null);
+              setPreviewType(null);
+            }}
+          />
+        )
+      }
 
-      {publishing && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-14 h-14 border-4 border-white border-t-[#41398B] rounded-full animate-spin"></div>
-            <p className="text-white text-lg tracking-wide font-medium">
-              {labels.publishing[lang]}
-            </p>
+      {
+        publishing && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-14 h-14 border-4 border-white border-t-[#41398B] rounded-full animate-spin"></div>
+              <p className="text-white text-lg tracking-wide font-medium">
+                {labels.publishing[lang]}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-    </div>
+    </div >
   );
 }
 

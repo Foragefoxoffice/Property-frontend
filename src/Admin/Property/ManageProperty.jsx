@@ -10,8 +10,10 @@ import {
   RotateCcw,
   Upload,
   MoreVertical,
+  CheckCircle,
 } from "lucide-react";
 import {
+  updatePropertyListing,
   deletePropertyListing,
   permanentlyDeleteProperty,
   copyPropertyToSale,
@@ -51,7 +53,8 @@ export default function ManageProperty({
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
-  const { can } = usePermissions();
+  const { can, isApprover } = usePermissions();
+  const [activeTab, setActiveTab] = useState("all"); // all, pending
 
   const getPermissionKey = () => {
     if (filterByTransactionType === "Lease") return "properties.lease";
@@ -75,11 +78,22 @@ export default function ManageProperty({
 
     setLoading(true);
     try {
-      const res = await getPropertiesByTransactionType({
+      const params = {
         type: filterByTransactionType,
         page: currentPage,
         limit: rowsPerPage,
-      });
+        trashMode: trashMode ? "true" : undefined
+      };
+
+      if (!trashMode && isApprover) {
+        if (activeTab === "pending") {
+          params.status = "Pending";
+        } else if (activeTab === "all") {
+          params.excludeStatus = "Pending";
+        }
+      }
+
+      const res = await getPropertiesByTransactionType(params);
 
       if (res?.data?.success) {
         setProperties(res.data.data || []);
@@ -106,7 +120,7 @@ export default function ManageProperty({
     setCurrentPage((prev) => (prev === 1 ? 1 : prev)); // keep page unless changed elsewhere
     fetchProperties();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterByTransactionType, currentPage, rowsPerPage]);
+  }, [filterByTransactionType, currentPage, rowsPerPage, trashMode, activeTab]);
 
   // client-side filtering / search applied to the current page
   const filteredProperties = useMemo(() => {
@@ -224,8 +238,10 @@ export default function ManageProperty({
       );
     });
 
+
+
     return list;
-  }, [properties, searchTerm, appliedFilters, language, trashMode, filterByTransactionType]);
+  }, [properties, searchTerm, appliedFilters, language, trashMode, filterByTransactionType, activeTab]);
 
   // currentRows = filtered (already representing the backend page after client-side filtering)
   const currentRows = filteredProperties;
@@ -258,6 +274,16 @@ export default function ManageProperty({
       setTotalRows((prev) => Math.max(prev - 1, 0));
     } catch (err) {
       CommonToaster("Failed to restore property", "error");
+    }
+  };
+
+  const handleApprove = async (id) => {
+    try {
+      await updatePropertyListing(id, { status: "Published" });
+      CommonToaster("Property Approved Successfully", "success");
+      fetchProperties();
+    } catch (err) {
+      CommonToaster("Failed to approve property", "error");
     }
   };
 
@@ -384,6 +410,7 @@ export default function ManageProperty({
                 : ""}
         </h1>
 
+
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowFilterPopup(true)}
@@ -436,6 +463,28 @@ export default function ManageProperty({
           className="w-full pl-10 pr-4 py-3 rounded-full focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
         />
       </div>
+
+      {/* TABS */}
+      {!trashMode && isApprover && (
+        <div className="flex items-center gap-6 mb-6 border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`pb-3 text-sm font-medium transition-all relative ${activeTab === "all" ? "text-[#41398B] font-bold" : "text-gray-500 hover:text-gray-700"
+              }`}
+          >
+            {t.allProperties || "All Properties"}
+            {activeTab === "all" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#41398B] rounded-t-full"></div>}
+          </button>
+          <button
+            onClick={() => setActiveTab("pending")}
+            className={`pb-3 text-sm font-medium transition-all relative ${activeTab === "pending" ? "text-[#41398B] font-bold" : "text-gray-500 hover:text-gray-700"
+              }`}
+          >
+            {t.pendingApprovals || "Pending Approvals"}
+            {activeTab === "pending" && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#41398B] rounded-t-full"></div>}
+          </button>
+        </div>
+      )}
 
       {/* ACTIVE FILTER BADGES + CLEAR BUTTON */}
       {appliedFilters && (
@@ -531,7 +580,9 @@ export default function ManageProperty({
                             ? "bg-green-100 text-green-700"
                             : p.status === "Draft"
                               ? "bg-[#FFF3DE] text-[#FFA600]"
-                              : "bg-gray-200 text-gray-700"
+                              : p.status === "Pending"
+                                ? "bg-orange-100 text-orange-600"
+                                : "bg-gray-200 text-gray-700"
                             }`}
                         >
                           {p.status === "Published"
@@ -542,12 +593,25 @@ export default function ManageProperty({
                               ? language === "vi"
                                 ? "Bản nháp"
                                 : "Draft"
-                              : p.status || "—"}
+                              : p.status === "Pending"
+                                ? (language === "vi" ? "Đang chờ duyệt" : "Pending Approval")
+                                : p.status || "—"}
                         </span>
                       </div>
                     </td>
 
                     <td className="px-6 py-4 text-right flex justify-end gap-3">
+                      {/* Approve Button */}
+                      {isApprover && p.status === "Pending" && (
+                        <button
+                          onClick={() => handleApprove(p._id)}
+                          title="Approve"
+                          className="p-2 rounded-full hover:bg-green-100 bg-green-50 border border-green-200 h-10 w-10 cursor-pointer flex justify-center items-center text-green-600"
+                        >
+                          <CheckCircle size={18} />
+                        </button>
+                      )}
+
                       {can(permissionKey, 'view') && (
                         <button
                           onClick={() =>

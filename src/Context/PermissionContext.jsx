@@ -8,6 +8,7 @@ export const usePermissions = () => useContext(PermissionContext);
 export const PermissionProvider = ({ children }) => {
     const [permissions, setPermissions] = useState(null);
     const [userRole, setUserRole] = useState(null);
+    const [isApprover, setIsApprover] = useState(false);
     const [loading, setLoading] = useState(true);
 
     const fetchPermissions = async () => {
@@ -25,6 +26,7 @@ export const PermissionProvider = ({ children }) => {
 
                     if (currentRole) {
                         setPermissions(currentRole.permissions);
+                        setIsApprover(currentRole.isApprover || false);
                     } else {
                         console.warn(`PermissionContext: Role '${role}' not found in DB. Available:`, rolesData.map(r => r.name));
                         setPermissions(null);
@@ -85,7 +87,7 @@ export const PermissionProvider = ({ children }) => {
     };
 
     return (
-        <PermissionContext.Provider value={{ isHidden, can, userRole, loading, refreshPermissions: fetchPermissions }}>
+        <PermissionContext.Provider value={{ isHidden, can, userRole, isApprover, loading, refreshPermissions: fetchPermissions }}>
             {children}
         </PermissionContext.Provider>
     );

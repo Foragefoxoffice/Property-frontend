@@ -120,6 +120,7 @@ export default function Roles() {
     const initialFormState = {
         name: "",
         status: "Active",
+        isApprover: false,
         permissions: generateEmptyPermissions()
     };
 
@@ -170,6 +171,7 @@ export default function Roles() {
             setForm({
                 name: role.name,
                 status: role.status,
+                isApprover: role.isApprover || false,
                 permissions: mergedPermissions
             });
         } else {
@@ -395,6 +397,18 @@ export default function Roles() {
                                         >
                                             <Select.Option value="Active">{t.active}</Select.Option>
                                             <Select.Option value="Inactive">{t.inactive}</Select.Option>
+                                        </Select>
+                                    </div>
+                                    <div className="col-span-1">
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Role Type <span className="text-red-500">*</span></label>
+                                        <Select
+                                            value={form.isApprover ? "Approver" : "Non-approver"}
+                                            onChange={(value) => setForm({ ...form, isApprover: value === "Approver" })}
+                                            className="w-full h-11 custom-select"
+                                            popupClassName="custom-dropdown"
+                                        >
+                                            <Select.Option value="Non-approver">Non-approver</Select.Option>
+                                            <Select.Option value="Approver">Approver</Select.Option>
                                         </Select>
                                     </div>
                                 </div>
