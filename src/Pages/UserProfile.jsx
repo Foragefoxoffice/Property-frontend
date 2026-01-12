@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User, Phone, Mail, Lock, Eye, EyeOff, Save, Loader2, Calendar as CalendarIcon, Upload, Briefcase, Languages } from "lucide-react";
+import { User, Phone, Mail, Lock, Eye, EyeOff, Save, Loader2, Calendar as CalendarIcon, Upload, Briefcase, Languages, AlertCircle } from "lucide-react";
 import { getMe, updateUser, updatePassword, getAllStaffs, updateStaff } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
 import { useLanguage } from "../Language/LanguageContext";
@@ -138,7 +138,7 @@ export default function UserProfile() {
                     // Fetch Staff Record
                     const staffRes = await getAllStaffs();
                     const allStaffs = staffRes.data.data || [];
-                    const foundStaff = allStaffs.find(s => s.staffsEmail === userData.email);
+                    const foundStaff = allStaffs.find(s => s.staffsEmail?.toLowerCase() === userData.email?.toLowerCase());
 
                     if (foundStaff) {
                         setStaffData(foundStaff);
@@ -166,7 +166,7 @@ export default function UserProfile() {
                         });
                     } else {
                         // Fallback if staff record not found (shouldn't happen for admin usually)
-                        CommonToaster("Staff record not found linked to this account.", "error");
+                        console.warn("Staff record not found linked to this account.");
                     }
                 }
             }
@@ -325,6 +325,22 @@ export default function UserProfile() {
                 <h1 className="text-2xl font-bold text-gray-800">{isStaff ? (activeTab === "vi" ? "Hồ Sơ Nhân Viên" : "Staff Profile") : (t?.myProfile || "My Profile")}</h1>
                 <p className="text-gray-500">{isStaff ? (activeTab === "vi" ? "Quản lý thông tin và mật khẩu của bạn." : "Manage your account settings and password.") : (t?.manageAccount || "Manage your account settings and password.")}</p>
             </div>
+
+
+            {/* Warning if Staff Record Not Found */}
+            {isStaff && !staffData && !loading && (
+                <div className="bg-amber-50 border border-amber-200 text-amber-800 p-6 rounded-2xl flex items-start gap-3">
+                    <AlertCircle className="mt-1 flex-shrink-0" size={24} />
+                    <div>
+                        <h3 className="font-semibold text-lg">Staff Profile Not Found</h3>
+                        <p className="opacity-90 mt-1">
+                            Your account has the role <strong>{user?.role}</strong>, but no linked Staff Profile was found for email <strong>{user?.email}</strong>.
+                            <br />
+                            Please contact your administrator to create a Staff entry for this email address.
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {/* --- USER FORM --- */}
             {!isStaff && (
