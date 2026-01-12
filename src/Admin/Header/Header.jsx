@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, ChevronDown, Heart, Lock } from "lucide-react";
+import { LogOut, ChevronDown, Heart, Lock, Menu, X } from "lucide-react";
 import ChangePasswordModal from "./ChangePasswordModal";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -14,6 +14,8 @@ export default function Header({ showNavigation = true }) {
   const navigate = useNavigate();
   const [showLogout, setShowLogout] = useState(false);
   const [showPropertiesDropdown, setShowPropertiesDropdown] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showPropertiesMobile, setShowPropertiesMobile] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [headerLogo, setHeaderLogo] = useState("/images/login/logo.png");
   const { language, toggleLanguage } = useLanguage();
@@ -238,10 +240,18 @@ export default function Header({ showNavigation = true }) {
         onClose={() => setShowChangePasswordModal(false)}
       />
       <div className="max-w-[1400px] mx-auto px-6 py-5 flex items-center justify-between">
+        {/* Mobile Menu Button */}
+        <button
+          className="lg:hidden p-2 text-gray-600 hover:text-[#41398B] transition-colors rounded-lg hover:bg-gray-50"
+          onClick={() => setIsMobileMenuOpen(true)}
+          aria-label="Toggle menu"
+        >
+          <Menu size={24} />
+        </button>
         {/* Left Logo */}
         <div className="flex items-center">
           <img
-            className="h-8 md:h-12 object-contain cursor-pointer"
+            className="hidden lg:block h-8 md:h-12 object-contain cursor-pointer"
             src={getLogoUrl(headerLogo)}
             alt="Logo"
             onClick={() => navigate("/")}
@@ -365,7 +375,7 @@ export default function Header({ showNavigation = true }) {
           </Tooltip>
 
           {!localStorage.getItem("token") && (
-            <div>
+            <div className="hidden md:block">
               <Link className="font-medium text-[16px] hover:text-[#41398B]" to="/login">Login/Register</Link>
             </div>
           )}
@@ -564,6 +574,128 @@ export default function Header({ showNavigation = true }) {
           )}
         </div>
       </div>
-    </header>
+
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] lg:hidden"
+            />
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 h-full w-[300px] bg-white shadow-2xl z-[70] lg:hidden flex flex-col overflow-hidden"
+            >
+              {/* Menu Header */}
+              <div className="p-5 flex items-center justify-between border-b border-gray-100">
+                <img
+                  className="h-8 object-contain"
+                  src={getLogoUrl(headerLogo)}
+                  alt="Logo"
+                />
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-gray-500 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Menu Items */}
+              <div className="flex-1 overflow-y-auto py-4 px-4 flex flex-col gap-2">
+                <div onClick={() => setIsMobileMenuOpen(false)}>
+                  <AnimatedNavLink
+                    text={labels.homepages[language]}
+                    onClick={() => navigate("/")}
+                  />
+                </div>
+
+                {/* Properties Mobile Dropdown */}
+                <div className="flex flex-col border-b border-gray-100 pb-2">
+                  <button
+                    onClick={() => setShowPropertiesMobile(!showPropertiesMobile)}
+                    className="flex items-center justify-between w-full py-3 text-[16px] font-medium text-gray-700 hover:text-[#41398B] transition-colors"
+                  >
+                    {labels.properties[language]}
+                    <motion.div
+                      animate={{ rotate: showPropertiesMobile ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronDown size={18} />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {showPropertiesMobile && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden pl-4 flex flex-col gap-1"
+                      >
+                        {[
+                          { label: labels.propertiesLease[language], path: "/listing?type=Lease" },
+                          { label: labels.propertiesSale[language], path: "/listing?type=Sale" },
+                          { label: labels.propertiesHomestay[language], path: "/listing?type=Home Stay" }
+                        ].map((item, idx) => (
+                          <div key={idx} onClick={() => setIsMobileMenuOpen(false)}>
+                            <Link
+                              to={item.path}
+                              className="block py-2 text-gray-600 hover:text-[#41398B] text-sm"
+                            >
+                              {item.label}
+                            </Link>
+                          </div>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2 border-b border-gray-100">
+                  <Link to="/about" className="block text-gray-700 hover:text-[#41398B] font-medium">
+                    {labels.aboutus[language]}
+                  </Link>
+                </div>
+
+                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2 border-b border-gray-100">
+                  <Link to="/blogs" className="block text-gray-700 hover:text-[#41398B] font-medium">
+                    {labels.blog[language]}
+                  </Link>
+                </div>
+
+                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2">
+                  <Link to="/contact" className="block text-gray-700 hover:text-[#41398B] font-medium">
+                    {labels.contacts[language]}
+                  </Link>
+                </div>
+
+                {!localStorage.getItem("token") && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <button
+                      onClick={() => {
+                        navigate("/login");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full py-3 bg-[#41398B] text-white rounded-lg font-semibold hover:bg-[#352e7a] transition-all shadow-md active:scale-95"
+                    >
+                      {labels.loginRegister[language]}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </header >
   );
 }
