@@ -169,7 +169,7 @@ export default function PetPolicyPage({ goBack }) {
                     <table className="w-full text-sm text-left border-collapse">
                         <thead className="bg-gray-50 text-gray-700">
                             <tr>
-                                <th className="px-6 py-3 font-medium">Code</th>
+                                <th className="px-6 py-3 font-medium">S.no</th>
                                 <th className="px-6 py-3 font-medium">Policy</th>
                                 <th className="px-6 py-3 font-medium">Status</th>
                                 <th className="px-6 py-3 font-medium text-right">Actions</th>
@@ -189,7 +189,7 @@ export default function PetPolicyPage({ goBack }) {
                                         className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition`}
                                     >
                                         <td className="px-6 py-3">
-                                            {tableLang === "EN" ? row.code.en : row.code.vi}
+                                            {i + 1}
                                         </td>
                                         <td className="px-6 py-3">
                                             {tableLang === "EN" ? row.name.en : row.name.vi}
@@ -197,8 +197,8 @@ export default function PetPolicyPage({ goBack }) {
                                         <td className="px-6 py-3">
                                             <span
                                                 className={`px-3 py-1 rounded-full text-xs font-medium ${row.status === "Active"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : "bg-red-100 text-red-600"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-red-100 text-red-600"
                                                     }`}
                                             >
                                                 {row.status}
@@ -281,8 +281,8 @@ export default function PetPolicyPage({ goBack }) {
                             <button
                                 onClick={() => setActiveLang("EN")}
                                 className={`px-4 py-2 font-medium ${activeLang === "EN"
-                                        ? "text-black border-b-2 border-black"
-                                        : "text-gray-500"
+                                    ? "text-black border-b-2 border-black"
+                                    : "text-gray-500"
                                     }`}
                             >
                                 English
@@ -290,8 +290,8 @@ export default function PetPolicyPage({ goBack }) {
                             <button
                                 onClick={() => setActiveLang("VI")}
                                 className={`px-4 py-2 font-medium ${activeLang === "VI"
-                                        ? "text-black border-b-2 border-black"
-                                        : "text-gray-500"
+                                    ? "text-black border-b-2 border-black"
+                                    : "text-gray-500"
                                     }`}
                             >
                                 Vietnamese

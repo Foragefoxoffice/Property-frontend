@@ -42,9 +42,9 @@ export default function Roles() {
             label: t.properties,
             key: "properties",
             subModules: [
-                { key: "lease", label: t.lease, controls: ["hide", "view", "add", "edit", "delete", "copy", "bulkUpload"] },
-                { key: "sale", label: t.sale, controls: ["hide", "view", "add", "edit", "delete", "copy", "bulkUpload"] },
-                { key: "homestay", label: t.homeStay, controls: ["hide", "view", "add", "edit", "delete", "copy", "bulkUpload"] }
+                { key: "lease", label: t.lease, controls: ["hide", "view", "preview", "add", "edit", "delete", "copy", "bulkUpload"] },
+                { key: "sale", label: t.sale, controls: ["hide", "view", "preview", "add", "edit", "delete", "copy", "bulkUpload"] },
+                { key: "homestay", label: t.homeStay, controls: ["hide", "view", "preview", "add", "edit", "delete", "copy", "bulkUpload"] }
             ]
         },
         {
@@ -268,7 +268,7 @@ export default function Roles() {
         return (
             <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg mb-1 border border-gray-200">
                 <span className="text-gray-700 capitalize text-sm font-medium">
-                    {control === 'hide' ? t.hideTab : control === 'bulkUpload' ? t.bulkUpload : control === 'view' ? t.view : control === 'add' ? t.add : control === 'edit' ? t.edit : control === 'delete' ? t.deletePermission : control === 'copy' ? t.copy : control.charAt(0).toUpperCase() + control.slice(1)}
+                    {control === 'hide' ? t.hideTab : control === 'preview' ? t.preview : control === 'bulkUpload' ? t.bulkUpload : control === 'view' ? t.view : control === 'add' ? t.add : control === 'edit' ? t.edit : control === 'delete' ? t.deletePermission : control === 'copy' ? t.copy : control.charAt(0).toUpperCase() + control.slice(1)}
                 </span>
                 <Switch
                     size="small"

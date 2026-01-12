@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { Select, ConfigProvider, Checkbox } from "antd";
 import {
   Search,
   Eye,
@@ -46,6 +47,8 @@ export default function ManageTrashProperty() {
 
   // Delete confirm
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // Dropdown for type filter
   const [selectedType, setSelectedType] = useState("All");
@@ -87,6 +90,66 @@ export default function ManageTrashProperty() {
   const filteredRows = useMemo(() => {
     let list = properties;
 
+    // Filter
+    if (appliedFilters) {
+      const f = appliedFilters;
+
+      list = list.filter((property) => {
+        const info = property.listingInformation || {};
+        const pi = property.propertyInformation || {};
+
+        const matchTextObj = (apiObj, filterObj) => {
+          if (!filterObj || !filterObj.name) return true;
+          if (!apiObj) return false;
+
+          const apiEn = apiObj.en?.toLowerCase() || "";
+          const apiVi = apiObj.vi?.toLowerCase() || "";
+          const filterName = filterObj.name.toLowerCase();
+
+          return apiEn.includes(filterName) || apiVi.includes(filterName);
+        };
+
+        if (!matchTextObj(info.listingInformationProjectCommunity, f.projectId))
+          return false;
+        if (!matchTextObj(info.listingInformationZoneSubArea, f.zoneId))
+          return false;
+        // Block removed from UI but keeping logic optional if needed or remove validly
+        // if (!matchTextObj(info.listingInformationBlockName, f.blockId)) return false;
+
+        if (!matchTextObj(info.listingInformationPropertyType, f.propertyType))
+          return false;
+
+        if (
+          f.propertyNumber &&
+          !(
+            info.listingInformationPropertyNo?.en
+              ?.toLowerCase()
+              .includes(f.propertyNumber.toLowerCase()) ||
+            info.listingInformationPropertyNo?.vi
+              ?.toLowerCase()
+              .includes(f.propertyNumber.toLowerCase())
+          )
+        )
+          return false;
+
+        if (!matchTextObj(pi.informationFloors, f.floorRange)) return false;
+
+        if (
+          f.currency &&
+          f.currency.name &&
+          info.financialDetailsCurrency?.toLowerCase() !==
+          f.currency.name.toLowerCase()
+        )
+          return false;
+
+        const price = Number(info.financialDetailsPrice) || 0;
+        if (f.priceFrom && price < Number(f.priceFrom)) return false;
+        if (f.priceTo && price > Number(f.priceTo)) return false;
+
+        return true;
+      });
+    }
+
     // Search
     if (searchTerm.trim() !== "") {
       const search = searchTerm.toLowerCase();
@@ -95,7 +158,7 @@ export default function ManageTrashProperty() {
         const info = p.listingInformation || {};
 
         const propertyId =
-          info.listingInformationPropertyId?.toLowerCase() || "";
+          info.listingInformationPropertyId?.toString().toLowerCase() || "";
 
         const propertyNo =
           info.listingInformationPropertyNo?.[language]?.toLowerCase() ||
@@ -111,7 +174,7 @@ export default function ManageTrashProperty() {
     }
 
     return list;
-  }, [properties, searchTerm, language]);
+  }, [properties, searchTerm, language, appliedFilters]);
 
   // Final rows
   const currentRows = filteredRows;
@@ -159,6 +222,42 @@ export default function ManageTrashProperty() {
   };
 
   /* ======================================================
+     BULK ACTIONS
+  ====================================================== */
+  const handleBulkDelete = async () => {
+    try {
+      setLoading(true);
+      await Promise.all(selectedRowKeys.map(id => permanentlyDeleteProperty(id)));
+      CommonToaster("Selected properties deleted permanently", "success");
+      setSelectedRowKeys([]);
+      fetchProperties();
+    } catch (err) {
+      console.error(err);
+      CommonToaster("Bulk delete failed", "error");
+    } finally {
+      setLoading(false);
+      setBulkDeleteConfirm(false);
+    }
+  };
+
+  const onSelectAll = (e) => {
+    if (e.target.checked) {
+      const allKeys = currentRows.map(p => p._id);
+      setSelectedRowKeys(allKeys);
+    } else {
+      setSelectedRowKeys([]);
+    }
+  };
+
+  const onSelectRow = (id, checked) => {
+    if (checked) {
+      setSelectedRowKeys(prev => [...prev, id]);
+    } else {
+      setSelectedRowKeys(prev => prev.filter(k => k !== id));
+    }
+  };
+
+  /* ======================================================
      RENDER
   ====================================================== */
   return (
@@ -170,19 +269,23 @@ export default function ManageTrashProperty() {
 
         {/* Dropdown + Filters */}
         <div className="flex items-center gap-4">
-          <select
-            value={selectedType}
-            onChange={(e) => {
-              setSelectedType(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="border rounded-full px-4 py-2 bg-white"
-          >
-            <option value="All">All Types</option>
-            <option value="Sale">Sale</option>
-            <option value="Lease">Lease</option>
-            <option value="Home Stay">Home Stay</option>
-          </select>
+          <ConfigProvider theme={{ token: { colorPrimary: "#41398B" } }}>
+            <Select
+              value={selectedType}
+              onChange={(value) => {
+                setSelectedType(value);
+                setCurrentPage(1);
+              }}
+              className="min-w-[140px]"
+              size="large"
+              options={[
+                { value: "All", label: "All Types" },
+                { value: "Sale", label: "Sale" },
+                { value: "Lease", label: "Lease" },
+                { value: "Home Stay", label: "Home Stay" },
+              ]}
+            />
+          </ConfigProvider>
 
           <button
             onClick={() => setShowFilterPopup(true)}
@@ -209,18 +312,42 @@ export default function ManageTrashProperty() {
         />
       </div>
 
+      {/* BULK ACTIONS BAR */}
+      {selectedRowKeys.length > 0 && (
+        <div className="flex items-center gap-4 mb-4 bg-purple-50 p-4 rounded-xl border border-purple-100 animate-in fade-in slide-in-from-top-2">
+          <span className="text-sm font-semibold text-[#41398B]">
+            {selectedRowKeys.length} selected
+          </span>
+          <div className="h-4 w-px bg-purple-200"></div>
+          <button
+            onClick={() => setBulkDeleteConfirm(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full text-sm font-medium transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete Selected
+          </button>
+        </div>
+      )}
+
       {/* TABLE */}
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
         {loading ? (
           <SkeletonLoader />
         ) : (
-          <table className="w-full text-sm text-gray-700">
+          <table className="w-full text-sm text-gray-700 text-center">
             <thead className="bg-[#EAE9EE] text-gray-600">
               <tr>
+                <th className="px-6 py-3 w-12">
+                  <Checkbox
+                    checked={currentRows.length > 0 && selectedRowKeys.length === currentRows.length}
+                    indeterminate={selectedRowKeys.length > 0 && selectedRowKeys.length < currentRows.length}
+                    onChange={onSelectAll}
+                  />
+                </th>
                 <th className="px-6 py-3">Property ID</th>
                 <th className="px-6 py-3">Property No</th>
                 <th className="px-6 py-3">Type</th>
-                <th className="px-6 py-3">Block</th>
+
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3 text-right"></th>
               </tr>
@@ -236,6 +363,13 @@ export default function ManageTrashProperty() {
                     className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
                   >
                     <td className="px-6 py-4">
+                      <Checkbox
+                        checked={selectedRowKeys.includes(p._id)}
+                        onChange={(e) => onSelectRow(p._id, e.target.checked)}
+                      />
+                    </td>
+
+                    <td className="px-6 py-4">
                       {info?.listingInformationPropertyId}
                     </td>
 
@@ -247,9 +381,7 @@ export default function ManageTrashProperty() {
                       {info?.listingInformationPropertyType?.en || "—"}
                     </td>
 
-                    <td className="px-6 py-4">
-                      {info?.listingInformationBlockName?.en || "—"}
-                    </td>
+
 
                     <td className="px-6 py-4">
                       <span className="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
@@ -404,6 +536,32 @@ export default function ManageTrashProperty() {
           </div>
         </div>
       )}
+      {/* BULK DELETE CONFIRM MODAL */}
+      {bulkDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Delete {selectedRowKeys.length} properties?</h2>
+            <p className="text-gray-600 mb-6">
+              This action cannot be undone. These properties will be permanently removed.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setBulkDeleteConfirm(false)}
+                className="px-5 py-2 border rounded-full"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                className="px-6 py-2 bg-red-600 text-white rounded-full"
+              >
+                Delete All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

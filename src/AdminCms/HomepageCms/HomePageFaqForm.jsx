@@ -476,6 +476,88 @@ export default function HomePageFaqForm({
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                         />
                                                     </Form.Item>
+
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Đường Dẫn Nút</span>}
+                                                        name="homeFaqImageButtonLink"
+                                                        rules={[{ required: true, message: 'Vui lòng nhập đường dẫn nút' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="https://example.com/contact"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Ảnh Nền FAQ
+                                                                <span className="text-xs text-gray-400 ml-2 font-normal">
+                                                                    (Khuyên dùng: 1920x1080px, Tối đa: 5MB)
+                                                                </span>
+                                                            </span>
+                                                        }
+                                                    >
+                                                        <div className="space-y-3">
+                                                            {faqBgUrl ? (
+                                                                <div className="relative w-48 h-36 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50 group">
+                                                                    <img
+                                                                        src={faqBgUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${faqBgUrl}` : faqBgUrl}
+                                                                        alt="FAQ Background"
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                    <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setPreviewImage(faqBgUrl)}
+                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                            title="Xem trước"
+                                                                        >
+                                                                            <EyeOutlined className="text-[#41398B] text-lg" />
+                                                                        </button>
+                                                                        <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                                                            <button
+                                                                                type="button"
+                                                                                className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                                title="Đổi Ảnh"
+                                                                            >
+                                                                                <ReloadOutlined className="text-blue-600 text-lg" />
+                                                                            </button>
+                                                                        </Upload>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={removeImage}
+                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                            title="Xóa"
+                                                                        >
+                                                                            <X className="text-red-500 w-5 h-5" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <Upload
+                                                                    name="homeFaqBg"
+                                                                    listType="picture-card"
+                                                                    className="faq-uploader"
+                                                                    showUploadList={false}
+                                                                    beforeUpload={handleBeforeUpload}
+                                                                >
+                                                                    <div className="flex flex-col items-center justify-center h-full">
+                                                                        <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
+                                                                        <div className="text-sm text-gray-500 font-['Manrope']">Tải Ảnh Lên</div>
+                                                                    </div>
+                                                                </Upload>
+                                                            )}
+
+                                                            <Form.Item
+                                                                name="homeFaqBg"
+                                                                noStyle
+                                                            >
+                                                                <Input type="hidden" />
+                                                            </Form.Item>
+                                                        </div>
+                                                    </Form.Item>
                                                 </div>
 
                                                 {/* FAQ Content Section - Vietnamese */}

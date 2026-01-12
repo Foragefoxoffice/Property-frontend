@@ -7,7 +7,7 @@ import CreatePropertyListStep2 from "./CreatePropertyListStep2";
 import CreatePropertyListStep3 from "./CreatePropertyListStep3";
 import CreatePropertyListStep4SEO from "./CreatePropertyListStep4SEO";
 import CreatePropertyPreview from "./CreatePropertyPreview";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import {
   createPropertyListing,
   updatePropertyListing,
@@ -162,6 +162,7 @@ function mapApiToForm(api) {
     floorImageVisibility: api.floorImageVisibility || false,
     titleVisibility: api.titleVisibility || false,
     descriptionVisibility: api.descriptionVisibility || false,
+    whatNearbyVisibility: api.whatNearbyVisibility || false,
     propertyUtilityVisibility: api.propertyUtilityVisibility || false,
 
     listingInformationVisibility: api.listingInformationVisibility || {
@@ -264,7 +265,11 @@ export default function CreatePropertyPage({
   isEditMode = false,
   defaultTransactionType = null,
 }) {
-  const [step, setStep] = useState(1);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const initialStep = parseInt(searchParams.get('step')) || 1;
+
+  const [step, setStep] = useState(initialStep);
   const [propertyData, setPropertyData] = useState({});
   const { id } = useParams();
   const [dropdowns, setDropdowns] = useState({});
@@ -512,6 +517,7 @@ export default function CreatePropertyPage({
       floorImageVisibility: n.floorImageVisibility || false,
       titleVisibility: n.titleVisibility || false,
       descriptionVisibility: n.descriptionVisibility || false,
+      whatNearbyVisibility: n.whatNearbyVisibility || false,
       propertyUtilityVisibility: n.propertyUtilityVisibility || false,
 
       listingInformationVisibility: n.listingInformationVisibility || {

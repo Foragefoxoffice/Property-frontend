@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { getListingProperties } from '@/Api/action';
 import { Skeleton, Tooltip } from 'antd';
 import { useLanguage } from '@/Language/LanguageContext';
+import { translations } from '@/Language/translations';
 import { Heart } from 'lucide-react';
 import { useFavorites } from '@/Context/FavoritesContext';
 
 export default function HomeFeaturedProperties({ homePageData }) {
     const navigate = useNavigate();
     const { language } = useLanguage();
+    const t = translations[language];
     const { isFavorite, addFavorite, removeFavorite } = useFavorites();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -72,7 +74,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
     const getLocalizedValue = (value) => {
         if (!value) return '';
         if (typeof value === 'string') return value;
-        return value.en || value.vi || '';
+        return language === 'vi' ? (value.vi || value.en || '') : (value.en || value.vi || '');
     };
 
     const getCategoryBadgeClass = (category) => {
@@ -87,7 +89,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
         const cat = getLocalizedValue(category).toLowerCase();
         if (cat.includes('lease') || cat.includes('rent')) return 'For Rent';
         if (cat.includes('sale') || cat.includes('sell')) return 'For Sale';
-        if (cat.includes('home') || cat.includes('stay')) return 'For Rent';
+        if (cat.includes('home') || cat.includes('stay')) return 'Homestay';
         return getLocalizedValue(category);
     };
 
@@ -158,8 +160,8 @@ export default function HomeFeaturedProperties({ homePageData }) {
                         <svg className="w-24 h-24 text-purple-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
-                        <h2 className="text-2xl font-bold text-gray-700 mb-2">No Properties Available</h2>
-                        <p className="text-gray-500">Check back soon for new listings</p>
+                        <h2 className="text-2xl font-bold text-gray-700 mb-2">{t.noPropertiesFound}</h2>
+                        <p className="text-gray-500">{t.checkBackSoon}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
@@ -217,19 +219,26 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                             const priceNight = property.financialDetails?.financialDetailsPricePerNight;
                                             const genericPrice = property.financialDetails?.financialDetailsPrice;
 
-                                            let displayPrice = 'Contact for Price';
+                                            // Handle currency safely (extract code)
+                                            const currencyData = property.financialDetails?.financialDetailsCurrency;
+                                            const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
+
+                                            let displayPrice = t.contactForPrice;
                                             let displaySuffix = null;
 
+                                            // Helper to format price with currency
+                                            const formatP = (p) => `${Number(p).toLocaleString()} ${currencyCode}`;
+
                                             if (type === 'Sale' && priceSale) {
-                                                displayPrice = `₫ ${Number(priceSale).toLocaleString()}`;
+                                                displayPrice = formatP(priceSale);
                                             } else if (type === 'Lease' && priceLease) {
-                                                displayPrice = `₫ ${Number(priceLease).toLocaleString()}`;
+                                                displayPrice = formatP(priceLease);
                                                 displaySuffix = ' / month';
                                             } else if (type === 'Home Stay' && priceNight) {
-                                                displayPrice = `$ ${Number(priceNight).toLocaleString()}`;
+                                                displayPrice = formatP(priceNight);
                                                 displaySuffix = ' / night';
                                             } else if (genericPrice) {
-                                                displayPrice = `₫ ${Number(genericPrice).toLocaleString()}`;
+                                                displayPrice = formatP(genericPrice);
                                             }
 
                                             return (
@@ -246,7 +255,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                         {getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
                                             getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
                                             getLocalizedValue(property.listingInformation?.listingInformationProjectCommunity) ||
-                                            'Untitled Property'}
+                                            t.untitledProperty}
                                     </h3>
 
                                     {/* Location / Nearby */}
@@ -273,7 +282,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                                         d="M3 7h18M5 7v10M19 7v10M3 17h18M7 10h4a2 2 0 012 2v5M7 10a2 2 0 00-2 2v5"
                                                     />
                                                 </svg>
-                                                <span className="font-medium text-lg">{property.propertyInformation.informationBedrooms} Beds</span>
+                                                <span className="font-medium text-lg">{property.propertyInformation.informationBedrooms} {t.beds}</span>
                                             </div>
                                         )}
                                         {property.propertyInformation?.informationBathrooms > 0 && (
@@ -281,7 +290,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                                 <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 14h16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2zM6 14V9a3 3 0 0 1 6 0" />
                                                 </svg>
-                                                <span className="font-medium text-lg">{property.propertyInformation.informationBathrooms} Baths</span>
+                                                <span className="font-medium text-lg">{property.propertyInformation.informationBathrooms} {t.baths}</span>
                                             </div>
                                         )}
                                         {property.propertyInformation?.informationUnitSize > 0 && (
@@ -289,7 +298,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                                 <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.4 4.6a2 2 0 0 1 0 2.8l-12 12a2 2 0 0 1-2.8 0l-2-2a2 2 0 0 1 0-2.8l12-12a2 2 0 0 1 2.8 0zM12 7l2 2M10 9l2 2M8 11l2 2" />
                                                 </svg>
-                                                <span className="font-medium text-lg">{property.propertyInformation.informationUnitSize.toLocaleString()} Sqft</span>
+                                                <span className="font-medium text-lg">{property.propertyInformation.informationUnitSize.toLocaleString()} {t.sqft}</span>
                                             </div>
                                         )}
                                     </div>

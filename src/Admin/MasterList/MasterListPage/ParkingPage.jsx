@@ -178,7 +178,7 @@ export default function ParkingPage({ goBack }) {
                     <table className="w-full text-sm text-left border-collapse">
                         <thead className="bg-gray-50 text-gray-700">
                             <tr>
-                                <th className="px-6 py-3 font-medium">Code</th>
+                                <th className="px-6 py-3 font-medium">S.no</th>
                                 <th className="px-6 py-3 font-medium">Parking Availability</th>
                                 <th className="px-6 py-3 font-medium">Status</th>
                                 <th className="px-6 py-3 font-medium text-right">Actions</th>
@@ -199,7 +199,7 @@ export default function ParkingPage({ goBack }) {
                                             } hover:bg-gray-100 transition`}
                                     >
                                         <td className="px-6 py-3">
-                                            {tableLang === "EN" ? row.code.en : row.code.vi}
+                                            {i + 1}
                                         </td>
                                         <td className="px-6 py-3">
                                             {tableLang === "EN" ? row.name.en : row.name.vi}

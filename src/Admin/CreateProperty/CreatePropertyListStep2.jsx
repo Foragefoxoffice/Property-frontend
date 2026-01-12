@@ -662,8 +662,7 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en}`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -1110,8 +1109,7 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en}`,
                 value: c.currencySymbol?.en,
               }))}
             />
@@ -1448,8 +1446,7 @@ export default function CreatePropertyListStep2({
               className="w-full h-12 custom-select focus:ring-2 focus:ring-gray-300"
               popupClassName="custom-dropdown"
               options={currencies.map((c) => ({
-                label: `${c.currencyName?.[lang] || c.currencyName?.en} (${c.currencySymbol?.en
-                  })`,
+                label: `${c.currencyName?.[lang] || c.currencyName?.en}`,
                 value: c.currencySymbol?.en,
               }))}
             />

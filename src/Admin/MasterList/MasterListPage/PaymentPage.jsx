@@ -237,7 +237,7 @@ export default function PaymentPage() {
           <table className="w-full text-sm border-collapse">
             <thead className="bg-gray-50 text-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left">{isVI ? "Mã" : "Code"}</th>
+                <th className="px-6 py-3 text-left">{isVI ? "STT" : "S.no"}</th>
                 <th className="px-6 py-3 text-left">
                   {isVI ? "Phương thức" : "Payment Name"}
                 </th>
@@ -264,7 +264,7 @@ export default function PaymentPage() {
                       } hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-3">
-                      {isVI ? row.code.vi : row.code.en}
+                      {startIndex + i + 1}
                     </td>
                     <td className="px-6 py-3">
                       {isVI ? row.name.vi : row.name.en}

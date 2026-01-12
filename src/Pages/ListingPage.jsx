@@ -16,12 +16,14 @@ import Loader from '@/components/Loader/Loader';
 import { Heart } from 'lucide-react';
 import { useLanguage } from '@/Language/LanguageContext';
 import { useFavorites } from '../Context/FavoritesContext';
+import { translations } from '@/Language/translations';
 
 export default function ListingPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { can } = usePermissions();
     const { language } = useLanguage();
+    const t = translations[language];
     const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
     // Initialize category from URL or default to 'All'
@@ -273,7 +275,7 @@ export default function ListingPage() {
     const getLocalizedValue = (value) => {
         if (!value) return '';
         if (typeof value === 'string') return value;
-        return value.en || value.vi || '';
+        return language === 'vi' ? (value.vi || value.en || '') : (value.en || value.vi || '');
     };
 
     const getCategoryBadgeClass = (category) => {
@@ -286,7 +288,7 @@ export default function ListingPage() {
 
     const getCategoryLabel = (category) => {
         const cat = getLocalizedValue(category).toLowerCase();
-        if (cat.includes('lease') || cat.includes('rent')) return 'For Lease';
+        if (cat.includes('lease') || cat.includes('rent')) return 'For Rent';
         if (cat.includes('sale') || cat.includes('sell')) return 'For Sale';
         if (cat.includes('home') || cat.includes('stay')) return 'Homestay';
         return getLocalizedValue(category);
@@ -300,17 +302,17 @@ export default function ListingPage() {
                 <div className="">
                     <div className="max-w-7xl mx-auto px-6 py-5">
                         <div className="flex items-center gap-3 text-sm mb-4">
-                            <a href="/" className="text-gray-500 hover:text-[#41398B] font-medium transition-colors">Home</a>
+                            <a href="/" className="text-gray-500 hover:text-[#41398B] font-medium transition-colors">{t.home}</a>
                             <span className="text-gray-300">/</span>
-                            <span className="text-[#41398B] font-semibold">Properties</span>
+                            <span className="text-[#41398B] font-semibold">{t.properties}</span>
                         </div>
 
                         <div className="flex flex-wrap justify-between items-center gap-4">
                             <div>
                                 <h1 className="text-3xl font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-1">
-                                    Discover Your Dream Property
+                                    {t.discoverDreamProperty}
                                 </h1>
-                                <p className="text-gray-900 text-md">Find the perfect place to call home</p>
+                                <p className="text-gray-900 text-md">{t.findPerfectPlace}</p>
                             </div>
 
                             <div className="flex items-center gap-3">
@@ -322,11 +324,11 @@ export default function ListingPage() {
                                     style={{ width: 180 }}
                                     size="large"
                                 >
-                                    <Select.Option value="default">Default</Select.Option>
-                                    <Select.Option value="price-low">Price: Low to High</Select.Option>
-                                    <Select.Option value="price-high">Price: High to Low</Select.Option>
-                                    <Select.Option value="newest">Newest</Select.Option>
-                                    <Select.Option value="oldest">Oldest</Select.Option>
+                                    <Select.Option value="default">{t.defaultSort}</Select.Option>
+                                    <Select.Option value="price-low">{t.priceLowHigh}</Select.Option>
+                                    <Select.Option value="price-high">{t.priceHighLow}</Select.Option>
+                                    <Select.Option value="newest">{t.newest}</Select.Option>
+                                    <Select.Option value="oldest">{t.oldest}</Select.Option>
                                 </Select>
                             </div>
                         </div>
@@ -351,35 +353,35 @@ export default function ListingPage() {
                                                     }`}
                                                 onClick={() => setSelectedCategory(cat)}
                                             >
-                                                {cat === 'All' ? 'View All' : cat === 'Lease' ? 'For Lease' : cat === 'Sale' ? 'For Sale' : 'Homestay'}
+                                                {cat === 'All' ? t.viewAll : cat === 'Lease' ? t.forRent : cat === 'Sale' ? t.forSale : t.homestay}
                                             </button>
                                         ))}
                                     </div>
                                 </div>
 
                                 <div className="border-t border-gray-200 mt-0 mb-4"></div>
-                                <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">Looking For</h3>
+                                <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">{t.lookingFor}</h3>
                                 {/* Property ID / Keyword Search */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Property ID or Keyword</label>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.propertyIdOrKeyword}</label>
                                     <input
                                         type="text"
                                         className="w-full px-4 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                        placeholder="Search by ID or keyword..."
+                                        placeholder={t.propertyIdOrKeyword}
                                         value={filters.keyword}
                                         onChange={(e) => handleFilterChange('keyword', e.target.value)}
                                     />
                                 </div>
-                                <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">Location</h3>
+                                <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">{t.location}</h3>
                                 {/* Project / Community */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Project / Community</label>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.projectCommunity}</label>
                                     <Select
                                         className="custom-selects"
                                         popupClassName="custom-dropdown"
                                         value={filters.projectId || undefined}
                                         onChange={(value) => handleFilterChange('projectId', value || '')}
-                                        placeholder="Select Project"
+                                        placeholder={t.projectCommunity}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -398,13 +400,13 @@ export default function ListingPage() {
 
                                 {/* Area / Zone */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Area / Zone</label>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.areaZone}</label>
                                     <Select
                                         className="custom-selects"
                                         popupClassName="custom-dropdown"
                                         value={filters.zoneId || undefined}
                                         onChange={(value) => handleFilterChange('zoneId', value || '')}
-                                        placeholder="Select Area/Zone"
+                                        placeholder={t.areaZone}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -423,13 +425,13 @@ export default function ListingPage() {
 
                                 {/* Block Name */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Block Name</label>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.blockName}</label>
                                     <Select
                                         className="custom-selects"
                                         popupClassName="custom-dropdown"
                                         value={filters.blockId || undefined}
                                         onChange={(value) => handleFilterChange('blockId', value || '')}
-                                        placeholder="Select Block"
+                                        placeholder={t.blockName}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -448,13 +450,13 @@ export default function ListingPage() {
 
                                 {/* Property Type */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Property Type</label>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.propertyType}</label>
                                     <Select
                                         className="custom-selects"
                                         popupClassName="custom-dropdown"
                                         value={filters.propertyType || undefined}
                                         onChange={(value) => handleFilterChange('propertyType', value || '')}
-                                        placeholder="Select Type"
+                                        placeholder={t.propertyType}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
@@ -474,7 +476,7 @@ export default function ListingPage() {
                                 {/* Bedrooms & Bathrooms */}
                                 <div className="grid grid-cols-2 gap-3 mb-4">
                                     <div>
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Bedrooms</label>
+                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.bedrooms}</label>
                                         <Select
                                             className="custom-selects"
                                             popupClassName="custom-dropdown"
@@ -492,7 +494,7 @@ export default function ListingPage() {
                                         </Select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Bathrooms</label>
+                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.bathrooms}</label>
                                         <Select
                                             className="custom-selects"
                                             popupClassName="custom-dropdown"
@@ -511,27 +513,27 @@ export default function ListingPage() {
                                 </div>
 
                                 <div className="border-t border-gray-200 my-4"></div>
-                                <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">Price Range</h3>
+                                <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2">{t.priceRange}</h3>
 
                                 {/* Currency */}
                                 <div className="mb-4">
-                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Currency</label>
+                                    <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.currency}</label>
                                     <Select
                                         className="custom-selects"
                                         popupClassName="custom-dropdown"
                                         value={filters.currency || undefined}
                                         onChange={(value) => handleFilterChange('currency', value || '')}
-                                        placeholder="Select Currency"
+                                        placeholder={t.currency}
                                         style={{ width: '100%' }}
                                         size="large"
                                         allowClear
                                     >
                                         {currencies.map((curr) => {
-                                            const code = getLocalizedValue(curr.currencyCode) || getLocalizedValue(curr.currencyName) || 'N/A';
-                                            const symbol = getLocalizedValue(curr.currencySymbol) || '';
+                                            const name = getLocalizedValue(curr.currencyName) || 'N/A';
+                                            const code = getLocalizedValue(curr.currencyCode) || '';
                                             return (
                                                 <Select.Option key={curr._id} value={code}>
-                                                    {code} {symbol && `(${symbol})`}
+                                                    {name} ({code})
                                                 </Select.Option>
                                             );
                                         })}
@@ -541,21 +543,21 @@ export default function ListingPage() {
                                 {/* Min & Max Price */}
                                 <div className="grid grid-cols-2 gap-3 mb-6">
                                     <div>
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Min Price</label>
+                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.minPrice}</label>
                                         <input
                                             type="number"
                                             className="w-full px-3 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                            placeholder="Min"
+                                            placeholder={t.minPrice}
                                             value={filters.minPrice}
                                             onChange={(e) => handleFilterChange('minPrice', e.target.value)}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">Max Price</label>
+                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.maxPrice}</label>
                                         <input
                                             type="number"
                                             className="w-full px-3 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                            placeholder="Max"
+                                            placeholder={t.maxPrice}
                                             value={filters.maxPrice}
                                             onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
                                         />
@@ -567,7 +569,7 @@ export default function ListingPage() {
                                     className="w-full px-6 py-3.5 bg-gradient-to-r from-[#41398B] to-[#5b52a3] text-white font-bold rounded-xl hover:shadow-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all"
                                     onClick={handleSearch}
                                 >
-                                    Apply Filters
+                                    {t.applyFilters}
                                 </button>
                             </div>
                         </aside>
@@ -581,8 +583,8 @@ export default function ListingPage() {
                                     <svg className="w-24 h-24 text-purple-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                     </svg>
-                                    <h2 className="text-2xl font-bold text-gray-700 mb-2">No Properties Found</h2>
-                                    <p className="text-gray-500">Try adjusting your filters</p>
+                                    <h2 className="text-2xl font-bold text-gray-700 mb-2">{t.noPropertiesFound}</h2>
+                                    <p className="text-gray-500">{t.adjustFilters}</p>
                                 </div>
                             ) : (
                                 <>
@@ -643,26 +645,30 @@ export default function ListingPage() {
                                                                 const priceNight = property.financialDetails?.financialDetailsPricePerNight;
                                                                 const genericPrice = property.financialDetails?.financialDetailsPrice;
 
-                                                                let displayPrice = 'Contact for Price';
+                                                                // Handle currency safely (extract code)
+                                                                const currencyData = property.financialDetails?.financialDetailsCurrency;
+                                                                const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
+
+                                                                let displayPrice = t.contactForPrice;
                                                                 let displaySuffix = null;
 
+                                                                // Helper to format price with currency
+                                                                const formatP = (p) => `${Number(p).toLocaleString()} ${currencyCode}`;
+
                                                                 if (type === 'Sale' && priceSale) {
-                                                                    displayPrice = `₫ ${Number(priceSale).toLocaleString()}`;
+                                                                    displayPrice = formatP(priceSale);
                                                                 } else if (type === 'Lease' && priceLease) {
-                                                                    displayPrice = `₫ ${Number(priceLease).toLocaleString()}`;
+                                                                    displayPrice = formatP(priceLease);
                                                                     displaySuffix = ' / month';
                                                                 } else if (type === 'Home Stay' && priceNight) {
-                                                                    displayPrice = `$ ${Number(priceNight).toLocaleString()}`;
+                                                                    displayPrice = formatP(priceNight);
                                                                     displaySuffix = ' / night';
                                                                 } else if (genericPrice) {
+                                                                    displayPrice = formatP(genericPrice);
                                                                     if (selectedCategory === 'Lease') {
-                                                                        displayPrice = `₫ ${Number(genericPrice).toLocaleString()}`;
                                                                         displaySuffix = ' / month';
                                                                     } else if (selectedCategory === 'Home Stay') {
-                                                                        displayPrice = `$ ${Number(genericPrice).toLocaleString()}`;
                                                                         displaySuffix = ' / night';
-                                                                    } else {
-                                                                        displayPrice = `₫ ${Number(genericPrice).toLocaleString()}`;
                                                                     }
                                                                 }
 
@@ -680,7 +686,7 @@ export default function ListingPage() {
                                                             {getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
                                                                 getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
                                                                 getLocalizedValue(property.listingInformation?.listingInformationProjectCommunity) ||
-                                                                'Untitled Property'}
+                                                                t.untitledProperty}
                                                         </h3>
 
                                                         {/* Location / Nearby */}

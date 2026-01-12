@@ -238,7 +238,7 @@ export default function PropertyPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-6 py-3 font-medium text-left">
-                  {isVI ? "Mã (VI)" : "Code (EN)"}
+                  {isVI ? "STT" : "S.no"}
                 </th>
                 <th className="px-6 py-3 font-medium text-left">
                   {isVI ? "Tên dự án / Cộng đồng" : "Name (EN)"}
@@ -266,7 +266,7 @@ export default function PropertyPage() {
                       } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
-                      {isVI ? row.code.vi : row.code.en}
+                      {startIndex + i + 1}
                     </td>
                     <td className="px-6 py-3">
                       {isVI ? row.name.vi : row.name.en}

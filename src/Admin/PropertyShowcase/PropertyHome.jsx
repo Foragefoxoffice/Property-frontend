@@ -12,13 +12,21 @@ export default function PropertyHome({ property }) {
   const t = translations[language];
 
   // Safe extraction
+  const getLocalizedValue = (value) => {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    return language === 'vi' ? (value.vi || value.en || '') : (value.en || value.vi || '');
+  };
+
   const images = safeArray(property?.imagesVideos?.propertyImages).filter(Boolean);
   const type = safeVal(property?.listingInformation?.listingInformationTransactionType) || "";
-  const propertyType = safeVal(property?.listingInformation?.listingInformationPropertyType) || "";
-  const title = safeVal(property?.listingInformation?.listingInformationPropertyTitle) || "";
+  const propertyType = getLocalizedValue(property?.listingInformation?.listingInformationPropertyType) || "";
+  const title = getLocalizedValue(property?.listingInformation?.listingInformationPropertyTitle) || "";
   const priceSale = property?.financialDetails?.financialDetailsPrice;
   const priceLease = property?.financialDetails?.financialDetailsLeasePrice;
   const priceNight = property?.financialDetails?.financialDetailsPricePerNight;
+  const currencyData = property?.financialDetails?.financialDetailsCurrency;
+  const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
 
   useEffect(() => {
     if (!images.length) return;
@@ -29,28 +37,27 @@ export default function PropertyHome({ property }) {
   }, [images.length]);
 
   const getShowcasePrice = () => {
-    if (type === "Sale" && priceSale) return `${formatNumber(priceSale)} ${property?.financialDetails?.financialDetailsCurrency}`;
-    if (type === "Lease" && priceLease) return `${formatNumber(priceLease)} ${property?.financialDetails?.financialDetailsCurrency} ${t.monthSuffix}`;
-    if (type === "Home Stay" && priceNight) return `${formatNumber(priceNight)} ${property?.financialDetails?.financialDetailsCurrency} ${t.nightSuffix}`;
-    return "-";
+    if (type === "Sale" && priceSale) return `${formatNumber(priceSale)} ${currencyCode}`;
+    if (type === "Lease" && priceLease) return `${formatNumber(priceLease)} ${currencyCode} ${t.monthSuffix}`;
+    if (type === "Home Stay" && priceNight) return `${formatNumber(priceNight)} ${currencyCode} ${t.nightSuffix}`;
+    return t.contactForPrice;
   };
 
   const getLocalizedType = (typeVal) => {
     if (!typeVal) return "—";
     const lower = typeVal.toLowerCase();
-    if (lower === "sale") return t.sale;
-    if (lower === "lease") return t.lease;
-    if (lower === "home stay" || lower === "homestay") return t.homeStay;
+    if (lower.includes("sale")) return t.sale;
+    if (lower.includes("lease")) return t.lease;
+    if (lower.includes("home") || lower.includes("stay")) return t.homeStay;
     return typeVal;
   };
 
   const getTypeColor = () => {
-    switch (type) {
-      case "Sale": return "#FFE6E7";
-      case "Lease": return "#DAFFF9";
-      case "Home Stay": return "#DEF6FE";
-      default: return "#F2F2F2";
-    }
+    const lower = (type || '').toLowerCase();
+    if (lower.includes('sale')) return "#FFE6E7";
+    if (lower.includes('lease')) return "#DAFFF9";
+    if (lower.includes('home') || lower.includes('stay')) return "#DEF6FE";
+    return "#F2F2F2";
   };
 
   const handleShare = async () => {

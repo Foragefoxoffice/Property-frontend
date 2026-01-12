@@ -295,7 +295,7 @@ export default function UnitPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left font-medium">
-                  {isVI ? "Mã" : "Code"}
+                  {isVI ? "STT" : "S.no"}
                 </th>
                 <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Tên đơn vị" : "Unit Name"}
@@ -326,7 +326,7 @@ export default function UnitPage() {
                       } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
-                      {isVI ? row.code.vi : row.code.en}
+                      {startIndex + i + 1}
                     </td>
                     <td className="px-6 py-3">
                       {isVI ? row.name.vi : row.name.en}

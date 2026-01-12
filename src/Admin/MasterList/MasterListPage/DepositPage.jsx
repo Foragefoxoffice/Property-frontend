@@ -251,7 +251,7 @@ export default function DepositPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-6 py-3 font-medium text-left">
-                  {isVI ? "Mã" : "Code"}
+                  {isVI ? "STT" : "S.no"}
                 </th>
                 <th className="px-6 py-3 font-medium text-left">
                   {isVI ? "Tên đặt cọc" : "Deposit Name"}
@@ -279,7 +279,7 @@ export default function DepositPage() {
                       } hover:bg-gray-100`}
                   >
                     <td className="px-6 py-3">
-                      {isVI ? row.code.vi : row.code.en}
+                      {startIndex + i + 1}
                     </td>
                     <td className="px-6 py-3">
                       {isVI ? row.name.vi : row.name.en}

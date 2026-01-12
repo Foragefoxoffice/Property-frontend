@@ -235,7 +235,7 @@ export default function FurnishingPage() {
           <table className="w-full text-sm border-collapse">
             <thead className="bg-gray-50 text-gray-700">
               <tr>
-                <th className="px-6 py-3">{isVI ? "Mã" : "Code"}</th>
+                <th className="px-6 py-3">{isVI ? "STT" : "S.no"}</th>
                 <th className="px-6 py-3">
                   {isVI ? "Nội thất" : "Furnishing"}
                 </th>
@@ -260,7 +260,7 @@ export default function FurnishingPage() {
                       } hover:bg-gray-100 transition`}
                   >
                     <td className="px-6 py-3">
-                      {isVI ? row.code.vi : row.code.en}
+                      {startIndex + i + 1}
                     </td>
                     <td className="px-6 py-3">
                       {isVI ? row.name.vi : row.name.en}

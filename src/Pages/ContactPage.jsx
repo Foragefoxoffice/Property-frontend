@@ -40,8 +40,8 @@ export default function ContactPage() {
             <SmoothScroll />
             <Header />
             <ContactBanner data={pageData} />
-            <ContactMap data={pageData} />
             <ContactReachForm data={pageData} />
+            <ContactMap data={pageData} />
             <Footer />
         </div>
     );

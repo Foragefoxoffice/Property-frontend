@@ -530,7 +530,6 @@ export default function ManageProperty({
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyType}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.actionBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.sentBy}</th>
-                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.availabilitystatus}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.publishTheWebsite}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] text-right whitespace-nowrap"></th>
               </tr>
@@ -588,8 +587,6 @@ export default function ManageProperty({
                       <span className="text-sm font-medium text-gray-900">{p.createdByName || p.createdBy?.name || "—"}</span>
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">{blockName}</td>
-
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span
@@ -639,6 +636,16 @@ export default function ManageProperty({
                           className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
                         >
                           <Eye className="w-4 h-4 text-gray-600" />
+                        </button>
+                      )}
+
+                      {can(permissionKey, 'preview') && (
+                        <button
+                          onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}?step=5`)}
+                          title="Preview"
+                          className="p-2 rounded-full hover:bg-purple-100 bg-purple-50 transition border border-purple-300 h-10 w-10 cursor-pointer flex justify-center items-center"
+                        >
+                          <Eye className="w-4 h-4 text-purple-600" />
                         </button>
                       )}
 

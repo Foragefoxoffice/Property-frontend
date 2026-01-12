@@ -117,13 +117,25 @@ export default function PropertyDetailsSection({ property }) {
   /* -------------------------------------------------------
      SAFE data extraction using helpers
   ------------------------------------------------------- */
+  const { language } = useLanguage();
+
+  // Helper for localized values
+  const getLocalizedValue = (value) => {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    return language === 'vi' ? (value.vi || value.en || '') : (value.en || value.vi || '');
+  };
+
   const p = property || {};
   const info = p.propertyInformation || {};
   const list = p.listingInformation || {};
   const fin = p.financialDetails || {};
   const what = p.whatNearby || {};
 
+  // Use safeVal (English/Code) for logic checks
   const type = safeVal(list?.listingInformationTransactionType);
+  // Use getLocalizedValue for Display
+  const typeDisplay = getLocalizedValue(list?.listingInformationTransactionType);
 
   const videos = safeArray(p?.imagesVideos?.propertyVideo);
   const floorplans = safeArray(p?.imagesVideos?.floorPlan);
@@ -133,20 +145,14 @@ export default function PropertyDetailsSection({ property }) {
   const visProp = p.propertyInformationVisibility || {};
   const visFin = p.financialVisibility || {};
   const visDec = p.descriptionVisibility || {};
+  const visWhatNearby = p.whatNearbyVisibility || false;
   const visVideo = p.videoVisibility || {};
   const visFloor = p.floorImageVisibility || {};
-  const { language } = useLanguage();
+
   const { isFavorite, addFavorite: addFavoriteContext, removeFavorite } = useFavorites();
   const navigate = useNavigate();
   const [recentProperties, setRecentProperties] = useState([]);
   const [loadingRecent, setLoadingRecent] = useState(true);
-
-  // Helper for localized values
-  const getLocalizedValue = (value) => {
-    if (!value) return '';
-    if (typeof value === 'string') return value;
-    return value.en || value.vi || '';
-  };
   const t = translations[language];
   const sectionRefs = {
     Overview: useRef(null),
@@ -313,7 +319,7 @@ export default function PropertyDetailsSection({ property }) {
                 <OverviewCard
                   icon={<SlidersHorizontal />}
                   label={`${t.propertyType}:`}
-                  value={safeVal(list?.listingInformationPropertyType)}
+                  value={getLocalizedValue(list?.listingInformationPropertyType)}
                 />
               )}
               {show(visProp.bedrooms) && (
@@ -334,28 +340,28 @@ export default function PropertyDetailsSection({ property }) {
                 <OverviewCard
                   icon={<Armchair />}
                   label={`${t.furnishing}:`}
-                  value={safeVal(info?.informationFurnishing)}
+                  value={getLocalizedValue(info?.informationFurnishing)}
                 />
               )}
               {show(visProp.unit) && (
                 <OverviewCard
                   icon={<Ruler />}
                   label={`${t.size}:`}
-                  value={`${safeVal(info?.informationUnitSize)} m²`}
+                  value={`${safeVal(info?.informationUnitSize)} ${t.sqft || 'm²'}`}
                 />
               )}
               {show(visProp.floorRange) && (
                 <OverviewCard
                   icon={<Layers />}
                   label={`${t.floorRange}:`}
-                  value={safeVal(info?.informationFloors)}
+                  value={getLocalizedValue(info?.informationFloors)}
                 />
               )}
               {show(visProp.view) && (
                 <OverviewCard
                   icon={<Eye />}
                   label={`${t.view}:`}
-                  value={safeVal(info?.informationView)}
+                  value={getLocalizedValue(info?.informationView)}
                 />
               )}
             </div>
@@ -387,22 +393,24 @@ export default function PropertyDetailsSection({ property }) {
           ------------------------------------------------------- */}
           <section className="bg-white p-6 rounded-2xl mb-12">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <EcoparkItem
-                label={`${t.projectCommunity}:`}
-                value={safeVal(list?.listingInformationProjectCommunity)}
-              />
+              {show(visList.projectCommunity) && (
+                <EcoparkItem
+                  label={`${t.projectCommunity}:`}
+                  value={getLocalizedValue(list?.listingInformationProjectCommunity)}
+                />
+              )}
 
               {show(visList.areaZone) && (
                 <EcoparkItem
                   label={`${t.areaZone}:`}
-                  value={safeVal(list?.listingInformationZoneSubArea)}
+                  value={getLocalizedValue(list?.listingInformationZoneSubArea)}
                 />
               )}
 
               {show(visList.blockName) && (
                 <EcoparkItem
                   label={`${t.block}:`}
-                  value={safeVal(list?.listingInformationBlockName)}
+                  value={getLocalizedValue(list?.listingInformationBlockName)}
                 />
               )}
               {(type === "Sale" || type === "Lease") &&
@@ -418,11 +426,11 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              DESCRIPTION (UI preserved)
           ------------------------------------------------------- */}
-          {show(visDec.descriptionVisibility) && (
+          {show(visWhatNearby) && (
             <section className="bg-white p-6 rounded-2xl mb-12">
               <h2 className="text-xl font-semibold mb-5">{t.description}</h2>
               <p className="text-gray-700 leading-6">
-                {safeVal(what?.whatNearbyDescription) ||
+                {getLocalizedValue(what?.whatNearbyDescription) ||
                   t.noDescription}
               </p>
             </section>
@@ -804,19 +812,19 @@ export default function PropertyDetailsSection({ property }) {
                     {prop.propertyInformation?.informationBedrooms > 0 && (
                       <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
                         <Bed size={18} className="text-[#41398B]" />
-                        <span className="font-medium">{prop.propertyInformation.informationBedrooms} Beds</span>
+                        <span className="font-medium">{prop.propertyInformation.informationBedrooms} {t.beds}</span>
                       </div>
                     )}
                     {prop.propertyInformation?.informationBathrooms > 0 && (
                       <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
                         <Bath size={18} className="text-[#41398B]" />
-                        <span className="font-medium">{prop.propertyInformation.informationBathrooms} Baths</span>
+                        <span className="font-medium">{prop.propertyInformation.informationBathrooms} {t.baths}</span>
                       </div>
                     )}
                     {prop.propertyInformation?.informationUnitSize > 0 && (
                       <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
                         <Ruler size={18} className="text-[#41398B]" />
-                        <span className="font-medium">{prop.propertyInformation.informationUnitSize.toLocaleString()} m²</span>
+                        <span className="font-medium">{prop.propertyInformation.informationUnitSize.toLocaleString()} {t.sqft || 'm²'}</span>
                       </div>
                     )}
                   </div>

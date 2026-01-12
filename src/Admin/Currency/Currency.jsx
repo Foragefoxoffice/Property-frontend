@@ -358,7 +358,7 @@ export default function Currency({ goBack }) {
           <thead className="bg-gray-50 text-gray-700">
             <tr>
               <th className="px-6 py-3 text-left font-medium">
-                {isVI ? "Mã" : "Code"}
+                {isVI ? "STT" : "S.no"}
               </th>
               <th className="px-6 py-3 text-left font-medium">
                 {isVI ? "Tên tiền tệ" : "Currency Name"}
@@ -389,7 +389,7 @@ export default function Currency({ goBack }) {
                     } hover:bg-gray-100`}
                 >
                   <td className="px-6 py-3">
-                    {isVI ? row.currencyCode.vi : row.currencyCode.en}
+                    {startIndex + i + 1}
                   </td>
                   <td className="px-6 py-3">
                     {isVI ? row.currencyName.vi : row.currencyName.en}

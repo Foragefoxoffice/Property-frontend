@@ -406,11 +406,11 @@ export default function HomeBanner({ homePageData }) {
                                         allowClear
                                     >
                                         {currencies.map((curr) => {
-                                            const code = getLocalizedValue(curr.currencyCode) || getLocalizedValue(curr.currencyName) || 'N/A';
-                                            const symbol = getLocalizedValue(curr.currencySymbol) || '';
+                                            const name = getLocalizedValue(curr.currencyName) || 'N/A';
+                                            const code = getLocalizedValue(curr.currencyCode) || '';
                                             return (
                                                 <Select.Option key={curr._id} value={code}>
-                                                    {code} {symbol && `(${symbol})`}
+                                                    {name}
                                                 </Select.Option>
                                             );
                                         })}

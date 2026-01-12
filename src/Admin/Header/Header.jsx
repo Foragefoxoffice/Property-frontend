@@ -34,6 +34,7 @@ export default function Header({ showNavigation = true }) {
     changePassword: { en: "Change Password", vi: "Đổi mật khẩu" },
     dashboard: { en: "Dashboard", vi: "Trang tổng quan" },
     myFavorites: { en: "My Favorites", vi: "Yêu thích của tôi" },
+    visitSite: { en: "Visit Site", vi: "Truy cập trang web" },
   };
 
   // Fetch header logo from CMS
@@ -99,12 +100,14 @@ export default function Header({ showNavigation = true }) {
           {/* Right Side Controls */}
           <div className="flex items-center gap-5">
             {/* Visit Site Button */}
-            <button
-              onClick={() => navigate("/")}
-              className="px-4 py-2 bg-[#41398B] cursor-pointer text-white rounded-lg text-sm font-semibold transition-colors"
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 bg-[#41398B] cursor-pointer text-white rounded-lg text-sm font-semibold transition-colors hover:bg-[#352e7a]"
             >
-              Visit Site
-            </button>
+              {labels.visitSite[language]}
+            </a>
 
             {/* Language Toggle */}
             <div className="inline-flex items-center gap-1 rounded-full bg-gray-200 p-1">
@@ -175,7 +178,9 @@ export default function Header({ showNavigation = true }) {
                   <div className="w-8 h-8 rounded-full bg-[#41398B] text-white flex items-center justify-center text-sm font-bold">
                     {initials}
                   </div>
-                  <span className="text-[#41398B] text-sm font-medium">Admin</span>
+                  <span className="text-[#41398B] text-sm font-medium">
+                    {userName ? userName.split(" ")[0] : "Admin"}
+                  </span>
                 </div>
                 <AnimatePresence>
                   {showLogout && (
