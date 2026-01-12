@@ -23,6 +23,8 @@ import { uploadBlogImage } from '../../Api/action';
 import { getImageUrl } from '../../utils/imageHelper';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 import { X } from 'lucide-react';
 
 export default function BlogMainForm({
@@ -37,6 +39,8 @@ export default function BlogMainForm({
     isEditMode
 }) {
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeTab, setActiveTab] = useState('en');
     const [mainImageUrl, setMainImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
@@ -180,10 +184,10 @@ export default function BlogMainForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Blog Content & Metadata' : 'Nội Dung & Metadata Blog'}
+                            {t.blogContentMetadata}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Write your blog post and manage settings' : 'Viết bài viết và quản lý cài đặt'}
+                            {t.blogContentMetadataDesc}
                         </p>
                     </div>
                 </div>

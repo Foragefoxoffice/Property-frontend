@@ -135,7 +135,7 @@ export default function HomeBanner({ homePageData }) {
 
     return (
         <>
-            <div className="relative min-h-[100vh] bg-cover bg-center bg-no-repeat"
+            <div className="relative min-h-[70vh] md:min-h-[100vh] bg-cover bg-center bg-no-repeat"
                 style={{
                     backgroundImage: homePageData?.backgroundImage
                         ? `url(${getImageUrl(homePageData.backgroundImage)})`
@@ -165,7 +165,7 @@ export default function HomeBanner({ homePageData }) {
                 {/* Tabs */}
                 <div className="flex gap-3 justify-center">
                     <button
-                        className={`px-8 py-3 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Rent'
+                        className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Rent'
                             ? 'bg-[#fff] text-[#41398B]'
                             : 'bg-[#00000066] text-[#fff] hover:bg-gray-200 hover:text-[#41398B]'
                             }`}
@@ -174,7 +174,7 @@ export default function HomeBanner({ homePageData }) {
                         {language === 'en' ? 'For Rent' : 'Cho Thuê'}
                     </button>
                     <button
-                        className={`px-8 py-3 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Sale'
+                        className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Sale'
                             ? 'bg-[#fff] text-[#41398B]'
                             : 'bg-[#00000066] text-[#fff] hover:bg-gray-200 hover:text-[#41398B]'
                             }`}
@@ -183,7 +183,7 @@ export default function HomeBanner({ homePageData }) {
                         {language === 'en' ? 'For Sale' : 'Bán'}
                     </button>
                     <button
-                        className={`px-8 py-3 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'Home Stay'
+                        className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'Home Stay'
                             ? 'bg-[#fff] text-[#41398B]'
                             : 'bg-[#00000066] text-[#fff] hover:bg-gray-200 hover:text-[#41398B]'
                             }`}

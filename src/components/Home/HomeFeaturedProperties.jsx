@@ -19,20 +19,11 @@ export default function HomeFeaturedProperties({ homePageData }) {
         const fetchFeaturedProperties = async () => {
             try {
                 setLoading(true);
-                // Fetch 6 featured properties (2 from each category)
-                const [leaseRes, saleRes, homestayRes] = await Promise.all([
-                    getListingProperties({ type: 'Lease', page: 1, limit: 2, sortBy: 'newest' }),
-                    getListingProperties({ type: 'Sale', page: 1, limit: 2, sortBy: 'newest' }),
-                    getListingProperties({ type: 'Home Stay', page: 1, limit: 2, sortBy: 'newest' })
-                ]);
-
-                const allProperties = [
-                    ...(leaseRes.data?.data || []),
-                    ...(saleRes.data?.data || []),
-                    ...(homestayRes.data?.data || [])
-                ];
-
-                setProperties(allProperties);
+                // Fetch 6 featured properties
+                const response = await getListingProperties({ page: 1, limit: 6, sortBy: 'newest' });
+                if (response.data && response.data.data) {
+                    setProperties(response.data.data);
+                }
             } catch (error) {
                 console.error('Error fetching featured properties:', error);
             } finally {
@@ -132,7 +123,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
     };
 
     return (
-        <section ref={sectionRef} className="py-16 px-6 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff]">
+        <section ref={sectionRef} className="py-10 px-6 md:py-16 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff]">
             <div className="max-w-7xl mx-auto">
                 {/* Section Header */}
                 <div className="text-center mb-17">

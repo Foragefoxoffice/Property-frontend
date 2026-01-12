@@ -88,7 +88,7 @@ export default function Header({ showNavigation = true }) {
         {/* Left Logo */}
         <div className="flex items-center">
           <img
-            className="h-10 object-contain cursor-pointer"
+            className="h-8 md:h-12 object-contain cursor-pointer"
             src={getLogoUrl(headerLogo)}
             alt="Logo"
             onClick={() => navigate("/home")}

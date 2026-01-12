@@ -43,6 +43,9 @@ export const translations = {
     blogs: "Blogs",
     categories: "Categories",
     addBlog: "Blog Cms",
+    blogBanner: "Blog Banner", // Added translation
+    blogBannerTitle: "Blog Page Banner",
+    blogBannerDesc: "Manage your blog page banner section",
     // Create Property Steps
     createProperty: "Create Property",
     listingPropertyInfo: "Listing & Property Information",
@@ -211,6 +214,13 @@ export const translations = {
     sentBy: "Sent By",
     requestedBy: "Requested by",
     approvedBy: "Approved by",
+    blogBannerManagement: "Blog Banner Management",
+    blogContentMetadata: "Blog Content & Metadata",
+    blogContentMetadataDesc: "Write your blog post and manage settings",
+    blogSeoSettings: "SEO Settings",
+    blogSeoSettingsDesc: "Manage blog SEO and meta information",
+    createNewBlogPost: "Create New Blog Post",
+    editBlogPost: "Edit Blog Post",
   },
 
   vi: {
@@ -257,6 +267,9 @@ export const translations = {
     blogs: "Bài Viết",
     categories: "Danh Mục",
     addBlog: "Lời nhắn trên blog",
+    blogBanner: "Biểu ngữ Blog", // Added translation
+    blogBannerTitle: "Tùy Chỉnh Banner Blog",
+    blogBannerDesc: "Quản lý phần banner trang blog",
     // Create Property Steps
     createProperty: "Tạo Bất Động Sản",
     listingPropertyInfo: "Thông Tin Niêm Yết & Bất Động Sản",
@@ -425,5 +438,12 @@ export const translations = {
     sentBy: "Gửi bởi",
     requestedBy: "Yêu cầu bởi",
     approvedBy: "Được duyệt bởi",
+    blogBannerManagement: "Quản lý banner blog",
+    blogContentMetadata: "Nội Dung & Metadata Blog",
+    blogContentMetadataDesc: "Viết bài viết và quản lý cài đặt",
+    blogSeoSettings: "Cài Đặt SEO",
+    blogSeoSettingsDesc: "Quản lý SEO blog và thông tin meta",
+    createNewBlogPost: "Tạo Bài Viết Mới",
+    editBlogPost: "Chỉnh Sửa Bài Viết",
   },
 };

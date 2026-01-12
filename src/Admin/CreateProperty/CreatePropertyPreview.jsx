@@ -83,13 +83,18 @@ export default function CreatePropertyPreview({
   onPublish,
   onPrev,
 }) {
+  const { isApprover } = usePermissions();
   const [property, setProperty] = useState(propertyData || {});
-  const [status, setStatus] = useState(propertyData?.status || "Draft");
+
+  // ✅ Auto-set status to "Published" for Approvers (User Request: automatically approved and publish)
+  const [status, setStatus] = useState(() => {
+    if (isApprover) return "Published";
+    return propertyData?.status || "Draft";
+  });
+
   const [publishing, setPublishing] = useState(false);
 
   console.log("💾 PREVIEW RECEIVED DATA:", propertyData);
-
-  const { isApprover } = usePermissions();
 
   const [lang, setLang] = useState("en");
   const [loading, setLoading] = useState(false);

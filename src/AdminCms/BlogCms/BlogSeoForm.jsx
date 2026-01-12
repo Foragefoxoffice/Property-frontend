@@ -17,6 +17,8 @@ import {
 } from '@ant-design/icons';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 import { X } from 'lucide-react';
 
 const { TextArea } = Input;
@@ -32,6 +34,8 @@ export default function BlogSeoForm({
     isEditMode
 }) {
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeTab, setActiveTab] = useState('en');
     const [previewImage, setPreviewImage] = useState(null);
     const [ogImages, setOgImages] = useState([]);
@@ -132,10 +136,10 @@ export default function BlogSeoForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'SEO Settings' : 'Cài Đặt SEO'}
+                            {t.blogSeoSettings}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage blog SEO and meta information' : 'Quản lý SEO blog và thông tin meta'}
+                            {t.blogSeoSettingsDesc}
                         </p>
                     </div>
                 </div>

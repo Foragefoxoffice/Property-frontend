@@ -32,7 +32,7 @@ export default function HomeAbout({ homePageData }) {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-20 px-6 bg-white overflow-hidden">
+        <section ref={sectionRef} className="py-10 md:py-20 px-6 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                     {/* Left Side - About Us Content */}

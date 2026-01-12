@@ -17,6 +17,8 @@ import { onFormFinishFailed } from '@/utils/formValidation';
 import { uploadBlogImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 import { X } from 'lucide-react';
 
 const { TextArea } = Input;
@@ -28,15 +30,17 @@ export default function BlogBannerForm({
     pageData,
     onCancel,
     isOpen,
-    onToggle
+    onToggle,
+    permissionModule = 'blogs.blogCms'
 }) {
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeTab, setActiveTab] = useState('en');
     const [bannerImageUrl, setBannerImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
 
-    // Update banner image when pageData changes
     useEffect(() => {
         if (pageData?.blogBannerbg) {
             setBannerImageUrl(pageData.blogBannerbg);
@@ -48,8 +52,6 @@ export default function BlogBannerForm({
         try {
             setUploading(true);
             const response = await uploadBlogImage(file);
-            // Adjust based on actual response structure of uploadBlogImage
-            // BlogMainForm uses response.data.url
             const uploadedUrl = response.data.url;
 
             form.setFieldsValue({ blogBannerbg: uploadedUrl });
@@ -103,10 +105,10 @@ export default function BlogBannerForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Blog Page Banner' : 'Tùy Chỉnh Banner Blog'}
+                            {t.blogBannerTitle}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Manage your blog page banner section' : 'Quản lý phần banner trang blog'}
+                            {t.blogBannerDesc}
                         </p>
                     </div>
                 </div>
@@ -126,7 +128,7 @@ export default function BlogBannerForm({
                             layout="vertical"
                             onFinish={onSubmit}
                             onFinishFailed={onFormFinishFailed}
-                            disabled={!can('blogs.blogCms', 'edit')}
+                            disabled={!can(permissionModule, "edit")}
                         >
                             <Tabs
                                 activeKey={activeTab}
@@ -326,7 +328,7 @@ export default function BlogBannerForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                {can('blogs.blogCms', 'edit') && (
+                                {can(permissionModule, 'edit') && (
                                     <Button
                                         type="primary"
                                         htmlType="submit"

@@ -122,8 +122,8 @@ export default function HomeFaq({ homePageData }) {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-20 px-6 bg-white overflow-hidden">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+        <section ref={sectionRef} className="py-10 md:py-20 px-6 bg-white overflow-hidden">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-24">
                 {/* Left Side: Contact Card */}
                 <div
                     className={`relative rounded-3xl overflow-hidden min-h-[500px] flex flex-col bg-cover bg-center transition-all duration-1000 ease-out transform ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
@@ -134,11 +134,11 @@ export default function HomeFaq({ homePageData }) {
                     <div className="absolute inset-0 bg-black/5 z-0"></div>
 
                     {/* Content */}
-                    <div className="relative z-10 p-10 md:p-12 flex flex-col h-full items-start">
-                        <h2 className="text-4xl md:text-5xl font-semibold text-white mb-6 leading-tight">
+                    <div className="relative z-10 p-6 md:p-12 flex flex-col h-full items-start">
+                        <h2 className="text-4xl md:text-5xl font-semibold text-white mb-2 md:mb-6 leading-tight">
                             {cardTitle}
                         </h2>
-                        <p className="text-white/90 text-lg mb-8 leading-relaxed max-w-md">
+                        <p className="text-white/90 text-lg mb-2 md:mb-8 leading-relaxed max-w-md">
                             {cardDescription}
                         </p>
                         <button
@@ -159,7 +159,7 @@ export default function HomeFaq({ homePageData }) {
                         {faqSectionSubtitle}
                     </span>
                     <h2
-                        className={`text-4xl md:text-5xl font-semibold text-[#1a1a1a] mb-9 leading-tight transition-all duration-700 delay-500 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                        className={`text-4xl md:text-5xl font-semibold text-[#1a1a1a] mb-3 md:mb-9 leading-tight transition-all duration-700 delay-500 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                             }`}
                     >
                         {faqSectionTitle}
@@ -177,7 +177,7 @@ export default function HomeFaq({ homePageData }) {
                                     className="w-full py-6 flex items-center justify-between text-left group cursor-pointer"
                                     onClick={() => toggleAccordion(index)}
                                 >
-                                    <span className="text-xl font-medium text-[#1a1a1a] pr-8 group-hover:text-[#41398B] transition-colors duration-300">
+                                    <span className="text-lg md:text-xl font-medium text-[#1a1a1a] pr-8 group-hover:text-[#41398B] transition-colors duration-300">
                                         {language === 'en' ? (faq.header_en || faq.header) : (faq.header_vn || faq.header_en || faq.header)}
                                     </span>
                                     <span className={`transform transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-[#41398B]' : 'rotate-0 text-gray-400 group-hover:text-[#41398B]'}`}>

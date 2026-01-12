@@ -24,10 +24,10 @@ export default function ListingPage() {
     const { language } = useLanguage();
     const { isFavorite, addFavorite, removeFavorite } = useFavorites();
 
-    // Initialize category from URL or default to 'Lease'
+    // Initialize category from URL or default to 'All'
     const [selectedCategory, setSelectedCategory] = useState(() => {
         const type = searchParams.get('type');
-        return (type === 'Lease' || type === 'Sale' || type === 'Home Stay') ? type : 'Lease';
+        return (type && ['Lease', 'Sale', 'Home Stay'].includes(type)) ? type : 'All';
     });
 
     const [properties, setProperties] = useState([]);
@@ -91,11 +91,12 @@ export default function ListingPage() {
             maxPrice: searchParams.get('maxPrice') || ''
         };
 
-        const typeChanged = type && ['Lease', 'Sale', 'Home Stay'].includes(type) && type !== selectedCategory;
+        const targetType = (type && ['Lease', 'Sale', 'Home Stay'].includes(type)) ? type : 'All';
+        const typeChanged = targetType !== selectedCategory;
         const filtersChanged = JSON.stringify(newFilters) !== JSON.stringify(filters);
 
         if (typeChanged) {
-            setSelectedCategory(type);
+            setSelectedCategory(targetType);
             if (filtersChanged) setFilters(newFilters);
         } else if (filtersChanged) {
             setFilters(newFilters);
@@ -194,7 +195,7 @@ export default function ListingPage() {
 
         try {
             const params = {
-                type: selectedCategory,
+                type: selectedCategory === 'All' ? '' : selectedCategory,
                 page: currentPage,
                 limit: 10,
                 sortBy: sortBy
@@ -341,7 +342,7 @@ export default function ListingPage() {
                                 {/* Category */}
                                 <div className="mb-3">
                                     <div className="space-y-2">
-                                        {['Lease', 'Sale', 'Home Stay'].map((cat) => (
+                                        {['All', 'Lease', 'Sale', 'Home Stay'].map((cat) => (
                                             <button
                                                 key={cat}
                                                 className={`w-full px-4 py-3 text-left text-md font-semibold rounded-xl cursor-pointer transition-all ${selectedCategory === cat
@@ -350,7 +351,7 @@ export default function ListingPage() {
                                                     }`}
                                                 onClick={() => setSelectedCategory(cat)}
                                             >
-                                                {cat === 'Lease' ? 'For Lease' : cat === 'Sale' ? 'For Sale' : 'Homestay'}
+                                                {cat === 'All' ? 'View All' : cat === 'Lease' ? 'For Lease' : cat === 'Sale' ? 'For Sale' : 'Homestay'}
                                             </button>
                                         ))}
                                     </div>

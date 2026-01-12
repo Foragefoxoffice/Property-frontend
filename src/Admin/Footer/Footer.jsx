@@ -115,7 +115,7 @@ export default function Footer() {
     const baseURL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/v1', '') : '';
 
     return (
-        <footer className="bg-[#161616] text-white pt-16 pb-8 font-['Manrope']">
+        <footer className="bg-[#161616] text-white pt-12 md:pt-16 pb-8 font-['Manrope']">
             <div className="container mx-auto px-4 max-w-7xl">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 border-b border-gray-800 pb-12">
                     {/* Left Column - Contact Info */}
@@ -125,7 +125,7 @@ export default function Footer() {
                                 <img
                                     src={footerData.footerLogo.startsWith('/') ? `${baseURL}${footerData.footerLogo}` : footerData.footerLogo}
                                     alt="Logo"
-                                    className="h-8 md:h-24 w-auto object-contain"
+                                    className="h-20 md:h-24 w-auto object-contain"
                                 />
                             </Link>
                         )}

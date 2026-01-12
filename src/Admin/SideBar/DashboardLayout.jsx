@@ -14,12 +14,50 @@ const DashboardLayout = () => {
     const { language } = useLanguage();
     const t = translations[language];
     const { isHidden, loading } = usePermissions();
-    const [openProperties, setOpenProperties] = useState(true);
+    const [openProperties, setOpenProperties] = useState(false);
     const [openCMS, setOpenCMS] = useState(false);
     const [openBlogs, setOpenBlogs] = useState(false);
     const [openUserManagement, setOpenUserManagement] = useState(false);
     const [openManageStaffs, setOpenManageStaffs] = useState(false);
     const [openOtherEnquiry, setOpenOtherEnquiry] = useState(false);
+
+    // Sync sidebar state with current URL
+    React.useEffect(() => {
+        const path = location.pathname;
+
+        if (path.includes('/dashboard/lease') || path.includes('/dashboard/sale') || path.includes('/dashboard/homestay')) {
+            setOpenProperties(true);
+        }
+
+        if (path.includes('/dashboard/cms/home') ||
+            path.includes('/dashboard/cms/about') ||
+            path.includes('/dashboard/cms/contact') ||
+            path.includes('/dashboard/cms/header') ||
+            path.includes('/dashboard/cms/footer') ||
+            path.includes('/dashboard/cms/agent') ||
+            path.includes('/dashboard/cms/blog-banner')) {
+            setOpenCMS(true);
+        }
+
+        if (path.includes('/dashboard/cms/categories') ||
+            path.includes('/dashboard/cms/blogs') ||
+            path.includes('/dashboard/cms/blog') || // Handles blog edit/create subpages
+            path.includes('/dashboard/subscription')) {
+            setOpenBlogs(true);
+        }
+
+        if (path.includes('/dashboard/user-details') || path.includes('/dashboard/enquiry')) {
+            setOpenUserManagement(true);
+        }
+
+        if (path.includes('/dashboard/roles') || path.includes('/dashboard/staffs')) {
+            setOpenManageStaffs(true);
+        }
+
+        if (path.includes('/dashboard/contact-enquiry')) {
+            setOpenOtherEnquiry(true);
+        }
+    }, [location.pathname]);
 
     const isActive = (path) => location.pathname.startsWith(path);
 
@@ -109,7 +147,7 @@ const DashboardLayout = () => {
                         )}
 
                         {/* CMS SETTINGS DROPDOWN */}
-                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent")) && (
+                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.blogBanner")) && (
                             <div className="w-full">
                                 <button
                                     onClick={() => setOpenCMS(!openCMS)}
@@ -202,6 +240,18 @@ const DashboardLayout = () => {
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <User /> </span>
                                                 <span className="text-sm">{t.agent}</span>
+                                            </button>
+                                        )}
+                                        {/* BLOG BANNER */}
+                                        {!isHidden("cms.blogBanner") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/blog-banner")}
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/blog-banner") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
+                                                <span className="text-sm">{t.blogBanner}</span>
                                             </button>
                                         )}
                                     </div>

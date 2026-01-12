@@ -252,6 +252,8 @@ function mapApiToForm(api) {
 
       ogImages: api.seoInformation?.ogImages || [],
     },
+
+    status: api.status || "Draft",
   };
 }
 

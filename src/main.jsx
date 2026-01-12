@@ -66,6 +66,7 @@ import ContactPage from "./Pages/ContactPage.jsx";
 import BlogPage from "./Pages/BlogPage.jsx";
 import BlogDetailPage from "./Pages/BlogDetailPage.jsx";
 import BlogListPage from "./AdminCms/BlogCms/BlogListPage.jsx";
+import BlogBannerPage from "./AdminCms/BlogCms/BlogBannerPage.jsx"; // Added
 import BlogCmsForm from "./AdminCms/BlogCms/BlogCmsForm.jsx";
 import CategoryListPage from "./AdminCms/CategoryCms/CategoryListPage.jsx";
 import HeaderCmsForm from "./AdminCms/HeaderCms/HeaderCmsForm.jsx";
@@ -123,7 +124,7 @@ createRoot(document.getElementById("root")).render(
               />
               <Route
                 path="homestay"
-                element={<PropertyManager propertyTypeFilter="HomeStay" />}
+                element={<PropertyManager propertyTypeFilter="Home Stay" />}
               />
 
               {/* CREATE / EDIT PROPERTY */}
@@ -137,7 +138,7 @@ createRoot(document.getElementById("root")).render(
               />
               <Route
                 path="homestay/create"
-                element={<CreatePropertyPage defaultTransactionType="HomeStay" />}
+                element={<CreatePropertyPage defaultTransactionType="Home Stay" />}
               />
 
               <Route
@@ -157,7 +158,7 @@ createRoot(document.getElementById("root")).render(
                 element={
                   <CreatePropertyPage
                     isEditMode
-                    defaultTransactionType="HomeStay"
+                    defaultTransactionType="Home Stay"
                   />
                 }
               />
@@ -229,6 +230,7 @@ createRoot(document.getElementById("root")).render(
               <Route path="cms/header" element={<HeaderCmsForm />} />
               <Route path="cms/footer" element={<FooterCmsForm />} />
               <Route path="cms/agent" element={<AgentFormCms />} />
+              <Route path="cms/blog-banner" element={<BlogBannerPage />} />
               <Route path="cms/:section" element={<CMSPlaceholder />} />
               <Route path="profile" element={<UserProfile />} />
             </Route>

@@ -66,7 +66,7 @@ export default function HomeLatestBlogs({ homePageData }) {
         : (homePageData?.homeBlogDescription_vn || 'Cập nhật xu hướng bất động sản mới nhất, thông tin thị trường và lời khuyên từ chuyên gia');
 
     return (
-        <section ref={sectionRef} className="py-20 px-6 bg-white">
+        <section ref={sectionRef} className="py-10 md:py-20 px-6 bg-white">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
                     <p

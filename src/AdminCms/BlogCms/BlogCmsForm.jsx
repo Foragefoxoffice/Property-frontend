@@ -6,15 +6,13 @@ import {
     createBlog,
     updateBlog,
     getCategories,
-    getBlogPage,
-    createBlogPage,
-    updateBlogPage,
 } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import BlogMainForm from './BlogMainForm';
 import BlogSeoForm from './BlogSeoForm';
-import BlogBannerForm from './BlogBannerForm'; // Added
 import { validateVietnameseFields } from '@/utils/formValidation';
+import { useLanguage } from '@/Language/LanguageContext';
+import { translations } from '@/Language/translations';
 
 export default function BlogCmsForm() {
     const navigate = useNavigate();
@@ -23,24 +21,21 @@ export default function BlogCmsForm() {
 
     const [mainForm] = Form.useForm();
     const [seoForm] = Form.useForm();
-    const [bannerForm] = Form.useForm(); // Added
 
     const [blogData, setBlogData] = useState(null);
-    const [pageData, setPageData] = useState(null); // Added for Page Data
-    const [pageId, setPageId] = useState(null); // Added for Page ID
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
+    const { language } = useLanguage();
+    const t = translations[language];
 
     // Accordion state
     const [openAccordions, setOpenAccordions] = useState({
-        banner: true, // Added
-        main: false,
+        main: true,
         seo: false,
     });
 
     const toggleAccordion = (key) => {
         setOpenAccordions(prev => ({
-            banner: key === 'banner' ? !prev.banner : false,
             main: key === 'main' ? !prev.main : false,
             seo: key === 'seo' ? !prev.seo : false,
         }));
@@ -48,7 +43,6 @@ export default function BlogCmsForm() {
 
     const [mainLoading, setMainLoading] = useState(false);
     const [seoLoading, setSeoLoading] = useState(false);
-    const [bannerLoading, setBannerLoading] = useState(false); // Added
 
     // Helper to get preserved data
     const getPreservedData = (data) => {
@@ -77,25 +71,6 @@ export default function BlogCmsForm() {
         }
     };
 
-    // Fetch Blog Page Data (Banner etc)
-    const fetchBlogPageData = async () => {
-        try {
-            const res = await getBlogPage();
-            const data = Array.isArray(res.data.data) ? res.data.data[0] : res.data.data;
-
-            if (data) {
-                setPageData(data);
-                setPageId(data._id);
-                bannerForm.setFieldsValue({
-                    blogTitle: data.blogTitle,
-                    blogDescription: data.blogDescription,
-                    blogBannerbg: data.blogBannerbg,
-                });
-            }
-        } catch (error) {
-            console.error('Failed to fetch blog page data', error);
-        }
-    };
 
     // Fetch blog data
     const fetchBlogData = async () => {
@@ -150,7 +125,6 @@ export default function BlogCmsForm() {
 
     useEffect(() => {
         fetchCategories();
-        fetchBlogPageData(); // Added
         if (isEditMode) {
             fetchBlogData();
         }
@@ -220,28 +194,6 @@ export default function BlogCmsForm() {
         }
     };
 
-    // Handle Banner form submission
-    const handleBannerSubmit = async (values) => {
-        if (!validateVietnameseFields(values)) return;
-        try {
-            setBannerLoading(true);
-
-            if (pageId) {
-                await updateBlogPage(pageId, values);
-                CommonToaster('Blog Page Banner updated successfully!', 'success');
-            } else {
-                await createBlogPage(values);
-                CommonToaster('Blog Page Banner created successfully!', 'success');
-            }
-
-            fetchBlogPageData();
-        } catch (error) {
-            CommonToaster(error.response?.data?.message || 'Failed to save banner section', 'error');
-            console.error(error);
-        } finally {
-            setBannerLoading(false);
-        }
-    };
 
     if (loading && !blogData && isEditMode) {
         return (
@@ -263,20 +215,10 @@ export default function BlogCmsForm() {
                 marginBottom: '18px',
                 fontFamily: 'Manrope, sans-serif'
             }}>
-                {isEditMode ? 'Edit Blog Post' : 'Create New Blog Post'}
+                {isEditMode ? t.editBlogPost : t.createNewBlogPost}
             </h2>
 
             <div className="space-y-6">
-                {/* Banner Section */}
-                <BlogBannerForm
-                    form={bannerForm}
-                    onSubmit={handleBannerSubmit}
-                    loading={bannerLoading}
-                    pageData={pageData}
-                    onCancel={() => navigate('/dashboard/cms/blogs')}
-                    isOpen={openAccordions.banner}
-                    onToggle={() => toggleAccordion('banner')}
-                />
 
                 {/* Main Section (Content + Metadata) */}
                 <BlogMainForm

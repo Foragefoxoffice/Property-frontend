@@ -69,7 +69,7 @@ export default function HomeFindProperty({ homePageData }) {
             <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
                 <div className="max-w-4xl">
                     <h2
-                        className={`text-4xl md:text-5xl lg:text-5xl font-semibold text-white leading-tight mb-4 transition-all duration-1000 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+                        className={`text-3xl md:text-5xl lg:text-5xl font-semibold text-white leading-tight mb-4 transition-all duration-1000 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
                             }`}
                     >
                         {title}
