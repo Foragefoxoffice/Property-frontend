@@ -37,6 +37,7 @@ export default function BlogListPage() {
             cancel: "Cancel",
             untitled: "Untitled",
             deleting: "Deleting...",
+            sno: "S.No",
         },
         vi: {
             pageTitle: "Quản lý Blog",
@@ -54,6 +55,7 @@ export default function BlogListPage() {
             cancel: "Hủy",
             untitled: "Chưa có tiêu đề",
             deleting: "Đang xóa...",
+            sno: "STT",
         }
     };
 
@@ -165,8 +167,8 @@ export default function BlogListPage() {
                     <table className="w-full text-sm border-collapse">
                         <thead className="bg-gray-50 text-gray-700">
                             <tr>
+                                <th className="px-6 py-4 text-left font-medium">{t.sno}</th>
                                 <th className="px-6 py-4 text-left font-medium">{t.title}</th>
-                                <th className="px-6 py-4 text-left font-medium">{t.slug}</th>
                                 <th className="px-6 py-4 text-left font-medium">{t.author}</th>
                                 <th className="px-6 py-4 text-center font-medium">{t.published}</th>
                                 <th className="px-6 py-4 text-right font-medium">{t.actions}</th>
@@ -195,6 +197,9 @@ export default function BlogListPage() {
                                         key={blog._id}
                                         className="border-b last:border-0 border-gray-100 hover:bg-gray-50 transition-colors"
                                     >
+                                        <td className="px-6 py-4 text-gray-500">
+                                            {startIndex + i + 1}
+                                        </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-4">
                                                 {blog.mainImage && (
@@ -209,9 +214,7 @@ export default function BlogListPage() {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-500">
-                                            {blog.slug?.[language] || blog.slug?.en || blog.slug?.vi || '-'}
-                                        </td>
+
                                         <td className="px-6 py-4 text-gray-500 font-medium">
                                             {blog.author}
                                         </td>

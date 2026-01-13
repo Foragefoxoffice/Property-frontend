@@ -288,9 +288,9 @@ export default function ListingPage() {
 
     const getCategoryLabel = (category) => {
         const cat = getLocalizedValue(category).toLowerCase();
-        if (cat.includes('lease') || cat.includes('rent')) return 'For Rent';
-        if (cat.includes('sale') || cat.includes('sell')) return 'For Sale';
-        if (cat.includes('home') || cat.includes('stay')) return 'Homestay';
+        if (cat.includes('lease') || cat.includes('rent')) return t.forRent;
+        if (cat.includes('sale') || cat.includes('sell')) return t.forSale;
+        if (cat.includes('home') || cat.includes('stay')) return t.homestay;
         return getLocalizedValue(category);
     };
 

@@ -11,12 +11,14 @@ import {
 import { SlidersHorizontal } from 'lucide-react';
 import { useLanguage } from '../../Language/LanguageContext';
 import { usePermissions } from '../../Context/PermissionContext';
+import { translations } from '../../Language/translations';
 
 export default function HomeBanner({ homePageData }) {
     const navigate = useNavigate();
     const { language } = useLanguage();
+    const t = translations[language]; // Initialize translations
     const { can } = usePermissions();
-    const [selectedTab, setSelectedTab] = useState('For Rent');
+    const [selectedTab, setSelectedTab] = useState('For Lease');
     const [showMoreFilters, setShowMoreFilters] = useState(false);
 
     // Dropdown data
@@ -165,13 +167,13 @@ export default function HomeBanner({ homePageData }) {
                 {/* Tabs */}
                 <div className="flex gap-3 justify-center">
                     <button
-                        className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Rent'
+                        className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Lease'
                             ? 'bg-[#fff] text-[#41398B]'
                             : 'bg-[#00000066] text-[#fff] hover:bg-gray-200 hover:text-[#41398B]'
                             }`}
-                        onClick={() => setSelectedTab('For Rent')}
+                        onClick={() => setSelectedTab('For Lease')}
                     >
-                        {language === 'en' ? 'For Rent' : 'Cho Thuê'}
+                        {t.forRent}
                     </button>
                     <button
                         className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Sale'
@@ -180,7 +182,7 @@ export default function HomeBanner({ homePageData }) {
                             }`}
                         onClick={() => setSelectedTab('For Sale')}
                     >
-                        {language === 'en' ? 'For Sale' : 'Bán'}
+                        {t.forSale}
                     </button>
                     <button
                         className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'Home Stay'
@@ -189,7 +191,7 @@ export default function HomeBanner({ homePageData }) {
                             }`}
                         onClick={() => setSelectedTab('Home Stay')}
                     >
-                        {language === 'en' ? 'Home Stay' : 'Lưu Trú'}
+                        {t.homeStay}
                     </button>
                 </div>
 

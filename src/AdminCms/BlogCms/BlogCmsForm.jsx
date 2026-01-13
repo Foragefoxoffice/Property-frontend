@@ -11,6 +11,7 @@ import { CommonToaster } from '@/Common/CommonToaster';
 import BlogMainForm from './BlogMainForm';
 import BlogSeoForm from './BlogSeoForm';
 import { validateVietnameseFields } from '@/utils/formValidation';
+import { SlidersHorizontal, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/Language/LanguageContext';
 import { translations } from '@/Language/translations';
 
@@ -136,10 +137,26 @@ export default function BlogCmsForm() {
         try {
             setMainLoading(true);
 
+            const preserved = blogData ? getPreservedData(blogData) : {};
+
             const finalPayload = {
-                ...(blogData && getPreservedData(blogData)),
+                ...preserved,
                 ...values,
-                published: !!values.published
+                title: {
+                    ...preserved.title,
+                    ...values.title
+                },
+                content: {
+                    ...preserved.content,
+                    ...values.content
+                },
+                tags: {
+                    en: values.tags?.en || preserved.tags?.en || [],
+                    vi: values.tags?.vi || preserved.tags?.vi || []
+                },
+                category: values.category || preserved.category,
+                mainImage: values.mainImage || preserved.mainImage,
+                published: values.published !== undefined ? !!values.published : !!preserved.published
             };
 
             if (blogData) {
@@ -166,9 +183,31 @@ export default function BlogCmsForm() {
         if (!validateVietnameseFields(values)) return;
         try {
             setSeoLoading(true);
+
+            const preserved = blogData ? getPreservedData(blogData) : {};
+
+            // Deep merge seoInformation
+            const seoInfo = {
+                ...preserved.seoInformation,
+                ...values.seoInformation,
+                // Ensure nested localized fields are merged if they exist
+                metaTitle: { ...preserved.seoInformation?.metaTitle, ...values.seoInformation?.metaTitle },
+                metaDescription: { ...preserved.seoInformation?.metaDescription, ...values.seoInformation?.metaDescription },
+                metaKeywords: {
+                    en: values.seoInformation?.metaKeywords?.en || preserved.seoInformation?.metaKeywords?.en || [],
+                    vi: values.seoInformation?.metaKeywords?.vi || preserved.seoInformation?.metaKeywords?.vi || []
+                },
+                slugUrl: { ...preserved.seoInformation?.slugUrl, ...values.seoInformation?.slugUrl },
+                canonicalUrl: { ...preserved.seoInformation?.canonicalUrl, ...values.seoInformation?.canonicalUrl },
+                schemaType: { ...preserved.seoInformation?.schemaType, ...values.seoInformation?.schemaType },
+                ogTitle: { ...preserved.seoInformation?.ogTitle, ...values.seoInformation?.ogTitle },
+                ogDescription: { ...preserved.seoInformation?.ogDescription, ...values.seoInformation?.ogDescription },
+            };
+
             const finalPayload = {
-                ...(blogData && getPreservedData(blogData)),
-                ...values
+                ...preserved,
+                ...values,
+                seoInformation: seoInfo
             };
 
             if (blogData) {
@@ -208,6 +247,15 @@ export default function BlogCmsForm() {
 
     return (
         <div className="">
+            <div className="flex items-center justify-start mb-6">
+                <button
+                    onClick={() => navigate('/dashboard/cms/blogs')}
+                    className="w-10 h-10 flex cursor-pointer items-center justify-center bg-[#41398B] text-white rounded-full hover:bg-[#342d70] transition-all duration-300 shadow-sm hover:shadow-md"
+                >
+                    <ArrowLeft size={20} />
+                </button>
+            </div>
+
             <h2 style={{
                 color: '#111827',
                 fontSize: '36px',

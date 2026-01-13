@@ -650,7 +650,8 @@ export default function CreatePropertyPage({
       }
 
       CommonToaster("Property saved successfully!", "success");
-      navigate(`/dashboard/${defaultTransactionType}`);
+      const routePath = defaultTransactionType.toLowerCase().replace(/\s+/g, '');
+      navigate(`/dashboard/${routePath}`);
 
     } catch (err) {
       console.log(err);

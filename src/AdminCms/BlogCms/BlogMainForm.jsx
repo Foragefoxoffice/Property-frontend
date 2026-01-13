@@ -216,6 +216,7 @@ export default function BlogMainForm({
                                 className="mb-6"
                                 items={[
                                     {
+                                        forceRender: true,
                                         key: 'en',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -443,6 +444,7 @@ export default function BlogMainForm({
                                         )
                                     },
                                     {
+                                        forceRender: true,
                                         key: 'vn',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">

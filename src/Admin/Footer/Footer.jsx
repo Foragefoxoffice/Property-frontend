@@ -26,10 +26,6 @@ const staticTranslations = {
         en: "Contact Us",
         vi: "Liên hệ"
     },
-    ourTeam: {
-        en: "Our Team",
-        vi: "Đội ngũ của chúng tôi"
-    },
     latestNews: {
         en: "Latest News",
         vi: "Tin tức mới nhất"
@@ -177,7 +173,6 @@ export default function Footer() {
                         <ul className="space-y-4">
                             <li><Link to="/about" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('aboutUs')}</Link></li>
                             <li><Link to="/contact" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('contactUs')}</Link></li>
-                            <li><Link to="/about" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('ourTeam')}</Link></li>
                             <li><Link to="/blogs" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('latestNews')}</Link></li>
                         </ul>
                     </div>

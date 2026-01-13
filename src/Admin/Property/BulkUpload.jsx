@@ -213,7 +213,7 @@ export default function BulkUpload() {
         if (baseField === "Unit Size") return "1200";
         if (baseField === "Currency") return "USD";
         if (baseField === "Available From") return "2024-01-01";
-        return isVietnamese ? `Mẫu ${field}` : `Sample ${field}`;
+        return isVietnamese ? `${field}` : `${field}`;
       })
       .join(",");
 
@@ -663,8 +663,8 @@ export default function BulkUpload() {
         <div className="mb-6">
           <div
             className={`border-2 border-dashed rounded-xl p-8 text-center transition ${selectedFile
-                ? "border-green-400 bg-green-50"
-                : "border-gray-300 hover:border-gray-400 bg-gray-50"
+              ? "border-green-400 bg-green-50"
+              : "border-gray-300 hover:border-gray-400 bg-gray-50"
               }`}
           >
             <input
@@ -708,8 +708,8 @@ export default function BulkUpload() {
             onClick={handleUpload}
             disabled={!selectedFile || uploading}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition ${!selectedFile || uploading
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-[#41398B] hover:bg-[#41398be3] text-white cursor-pointer"
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#41398B] hover:bg-[#41398be3] text-white cursor-pointer"
               }`}
           >
             <Upload className="w-4 h-4" />

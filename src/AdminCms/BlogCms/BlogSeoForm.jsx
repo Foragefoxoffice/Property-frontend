@@ -167,6 +167,7 @@ export default function BlogSeoForm({
                                 className="mb-6"
                                 items={[
                                     {
+                                        forceRender: true,
                                         key: 'en',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -339,6 +340,7 @@ export default function BlogSeoForm({
                                         )
                                     },
                                     {
+                                        forceRender: true,
                                         key: 'vi',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
