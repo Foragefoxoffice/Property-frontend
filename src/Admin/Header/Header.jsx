@@ -376,7 +376,9 @@ export default function Header({ showNavigation = true }) {
 
           {!localStorage.getItem("token") && (
             <div className="hidden md:block">
-              <Link className="font-medium text-[16px] hover:text-[#41398B]" to="/login">Login/Register</Link>
+              <Link className="font-medium text-[16px] hover:text-[#41398B]" to="/login">
+                {labels.loginRegister[language]}
+              </Link>
             </div>
           )}
           {/* Language Toggle */}

@@ -97,6 +97,12 @@ export default function Roles() {
             key: "landlords",
             isDirect: true, // No submodules
             controls: ["hide", "view", "add", "edit", "delete"]
+        },
+        {
+            label: t.masters,
+            key: "masters",
+            isDirect: true,
+            controls: ["hide"]
         }
     ];
 

@@ -502,15 +502,17 @@ const DashboardLayout = () => {
 
 
                         {/* MASTERS */}
-                        <button
-                            onClick={() => navigate("/dashboard/masters")}
-                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                        {!isHidden("masters") && (
+                            <button
+                                onClick={() => navigate("/dashboard/masters")}
+                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
                  ${isActive("/dashboard/masters") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
-                        >
-                            <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><LayoutGrid /></span>
-                            <span>{t.masters}</span>
-                        </button>
+                            >
+                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><LayoutGrid /></span>
+                                <span>{t.masters}</span>
+                            </button>
+                        )}
 
                         {/* TRASH */}
                         <button
