@@ -55,6 +55,7 @@ export default function Roles() {
                 { key: "footer", label: t.footer, controls: ["hide", "edit"] },
                 { key: "agent", label: t.propertyConsultant, controls: ["hide", "edit"] },
                 { key: "termsConditions", label: t.termsConditions || "Terms & Conditions", controls: ["hide", "edit"] },
+                { key: "privacyPolicy", label: t.privacyPolicy || "Privacy Policy", controls: ["hide", "edit"] },
                 { key: "blogBanner", label: t.blogBanner, controls: ["hide", "edit"] }
 
             ]

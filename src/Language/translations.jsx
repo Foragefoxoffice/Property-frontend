@@ -45,6 +45,8 @@ export const translations = {
     blogBanner: "Blog Banner", // Added translation
     blogBannerTitle: "Blog Page Banner",
     blogBannerDesc: "Manage your blog page banner section",
+    termsConditions: "Terms & Conditions",
+    privacyPolicy: "Privacy Policy",
     // Create Property Steps
     createProperty: "Create Property",
     listingPropertyInfo: "Listing & Property Information",
@@ -307,6 +309,8 @@ export const translations = {
     blogBanner: "Biểu ngữ Blog", // Added translation
     blogBannerTitle: "Tùy Chỉnh Banner Blog",
     blogBannerDesc: "Quản lý phần banner trang blog",
+    termsConditions: "Điều Khoản & Điều Kiện",
+    privacyPolicy: "Chính Sách Bảo Mật",
     // Create Property Steps
     createProperty: "Tạo Bất Động Sản",
     listingPropertyInfo: "Thông Tin Niêm Yết & Bất Động Sản",

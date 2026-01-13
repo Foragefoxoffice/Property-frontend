@@ -555,5 +555,25 @@ export const uploadTermsConditionsPageImage = (file) => {
   });
 };
 
+/* =========================================================
+   🔒 PRIVACY POLICY PAGE CMS APIs
+   ========================================================= */
+export const getPrivacyPolicyPage = () => API.get("/privacy-policy-page");
+export const updatePrivacyPolicyPage = (data) => API.post("/privacy-policy-page", data);
+export const uploadPrivacyPolicyPageImage = (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/privacy-policy-page/upload-image`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
 export default API;
 

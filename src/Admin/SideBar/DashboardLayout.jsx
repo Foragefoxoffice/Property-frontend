@@ -36,6 +36,7 @@ const DashboardLayout = () => {
             path.includes('/dashboard/cms/footer') ||
             path.includes('/dashboard/cms/agent') ||
             path.includes('/dashboard/cms/terms-conditions') ||
+            path.includes('/dashboard/cms/privacy-policy') ||
             path.includes('/dashboard/cms/blog-banner')) {
 
             setOpenCMS(true);
@@ -149,7 +150,7 @@ const DashboardLayout = () => {
                         )}
 
                         {/* CMS SETTINGS DROPDOWN */}
-                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.termsConditions") || !isHidden("cms.blogBanner")) && (
+                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.termsConditions") || !isHidden("cms.privacyPolicy") || !isHidden("cms.blogBanner")) && (
 
                             <div className="w-full">
                                 <button
@@ -255,6 +256,18 @@ const DashboardLayout = () => {
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
                                                 <span className="text-sm">{t.termsConditions || "Terms & Conditions"}</span>
+                                            </button>
+                                        )}
+                                        {/* PRIVACY POLICY */}
+                                        {!isHidden("cms.privacyPolicy") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/privacy-policy")}
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/privacy-policy") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
+                                                <span className="text-sm">{t.privacyPolicy || "Privacy Policy"}</span>
                                             </button>
                                         )}
 
