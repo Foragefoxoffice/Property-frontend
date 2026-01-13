@@ -18,10 +18,6 @@ const staticTranslations = {
         en: "Property For Home Stay",
         vi: "Homestay"
     },
-    allProperties: {
-        en: "All Properties",
-        vi: "Tất cả bất động sản"
-    },
     aboutUs: {
         en: "About Us",
         vi: "Về chúng tôi"
@@ -172,7 +168,6 @@ export default function Footer() {
                             <li><Link to="/listing?type=Sale" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForSale')}</Link></li>
                             <li><Link to="/listing?type=Lease" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForLease')}</Link></li>
                             <li><Link to="/listing?type=Home Stay" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForHomeStay')}</Link></li>
-                            <li><Link to="/listing" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('allProperties')}</Link></li>
                         </ul>
                     </div>
 

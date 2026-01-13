@@ -5,7 +5,8 @@ import {
     Button,
     Tabs,
     ConfigProvider,
-    Select
+    Upload,
+    Spin
 } from 'antd';
 import {
     SaveOutlined,
@@ -15,17 +16,11 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { usePermissions } from '../../Context/PermissionContext';
-import * as LucideIcons from 'lucide-react';
+import { uploadAboutPageImage } from '../../Api/action';
 
 const { TextArea } = Input;
 
-// Popular Lucide icons for selection
-const ICON_OPTIONS = [
-    'LifeBuoy', 'Clock', 'Gem', 'Shield', 'Award', 'Star', 'Heart',
-    'ThumbsUp', 'CheckCircle', 'Target', 'Zap', 'TrendingUp', 'Users',
-    'Home', 'Building', 'MapPin', 'Key', 'DollarSign', 'Briefcase',
-    'Phone', 'Mail', 'MessageCircle', 'Calendar', 'Settings', 'Lock'
-];
+
 
 export default function AboutPageWhyChooseForm({
     form,
@@ -39,6 +34,7 @@ export default function AboutPageWhyChooseForm({
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('en');
+    const [iconUploading, setIconUploading] = useState(null); // Track which icon is uploading
 
     useEffect(() => {
         if (headerLang) {
@@ -46,12 +42,44 @@ export default function AboutPageWhyChooseForm({
         }
     }, [headerLang]);
 
-    // Render icon preview
-    const renderIcon = (iconName) => {
-        if (!iconName) return null;
-        const IconComponent = LucideIcons[iconName];
-        if (!IconComponent) return null;
-        return <IconComponent className="w-5 h-5" />;
+    // Handle icon upload
+    const handleIconUpload = async (file, index) => {
+        try {
+            setIconUploading(index);
+            const response = await uploadAboutPageImage(file);
+            const uploadedUrl = response.data.data.url;
+
+            // Get current boxes list
+            const boxes = form.getFieldValue('aboutWhyChooseBoxes') || [];
+            // Update the specific icon at index
+            if (!boxes[index]) boxes[index] = {};
+            boxes[index].icon = uploadedUrl;
+
+            form.setFieldsValue({ aboutWhyChooseBoxes: boxes });
+            CommonToaster('Icon uploaded successfully!', 'success');
+            return false;
+        } catch (error) {
+            CommonToaster('Failed to upload icon', 'error');
+            console.error(error);
+            return false;
+        } finally {
+            setIconUploading(null);
+        }
+    };
+
+    const handleBeforeIconUpload = (file, index) => {
+        const isImage = file.type.startsWith('image/');
+        if (!isImage) {
+            CommonToaster('You can only upload image files!', 'error');
+            return Upload.LIST_IGNORE;
+        }
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+            CommonToaster('Image must be smaller than 5MB!', 'error');
+            return Upload.LIST_IGNORE;
+        }
+        handleIconUpload(file, index);
+        return false;
     };
 
     return (
@@ -281,7 +309,7 @@ export default function AboutPageWhyChooseForm({
                                                         </span>
                                                     </div>
 
-                                                    {/* Icon Selection */}
+                                                    {/* Icon Upload */}
                                                     <Form.Item
                                                         {...restField}
                                                         label={
@@ -290,23 +318,52 @@ export default function AboutPageWhyChooseForm({
                                                             </span>
                                                         }
                                                         name={[name, 'icon']}
+                                                        rules={[{ required: true, message: 'Icon is required' }]}
                                                     >
-                                                        <Select
-                                                            placeholder="Select an icon"
-                                                            size="large"
-                                                            className="w-full"
-                                                            showSearch
-                                                            optionFilterProp="children"
-                                                        >
-                                                            {ICON_OPTIONS.map(iconName => (
-                                                                <Select.Option key={iconName} value={iconName}>
-                                                                    <div className="flex items-center gap-2">
-                                                                        {renderIcon(iconName)}
-                                                                        <span>{iconName}</span>
-                                                                    </div>
-                                                                </Select.Option>
-                                                            ))}
-                                                        </Select>
+                                                        <Form.Item shouldUpdate noStyle>
+                                                            {() => {
+                                                                const boxes = form.getFieldValue('aboutWhyChooseBoxes') || [];
+                                                                const currentIcon = boxes[index]?.icon;
+
+                                                                return (
+                                                                    <Upload
+                                                                        name="icon"
+                                                                        listType="picture-card"
+                                                                        showUploadList={false}
+                                                                        disabled={!can('cms.aboutUs', 'edit')}
+                                                                        beforeUpload={(file) => handleBeforeIconUpload(file, index)}
+                                                                        className="w-[80px] h-[80px] flex-shrink-0 [&>.ant-upload]:!w-[80px] [&>.ant-upload]:!h-[80px] [&>.ant-upload]:!border-purple-200 [&>.ant-upload]:!bg-gray-50 [&>.ant-upload]:!rounded-lg overflow-hidden [&>.ant-upload]:!m-0"
+                                                                    >
+                                                                        {currentIcon ? (
+                                                                            <div className="w-full bg-white rounded-lg h-full relative group border border-gray-200">
+                                                                                <img
+                                                                                    src={currentIcon.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${currentIcon}` : currentIcon}
+                                                                                    alt="icon"
+                                                                                    className="w-full h-full object-contain p-2"
+                                                                                />
+                                                                                {/* Loading Spinner for Icon */}
+                                                                                {iconUploading === index && (
+                                                                                    <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                                                                                        <Spin size="small" />
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div className="flex flex-col items-center justify-center h-full text-purple-300 hover:text-[#41398B] transition-colors">
+                                                                                {iconUploading === index ? (
+                                                                                    <Spin size="small" />
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <PlusOutlined className="text-2xl mb-1" />
+                                                                                        <span className="text-xs">Upload</span>
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+                                                                        )}
+                                                                    </Upload>
+                                                                );
+                                                            }}
+                                                        </Form.Item>
                                                     </Form.Item>
 
                                                     {/* English Fields */}

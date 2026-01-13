@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { LifeBuoy, Clock, Diamond, Award } from 'lucide-react';
 import { useLanguage } from '@/Language/LanguageContext';
 
 export default function AboutWhyChoose({ data }) {
@@ -22,21 +21,21 @@ export default function AboutWhyChoose({ data }) {
 
     const defaultBoxes = [
         {
-            icon: "LifeBuoy",
+            icon: "",
             title_en: "Personalized Support",
             title_vn: "Hỗ Trợ Cá Nhân Hóa",
             description_en: "Receive tailored assistance from our experienced team to ensure every step fits your specific needs and goals.",
             description_vn: "Nhận được sự hỗ trợ được tùy chỉnh từ đội ngũ giàu kinh nghiệm của chúng tôi để đảm bảo mỗi bước phù hợp với nhu cầu và mục tiêu cụ thể của bạn."
         },
         {
-            icon: "Clock",
+            icon: "",
             title_en: "Time-Saving Process",
             title_vn: "Quy Trình Tiết Kiệm Thời Gian",
             description_en: "From quick callbacks to streamlined procedures, we value your time and help you move forward without delays.",
             description_vn: "Từ việc gọi lại nhanh chóng đến các thủ tục được sắp xếp hợp lý, chúng tôi trân trọng thời gian của bạn và giúp bạn tiến lên mà không bị trì hoãn."
         },
         {
-            icon: "Diamond",
+            icon: "",
             title_en: "Trusted Expertise",
             title_vn: "Chuyên Môn Đáng Tin Cậy",
             description_en: "Work with professionals who bring deep industry knowledge and proven strategies to guide your decisions confidently.",
@@ -104,15 +103,6 @@ export default function AboutWhyChoose({ data }) {
                     animate={isInView ? "visible" : "hidden"}
                 >
                     {boxes.map((box, index) => {
-                        const IconComponent = (() => {
-                            const normalized = box.icon?.toLowerCase() || "";
-                            if (normalized.includes("time") || normalized.includes("clock")) return Clock;
-                            if (normalized.includes("support") || normalized.includes("life")) return LifeBuoy;
-                            if (normalized.includes("gem") || normalized.includes("gen") || normalized.includes("diamond") || normalized.includes("expert")) return Diamond;
-                            if (normalized.includes("award")) return Award;
-                            return Diamond;
-                        })();
-
                         return (
                             <motion.div
                                 key={index}
@@ -123,10 +113,15 @@ export default function AboutWhyChoose({ data }) {
                                     w-25 h-25 rounded-full flex items-center justify-center mb-8 transition-all duration-500
                                     bg-transparent border border-white/20 group-hover:bg-[#41398B] group-hover:border-[#41398B] 
                                 `}>
-                                    <IconComponent
-                                        className="w-12 h-12 text-white transition-colors duration-300"
-                                        strokeWidth={1.5}
-                                    />
+                                    {box.icon ? (
+                                        <img
+                                            src={box.icon.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${box.icon}` : box.icon}
+                                            alt={language === 'en' ? (box.title_en || box.title) : (box.title_vn || box.title_en || box.title)}
+                                            className="w-12 h-12 object-contain transition-all duration-300"
+                                        />
+                                    ) : (
+                                        <div className="w-12 h-12 bg-white/10 rounded-full" />
+                                    )}
                                 </div>
 
                                 <h3 className="text-3xl font-bold mb-4">

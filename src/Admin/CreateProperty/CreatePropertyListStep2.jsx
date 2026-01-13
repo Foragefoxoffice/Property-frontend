@@ -60,7 +60,7 @@ export default function CreatePropertyListStep2({
       propertyImages: "Property Images",
       propertyVideo: "Property Video",
       floorPlan: "Floor Plan",
-      recommendedImg: "Recommended: (jpg, jpeg, png, webp, svg)",
+      recommendedImg: "Recommended: (jpg, jpeg, png, webp, svg) - (h-700px)",
       recommendedVid: "Recommended: (mp4, webm, mov, avi, mkv)",
       clickUpload: "Click here to upload",
       financialDetails: "Financial Details",
