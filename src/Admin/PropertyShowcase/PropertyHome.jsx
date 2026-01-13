@@ -213,10 +213,10 @@ export default function PropertyHome({ property }) {
         {images.length > 0 && (
           <button
             onClick={openPopup}
-            className="absolute bottom-6 left-6 bg-black/80 hover:bg-black text-white px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 z-10 font-medium"
+            className="absolute bottom-6 left-6 bg-black/80 hover:bg-black text-white px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 z-10 font-medium cursor-pointer"
           >
             <ImageIcon className="w-5 h-5" />
-            <span>View All Photo</span>
+            <span>{t.viewAllPhoto}</span>
           </button>
         )}
 
@@ -264,7 +264,7 @@ export default function PropertyHome({ property }) {
             <img
               src={images[popupIndex]}
               alt={`Full view ${popupIndex + 1}`}
-              className="max-w-full max-h-full object-contain"
+              className="w-[700px] h-[750px] object-contain"
             />
 
             {/* Navigation Arrows */}

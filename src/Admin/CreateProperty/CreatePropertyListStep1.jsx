@@ -1491,32 +1491,7 @@ export default function CreatePropertyListStep1({
           <div
             key={i}
             className="grid grid-cols-12 gap-6 mb-4 items-center pb-3"
-          >
-            {/* ✅ Utility Name */}
-            <div className="col-span-5">
-              <label className="block text-sm text-[#131517] font-semibold mb-2">
-                {lang === "en" ? "Utility Name" : "Tên tiện ích"}
-              </label>
-
-              <input
-                type="text"
-                value={u.name?.[lang] || ""}
-                onChange={(e) =>
-                  setForm((prev) => {
-                    const updated = [...prev.utilities];
-                    updated[i].name = {
-                      ...(updated[i].name || { en: "", vi: "" }),
-                      [lang]: e.target.value,
-                    };
-                    return { ...prev, utilities: updated };
-                  })
-                }
-                placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
-                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
-              />
-            </div>
-
-            {/* ✅ Select Icon */}
+          >            {/* ✅ Select Icon */}
             <div className="col-span-5">
               <label className="block text-sm text-[#131517] font-semibold mb-2">
                 {lang === "en" ? "Select Icon" : "Chọn biểu tượng"}
@@ -1569,9 +1544,9 @@ export default function CreatePropertyListStep1({
                     key={item.value}
                     value={JSON.stringify({
                       icon: item.icon,
-                      name: item.name, // full {en,vi}
-                    })}          // must be string
-                    label={item.name[lang]} // plain string label
+                      name: item.name,
+                    })}
+                    label={item.name[lang]}
                   >
                     {/* React children allowed because label is string */}
                     <div className="flex items-center gap-2">
@@ -1581,7 +1556,30 @@ export default function CreatePropertyListStep1({
                   </AntdSelect.Option>
                 ))}
               </AntdSelect>
+            </div>
 
+            {/* ✅ Utility Name */}
+            <div className="col-span-5">
+              <label className="block text-sm text-[#131517] font-semibold mb-2">
+                {lang === "en" ? "Utility Name" : "Tên tiện ích"}
+              </label>
+
+              <input
+                type="text"
+                value={u.name?.[lang] || ""}
+                onChange={(e) =>
+                  setForm((prev) => {
+                    const updated = [...prev.utilities];
+                    updated[i].name = {
+                      ...(updated[i].name || { en: "", vi: "" }),
+                      [lang]: e.target.value,
+                    };
+                    return { ...prev, utilities: updated };
+                  })
+                }
+                placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+                className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
+              />
             </div>
 
             {/* ✅ Delete Button */}

@@ -5,9 +5,6 @@ import {
     Edit2,
     Trash2,
     X,
-    Trash,
-    ChevronDown,
-    ChevronUp
 } from "lucide-react";
 import {
     getRoles,
@@ -57,7 +54,9 @@ export default function Roles() {
                 { key: "header", label: t.header, controls: ["hide", "edit"] },
                 { key: "footer", label: t.footer, controls: ["hide", "edit"] },
                 { key: "agent", label: t.propertyConsultant, controls: ["hide", "edit"] },
+                { key: "termsConditions", label: t.termsConditions || "Terms & Conditions", controls: ["hide", "edit"] },
                 { key: "blogBanner", label: t.blogBanner, controls: ["hide", "edit"] }
+
             ]
         },
         {

@@ -35,7 +35,9 @@ const DashboardLayout = () => {
             path.includes('/dashboard/cms/header') ||
             path.includes('/dashboard/cms/footer') ||
             path.includes('/dashboard/cms/agent') ||
+            path.includes('/dashboard/cms/terms-conditions') ||
             path.includes('/dashboard/cms/blog-banner')) {
+
             setOpenCMS(true);
         }
 
@@ -147,7 +149,8 @@ const DashboardLayout = () => {
                         )}
 
                         {/* CMS SETTINGS DROPDOWN */}
-                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.blogBanner")) && (
+                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.termsConditions") || !isHidden("cms.blogBanner")) && (
+
                             <div className="w-full">
                                 <button
                                     onClick={() => setOpenCMS(!openCMS)}
@@ -242,6 +245,19 @@ const DashboardLayout = () => {
                                                 <span className="text-sm">{t.agent}</span>
                                             </button>
                                         )}
+                                        {/* TERMS & CONDITIONS */}
+                                        {!isHidden("cms.termsConditions") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/terms-conditions")}
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-full transition 
+                      ${isActive("/dashboard/cms/terms-conditions") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid /> </span>
+                                                <span className="text-sm">{t.termsConditions || "Terms & Conditions"}</span>
+                                            </button>
+                                        )}
+
                                         {/* BLOG BANNER */}
                                         {!isHidden("cms.blogBanner") && (
                                             <button

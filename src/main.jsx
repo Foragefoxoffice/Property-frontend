@@ -79,6 +79,8 @@ import ContactEnquiry from "./Admin/Enquiry/ContactEnquiry.jsx";
 import Subscription from "./Admin/Subscription/Subscription.jsx";
 import Favorites from "./Pages/Favorites.jsx";
 import Enquires from "./Admin/Enquiry/Enquires.jsx";
+import TermsCondionsForm from "./AdminCms/TermsCondionsCms/TermsCondionsForm.jsx";
+import TermsConditionPage from "./Pages/TermsConditionPage.jsx";
 
 
 createRoot(document.getElementById("root")).render(
@@ -232,7 +234,9 @@ createRoot(document.getElementById("root")).render(
               <Route path="cms/agent" element={<AgentFormCms />} />
               <Route path="cms/blog-banner" element={<BlogBannerPage />} />
               <Route path="cms/:section" element={<CMSPlaceholder />} />
+              <Route path="cms/terms-conditions" element={<TermsCondionsForm />} />
               <Route path="profile" element={<UserProfile />} />
+
             </Route>
 
             {/* ---------- USER DASHBOARD ---------- */}
@@ -262,6 +266,7 @@ createRoot(document.getElementById("root")).render(
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/blogs" element={<BlogPage />} />
               <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+              <Route path="/terms-conditions" element={<TermsConditionPage />} />
 
               <Route path="/property-showcase/:id" element={<PropertyShowcasePage />} />
               <Route path="/favorites" element={<Favorites />} />

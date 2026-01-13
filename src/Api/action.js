@@ -535,4 +535,25 @@ export const getAllEnquiries = () => API.get("/favorites/admin/all");
 export const markEnquiryAsRead = (id, isRead) => API.put(`/favorites/admin/mark-read/${id}`, { isRead });
 export const deleteEnquiry = (id) => API.delete(`/favorites/admin/delete/${id}`);
 
+/* =========================================================
+   📜 TERMS CONDITIONS PAGE CMS APIs
+   ========================================================= */
+export const getTermsConditionsPage = () => API.get("/terms-conditions-page");
+export const updateTermsConditionsPage = (data) => API.post("/terms-conditions-page", data);
+export const uploadTermsConditionsPageImage = (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/terms-conditions-page/upload-image`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
 export default API;
+

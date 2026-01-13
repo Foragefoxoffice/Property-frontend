@@ -263,6 +263,7 @@ export const translations = {
     deleteFailed: "Delete failed",
     bulkDeleteSuccess: "Selected properties deleted permanently",
     bulkDeleteFailed: "Bulk delete failed",
+    viewAllPhoto: "View All Photo",
   },
 
   vi: {
@@ -529,5 +530,6 @@ export const translations = {
     deleteFailed: "Xóa thất bại",
     bulkDeleteSuccess: "Các bất động sản đã chọn đã bị xóa vĩnh viễn",
     bulkDeleteFailed: "Xóa hàng loạt thất bại",
+    viewAllPhoto: "Xem tất cả ảnh",
   },
 };
