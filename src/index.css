@@ -491,3 +491,12 @@ body {
   height: 4px;
   /* Expand on hover for usability */
 }
+
+@media (max-width:600px) {
+  .hover-image .img-style img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    transition: all 1s;
+  }
+}

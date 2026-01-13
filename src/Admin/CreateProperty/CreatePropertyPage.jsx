@@ -57,10 +57,13 @@ function mapApiToForm(api) {
     propertyId: safeStr(api.listingInformation?.listingInformationPropertyId),
 
     projectName: safe(api.listingInformation?.listingInformationProjectCommunity),
+    projectId: api.listingInformation?.listingInformationProjectCommunity?._id || "",
 
     zoneName: safe(api.listingInformation?.listingInformationZoneSubArea),
+    zoneId: api.listingInformation?.listingInformationZoneSubArea?._id || "",
 
     blockName: safe(api.listingInformation?.listingInformationBlockName),
+    blockId: api.listingInformation?.listingInformationBlockName?._id || "",
 
     title: safe(api.listingInformation?.listingInformationPropertyTitle),
 

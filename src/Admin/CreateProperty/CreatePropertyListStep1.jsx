@@ -336,76 +336,69 @@ export default function CreatePropertyListStep1({
 
   /* ✅ Sync when editing an existing property */
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
-      setForm((prev) => ({
-        ...prev,
+    if (initialData && Object.keys(initialData).length > 0 && dropdowns?.properties && dropdowns?.zones && dropdowns?.blocks) {
+
+      let newFormUpdates = {
         ...initialData,
-        blockName: initialData.blockName ||
-          prev.blockName || { en: "", vi: "" },
-        title: initialData.title || prev.title || { en: "", vi: "" },
-        address: initialData.address || prev.address || { en: "", vi: "" },
-        description: initialData.description ||
-          prev.description || { en: "", vi: "" },
-        view: initialData.view || prev.view || { en: "", vi: "" },
-        whatsNearby: initialData.whatsNearby ||
-          prev.whatsNearby || { en: "", vi: "" },
-        utilities:
-          initialData.utilities && initialData.utilities.length
-            ? initialData.utilities
-            : prev.utilities,
-      }));
+        blockName: initialData.blockName || form.blockName || { en: "", vi: "" },
+        title: initialData.title || form.title || { en: "", vi: "" },
+        address: initialData.address || form.address || { en: "", vi: "" },
+        description: initialData.description || form.description || { en: "", vi: "" },
+        view: initialData.view || form.view || { en: "", vi: "" },
+        whatsNearby: initialData.whatsNearby || form.whatsNearby || { en: "", vi: "" },
+        utilities: initialData.utilities && initialData.utilities.length ? initialData.utilities : form.utilities,
+      };
 
       /* --------------------------------------------------------------------
          ⭐⭐ RESTORE ZONE + BLOCK + PROJECT (FULL RESTORE SYSTEM)
       -------------------------------------------------------------------- */
 
-      // 1) Restore Project
-      if (initialData.projectId) {
-        const project = dropdowns.properties.find(
-          (p) => p._id === initialData.projectId
-        );
+      // Helper to find item by ID or Name
+      const findItem = (list, id, nameObj) => {
+        if (id) {
+          const found = list.find(item => item._id === id);
+          if (found) return found;
+        }
+        if (nameObj?.en) {
+          return list.find(item => item.name?.en === nameObj.en);
+        }
+        return null;
+      };
 
-        setForm((p) => ({
-          ...p,
-          projectId: initialData.projectId,
-          projectName: project ? project.name : { en: "", vi: "" },
-        }));
+      // 1) Restore Project
+      const project = findItem(dropdowns.properties, initialData.projectId, initialData.projectName);
+      if (project) {
+        newFormUpdates.projectId = project._id;
+        newFormUpdates.projectName = project.name;
       }
 
       // 2) Restore Zone
-      if (initialData.zoneId) {
-        const zone = dropdowns.zones.find((z) => z._id === initialData.zoneId);
-
-        setForm((p) => ({
-          ...p,
-          zoneId: initialData.zoneId,
-          zoneName: zone ? zone.name : { en: "", vi: "" },
-          zone: {
-            en: zone?.name?.en || "",
-            vi: zone?.name?.vi || "",
-          },
-        }));
+      const zone = findItem(dropdowns.zones, initialData.zoneId, initialData.zoneName);
+      if (zone) {
+        newFormUpdates.zoneId = zone._id;
+        newFormUpdates.zoneName = zone.name;
+        newFormUpdates.zone = {
+          en: zone.name?.en || "",
+          vi: zone.name?.vi || "",
+        };
       }
 
       // 3) Restore Block
-      if (initialData.blockId) {
-        const block = dropdowns.blocks.find(
-          (b) => b._id === initialData.blockId
-        );
-
-        setForm((p) => ({
-          ...p,
-          blockId: initialData.blockId,
-          blockNameText: block
-            ? lang === "vi"
-              ? block.name.vi
-              : block.name.en
-            : "",
-          blockName: block ? block.name : { en: "", vi: "" },
-        }));
+      const block = findItem(dropdowns.blocks, initialData.blockId, initialData.blockName);
+      if (block) {
+        newFormUpdates.blockId = block._id;
+        // Logic to determine display text based on available name
+        const displayName = lang === "vi" ? block.name?.vi : block.name?.en;
+        newFormUpdates.blockNameText = displayName;
+        newFormUpdates.blockName = block.name;
       }
+
+      setForm((prev) => ({
+        ...prev,
+        ...newFormUpdates
+      }));
     }
-  }, [initialData, dropdowns]);
+  }, [initialData, dropdowns]); // eslint-disable-line
 
   // ✅ Auto-select default UNIT
   // Auto-select default UNIT (localized object)

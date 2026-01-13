@@ -31,15 +31,6 @@ export default function PropertyHome({ property }) {
   const currencyData = property?.financialDetails?.financialDetailsCurrency;
   const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
 
-  useEffect(() => {
-    if (!images.length) return;
-    const int = setInterval(() => {
-      setDirection(1);
-      setCurrent((p) => (p + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(int);
-  }, [images.length]);
-
   const getShowcasePrice = () => {
     if (type === "Sale" && priceSale) return `${formatNumber(priceSale)} ${currencyCode}`;
     if (type === "Lease" && priceLease) return `${formatNumber(priceLease)} ${currencyCode} ${t.monthSuffix}`;
