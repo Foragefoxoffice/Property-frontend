@@ -16,9 +16,7 @@ export default function BlogPage() {
     const location = useLocation();
     const { language } = useLanguage();
 
-    useEffect(() => {
-        fetchBlogs();
-    }, []);
+
 
     useEffect(() => {
         // Filter logic
@@ -52,33 +50,44 @@ export default function BlogPage() {
     const [blogPageData, setBlogPageData] = useState(null);
 
     useEffect(() => {
-        fetchBlogs();
-        fetchBlogPageData();
+        const initData = async () => {
+            try {
+                const { getBlogPage } = await import('../Api/action');
+
+                await Promise.all([
+                    (async () => {
+                        try {
+                            const res = await getBlogs();
+                            setBlogs(res.data.data);
+                            setFilteredBlogs(res.data.data);
+                        } catch (error) {
+                            console.error("Failed to fetch blogs", error);
+                        }
+                    })(),
+                    (async () => {
+                        try {
+                            const res = await getBlogPage();
+                            if (res.data.success && res.data.data) {
+                                setBlogPageData(res.data.data);
+                            }
+                        } catch (error) {
+                            console.error("Failed to fetch blog page data", error);
+                        }
+                    })()
+                ]);
+            } catch (error) {
+                console.error("Initialization error", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        initData();
     }, []);
 
-    const fetchBlogPageData = async () => {
-        try {
-            const { getBlogPage } = await import('../Api/action');
-            const res = await getBlogPage();
-            if (res.data.success && res.data.data) {
-                setBlogPageData(res.data.data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch blog page data", error);
-        }
-    };
+    // Removed separate fetchBlogPageData and fetchBlogs functions as they are now inline or better handled in the effect
+    // But keeping filter logic effect below
 
-    const fetchBlogs = async () => {
-        try {
-            const res = await getBlogs();
-            setBlogs(res.data.data);
-            setFilteredBlogs(res.data.data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     // Helper to get derived data
     const bannerTitle = blogPageData?.blogTitle?.[language] || blogPageData?.blogTitle?.en || (language === 'vi' ? 'Tin tức & Bài viết' : 'News & Articles');
