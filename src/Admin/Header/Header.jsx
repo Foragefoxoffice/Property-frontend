@@ -381,6 +381,7 @@ export default function Header({ showNavigation = true }) {
               </Link>
             </div>
           )}
+
           {/* Language Toggle */}
           <div className="inline-flex items-center gap-1 rounded-full bg-gray-100 p-1">
             {/* English Flag */}
