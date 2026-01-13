@@ -155,13 +155,17 @@ export default function Favorites({ isDashboard = false }) {
                                 const priceLease = prop.financialDetails?.financialDetailsLeasePrice;
                                 const priceNight = prop.financialDetails?.financialDetailsPricePerNight;
                                 const genericPrice = prop.financialDetails?.financialDetailsPrice;
+                                const currencyData = prop.financialDetails?.financialDetailsCurrency;
+                                const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
                                 const type = getLocalizedValue(prop.listingInformation?.listingInformationTransactionType);
 
                                 let displayPrice = t.contactForPrice;
-                                if (type === 'Sale' && priceSale) displayPrice = `₫ ${Number(priceSale).toLocaleString()}`;
-                                else if (type === 'Lease' && priceLease) displayPrice = `₫ ${Number(priceLease).toLocaleString()} / month`;
-                                else if (type === 'Home Stay' && priceNight) displayPrice = `$ ${Number(priceNight).toLocaleString()} / night`;
-                                else if (genericPrice) displayPrice = `₫ ${Number(genericPrice).toLocaleString()}`;
+                                const formatP = (p) => `${Number(p).toLocaleString()} ${currencyCode}`;
+
+                                if (type === 'Sale' && priceSale) displayPrice = formatP(priceSale);
+                                else if (type === 'Lease' && priceLease) displayPrice = `${formatP(priceLease)} / month`;
+                                else if (type === 'Home Stay' && priceNight) displayPrice = `${formatP(priceNight)} / night`;
+                                else if (genericPrice) displayPrice = formatP(genericPrice);
 
                                 return (
                                     <div key={fav._id} className="grid grid-cols-12 gap-4 p-5 items-center hover:bg-gray-50 transition-colors group">
@@ -181,12 +185,11 @@ export default function Favorites({ isDashboard = false }) {
                                                 <h3 className="font-bold text-gray-900 line-clamp-1 mb-1 group-hover:text-[#41398B] text-[20px] transition-colors">
                                                     {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || t.untitledProperty}
                                                 </h3>
-                                                <div className="flex items-center text-xs text-gray-500 mb-1">
-                                                    <MapPin size={12} className="mr-1" />
-                                                    <span className="line-clamp-1 text-[14px]">
-                                                        {getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) || t.locationNA}
-                                                    </span>
-                                                </div>
+                                                <p className="text-sm text-gray-500 mb-1 line-clamp-1">
+                                                    {getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
+                                                        getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                                                        t.locationNA}
+                                                </p>
                                                 <p className="text-[#41398B] font-bold text-lg">{displayPrice}</p>
                                             </div>
                                         </div>

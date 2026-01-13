@@ -5,11 +5,16 @@ import { loginUser } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
 import { usePermissions } from "../Context/PermissionContext";
 import { useFavorites } from "../Context/FavoritesContext";
+import { useLanguage } from "../Language/LanguageContext";
+import { translations } from "../Language/translations";
 
 export default function Login() {
   const navigate = useNavigate();
   const { refreshPermissions } = usePermissions();
   const { fetchFavorites } = useFavorites();
+  const { language } = useLanguage();
+  const t = translations[language];
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +36,7 @@ export default function Login() {
         localStorage.setItem("userRole", user?.role || "user");
         await refreshPermissions();
         await fetchFavorites();
-        CommonToaster("Login Successfully!", "success");
+        CommonToaster(t.loginSuccess, "success");
 
         // Redirect based on user role
         if (user?.role === "user") {
@@ -43,9 +48,7 @@ export default function Login() {
       }
     } catch (err) {
       setError(
-        err.response?.data?.error ||
-        "Login failed. Please check your credentials."
-
+        err.response?.data?.error || t.loginFailed
       );
     } finally {
       setLoading(false);
@@ -73,17 +76,17 @@ export default function Login() {
           style={{ fontWeight: 800, fontSize: 36 }}
           className="text-center text-gray-800 mb-3"
         >
-          Login
+          {t.login}
         </h2>
         <p className="text-center text-[#000] text-md mb-8">
-          Enter your Email Address below to login to your account
+          {t.loginSubtitle}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
-              Email Address
+              {t.emailAddress}
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
@@ -93,7 +96,7 @@ export default function Login() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your Email Address"
+                placeholder={t.enterEmail}
                 className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
               />
             </div>
@@ -102,7 +105,7 @@ export default function Login() {
           {/* Password */}
           <div>
             <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
-              Password
+              {t.password}
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
@@ -112,7 +115,7 @@ export default function Login() {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Enter your Password"
+                placeholder={t.enterPassword}
                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
               />
               <button
@@ -140,23 +143,22 @@ export default function Login() {
           >
             {loading ? (
               <>
-                <Loader2 className="animate-spin mr-2" size={18} /> Logging
-                in...
+                <Loader2 className="animate-spin mr-2" size={18} /> {t.loggingIn}
               </>
             ) : (
-              "Login"
+              t.loginButton
             )}
           </button>
 
           {/* Register Link */}
           <div className="text-center mt-4">
             <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
+              {t.dontHaveAccount}{" "}
               <Link
                 to="/register"
                 className="text-[#4A3AFF] hover:text-[#41398B] font-semibold transition"
               >
-                Register here
+                {t.registerHere}
               </Link>
             </p>
           </div>

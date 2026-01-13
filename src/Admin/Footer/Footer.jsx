@@ -205,7 +205,7 @@ export default function Footer() {
                             <Link to="/terms-conditions" className="text-[#898989] hover:text-white text-[14px] underline underline-offset-4 decoration-gray-600 hover:decoration-white transition-all">
                                 {st('termsOfService')}
                             </Link>
-                            <Link to="#" className="text-[#898989] hover:text-white text-[14px] underline underline-offset-4 decoration-gray-600 hover:decoration-white transition-all">
+                            <Link to="/privacy-policy" className="text-[#898989] hover:text-white text-[14px] underline underline-offset-4 decoration-gray-600 hover:decoration-white transition-all">
                                 {st('privacyPolicy')}
                             </Link>
                         </div>

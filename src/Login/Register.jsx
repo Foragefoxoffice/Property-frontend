@@ -5,11 +5,16 @@ import { userRegisterApi } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
 import { usePermissions } from "../Context/PermissionContext";
 import { useFavorites } from "../Context/FavoritesContext";
+import { useLanguage } from "../Language/LanguageContext";
+import { translations } from "../Language/translations";
 
 export default function Register() {
     const navigate = useNavigate();
     const { refreshPermissions } = usePermissions();
     const { fetchFavorites } = useFavorites();
+    const { language } = useLanguage();
+    const t = translations[language];
+
     const [formData, setFormData] = useState({
         name: "",
         mobile: "",
@@ -31,7 +36,7 @@ export default function Register() {
 
         // Validate passwords match
         if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match");
+            setError(t.passwordsDoNotMatch);
             return;
         }
 
@@ -45,13 +50,12 @@ export default function Register() {
                 localStorage.setItem("userRole", user?.role || "user");
                 await refreshPermissions();
                 await fetchFavorites();
-                CommonToaster("Registration Successful!", "success");
+                CommonToaster(t.registerSuccess, "success");
                 navigate("/login");
             }
         } catch (err) {
             setError(
-                err.response?.data?.error ||
-                "Registration failed. Please try again."
+                err.response?.data?.error || t.registerFailed
             );
         } finally {
             setLoading(false);
@@ -79,17 +83,17 @@ export default function Register() {
                     style={{ fontWeight: 800, fontSize: 36 }}
                     className="text-center text-gray-800 mb-3"
                 >
-                    Register
+                    {t.register}
                 </h2>
                 <p className="text-center text-[#000] text-md mb-8">
-                    Create your account to get started
+                    {t.registerSubtitle}
                 </p>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Name */}
                     <div>
                         <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
-                            Full Name
+                            {t.fullName}
                         </label>
                         <div className="relative">
                             <User className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
@@ -99,7 +103,7 @@ export default function Register() {
                                 required
                                 value={formData.name}
                                 onChange={handleChange}
-                                placeholder="Enter your Full Name"
+                                placeholder={t.enterFullName}
                                 className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
                             />
                         </div>
@@ -108,7 +112,7 @@ export default function Register() {
                     {/* Mobile Number */}
                     <div>
                         <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
-                            Mobile Number
+                            {t.mobileNumber}
                         </label>
                         <div className="relative">
                             <Phone className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
@@ -118,7 +122,7 @@ export default function Register() {
                                 required
                                 value={formData.mobile}
                                 onChange={handleChange}
-                                placeholder="Enter your Mobile Number"
+                                placeholder={t.enterMobileNumber}
                                 className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
                             />
                         </div>
@@ -127,7 +131,7 @@ export default function Register() {
                     {/* Email */}
                     <div>
                         <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
-                            Email Address
+                            {t.emailAddress}
                         </label>
                         <div className="relative">
                             <Mail className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
@@ -137,7 +141,7 @@ export default function Register() {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter your Email Address"
+                                placeholder={t.enterEmail}
                                 className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
                             />
                         </div>
@@ -146,7 +150,7 @@ export default function Register() {
                     {/* Password */}
                     <div>
                         <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
-                            Password
+                            {t.password}
                         </label>
                         <div className="relative">
                             <Lock className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
@@ -156,7 +160,7 @@ export default function Register() {
                                 required
                                 value={formData.password}
                                 onChange={handleChange}
-                                placeholder="Enter your Password"
+                                placeholder={t.enterPassword}
                                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
                             />
                             <button
@@ -172,7 +176,7 @@ export default function Register() {
                     {/* Confirm Password */}
                     <div>
                         <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
-                            Confirm Password
+                            {t.confirmPassword}
                         </label>
                         <div className="relative">
                             <Lock className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
@@ -182,7 +186,7 @@ export default function Register() {
                                 required
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                placeholder="Confirm your Password"
+                                placeholder={t.enterConfirmPassword}
                                 className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
                             />
                             <button
@@ -210,23 +214,22 @@ export default function Register() {
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="animate-spin mr-2" size={18} /> Creating
-                                account...
+                                <Loader2 className="animate-spin mr-2" size={18} /> {t.registering}
                             </>
                         ) : (
-                            "Register"
+                            t.registerButton
                         )}
                     </button>
 
                     {/* Login Link */}
                     <div className="text-center mt-4">
                         <p className="text-sm text-gray-600">
-                            Already have an account?{" "}
+                            {t.alreadyHaveAccount}{" "}
                             <Link
                                 to="/login"
                                 className="text-[#4A3AFF] hover:text-[#41398B] font-semibold transition"
                             >
-                                Login here
+                                {t.loginHere}
                             </Link>
                         </p>
                     </div>

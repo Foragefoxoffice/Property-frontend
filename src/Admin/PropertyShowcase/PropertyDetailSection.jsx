@@ -767,20 +767,24 @@ export default function PropertyDetailsSection({ property }) {
                       const priceLease = prop.financialDetails?.financialDetailsLeasePrice;
                       const priceNight = prop.financialDetails?.financialDetailsPricePerNight;
                       const genericPrice = prop.financialDetails?.financialDetailsPrice;
+                      const currencyData = prop.financialDetails?.financialDetailsCurrency;
+                      const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
 
                       let displayPrice = t.contactForPrice;
                       let displaySuffix = null;
 
+                      const formatP = (p) => `${Number(p).toLocaleString()} ${currencyCode}`;
+
                       if (type === 'Sale' && priceSale) {
-                        displayPrice = `₫ ${Number(priceSale).toLocaleString()}`;
+                        displayPrice = formatP(priceSale);
                       } else if (type === 'Lease' && priceLease) {
-                        displayPrice = `₫ ${Number(priceLease).toLocaleString()}`;
+                        displayPrice = formatP(priceLease);
                         displaySuffix = ` ${t.monthSuffix}`;
                       } else if (type === 'Home Stay' && priceNight) {
-                        displayPrice = `$ ${Number(priceNight).toLocaleString()}`;
+                        displayPrice = formatP(priceNight);
                         displaySuffix = ` ${t.nightSuffix}`;
                       } else if (genericPrice) {
-                        displayPrice = `₫ ${Number(genericPrice).toLocaleString()}`;
+                        displayPrice = formatP(genericPrice);
                       }
 
                       return (

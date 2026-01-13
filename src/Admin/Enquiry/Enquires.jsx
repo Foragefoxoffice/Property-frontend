@@ -358,12 +358,11 @@ export default function Enquires() {
                                                     {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || "Untitled Property"}
                                                 </h2>
 
-                                                <div className="flex items-start gap-2 text-gray-500 mb-3">
-                                                    <MapPin size={16} className="mt-0.5 text-[#41398B] flex-shrink-0" />
-                                                    <span className="text-sm font-medium line-clamp-1">
-                                                        {getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) || "Location Not Available"}
-                                                    </span>
-                                                </div>
+                                                <p className="text-sm text-gray-500 mb-3 line-clamp-1">
+                                                    {getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
+                                                        getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                                                        "Description not available"}
+                                                </p>
 
                                                 <div className="flex flex-wrap gap-3 mb-4">
                                                     {prop.propertyInformation?.informationBedrooms > 0 && (
