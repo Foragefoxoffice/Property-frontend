@@ -5,7 +5,7 @@ import { useLanguage } from '../Language/LanguageContext';
 import Footer from '@/Admin/Footer/Footer';
 import Header from '@/Admin/Header/Header';
 import { Spin } from 'antd';
-import { Helmet } from 'react-helmet-async';
+
 
 export default function PrivacyPolicyPage() {
     const [pageData, setPageData] = useState(null);
@@ -29,6 +29,65 @@ export default function PrivacyPolicyPage() {
         fetchPageData();
     }, []);
 
+    useEffect(() => {
+        if (!pageData) return;
+
+        // SEO Meta Data
+        const metaTitle = language === 'en' ? pageData?.privacyPolicySeoMetaTitle_en : pageData?.privacyPolicySeoMetaTitle_vn;
+        const metaDescription = language === 'en' ? pageData?.privacyPolicySeoMetaDescription_en : pageData?.privacyPolicySeoMetaDescription_vn;
+        const metaKeywords = language === 'en' ? pageData?.privacyPolicySeoMetaKeywords_en : pageData?.privacyPolicySeoMetaKeywords_vn;
+        const canonicalUrl = language === 'en' ? pageData?.privacyPolicySeoCanonicalUrl_en : pageData?.privacyPolicySeoCanonicalUrl_vn;
+        const ogTitle = language === 'en' ? pageData?.privacyPolicySeoOgTitle_en : pageData?.privacyPolicySeoOgTitle_vn;
+        const ogDescription = language === 'en' ? pageData?.privacyPolicySeoOgDescription_en : pageData?.privacyPolicySeoOgDescription_vn;
+        const ogImages = pageData?.privacyPolicySeoOgImages || [];
+
+        // Set Title
+        if (metaTitle) document.title = metaTitle;
+
+        // Set Meta Tags Helper
+        const setMetaTag = (name, content) => {
+            if (!content) return;
+            let element = document.querySelector(`meta[name="${name}"]`);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute('name', name);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('content', content);
+        };
+
+        // Set Open Graph Helper
+        const setOgTag = (property, content) => {
+            if (!content) return;
+            let element = document.querySelector(`meta[property="${property}"]`);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute('property', property);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('content', content);
+        };
+
+        const setLinkTag = (rel, href) => {
+            if (!href) return;
+            let element = document.querySelector(`link[rel="${rel}"]`);
+            if (!element) {
+                element = document.createElement('link');
+                element.setAttribute('rel', rel);
+                document.head.appendChild(element);
+            }
+            element.setAttribute('href', href);
+        };
+
+        setMetaTag('description', metaDescription);
+        setMetaTag('keywords', Array.isArray(metaKeywords) ? metaKeywords.join(', ') : metaKeywords);
+        setLinkTag('canonical', canonicalUrl);
+        setOgTag('og:title', ogTitle);
+        setOgTag('og:description', ogDescription);
+        if (ogImages.length > 0) setOgTag('og:image', ogImages[0]);
+
+    }, [pageData, language]);
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -45,28 +104,9 @@ export default function PrivacyPolicyPage() {
         ? pageData?.privacyPolicyContent_en
         : pageData?.privacyPolicyContent_vn;
 
-    // SEO Meta Data
-    const metaTitle = language === 'en' ? pageData?.privacyPolicySeoMetaTitle_en : pageData?.privacyPolicySeoMetaTitle_vn;
-    const metaDescription = language === 'en' ? pageData?.privacyPolicySeoMetaDescription_en : pageData?.privacyPolicySeoMetaDescription_vn;
-    const metaKeywords = language === 'en' ? pageData?.privacyPolicySeoMetaKeywords_en : pageData?.privacyPolicySeoMetaKeywords_vn;
-    const canonicalUrl = language === 'en' ? pageData?.privacyPolicySeoCanonicalUrl_en : pageData?.privacyPolicySeoCanonicalUrl_vn;
-    const ogTitle = language === 'en' ? pageData?.privacyPolicySeoOgTitle_en : pageData?.privacyPolicySeoOgTitle_vn;
-    const ogDescription = language === 'en' ? pageData?.privacyPolicySeoOgDescription_en : pageData?.privacyPolicySeoOgDescription_vn;
-    const ogImages = pageData?.privacyPolicySeoOgImages || [];
-
     return (
         <div className="bg-white min-h-screen flex flex-col">
-            <Helmet>
-                {metaTitle && <title>{metaTitle}</title>}
-                {metaDescription && <meta name="description" content={metaDescription} />}
-                {metaKeywords && <meta name="keywords" content={Array.isArray(metaKeywords) ? metaKeywords.join(', ') : metaKeywords} />}
-                {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
-                {/* OG Tags */}
-                {ogTitle && <meta property="og:title" content={ogTitle} />}
-                {ogDescription && <meta property="og:description" content={ogDescription} />}
-                {ogImages.length > 0 && <meta property="og:image" content={ogImages[0]} />}
-            </Helmet>
 
             <Header />
 
