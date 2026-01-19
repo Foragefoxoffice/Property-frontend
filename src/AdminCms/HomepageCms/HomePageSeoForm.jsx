@@ -7,8 +7,10 @@ import {
     ConfigProvider,
     Select,
     Switch,
-    Upload
+    Upload,
+    message
 } from 'antd';
+import { uploadHomePageImage } from '../../Api/action';
 import {
     SaveOutlined,
     PlusOutlined,
@@ -106,14 +108,28 @@ export default function HomePageSeoForm({
     // Keyword handlers removed - moved to KeywordTagsInput component
 
     // Handle OG Image upload
-    const handleOgImageUpload = (file) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const newImages = [...ogImages, e.target.result];
-            setOgImages(newImages);
-            form.setFieldsValue({ homeSeoOgImages: newImages });
-        };
-        reader.readAsDataURL(file);
+    const handleOgImageUpload = async (file) => {
+        try {
+            const res = await uploadHomePageImage(file);
+            if (res.data.success) {
+                // Construct absolute URL for display/SEO
+                // The backend returns a relative path like /uploads/homepage/xyz.jpg
+                const rawUrl = res.data.data.url;
+                const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+
+                const absoluteUrl = rawUrl.startsWith('http')
+                    ? rawUrl
+                    : `${apiBase}${rawUrl}`;
+
+                const newImages = [...ogImages, absoluteUrl];
+                setOgImages(newImages);
+                form.setFieldsValue({ homeSeoOgImages: newImages });
+                message.success('Image uploaded successfully');
+            }
+        } catch (error) {
+            console.error('Upload failed:', error);
+            message.error('Failed to upload image');
+        }
         return false; // Prevent auto upload
     };
 
