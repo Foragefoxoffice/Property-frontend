@@ -7,8 +7,10 @@ import {
     ConfigProvider,
     Select,
     Switch,
-    Upload
+    Upload,
+    message
 } from 'antd';
+import { uploadBlogImage } from '../../Api/action';
 import {
     SaveOutlined,
     PlusOutlined,
@@ -129,19 +131,27 @@ export default function BlogSeoForm({
     }, [blogData, form]);
 
     // Handle OG Image upload
-    const handleOgImageUpload = (file) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const newImages = [...ogImages, e.target.result];
-            setOgImages(newImages);
-            form.setFieldsValue({
-                seoInformation: {
-                    ...form.getFieldValue('seoInformation'),
-                    ogImages: newImages
-                }
-            });
-        };
-        reader.readAsDataURL(file);
+    const handleOgImageUpload = async (file) => {
+        try {
+            const res = await uploadBlogImage(file);
+            if (res.data.success) {
+                // Generic upload endpoint returns absolute URL directly in res.data.url
+                const absoluteUrl = res.data.url;
+
+                const newImages = [...ogImages, absoluteUrl];
+                setOgImages(newImages);
+                form.setFieldsValue({
+                    seoInformation: {
+                        ...form.getFieldValue('seoInformation'),
+                        ogImages: newImages
+                    }
+                });
+                message.success('Image uploaded successfully');
+            }
+        } catch (error) {
+            console.error('Upload failed:', error);
+            message.error('Failed to upload image');
+        }
         return false; // Prevent auto upload
     };
 
