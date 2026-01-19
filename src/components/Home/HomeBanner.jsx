@@ -143,16 +143,17 @@ export default function HomeBanner({ homePageData }) {
                         ? `url(${getImageUrl(homePageData.backgroundImage)})`
                         : 'url("/images/property/home-banner.jpg")'
                 }}>
+                <div className="absolute inset-0 bg-black/50"></div>
                 <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
                     {/* Title & Description */}
                     <div className="text-center mb-12">
-                        <h1 className="text-5xl md:text-8xl font-medium text-black mb-4 animate-fadeInUp">
+                        <h1 className="text-5xl md:text-8xl font-medium text-white mb-4 animate-fadeInUp">
                             {language === 'en'
                                 ? (homePageData?.heroTitle_en || 'Find The Best Place')
                                 : (homePageData?.heroTitle_vn || 'Tìm Nơi Tốt Nhất')
                             }
                         </h1>
-                        <p className="text-xl text-[#5c6368] font-medium max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
+                        <p className="text-xl text-gray-200 font-medium max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
                             {language === 'en'
                                 ? (homePageData?.heroDescription_en || 'This stunning coastal villa in Malibu offers panoramic ocean views, open-concept living, and elegant modern design.')
                                 : (homePageData?.heroDescription_vn || 'Biệt thự ven biển tuyệt đẹp này ở Malibu mang đến tầm nhìn toàn cảnh ra đại dương, không gian sống mở và thiết kế hiện đại thanh lịch.')
