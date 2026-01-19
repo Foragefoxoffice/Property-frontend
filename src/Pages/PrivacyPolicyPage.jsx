@@ -100,10 +100,17 @@ export default function PrivacyPolicyPage() {
         if (Array.isArray(ogImages) && ogImages.length > 0) {
             ogImages.forEach(imgUrl => {
                 if (!imgUrl) return;
+
+                // Fix Legacy Filenames
+                let rawUrl = imgUrl;
+                if (!imgUrl.includes('/') && !imgUrl.startsWith('http')) {
+                    rawUrl = `/uploads/privacypolicypage/${imgUrl}`;
+                }
+
                 // Ensure absolute URL for social sharing
-                const absoluteUrl = imgUrl.startsWith('http')
-                    ? imgUrl
-                    : `${window.location.origin}${imgUrl.startsWith('/') ? '' : '/'}${imgUrl}`;
+                const absoluteUrl = rawUrl.startsWith('http')
+                    ? rawUrl
+                    : `${window.location.origin}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
 
                 const el = document.createElement('meta');
                 el.setAttribute('property', 'og:image');
