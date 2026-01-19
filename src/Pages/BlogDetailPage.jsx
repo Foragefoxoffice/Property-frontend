@@ -31,6 +31,85 @@ export default function BlogDetailPage() {
         fetchBlog();
     }, [slug]);
 
+    // SEO Meta Injection
+    useEffect(() => {
+        if (!blog) return;
+
+        const langKey = language === 'vi' ? 'vi' : 'en'; // Blog CMS uses 'vi' not 'vn' for fields? 
+        // Checking BlogCmsForm: keys are 'en' and 'vi'. Correct.
+        // Wait, other pages used 'vn'. Blog uses 'vi'. I must be careful.
+        // In BlogSeoForm, keys are 'en' and 'vi'.
+        // In BlogDetailPage, getLocalized uses 'en' or [language]. Language context is usually 'vi' or 'en'.
+        // Let's assume language context provides 'vi'.
+
+        const seo = blog.seoInformation || {};
+        const metaTitle = seo.metaTitle?.[language] || blog.title?.[language] || blog.title?.en;
+        const metaDesc = seo.metaDescription?.[language] || '';
+        const metaKeywords = seo.metaKeywords?.[language] || [];
+        const canonicalUrl = seo.canonicalUrl?.[language];
+
+        // Open Graph
+        const ogTitle = seo.ogTitle?.[language] || metaTitle;
+        const ogDesc = seo.ogDescription?.[language] || metaDesc;
+        const ogImages = seo.ogImages || (blog.mainImage ? [blog.mainImage] : []);
+
+        // 1. Title
+        if (metaTitle) document.title = metaTitle;
+
+        // Helper
+        const updateMeta = (name, content, attribute = 'name') => {
+            let element = document.querySelector(`meta[${attribute}="${name}"]`);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute(attribute, name);
+                document.head.appendChild(element);
+            }
+            if (content) {
+                element.setAttribute('content', content);
+            } else {
+                element.remove();
+            }
+        };
+
+        // 2. Meta Tags
+        updateMeta('description', metaDesc);
+        updateMeta('keywords', Array.isArray(metaKeywords) ? metaKeywords.join(', ') : metaKeywords);
+
+        // 3. Canonical
+        let link = document.querySelector('link[rel="canonical"]');
+        if (!link) {
+            link = document.createElement('link');
+            link.setAttribute('rel', 'canonical');
+            document.head.appendChild(link);
+        }
+        if (canonicalUrl) {
+            link.setAttribute('href', canonicalUrl);
+        } else {
+            link.remove();
+        }
+
+        // 4. OG Tags
+        updateMeta('og:title', ogTitle, 'property');
+        updateMeta('og:description', ogDesc, 'property');
+        updateMeta('og:type', 'article', 'property');
+
+        // OG Images
+        document.querySelectorAll('meta[property="og:image"]').forEach(el => el.remove());
+        if (Array.isArray(ogImages)) {
+            ogImages.forEach(img => {
+                const el = document.createElement('meta');
+                el.setAttribute('property', 'og:image');
+                el.setAttribute('content', img.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${img}` : img);
+                document.head.appendChild(el);
+            });
+        }
+
+        // 5. Robots
+        const allowIndexing = seo.allowIndexing !== false; // Default true
+        updateMeta('robots', allowIndexing ? 'index, follow' : 'noindex, nofollow');
+
+    }, [blog, language]);
+
     // Share functionality
     const handleShare = async () => {
         const shareData = {

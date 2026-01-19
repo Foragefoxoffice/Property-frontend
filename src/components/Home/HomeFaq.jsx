@@ -131,7 +131,7 @@ export default function HomeFaq({ homePageData }) {
                     style={{ backgroundImage: `url(${cardImage})` }}
                 >
                     {/* Dark overlay for better text readability */}
-                    <div className="absolute inset-0 bg-black/8 z-0"></div>
+                    <div className="absolute inset-0 bg-black/20 z-0"></div>
 
                     {/* Content */}
                     <div className="relative z-10 p-6 md:p-12 flex flex-col h-full items-start">

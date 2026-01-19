@@ -128,7 +128,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
         <section ref={sectionRef} className="py-10 px-6 md:py-16 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff]">
             <div className="max-w-7xl mx-auto">
                 {/* Section Header */}
-                <div className="text-center mb-17">
+                <div className="text-center mb-8 md:mb-16">
                     <p
                         className={`text-sm font-semibold text-[#a4aeb5] uppercase tracking-wider mb-3 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
                             }`}
@@ -171,7 +171,12 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                 className={`card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-700 cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
                                     }`}
                                 style={{ transitionDelay: `${200 + index * 100}ms` }}
-                                onClick={() => navigate(`/property-showcase/${property.listingInformation?.listingInformationPropertyId || property._id}`)}
+                                onClick={() => {
+                                    const id = property.listingInformation?.listingInformationPropertyId || property._id;
+                                    const slug = getLocalizedValue(property.seoInformation?.slugUrl);
+                                    // Navigate to ID/Slug or just ID
+                                    navigate(`/property-showcase/${id}${slug ? `/${slug}` : ''}`);
+                                }}
                             >
                                 {/* Image */}
                                 <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl">
@@ -191,7 +196,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="absolute top-3 right-3 z-20 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
                                         <button
                                             onClick={(e) => handleToggleFavorite(e, property)}
                                             className="p-1 bg-white rounded-md shadow-sm text-[#000] hover:scale-105 transition-transform cursor-pointer"

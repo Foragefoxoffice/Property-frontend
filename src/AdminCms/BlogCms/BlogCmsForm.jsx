@@ -95,15 +95,21 @@ export default function BlogCmsForm() {
                 });
 
                 // Set SEO Form
+                const backendSeo = blog.seoInformation || {
+                    metaTitle: { en: '', vi: '' },
+                    metaDescription: { en: '', vi: '' },
+                    metaKeywords: { en: [], vi: [] },
+                    slugUrl: { en: '', vi: '' },
+                    canonicalUrl: { en: '', vi: '' },
+                    allowIndexing: { en: true, vi: true },
+                    ogImages: []
+                };
+
                 seoForm.setFieldsValue({
-                    seoInformation: blog.seoInformation || {
-                        metaTitle: { en: '', vi: '' },
-                        metaDescription: { en: '', vi: '' },
-                        metaKeywords: { en: [], vi: [] },
-                        slugUrl: { en: '', vi: '' },
-                        canonicalUrl: { en: '', vi: '' },
-                        allowIndexing: { en: true, vi: true },
-                    },
+                    seoInformation: {
+                        ...backendSeo,
+                        allowIndexing: backendSeo.allowIndexing?.en !== false
+                    }
                 });
             } else {
                 setBlogData(null);
@@ -185,23 +191,35 @@ export default function BlogCmsForm() {
             setSeoLoading(true);
 
             const preserved = blogData ? getPreservedData(blogData) : {};
+            const seoValues = values.seoInformation || {};
+
+            // Handle Allow Indexing (Boolean -> Object)
+            const allowIndexingBool = seoValues.allowIndexing !== undefined
+                ? seoValues.allowIndexing
+                : (preserved.seoInformation?.allowIndexing?.en !== false);
+
+            const allowIndexingObj = { en: allowIndexingBool, vi: allowIndexingBool };
 
             // Deep merge seoInformation
             const seoInfo = {
+                // Base preserved (includes _id etc if any)
                 ...preserved.seoInformation,
-                ...values.seoInformation,
-                // Ensure nested localized fields are merged if they exist
-                metaTitle: { ...preserved.seoInformation?.metaTitle, ...values.seoInformation?.metaTitle },
-                metaDescription: { ...preserved.seoInformation?.metaDescription, ...values.seoInformation?.metaDescription },
+                // Top-level replacements from form
+                allowIndexing: allowIndexingObj,
+                ogImages: seoValues.ogImages || preserved.seoInformation?.ogImages || [],
+
+                // Explicit localized merges
+                metaTitle: { ...preserved.seoInformation?.metaTitle, ...seoValues.metaTitle },
+                metaDescription: { ...preserved.seoInformation?.metaDescription, ...seoValues.metaDescription },
                 metaKeywords: {
-                    en: values.seoInformation?.metaKeywords?.en || preserved.seoInformation?.metaKeywords?.en || [],
-                    vi: values.seoInformation?.metaKeywords?.vi || preserved.seoInformation?.metaKeywords?.vi || []
+                    en: seoValues.metaKeywords?.en || preserved.seoInformation?.metaKeywords?.en || [],
+                    vi: seoValues.metaKeywords?.vi || preserved.seoInformation?.metaKeywords?.vi || []
                 },
-                slugUrl: { ...preserved.seoInformation?.slugUrl, ...values.seoInformation?.slugUrl },
-                canonicalUrl: { ...preserved.seoInformation?.canonicalUrl, ...values.seoInformation?.canonicalUrl },
-                schemaType: { ...preserved.seoInformation?.schemaType, ...values.seoInformation?.schemaType },
-                ogTitle: { ...preserved.seoInformation?.ogTitle, ...values.seoInformation?.ogTitle },
-                ogDescription: { ...preserved.seoInformation?.ogDescription, ...values.seoInformation?.ogDescription },
+                slugUrl: { ...preserved.seoInformation?.slugUrl, ...seoValues.slugUrl },
+                canonicalUrl: { ...preserved.seoInformation?.canonicalUrl, ...seoValues.canonicalUrl },
+                schemaType: { ...preserved.seoInformation?.schemaType, ...seoValues.schemaType },
+                ogTitle: { ...preserved.seoInformation?.ogTitle, ...seoValues.ogTitle },
+                ogDescription: { ...preserved.seoInformation?.ogDescription, ...seoValues.ogDescription },
             };
 
             const finalPayload = {

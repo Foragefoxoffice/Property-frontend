@@ -715,7 +715,10 @@ export default function PropertyDetailsSection({ property }) {
                 key={prop._id}
                 className="card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-700 cursor-pointer shadow-sm hover:shadow-lg"
                 onClick={() => {
-                  navigate(`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`);
+                  const id = prop.listingInformation?.listingInformationPropertyId || prop._id;
+                  const slug = getLocalizedValue(prop.seoInformation?.slugUrl);
+                  // Navigate to ID/Slug or just ID
+                  navigate(`/property-showcase/${id}${slug ? `/${slug}` : ''}`);
                   window.scrollTo(0, 0);
                 }}
               >

@@ -66,7 +66,7 @@ export default function Register() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#f6f4ff] to-[#e5defc] relative overflow-hidden">
             {/* Subtle skyline background */}
             <div
-                className="absolute bottom-0 left-0 w-full bg-cover bg-bottom bg-no-repeat h-120"
+                className="absolute bottom-0 left-0 w-full bg-contain bg-bottom bg-no-repeat h-120"
                 style={{
                     backgroundImage: "url('/images/login/bg.png')",
                 }}

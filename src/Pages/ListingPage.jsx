@@ -611,7 +611,12 @@ export default function ListingPage() {
                                                     key={property._id}
                                                     ref={isLastProperty ? lastPropertyRef : null}
                                                     className="card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer"
-                                                    onClick={() => navigate(`/property-showcase/${property.listingInformation?.listingInformationPropertyId || property._id}`)}
+                                                    onClick={() => {
+                                                        const id = property.listingInformation?.listingInformationPropertyId || property._id;
+                                                        const slug = getLocalizedValue(property.seoInformation?.slugUrl);
+                                                        // Navigate to ID/Slug or just ID
+                                                        navigate(`/property-showcase/${id}${slug ? `/${slug}` : ''}`);
+                                                    }}
                                                 >
                                                     {/* Image */}
                                                     <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl">
@@ -632,7 +637,7 @@ export default function ListingPage() {
                                                             )}
                                                         </div>
                                                         {/* Favorite Button */}
-                                                        <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                        <div className="absolute top-3 right-3 z-20 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
                                                             <button
                                                                 onClick={(e) => handleToggleFavorite(e, property)}
                                                                 className="p-1 bg-white rounded-md shadow-sm text-[#000] hover:scale-105 transition-transform cursor-pointer"

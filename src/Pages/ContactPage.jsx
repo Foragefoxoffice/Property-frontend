@@ -7,10 +7,95 @@ import SmoothScroll from "@/components/SmoothScroll";
 import Loader from "@/components/Loader/Loader";
 import Header from "@/Admin/Header/Header";
 import Footer from "@/Admin/Footer/Footer";
+import { useLanguage } from "@/Language/LanguageContext";
 
 export default function ContactPage() {
     const [pageData, setPageData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { language } = useLanguage();
+
+    // SEO Head Management
+    useEffect(() => {
+        if (!pageData) return;
+
+        const langKey = language === 'vi' ? 'vn' : 'en';
+
+        // Helper to safely update meta tags
+        const updateMeta = (name, content, attribute = 'name') => {
+            let element = document.querySelector(`meta[${attribute}="${name}"]`);
+            if (!element) {
+                element = document.createElement('meta');
+                element.setAttribute(attribute, name);
+                document.head.appendChild(element);
+            }
+            if (content) {
+                element.setAttribute('content', content);
+            } else {
+                element.remove();
+            }
+        };
+
+        // 1. Update Title
+        const metaTitle = pageData[`contactSeoMetaTitle_${langKey}`] ||
+            (langKey === 'en' ? 'Contact Us' : 'Liên Hệ');
+
+        if (metaTitle) {
+            document.title = metaTitle;
+        }
+
+        // 2. Meta Description
+        const metaDesc = pageData[`contactSeoMetaDescription_${langKey}`] || '';
+        updateMeta('description', metaDesc);
+
+        // 3. Keywords
+        const keywords = pageData[`contactSeoMetaKeywords_${langKey}`];
+        if (Array.isArray(keywords) && keywords.length > 0) {
+            updateMeta('keywords', keywords.join(', '));
+        } else {
+            updateMeta('keywords', '');
+        }
+
+        // 4. Canonical URL
+        let canonicalLink = document.querySelector('link[rel="canonical"]');
+        if (!canonicalLink) {
+            canonicalLink = document.createElement('link');
+            canonicalLink.setAttribute('rel', 'canonical');
+            document.head.appendChild(canonicalLink);
+        }
+        const canonicalUrl = pageData[`contactSeoCanonicalUrl_${langKey}`];
+        if (canonicalUrl) {
+            canonicalLink.setAttribute('href', canonicalUrl);
+        } else {
+            canonicalLink.remove();
+        }
+
+        // 5. Open Graph Tags
+        const ogTitle = pageData[`contactSeoOgTitle_${langKey}`] || metaTitle;
+        const ogDesc = pageData[`contactSeoOgDescription_${langKey}`] || metaDesc;
+
+        updateMeta('og:title', ogTitle, 'property');
+        updateMeta('og:description', ogDesc, 'property');
+        updateMeta('og:type', 'website', 'property');
+
+        // OG Images (Handle array)
+        const oldOgImages = document.querySelectorAll('meta[property="og:image"]');
+        oldOgImages.forEach(el => el.remove());
+
+        const ogImages = pageData.contactSeoOgImages || [];
+        if (Array.isArray(ogImages) && ogImages.length > 0) {
+            ogImages.forEach(imgUrl => {
+                const el = document.createElement('meta');
+                el.setAttribute('property', 'og:image');
+                el.setAttribute('content', imgUrl);
+                document.head.appendChild(el);
+            });
+        }
+
+        // 6. Robots / Indexing
+        const allowIndexing = pageData.contactSeoAllowIndexing !== false; // Default true
+        updateMeta('robots', allowIndexing ? 'index, follow' : 'noindex, nofollow');
+
+    }, [pageData, language]);
 
     useEffect(() => {
         const fetchPageData = async () => {

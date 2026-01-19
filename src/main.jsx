@@ -274,7 +274,7 @@ createRoot(document.getElementById("root")).render(
               <Route path="/terms-conditions" element={<TermsConditionPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
-              <Route path="/property-showcase/:id" element={<PropertyShowcasePage />} />
+              <Route path="/property-showcase/:id/:slug?" element={<PropertyShowcasePage />} />
               <Route path="/favorites" element={<Favorites />} />
 
             </Route>

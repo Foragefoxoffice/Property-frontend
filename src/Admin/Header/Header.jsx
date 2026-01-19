@@ -675,9 +675,20 @@ export default function Header({ showNavigation = true }) {
                   </Link>
                 </div>
 
-                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2">
+                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2 border-b border-gray-100">
                   <Link to="/contact" className="block text-gray-700 hover:text-[#41398B] font-medium">
                     {labels.contacts[language]}
+                  </Link>
+                </div>
+
+                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2">
+                  <Link to="/favorites" className="flex items-center gap-2 text-gray-700 hover:text-[#41398B] font-medium w-full">
+                    {labels.myFavorites[language]}
+                    {favorites.length > 0 && (
+                      <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        {favorites.length}
+                      </span>
+                    )}
                   </Link>
                 </div>
 

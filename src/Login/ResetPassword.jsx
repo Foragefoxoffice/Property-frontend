@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { resetPassword } from "../Api/action";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useLanguage } from "../Language/LanguageContext";
+import { translations } from "../Language/translations";
+import { Mail, Lock, Key, Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function ResetPassword() {
   const [form, setForm] = useState({
@@ -9,9 +12,12 @@ export default function ResetPassword() {
     newPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,71 +42,129 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 flex items-center justify-center p-4">
-      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-          Reset Password 🔒
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#f6f4ff] to-[#e5defc] relative overflow-hidden">
+      {/* Subtle skyline background */}
+      <div
+        className="absolute bottom-0 left-0 w-full bg-contain bg-bottom bg-no-repeat h-120"
+        style={{
+          backgroundImage: "url('/images/login/bg.png')",
+        }}
+      />
+
+      {/* Logo */}
+      <div className="mb-16 text-center z-10">
+        <img className="h-16" src="/images/login/logo.png" alt="" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-lg bg-white shadow-xl rounded-2xl px-8 py-10 border border-gray-100">
+        <h1
+          style={{ fontWeight: 800, fontSize: 36 }}
+          className="text-center text-gray-800 mb-3"
+        >
+          {t.resetPasswordTitle}
         </h1>
-        <p className="text-center text-gray-500 mb-8">
-          Enter your email, OTP, and new password
+        <p className="text-center text-[#000] text-md mb-8">
+          {t.resetPasswordSubtitle}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="you@example.com"
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-400 transition-all"
-          />
-          <input
-            type="text"
-            name="otp"
-            value={form.otp}
-            onChange={handleChange}
-            placeholder="Enter OTP"
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-400 transition-all"
-          />
-          <input
-            type="password"
-            name="newPassword"
-            value={form.newPassword}
-            onChange={handleChange}
-            placeholder="New Password"
-            required
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-400 transition-all"
-          />
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
+              {t.emailAddress}
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder={t.enterEmail}
+                required
+                className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
+              />
+            </div>
+          </div>
+
+          {/* OTP */}
+          <div>
+            <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
+              {t.otp}
+            </label>
+            <div className="relative">
+              <Key className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                name="otp"
+                value={form.otp}
+                onChange={handleChange}
+                placeholder={t.enterOtp}
+                required
+                className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
+              />
+            </div>
+          </div>
+
+          {/* New Password */}
+          <div>
+            <label className="block text-sm font-medium text-[#2a2a2a] mb-1">
+              {t.newPassword}
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
+              <input
+                type={showPassword ? "text" : "password"}
+                name="newPassword"
+                value={form.newPassword}
+                onChange={handleChange}
+                placeholder={t.newPassword}
+                required
+                className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A3AFF] focus:border-[#4A3AFF] outline-none text-gray-700"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 transition"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
 
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-xl text-sm">
+            <p className="text-center text-red-500 text-sm bg-red-50 py-2 rounded-md border border-red-200">
               {error}
-            </div>
+            </p>
           )}
           {message && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-xl text-sm">
+            <p className="text-center text-green-500 text-sm bg-green-50 py-2 rounded-md border border-green-200">
               {message}
-            </div>
+            </p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
+            className="w-full cursor-pointer py-3 bg-[#41398B] hover:bg-[#41398be1] text-white font-semibold rounded-4xl shadow-md transition-all flex justify-center items-center"
           >
-            {loading ? "Resetting..." : "Reset Password"}
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin mr-2" size={18} /> {t.resetting}
+              </>
+            ) : (
+              t.resetPasswordButton
+            )}
           </button>
         </form>
 
         <div className="text-center mt-6 text-sm text-gray-600">
-          <a
-            href="/login"
-            className="text-blue-600 hover:underline font-medium"
+          <Link
+            to="/login"
+            className="text-[#4A3AFF] hover:text-[#41398B] font-semibold transition"
           >
-            Back to Login
-          </a>
+            {t.backToLogin}
+          </Link>
         </div>
       </div>
     </div>

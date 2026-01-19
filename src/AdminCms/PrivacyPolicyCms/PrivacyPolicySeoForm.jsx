@@ -21,6 +21,59 @@ import { X } from 'lucide-react';
 
 const { TextArea } = Input;
 
+const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
+    const [inputValue, setInputValue] = useState('');
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && e.target.value.trim()) {
+            e.preventDefault();
+            const newKeyword = e.target.value.trim();
+            // Ensure value is an array before spreading
+            const currentKeywords = Array.isArray(value) ? value : [];
+            onChange([...currentKeywords, newKeyword]);
+            setInputValue('');
+        }
+    };
+
+    const removeKeyword = (index) => {
+        const currentKeywords = Array.isArray(value) ? value : [];
+        const newKeywords = currentKeywords.filter((_, i) => i !== index);
+        onChange(newKeywords);
+    };
+
+    return (
+        <div className="border border-[#d1d5db] rounded-[10px] px-3 py-2 min-h-[120px]">
+            <div className="flex flex-wrap gap-2 mb-2">
+                {(Array.isArray(value) ? value : []).map((kw, i) => (
+                    <div
+                        key={i}
+                        className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
+                    >
+                        <span className="text-sm">{kw}</span>
+                        <button
+                            type="button"
+                            className="text-red-300 hover:text-red-100"
+                            onClick={() => removeKeyword(i)}
+                            disabled={disabled}
+                        >
+                            <X size={14} />
+                        </button>
+                    </div>
+                ))}
+            </div>
+            <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={placeholder}
+                className="outline-none w-full text-[15px] font-['Manrope']"
+                disabled={disabled}
+            />
+        </div>
+    );
+};
+
 export default function PrivacyPolicySeoForm({
     form,
     onSubmit,
@@ -49,26 +102,15 @@ export default function PrivacyPolicySeoForm({
         }
     }, [pageData]);
 
-    // Handle keyword input
-    const handleKeywordKeyDown = (e, lang) => {
-        if (e.key === 'Enter' && e.target.value.trim()) {
-            e.preventDefault();
-            const keyword = e.target.value.trim();
-            const currentKeywords = form.getFieldValue(`privacyPolicySeoMetaKeywords_${lang}`) || [];
-            form.setFieldsValue({
-                [`privacyPolicySeoMetaKeywords_${lang}`]: [...currentKeywords, keyword]
-            });
-            e.target.value = '';
-        }
-    };
-
-    // Remove keyword
-    const removeKeyword = (lang, index) => {
-        const currentKeywords = form.getFieldValue(`privacyPolicySeoMetaKeywords_${lang}`) || [];
+    // Force default values for Title and Slug
+    useEffect(() => {
         form.setFieldsValue({
-            [`privacyPolicySeoMetaKeywords_${lang}`]: currentKeywords.filter((_, i) => i !== index)
+            privacyPolicySeoMetaTitle_en: 'Privacy Policy',
+            privacyPolicySeoSlugUrl_en: 'privacy-policy',
+            privacyPolicySeoMetaTitle_vn: 'Chính Sách Bảo Mật',
+            privacyPolicySeoSlugUrl_vn: 'chinh-sach-bao-mat'
         });
-    };
+    }, [form, pageData]);
 
     // Handle OG Image upload
     const handleOgImageUpload = (file) => {
@@ -164,7 +206,7 @@ export default function PrivacyPolicySeoForm({
                                                         placeholder="Enter meta title for SEO"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 
@@ -198,34 +240,10 @@ export default function PrivacyPolicySeoForm({
                                                     name="privacyPolicySeoMetaKeywords_en"
                                                     initialValue={[]}
                                                 >
-                                                    <div className="border border-[#d1d5db] rounded-[10px] px-3 py-2 min-h-[120px]">
-                                                        <div className="flex flex-wrap gap-2 mb-2">
-                                                            {(form.getFieldValue('privacyPolicySeoMetaKeywords_en') || []).map((kw, i) => (
-                                                                <div
-                                                                    key={i}
-                                                                    className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
-                                                                >
-                                                                    <span className="text-sm">{kw}</span>
-                                                                    {can('cms.privacyPolicy', 'edit') && (
-                                                                        <button
-                                                                            type="button"
-                                                                            className="text-red-300 hover:text-red-100"
-                                                                            onClick={() => removeKeyword('en', i)}
-                                                                        >
-                                                                            <X size={14} />
-                                                                        </button>
-                                                                    )}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Type keyword & press Enter"
-                                                            onKeyDown={(e) => handleKeywordKeyDown(e, 'en')}
-                                                            className="outline-none w-full text-[15px] font-['Manrope']"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                    </div>
+                                                    <KeywordTagsInput
+                                                        placeholder="Type keyword & press Enter"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 {/* Slug URL */}
@@ -241,7 +259,7 @@ export default function PrivacyPolicySeoForm({
                                                         placeholder="privacy-policy"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 
@@ -346,7 +364,7 @@ export default function PrivacyPolicySeoForm({
                                                         placeholder="Nhập tiêu đề meta cho SEO"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 
@@ -380,34 +398,10 @@ export default function PrivacyPolicySeoForm({
                                                     name="privacyPolicySeoMetaKeywords_vn"
                                                     initialValue={[]}
                                                 >
-                                                    <div className="border border-[#d1d5db] rounded-[10px] px-3 py-2 min-h-[120px]">
-                                                        <div className="flex flex-wrap gap-2 mb-2">
-                                                            {(form.getFieldValue('privacyPolicySeoMetaKeywords_vn') || []).map((kw, i) => (
-                                                                <div
-                                                                    key={i}
-                                                                    className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
-                                                                >
-                                                                    <span className="text-sm">{kw}</span>
-                                                                    {can('cms.privacyPolicy', 'edit') && (
-                                                                        <button
-                                                                            type="button"
-                                                                            className="text-red-300 hover:text-red-100"
-                                                                            onClick={() => removeKeyword('vn', i)}
-                                                                        >
-                                                                            <X size={14} />
-                                                                        </button>
-                                                                    )}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Nhập từ khóa & nhấn Enter"
-                                                            onKeyDown={(e) => handleKeywordKeyDown(e, 'vn')}
-                                                            className="outline-none w-full text-[15px] font-['Manrope']"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                    </div>
+                                                    <KeywordTagsInput
+                                                        placeholder="Nhập từ khóa & nhấn Enter"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 {/* Slug URL */}
@@ -423,7 +417,7 @@ export default function PrivacyPolicySeoForm({
                                                         placeholder="chinh-sach-bao-mat"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 

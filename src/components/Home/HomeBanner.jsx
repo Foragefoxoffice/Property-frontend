@@ -143,7 +143,7 @@ export default function HomeBanner({ homePageData }) {
                         ? `url(${getImageUrl(homePageData.backgroundImage)})`
                         : 'url("/images/property/home-banner.jpg")'
                 }}>
-                <div className="absolute inset-0 bg-black/50"></div>
+                <div className="absolute inset-0 bg-black/40"></div>
                 <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
                     {/* Title & Description */}
                     <div className="text-center mb-12">

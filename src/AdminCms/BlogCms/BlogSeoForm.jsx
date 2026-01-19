@@ -23,6 +23,58 @@ import { X } from 'lucide-react';
 
 const { TextArea } = Input;
 
+const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
+    const [inputValue, setInputValue] = useState('');
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && e.target.value.trim()) {
+            e.preventDefault();
+            const newKeyword = e.target.value.trim();
+            const currentKeywords = Array.isArray(value) ? value : [];
+            onChange([...currentKeywords, newKeyword]);
+            setInputValue('');
+        }
+    };
+
+    const removeKeyword = (index) => {
+        const currentKeywords = Array.isArray(value) ? value : [];
+        const newKeywords = currentKeywords.filter((_, i) => i !== index);
+        onChange(newKeywords);
+    };
+
+    return (
+        <div className="border border-[#d1d5db] rounded-[10px] px-3 py-2 min-h-[120px]">
+            <div className="flex flex-wrap gap-2 mb-2">
+                {(Array.isArray(value) ? value : []).map((kw, i) => (
+                    <div
+                        key={i}
+                        className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
+                    >
+                        <span className="text-sm">{kw}</span>
+                        <button
+                            type="button"
+                            className="text-red-300 hover:text-red-100"
+                            onClick={() => removeKeyword(i)}
+                            disabled={disabled}
+                        >
+                            <X size={14} />
+                        </button>
+                    </div>
+                ))}
+            </div>
+            <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={placeholder}
+                className="outline-none w-full text-[15px] font-['Manrope']"
+                disabled={disabled}
+            />
+        </div>
+    );
+};
+
 export default function BlogSeoForm({
     form,
     onSubmit,
@@ -47,38 +99,34 @@ export default function BlogSeoForm({
         }
     }, [blogData]);
 
-    // Handle keyword input
-    const handleKeywordKeyDown = (e, lang) => {
-        if (e.key === 'Enter' && e.target.value.trim()) {
-            e.preventDefault();
-            const keyword = e.target.value.trim();
-            const currentKeywords = form.getFieldValue(['seoInformation', 'metaKeywords', lang]) || [];
+    // Sync Title and Slug defaults
+    useEffect(() => {
+        if (!blogData?.title) return;
+
+        const currentSlugEn = form.getFieldValue(['seoInformation', 'slugUrl', 'en']);
+        const currentSlugVi = form.getFieldValue(['seoInformation', 'slugUrl', 'vi']);
+        const titleToSlug = blogData.title.en || blogData.title.vi;
+
+        // If slugs are empty, auto-fill from title (prefer English)
+        if ((!currentSlugEn || !currentSlugVi) && titleToSlug) {
+            const slug = titleToSlug
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric chars
+                .replace(/\s+/g, '-')         // Replace spaces with dashes
+                .replace(/-+/g, '-');         // Remove duplicate dashes
+
+            // Set BOTH to the same slug
             form.setFieldsValue({
                 seoInformation: {
                     ...form.getFieldValue('seoInformation'),
-                    metaKeywords: {
-                        ...form.getFieldValue(['seoInformation', 'metaKeywords']),
-                        [lang]: [...currentKeywords, keyword]
+                    slugUrl: {
+                        en: currentSlugEn || slug,
+                        vi: currentSlugVi || slug
                     }
                 }
             });
-            e.target.value = '';
         }
-    };
-
-    // Remove keyword
-    const removeKeyword = (lang, index) => {
-        const currentKeywords = form.getFieldValue(['seoInformation', 'metaKeywords', lang]) || [];
-        form.setFieldsValue({
-            seoInformation: {
-                ...form.getFieldValue('seoInformation'),
-                metaKeywords: {
-                    ...form.getFieldValue(['seoInformation', 'metaKeywords']),
-                    [lang]: currentKeywords.filter((_, i) => i !== index)
-                }
-            }
-        });
-    };
+    }, [blogData, form]);
 
     // Handle OG Image upload
     const handleOgImageUpload = (file) => {
@@ -161,6 +209,29 @@ export default function BlogSeoForm({
                             onFinishFailed={onFormFinishFailed}
                             disabled={!can('blogs.blogCms', 'edit')}
                         >
+                            {/* Global Slug URL */}
+                            <Form.Item
+                                label={
+                                    <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                        Slug URL (Shared / Dùng chung)
+                                    </span>
+                                }
+                                name={['seoInformation', 'slugUrl', 'en']}
+                                normalize={(value) => value?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || ''}
+                                help="The slug will be the same for both languages / Slash URL sẽ giống nhau cho cả hai ngôn ngữ"
+                            >
+                                <Input
+                                    placeholder="my-blog-post"
+                                    size="large"
+                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                    onChange={(e) => {
+                                        // Sync to VI
+                                        const val = e.target.value?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || '';
+                                        form.setFieldValue(['seoInformation', 'slugUrl', 'vi'], val);
+                                    }}
+                                />
+                            </Form.Item>
+
                             <Tabs
                                 activeKey={activeTab}
                                 onChange={setActiveTab}
@@ -224,46 +295,9 @@ export default function BlogSeoForm({
                                                     name={['seoInformation', 'metaKeywords', 'en']}
                                                     initialValue={[]}
                                                 >
-                                                    <div className="border border-[#d1d5db] rounded-[10px] px-3 py-2 min-h-[120px]">
-                                                        <div className="flex flex-wrap gap-2 mb-2">
-                                                            {(form.getFieldValue(['seoInformation', 'metaKeywords', 'en']) || []).map((kw, i) => (
-                                                                <div
-                                                                    key={i}
-                                                                    className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
-                                                                >
-                                                                    <span className="text-sm">{kw}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="text-red-300 hover:text-red-100"
-                                                                        onClick={() => removeKeyword('en', i)}
-                                                                    >
-                                                                        <X size={14} />
-                                                                    </button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Type keyword & press Enter"
-                                                            onKeyDown={(e) => handleKeywordKeyDown(e, 'en')}
-                                                            className="outline-none w-full text-[15px] font-['Manrope']"
-                                                        />
-                                                    </div>
-                                                </Form.Item>
-
-                                                {/* Slug URL */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Slug URL
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'slugUrl', 'en']}
-                                                >
-                                                    <Input
-                                                        placeholder="my-blog-post"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    <KeywordTagsInput
+                                                        placeholder="Type keyword & press Enter"
+                                                        disabled={!can('blogs.blogCms', 'edit')}
                                                     />
                                                 </Form.Item>
 
@@ -397,46 +431,9 @@ export default function BlogSeoForm({
                                                     name={['seoInformation', 'metaKeywords', 'vi']}
                                                     initialValue={[]}
                                                 >
-                                                    <div className="border border-[#d1d5db] rounded-[10px] px-3 py-2 min-h-[120px]">
-                                                        <div className="flex flex-wrap gap-2 mb-2">
-                                                            {(form.getFieldValue(['seoInformation', 'metaKeywords', 'vi']) || []).map((kw, i) => (
-                                                                <div
-                                                                    key={i}
-                                                                    className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
-                                                                >
-                                                                    <span className="text-sm">{kw}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="text-red-300 hover:text-red-100"
-                                                                        onClick={() => removeKeyword('vi', i)}
-                                                                    >
-                                                                        <X size={14} />
-                                                                    </button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Nhập từ khóa & nhấn Enter"
-                                                            onKeyDown={(e) => handleKeywordKeyDown(e, 'vi')}
-                                                            className="outline-none w-full text-[15px] font-['Manrope']"
-                                                        />
-                                                    </div>
-                                                </Form.Item>
-
-                                                {/* Slug URL */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Đường Dẫn Slug
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'slugUrl', 'vi']}
-                                                >
-                                                    <Input
-                                                        placeholder="bai-viet-cua-toi"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    <KeywordTagsInput
+                                                        placeholder="Nhập từ khóa & nhấn Enter"
+                                                        disabled={!can('blogs.blogCms', 'edit')}
                                                     />
                                                 </Form.Item>
 

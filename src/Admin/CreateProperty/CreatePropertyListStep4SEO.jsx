@@ -1,8 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, X, Plus, ArrowRight, ArrowLeft } from "lucide-react";
 import { Select as AntdSelect, Switch } from "antd";
 import { uploadPropertyMedia } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
+
+const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+      e.preventDefault();
+      const newKeyword = e.target.value.trim();
+      const currentKeywords = Array.isArray(value) ? value : [];
+      onChange([...currentKeywords, newKeyword]);
+      setInputValue('');
+    }
+  };
+
+  const removeKeyword = (index) => {
+    const currentKeywords = Array.isArray(value) ? value : [];
+    const newKeywords = currentKeywords.filter((_, i) => i !== index);
+    onChange(newKeywords);
+  };
+
+  return (
+    <div className="border border-[#B2B2B3] rounded-lg px-3 py-2 min-h-[100px] bg-white">
+      <div className="flex flex-wrap gap-2 mb-2">
+        {(Array.isArray(value) ? value : []).map((kw, i) => (
+          <div
+            key={i}
+            className="bg-[#41398B] px-3 py-1 text-white rounded-md flex items-center gap-2"
+          >
+            <span className="text-sm">{kw}</span>
+            <button
+              type="button"
+              className="text-red-300 hover:text-red-100 font-bold"
+              onClick={() => removeKeyword(i)}
+              disabled={disabled}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        className="outline-none w-full text-[15px] font-['Manrope']"
+        disabled={disabled}
+      />
+    </div>
+  );
+};
 
 export default function CreatePropertyListStep4SEO({
   onNext,
@@ -76,6 +128,42 @@ export default function CreatePropertyListStep4SEO({
     }
   }, [initialData]);
 
+  /* ✅ Sync Slug with Title (Auto-fill) */
+  useEffect(() => {
+    // Check nested title from CreateProperty schema or fallback to 'name'
+    const listingInfo = initialData?.listingInformation;
+    const titleObj = listingInfo?.listingInformationPropertyTitle || initialData?.name;
+
+    if (!titleObj) return;
+
+    const titleToSlug = titleObj.en || titleObj.vi;
+    if (!titleToSlug) return;
+
+    const currentSlugEn = seo.slugUrl.en;
+    const currentSlugVi = seo.slugUrl.vi;
+
+    // Only auto-fill if both slugs are empty to avoid overwriting user manual edits
+    if (!currentSlugEn && !currentSlugVi) {
+      const slug = titleToSlug
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+
+      const updated = {
+        ...seo,
+        slugUrl: { en: slug, vi: slug },
+        // Also auto-fill meta title if empty
+        metaTitle: {
+          en: seo.metaTitle.en || titleObj.en || titleToSlug,
+          vi: seo.metaTitle.vi || titleObj.vi || titleToSlug
+        }
+      };
+      setSeo(updated);
+      onChange({ seoInformation: updated });
+    }
+  }, [initialData]); // Re-run when initialData (which contains title) changes
+
   /* ---------------------------------------------
        ✅ UPDATE HANDLER (multilingual)
     --------------------------------------------- */
@@ -87,41 +175,6 @@ export default function CreatePropertyListStep4SEO({
     setSeo(updated);
     onChange({ seoInformation: updated });
   };
-
-  /* ---------------------------------------------
-       ✅ KEYWORDS
-    --------------------------------------------- */
-  const handleKeywordKeyDown = (e) => {
-    if (e.key !== "Enter" || !e.target.value.trim()) return;
-    e.preventDefault();
-    const keyword = e.target.value.trim();
-
-    const updated = {
-      ...seo,
-      metaKeywords: {
-        ...seo.metaKeywords,
-        [activeLang]: [...seo.metaKeywords[activeLang], keyword],
-      },
-    };
-
-    setSeo(updated);
-    onChange({ seoInformation: updated });
-    e.target.value = "";
-  };
-
-  const removeKeyword = (lang, index) => {
-    const updated = {
-      ...seo,
-      metaKeywords: {
-        ...seo.metaKeywords,
-        [lang]: seo.metaKeywords[lang].filter((_, i) => i !== index),
-      },
-    };
-    setSeo(updated);
-    onChange({ seoInformation: updated });
-  };
-
-
 
   /* ---------------------------------------------
        ✅ OG IMAGE UPLOAD + DELETE
@@ -190,6 +243,27 @@ export default function CreatePropertyListStep4SEO({
         ))}
       </div>
 
+      {/* ✅ SHARED SLUG URL (Outside Tabs logic mostly, but we sync it) */}
+      <div>
+        <label className="text-sm font-semibold mb-2 block">
+          Slug URL (Shared / Dùng chung) <span className="font-normal text-gray-500 text-xs ml-2">(Auto-synced for both languages)</span>
+        </label>
+        <input
+          placeholder="my-property-slug"
+          className={inputClass}
+          value={seo.slugUrl.en} // Always show EN as the master value
+          onChange={(e) => {
+            const val = e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            const updated = {
+              ...seo,
+              slugUrl: { en: val, vi: val } // Sync both
+            };
+            setSeo(updated);
+            onChange({ seoInformation: updated });
+          }}
+        />
+      </div>
+
       {/* ✅ META TITLE */}
       <div>
         <label className="text-sm font-semibold mb-2 block">
@@ -221,45 +295,15 @@ export default function CreatePropertyListStep4SEO({
         />
       </div>
 
-      {/* ✅ META KEYWORDS */}
+      {/* ✅ META KEYWORDS (Using New Component) */}
       <div>
         <label className="text-sm font-semibold mb-2 block">
           {labels.metaKeywords[activeLang]}
         </label>
-        <div className="border border-[#B2B2B3] rounded-lg px-3 py-2 flex flex-wrap gap-2">
-          {seo.metaKeywords[activeLang].map((kw, i) => (
-            <div
-              key={i}
-              className="bg-[#41398B] px-2 py-1 h-full text-white rounded flex items-center gap-1"
-            >
-              {kw}
-              <button
-                className="text-red-500 cursor-pointer font-bold"
-                onClick={() => removeKeyword(activeLang, i)}
-              >
-                <X size={15} />
-              </button>
-            </div>
-          ))}
-          <textarea
-            placeholder="Type keyword & press Enter"
-            onKeyDown={handleKeywordKeyDown}
-            className="outline-none flex-grow"
-            rows={4}
-          />
-        </div>
-      </div>
-
-      {/* ✅ SLUG */}
-      <div>
-        <label className="text-sm font-semibold mb-2 block">
-          {labels.slugUrl[activeLang]}
-        </label>
-        <input
-          placeholder="Type Here and Edit"
-          className={inputClass}
-          value={seo.slugUrl[activeLang]}
-          onChange={(e) => handleChange("slugUrl", activeLang, e.target.value)}
+        <KeywordTagsInput
+          value={seo.metaKeywords[activeLang]}
+          onChange={(newKeywords) => handleChange("metaKeywords", activeLang, newKeywords)}
+          placeholder="Type keyword & press Enter"
         />
       </div>
 
