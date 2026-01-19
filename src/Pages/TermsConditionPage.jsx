@@ -73,22 +73,43 @@ export default function TermsConditionPage() {
         updateMeta('og:title', ogTitle, 'property');
         updateMeta('og:description', ogDesc, 'property');
         updateMeta('og:type', 'website', 'property');
+        updateMeta('og:url', window.location.href, 'property');
 
-        // OG Images (Handle array)
+        // OG Images (Handle array) - Ensure absolute URLs
         const oldOgImages = document.querySelectorAll('meta[property="og:image"]');
         oldOgImages.forEach(el => el.remove());
 
         const ogImages = pageData.termsConditionSeoOgImages || [];
         if (Array.isArray(ogImages) && ogImages.length > 0) {
             ogImages.forEach(imgUrl => {
+                if (!imgUrl) return;
+                // Ensure absolute URL for social sharing
+                const absoluteUrl = imgUrl.startsWith('http')
+                    ? imgUrl
+                    : `${window.location.origin}${imgUrl.startsWith('/') ? '' : '/'}${imgUrl}`;
+
                 const el = document.createElement('meta');
                 el.setAttribute('property', 'og:image');
-                el.setAttribute('content', imgUrl);
+                el.setAttribute('content', absoluteUrl);
                 document.head.appendChild(el);
             });
         }
 
-        // 6. Robots / Indexing
+        // 6. Twitter Card Tags
+        updateMeta('twitter:card', 'summary_large_image');
+        updateMeta('twitter:title', ogTitle);
+        updateMeta('twitter:description', ogDesc);
+        updateMeta('twitter:url', window.location.href);
+
+        // Twitter image (use first OG image if available)
+        if (Array.isArray(ogImages) && ogImages.length > 0 && ogImages[0]) {
+            const absoluteUrl = ogImages[0].startsWith('http')
+                ? ogImages[0]
+                : `${window.location.origin}${ogImages[0].startsWith('/') ? '' : '/'}${ogImages[0]}`;
+            updateMeta('twitter:image', absoluteUrl);
+        }
+
+        // 7. Robots / Indexing
         const allowIndexing = pageData.termsConditionSeoAllowIndexing !== false; // Default true
         updateMeta('robots', allowIndexing ? 'index, follow' : 'noindex, nofollow');
 

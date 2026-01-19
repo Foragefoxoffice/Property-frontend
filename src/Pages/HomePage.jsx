@@ -71,22 +71,44 @@ export default function HomePage() {
         // 5. Open Graph / Social Sharing
         updateMeta('og:title', homePageData[`homeSeoOgTitle_${langKey}`] || metaTitle, 'property');
         updateMeta('og:description', homePageData[`homeSeoOgDescription_${langKey}`] || metaDesc, 'property');
+        updateMeta('og:type', 'website', 'property');
+        updateMeta('og:url', window.location.href, 'property');
 
-        // OG Images (Common for both languages)
+        // OG Images (Common for both languages) - Ensure absolute URLs
         const ogImages = homePageData.homeSeoOgImages;
         if (Array.isArray(ogImages) && ogImages.length > 0) {
             // Remove existing og:image tags to prevent duplicates if any
             document.querySelectorAll('meta[property="og:image"]').forEach(el => el.remove());
 
             ogImages.forEach(imgUrl => {
+                if (!imgUrl) return;
+                // Ensure absolute URL for social sharing
+                const absoluteUrl = imgUrl.startsWith('http')
+                    ? imgUrl
+                    : `${window.location.origin}${imgUrl.startsWith('/') ? '' : '/'}${imgUrl}`;
+
                 const el = document.createElement('meta');
                 el.setAttribute('property', 'og:image');
-                el.setAttribute('content', imgUrl);
+                el.setAttribute('content', absoluteUrl);
                 document.head.appendChild(el);
             });
         }
 
-        // Allow Indexing
+        // 6. Twitter Card Tags
+        updateMeta('twitter:card', 'summary_large_image');
+        updateMeta('twitter:title', homePageData[`homeSeoOgTitle_${langKey}`] || metaTitle);
+        updateMeta('twitter:description', homePageData[`homeSeoOgDescription_${langKey}`] || metaDesc);
+        updateMeta('twitter:url', window.location.href);
+
+        // Twitter image (use first OG image if available)
+        if (Array.isArray(ogImages) && ogImages.length > 0 && ogImages[0]) {
+            const absoluteUrl = ogImages[0].startsWith('http')
+                ? ogImages[0]
+                : `${window.location.origin}${ogImages[0].startsWith('/') ? '' : '/'}${ogImages[0]}`;
+            updateMeta('twitter:image', absoluteUrl);
+        }
+
+        // 7. Allow Indexing
         if (homePageData.homeSeoAllowIndexing === false) {
             updateMeta('robots', 'noindex, nofollow');
         } else {

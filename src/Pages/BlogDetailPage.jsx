@@ -92,19 +92,40 @@ export default function BlogDetailPage() {
         updateMeta('og:title', ogTitle, 'property');
         updateMeta('og:description', ogDesc, 'property');
         updateMeta('og:type', 'article', 'property');
+        updateMeta('og:url', window.location.href, 'property');
 
-        // OG Images
+        // OG Images - Ensure absolute URLs
         document.querySelectorAll('meta[property="og:image"]').forEach(el => el.remove());
         if (Array.isArray(ogImages)) {
             ogImages.forEach(img => {
+                if (!img) return;
+                // Ensure absolute URL for social sharing
+                const absoluteUrl = img.startsWith('http')
+                    ? img
+                    : `${window.location.origin}${img.startsWith('/') ? '' : '/'}${img}`;
+
                 const el = document.createElement('meta');
                 el.setAttribute('property', 'og:image');
-                el.setAttribute('content', img.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${img}` : img);
+                el.setAttribute('content', absoluteUrl);
                 document.head.appendChild(el);
             });
         }
 
-        // 5. Robots
+        // 5. Twitter Card Tags
+        updateMeta('twitter:card', 'summary_large_image');
+        updateMeta('twitter:title', ogTitle);
+        updateMeta('twitter:description', ogDesc);
+        updateMeta('twitter:url', window.location.href);
+
+        // Twitter image (use first OG image if available)
+        if (Array.isArray(ogImages) && ogImages.length > 0 && ogImages[0]) {
+            const absoluteUrl = ogImages[0].startsWith('http')
+                ? ogImages[0]
+                : `${window.location.origin}${ogImages[0].startsWith('/') ? '' : '/'}${ogImages[0]}`;
+            updateMeta('twitter:image', absoluteUrl);
+        }
+
+        // 6. Robots
         const allowIndexing = seo.allowIndexing !== false; // Default true
         updateMeta('robots', allowIndexing ? 'index, follow' : 'noindex, nofollow');
 

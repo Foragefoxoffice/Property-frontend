@@ -153,6 +153,20 @@ export default function PropertyShowcasePage() {
       });
     }
 
+    // Twitter Card Tags
+    updateTag('meta[name="twitter:card"]', "content", "summary_large_image");
+    updateTag('meta[name="twitter:title"]', "content", ogTitle);
+    updateTag('meta[name="twitter:description"]', "content", ogDesc);
+    updateTag('meta[name="twitter:url"]', "content", window.location.href);
+
+    // Twitter image (use first OG image if available)
+    if (ogImages.length > 0 && ogImages[0]) {
+      const fullUrl = ogImages[0].startsWith("http")
+        ? ogImages[0]
+        : `${import.meta.env.VITE_API_URL || ""}${ogImages[0].startsWith("/") ? "" : "/"}${ogImages[0]}`;
+      updateTag('meta[name="twitter:image"]', "content", fullUrl);
+    }
+
     // Cleanup function? Mostly not needed for meta tags as they are persistent until next update,
     // but good practice to allow next page to overwrite.
 
