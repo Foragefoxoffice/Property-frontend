@@ -86,8 +86,6 @@ import TermsConditionPage from "./Pages/TermsConditionPage.jsx";
 import PrivacyPolicyForm from "./AdminCms/PrivacyPolicyCms/PrivacyPolicyForm.jsx";
 import PrivacyPolicyPage from "./Pages/PrivacyPolicyPage.jsx";
 
-
-
 createRoot(document.getElementById("root")).render(
   <HelmetProvider>
     <BrowserRouter>
