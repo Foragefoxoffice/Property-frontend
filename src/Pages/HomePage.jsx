@@ -11,118 +11,12 @@ import Loader from "@/components/Loader/Loader";
 import Header from '@/Admin/Header/Header';
 import Footer from '@/Admin/Footer/Footer';
 import { useLanguage } from "@/Language/LanguageContext";
+import SEO from '@/components/SEO/SEO';
 
 export default function HomePage() {
     const [homePageData, setHomePageData] = useState(null);
     const [loading, setLoading] = useState(true);
     const { language } = useLanguage();
-
-    // SEO Head Management
-    useEffect(() => {
-        if (!homePageData) return;
-
-        const langKey = language === 'vi' ? 'vn' : 'en';
-
-        // Helper to safely update meta tags
-        const updateMeta = (name, content, attribute = 'name') => {
-            if (!content) return;
-            let element = document.querySelector(`meta[${attribute}="${name}"]`);
-            if (!element) {
-                element = document.createElement('meta');
-                element.setAttribute(attribute, name);
-                document.head.appendChild(element);
-            }
-            element.setAttribute('content', content);
-        };
-
-        // 1. Update Title
-        const metaTitle = homePageData[`homeSeoMetaTitle_${langKey}`] ||
-            homePageData[`heroTitle_${langKey}`] ||
-            (langKey === 'en' ? 'Home Page' : 'Trang Chủ');
-
-        if (metaTitle) {
-            document.title = metaTitle;
-        }
-
-        // 2. Meta Description
-        const metaDesc = homePageData[`homeSeoMetaDescription_${langKey}`] ||
-            homePageData[`heroDescription_${langKey}`] ||
-            '';
-        updateMeta('description', metaDesc);
-
-        // 3. Meta Keywords
-        const keywords = homePageData[`homeSeoMetaKeywords_${langKey}`];
-        if (Array.isArray(keywords) && keywords.length > 0) {
-            updateMeta('keywords', keywords.join(', '));
-        }
-
-        // 4. Canonical URL
-        const canonicalUrl = homePageData[`homeSeoCanonicalUrl_${langKey}`];
-        let linkCanonical = document.querySelector("link[rel='canonical']");
-        if (canonicalUrl) {
-            if (!linkCanonical) {
-                linkCanonical = document.createElement('link');
-                linkCanonical.setAttribute('rel', 'canonical');
-                document.head.appendChild(linkCanonical);
-            }
-            linkCanonical.setAttribute('href', canonicalUrl);
-        }
-
-        // 5. Open Graph / Social Sharing
-        updateMeta('og:title', homePageData[`homeSeoOgTitle_${langKey}`] || metaTitle, 'property');
-        updateMeta('og:description', homePageData[`homeSeoOgDescription_${langKey}`] || metaDesc, 'property');
-        updateMeta('og:type', 'website', 'property');
-        updateMeta('og:url', window.location.href, 'property');
-
-        // OG Images (Common for both languages) - Ensure absolute URLs
-        const ogImages = homePageData.homeSeoOgImages;
-        if (Array.isArray(ogImages) && ogImages.length > 0) {
-            // Remove existing og:image tags to prevent duplicates if any
-            document.querySelectorAll('meta[property="og:image"]').forEach(el => el.remove());
-
-            ogImages.forEach(imgUrl => {
-                if (!imgUrl) return;
-
-                // Fix Legacy Filenames: If it's just "image.jpg" and not a path/URL
-                let rawUrl = imgUrl;
-                if (!imgUrl.includes('/') && !imgUrl.startsWith('http')) {
-                    rawUrl = `/uploads/homepage/${imgUrl}`;
-                }
-
-                // Ensure absolute URL for social sharing
-                const absoluteUrl = rawUrl.startsWith('http')
-                    ? rawUrl
-                    : `${window.location.origin}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
-
-                const el = document.createElement('meta');
-                el.setAttribute('property', 'og:image');
-                el.setAttribute('content', absoluteUrl);
-                document.head.appendChild(el);
-            });
-        }
-
-        // 6. Twitter Card Tags
-        updateMeta('twitter:card', 'summary_large_image');
-        updateMeta('twitter:title', homePageData[`homeSeoOgTitle_${langKey}`] || metaTitle);
-        updateMeta('twitter:description', homePageData[`homeSeoOgDescription_${langKey}`] || metaDesc);
-        updateMeta('twitter:url', window.location.href);
-
-        // Twitter image (use first OG image if available)
-        if (Array.isArray(ogImages) && ogImages.length > 0 && ogImages[0]) {
-            const absoluteUrl = ogImages[0].startsWith('http')
-                ? ogImages[0]
-                : `${window.location.origin}${ogImages[0].startsWith('/') ? '' : '/'}${ogImages[0]}`;
-            updateMeta('twitter:image', absoluteUrl);
-        }
-
-        // 7. Allow Indexing
-        if (homePageData.homeSeoAllowIndexing === false) {
-            updateMeta('robots', 'noindex, nofollow');
-        } else {
-            updateMeta('robots', 'index, follow');
-        }
-
-    }, [homePageData, language]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -146,8 +40,27 @@ export default function HomePage() {
         return <Loader />;
     }
 
+    const langKey = language === 'vi' ? 'vn' : 'en';
+
+    // Prepare SEO Data
+    const metaTitle = homePageData?.[`homeSeoMetaTitle_${langKey}`] ||
+        homePageData?.[`heroTitle_${langKey}`] ||
+        (langKey === 'en' ? 'Home Page' : 'Trang Chủ');
+
+    const metaDesc = homePageData?.[`homeSeoMetaDescription_${langKey}`] ||
+        homePageData?.[`heroDescription_${langKey}`] ||
+        '';
+
+    const ogImage = homePageData?.homeSeoOgImages?.[0] || homePageData?.heroImage || null;
+
     return (
         <div>
+            <SEO
+                title={metaTitle}
+                description={metaDesc}
+                image={ogImage}
+                url={window.location.href}
+            />
             <SmoothScroll />
             <Header />
             <HomeBanner homePageData={homePageData} />
