@@ -100,7 +100,6 @@ createRoot(document.getElementById("root")).render(
         theme="colored"
       />
 
-
       <LanguageProvider>
         <PermissionProvider>
           <FavoritesProvider>
