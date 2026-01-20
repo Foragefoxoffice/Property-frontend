@@ -1,3 +1,16 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "User-Agent",
+          "value": ".*(facebookexternalhit|Twitterbot|WhatsApp|LinkedInBot|Discordbot|TelegramBot|Slackbot|Googlebot|bingbot|SkypeUriPreview).*"
+        }
+      ],
+      "destination": "https://dev.placetest.in/$1"
+    },
+    { "source": "/(.*)", "destination": "/" }
+  ]
 }
