@@ -303,7 +303,7 @@ export default function PropertyDetailsSection({ property }) {
           ------------------------------------------------------- */}
           <section
             ref={sectionRefs["Overview"]}
-            className="bg-white p-6 rounded-2xl mb-12"
+            className="bg-white p-6 rounded-2xl mb-6 md:mb-12"
           >
             <h2 className="text-xl font-semibold mb-5">{t.overview}</h2>
 
@@ -369,7 +369,7 @@ export default function PropertyDetailsSection({ property }) {
 
           {/* Check in check out */}
           {type === "Home Stay" && (
-            <section className="bg-white p-6 rounded-2xl mb-12">
+            <section className="bg-white p-6 rounded-2xl mb-6 md:mb-12">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {show(visFin.checkIn) && (
                   <InfoItem
@@ -391,7 +391,7 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              ECOPARK SECTION (UI preserved)
           ------------------------------------------------------- */}
-          <section className="bg-white p-6 rounded-2xl mb-12">
+          <section className="bg-white p-6 rounded-2xl mb-6 md:mb-12">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {show(visList.projectCommunity) && (
                 <EcoparkItem
@@ -427,7 +427,7 @@ export default function PropertyDetailsSection({ property }) {
              DESCRIPTION (UI preserved)
           ------------------------------------------------------- */}
           {show(visWhatNearby) && (
-            <section className="bg-white p-6 rounded-2xl mb-12">
+            <section className="bg-white p-6 rounded-2xl mb-6 md:mb-12">
               <h2 className="text-xl font-semibold mb-5">{t.description}</h2>
               <p className="text-gray-700 leading-6">
                 {getLocalizedValue(what?.whatNearbyDescription) ||
@@ -441,7 +441,7 @@ export default function PropertyDetailsSection({ property }) {
           ------------------------------------------------------- */}
           <section
             ref={sectionRefs["Property Utility"]}
-            className="bg-white p-6 rounded-2xl mb-12"
+            className="bg-white p-6 rounded-2xl mb-6 md:mb-12"
           >
             <h2 className="text-xl font-semibold mb-5">{t.propertyUtility}</h2>
 
@@ -468,7 +468,7 @@ export default function PropertyDetailsSection({ property }) {
           ------------------------------------------------------- */}
           <section
             ref={sectionRefs["Payment Overview"]}
-            className="bg-white p-6 rounded-2xl mb-16"
+            className="bg-white p-6 rounded-2xl mb-6 md:mb-12"
           >
             <h2 className="text-xl font-semibold mb-4">{t.paymentOverview}</h2>
 

@@ -102,10 +102,21 @@ export default function PropertyHome({ property }) {
     setIsPopupOpen(true);
   };
 
+  // Drag handler for swipe gestures
+  const handleDragEnd = (event, info) => {
+    const swipeThreshold = 50;
+
+    if (info.offset.x > swipeThreshold) {
+      handlePrev();
+    } else if (info.offset.x < -swipeThreshold) {
+      handleNext();
+    }
+  };
+
   return (
     <div className="bg-white md:h-[700px] flex flex-col lg:flex-row border-b">
       {/* LEFT: Text */}
-      <div className="w-full lg:w-1/2 p-6 pl-12 flex flex-col justify-center gap-8 order-2 lg:order-1">
+      <div className="w-full lg:w-1/2 p-6 md:p-6 md:pl-12 flex flex-col justify-center gap-4 md:gap-8 order-1 lg:order-1">
         <div>
           <div className="flex flex-wrap gap-3 mb-3">
             <span
@@ -141,16 +152,20 @@ export default function PropertyHome({ property }) {
       </div>
 
       {/* RIGHT: Images */}
-      <div className="w-full lg:w-2/3 relative order-1 lg:order-2 group">
-        <div className="relative w-full h-[700px] overflow-hidden bg-black">
+      <div className="w-full lg:w-2/3 relative order-2 lg:order-2 group">
+        <div className="relative w-full h-[400px] md:h-full overflow-hidden bg-black">
           {images.length > 0 ? (
             <AnimatePresence initial={false} custom={direction}>
               <motion.img
                 key={current}
                 src={images[current]}
                 alt={`property-img-${current}`}
-                className="w-full h-full absolute inset-0 object-contain"
+                className="w-full h-[400px] md:h-full absolute inset-0 object-contain cursor-grab active:cursor-grabbing"
                 custom={direction}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={handleDragEnd}
                 variants={{
                   enter: (direction) => ({
                     x: direction > 0 ? '100%' : '-100%',
@@ -183,7 +198,7 @@ export default function PropertyHome({ property }) {
             {/* Left Arrow */}
             <button
               onClick={handlePrev}
-              className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/60 hover:bg-[#41398B] cursor-pointer text-white rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
+              className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/60 hover:bg-[#41398B] cursor-pointer text-white rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
               aria-label="Previous image"
             >
               <ChevronLeft className="w-6 h-6" strokeWidth={2.5} />
@@ -192,7 +207,7 @@ export default function PropertyHome({ property }) {
             {/* Right Arrow */}
             <button
               onClick={handleNext}
-              className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/60 hover:bg-[#41398B] cursor-pointer text-white rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
+              className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/60 hover:bg-[#41398B] cursor-pointer text-white rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-10 opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
               aria-label="Next image"
             >
               <ChevronRight className="w-6 h-6" strokeWidth={2.5} />
