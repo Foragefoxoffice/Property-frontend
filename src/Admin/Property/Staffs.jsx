@@ -511,7 +511,7 @@ export default function Staffs({ openStaffView }) {
                         {/* Dropdown Menu */}
                         {openMenuIndex === i && (
                           <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
-                            {can("menuStaffs.staffs", "edit") && (
+                            {can("menuStaffs.staffs", "edit") && user.role !== "Super Admin" && (
                               <button
                                 onClick={() => {
                                   openModal(user);
@@ -526,7 +526,7 @@ export default function Staffs({ openStaffView }) {
                               </button>
                             )}
 
-                            {can("menuStaffs.staffs", "delete") && (
+                            {can("menuStaffs.staffs", "delete") && user.role !== "Super Admin" && (
                               <button
                                 onClick={() => {
                                   setDeleteConfirm({ show: true, id: user._id });

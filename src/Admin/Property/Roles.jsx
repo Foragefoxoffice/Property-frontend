@@ -340,12 +340,12 @@ export default function Roles() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 flex justify-end gap-2">
-                                            {can("menuStaffs.roles", "edit") && (
+                                            {can("menuStaffs.roles", "edit") && role.name !== "Super Admin" && (
                                                 <button onClick={() => openModal(role)} className="p-2 bg-white border border-gray-200 hover:bg-[#41398B] hover:text-white rounded-full transition text-gray-600 shadow-sm">
                                                     <Edit2 size={16} />
                                                 </button>
                                             )}
-                                            {can("menuStaffs.roles", "delete") && (
+                                            {can("menuStaffs.roles", "delete") && role.name !== "Super Admin" && (
                                                 <button onClick={() => setDeleteConfirm({ show: true, id: role._id })} className="p-2 bg-white border border-gray-200 hover:bg-red-600 hover:text-white rounded-full transition text-gray-600 shadow-sm">
                                                     <Trash2 size={16} />
                                                 </button>
