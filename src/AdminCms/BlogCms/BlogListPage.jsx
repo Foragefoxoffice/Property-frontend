@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Table, Button, Space, Modal, ConfigProvider, Spin, Select } from "antd";
-import { Search, Plus, Edit2, Trash2, X, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Calendar, Languages } from "lucide-react";
+import { Search, Plus, Edit2, Trash2, X, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Calendar, Languages, Eye, Clock, User, Tag, Share2, ExternalLink } from "lucide-react";
 import { getAdminBlogs, deleteBlog } from "../../Api/action";
 import { useLanguage } from "../../Language/LanguageContext";
 import { CommonToaster } from "@/Common/CommonToaster";
+import { getImageUrl } from "../../utils/imageHelper";
 
 export default function BlogListPage() {
     const { language } = useLanguage();
@@ -31,6 +32,8 @@ export default function BlogListPage() {
             published: "Published",
             draft: "Draft",
             actions: "Actions",
+            viewDetails: "View Details",
+            editBlog: "Edit Blog",
             deleteBlog: "Delete Blog?",
             deleteConfirmation: "Are you sure you want to delete this blog? This action cannot be undone.",
             yesDelete: "Yes, Delete",
@@ -49,6 +52,8 @@ export default function BlogListPage() {
             published: "Đã xuất bản",
             draft: "Bản nháp",
             actions: "Hành động",
+            viewDetails: "Xem chi tiết",
+            editBlog: "Chỉnh sửa Blog",
             deleteBlog: "Xóa Blog?",
             deleteConfirmation: "Bạn có chắc chắn muốn xóa blog này? Hành động này không thể hoàn tác.",
             yesDelete: "Có, Xóa",
@@ -204,7 +209,7 @@ export default function BlogListPage() {
                                             <div className="flex items-center gap-4">
                                                 {blog.mainImage && (
                                                     <img
-                                                        src={blog.mainImage}
+                                                        src={getImageUrl(blog.mainImage)}
                                                         alt={blog.title?.en}
                                                         className="w-12 h-12 object-cover rounded-md border border-gray-100"
                                                     />
@@ -239,6 +244,20 @@ export default function BlogListPage() {
                                             {/* Dropdown Menu */}
                                             {openMenuIndex === i && (
                                                 <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
+                                                    <Link
+                                                        to={`/blogs/${blog.slug?.[language] || blog.slug?.en || blog.slug?.vi}`}
+                                                        target="_blank"
+                                                        onClick={() => setOpenMenuIndex(null)}
+                                                    >
+                                                        <button
+                                                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group"
+                                                        >
+                                                            <span className="w-8 flex justify-center">
+                                                                <Eye size={15} className="text-[#41398B] group-hover:scale-110 transition" />
+                                                            </span>
+                                                            {t.viewDetails}
+                                                        </button>
+                                                    </Link>
                                                     <Link to={`/dashboard/cms/blogs/edit/${blog._id}`}>
                                                         <button
                                                             className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group"
@@ -246,7 +265,7 @@ export default function BlogListPage() {
                                                             <span className="w-8 flex justify-center">
                                                                 <Pencil size={15} className="text-blue-600 group-hover:scale-110 transition" />
                                                             </span>
-                                                            Edit Blog
+                                                            {t.editBlog}
                                                         </button>
                                                     </Link>
                                                     <button

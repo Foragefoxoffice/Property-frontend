@@ -102,7 +102,7 @@ export default function UsersDetails() {
     const handleSubmit = async () => {
         const { name, email, employeeId, password, role } = form;
 
-        if (!name || !email || !employeeId || (!editingUser && !password)) {
+        if (!name || !email || (!editingUser && !password)) {
             CommonToaster(
                 isVI
                     ? "Vui lòng điền đầy đủ các thông tin bắt buộc."
@@ -495,20 +495,20 @@ export default function UsersDetails() {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    {isVI ? "Mã nhân viên" : "Employee ID"}<span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    name="employeeId"
-                                    placeholder={isVI ? "Nhập mã NV" : "Enter Employee ID"}
-                                    value={form.employeeId}
-                                    onChange={handleChange}
-                                    readOnly={!!editingUser}
-                                    className={`w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#41398B] focus:border-[#41398B] outline-none transition ${!!editingUser ? "bg-gray-100 cursor-not-allowed" : ""}`}
-                                />
-                            </div>
+                            {/* Only show Employee ID when editing */}
+                            {editingUser && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        {isVI ? "Mã nhân viên" : "Employee ID"}
+                                    </label>
+                                    <div className="w-full px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-600">
+                                        {form.employeeId}
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        {isVI ? "Mã nhân viên không thể chỉnh sửa" : "Employee ID cannot be edited"}
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>

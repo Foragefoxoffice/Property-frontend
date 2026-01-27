@@ -15,6 +15,7 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import { LanguageProvider } from "./Language/LanguageContext.jsx";
 import { PermissionProvider } from "./Context/PermissionContext.jsx";
 import { FavoritesProvider } from "./Context/FavoritesContext.jsx";
+import { SocketProvider } from "./Context/SocketContext.jsx";
 import PublicLayout from "./components/Layout/PublicLayout.jsx";
 import UserDashboardLayout from "./components/Layout/UserDashboardLayout.jsx";
 import UserProfile from "./Pages/UserProfile.jsx";
@@ -107,185 +108,187 @@ createRoot(document.getElementById("root")).render(
       <LanguageProvider>
         <PermissionProvider>
           <FavoritesProvider>
-            <Routes>
-              {/* ---------- PUBLIC ROUTES ---------- */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
+            <SocketProvider>
+              <Routes>
+                {/* ---------- PUBLIC ROUTES ---------- */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
-              {/* ---------- ADMIN + PROTECTED ROUTES ---------- */}
-              <Route
-                path="/dashboard/*"
-                element={
-                  <ProtectedRoute>
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                {/* ---------- PROPERTY LIST PAGES ---------- */}
+                {/* ---------- ADMIN + PROTECTED ROUTES ---------- */}
                 <Route
-                  path="lease"
-                  element={<PropertyManager propertyTypeFilter="Lease" />}
-                />
-                <Route
-                  path="sale"
-                  element={<PropertyManager propertyTypeFilter="Sale" />}
-                />
-                <Route
-                  path="homestay"
-                  element={<PropertyManager propertyTypeFilter="Home Stay" />}
-                />
-
-                {/* CREATE / EDIT PROPERTY */}
-                <Route
-                  path="lease/create"
-                  element={<CreatePropertyPage defaultTransactionType="Lease" />}
-                />
-                <Route
-                  path="sale/create"
-                  element={<CreatePropertyPage defaultTransactionType="Sale" />}
-                />
-                <Route
-                  path="homestay/create"
-                  element={<CreatePropertyPage defaultTransactionType="Home Stay" />}
-                />
-
-                <Route
-                  path="lease/edit/:id"
+                  path="/dashboard/*"
                   element={
-                    <CreatePropertyPage isEditMode defaultTransactionType="Lease" />
+                    <ProtectedRoute>
+                      <DashboardLayout />
+                    </ProtectedRoute>
                   }
-                />
+                >
+                  {/* ---------- PROPERTY LIST PAGES ---------- */}
+                  <Route
+                    path="lease"
+                    element={<PropertyManager propertyTypeFilter="Lease" />}
+                  />
+                  <Route
+                    path="sale"
+                    element={<PropertyManager propertyTypeFilter="Sale" />}
+                  />
+                  <Route
+                    path="homestay"
+                    element={<PropertyManager propertyTypeFilter="Home Stay" />}
+                  />
+
+                  {/* CREATE / EDIT PROPERTY */}
+                  <Route
+                    path="lease/create"
+                    element={<CreatePropertyPage defaultTransactionType="Lease" />}
+                  />
+                  <Route
+                    path="sale/create"
+                    element={<CreatePropertyPage defaultTransactionType="Sale" />}
+                  />
+                  <Route
+                    path="homestay/create"
+                    element={<CreatePropertyPage defaultTransactionType="Home Stay" />}
+                  />
+
+                  <Route
+                    path="lease/edit/:id"
+                    element={
+                      <CreatePropertyPage isEditMode defaultTransactionType="Lease" />
+                    }
+                  />
+                  <Route
+                    path="sale/edit/:id"
+                    element={
+                      <CreatePropertyPage isEditMode defaultTransactionType="Sale" />
+                    }
+                  />
+                  <Route
+                    path="homestay/edit/:id"
+                    element={
+                      <CreatePropertyPage
+                        isEditMode
+                        defaultTransactionType="Home Stay"
+                      />
+                    }
+                  />
+
+                  {/* BULK UPLOAD ROUTES */}
+                  <Route
+                    path=":type/bulk-upload"
+                    element={<BulkUpload />}
+                  />
+
+                  {/* USERMANAGEMENT PAGES */}
+                  <Route path="user-details" element={<UsersDetails />} />
+                  <Route path="enquiry" element={<Enquires />} />
+
+                  {/* ENQUIRY PAGES */}
+                  <Route path="contact-enquiry" element={<ContactEnquiry />} />
+
+                  {/* Subscription PAGES */}
+                  <Route path="subscription" element={<Subscription />} />
+
+                  {/* ---------- MASTER ROUTES ---------- */}
+                  <Route path="masters" element={<Masters />} />
+                  <Route path="masters/property-master" element={<PropertyMaster />} />
+                  <Route path="masters/property" element={<PropertyPage />} />
+                  <Route path="masters/zone-sub-area" element={<ZoneSubAreaPage />} />
+                  <Route path="masters/block" element={<BlockPage />} />
+                  <Route path="masters/property-type" element={<PropertTypePage />} />
+                  <Route
+                    path="masters/availability-status"
+                    element={<AvailabilityStatusPage />}
+                  />
+                  <Route path="masters/unit" element={<UnitPage />} />
+                  <Route path="masters/furnishing" element={<FurnishingPage />} />
+                  <Route path="masters/parking" element={<ParkingPage />} />
+                  <Route path="masters/pet-policy" element={<PetPolicyPage />} />
+                  <Route path="masters/deposit" element={<DepositPage />} />
+                  <Route path="masters/payment" element={<PaymentPage />} />
+                  <Route path="masters/fee-tax" element={<FeeTaxPage />} />
+                  <Route
+                    path="masters/legal-document"
+                    element={<LegalDocumentPage />}
+                  />
+                  <Route path="masters/floor-range" element={<FloorRange />} />
+                  <Route path="masters/currency" element={<Currency />} />
+
+                  {/* ---------- LANDLORD ROUTES ---------- */}
+                  <Route path="landlords" element={<OwnersLandlords />} />
+                  <Route path="landlords/:id" element={<OwnerView />} />
+
+                  {/* ROLES */}
+                  <Route path="roles" element={<Roles />} />
+
+                  {/* ---------- STAFF ROUTES ---------- */}
+                  <Route path="staffs" element={<Staffs />} />
+                  <Route path="staffs/:id" element={<StaffView />} />
+
+                  {/* ---------- TRASH ---------- */}
+                  <Route path="trash" element={<ManageTrashProperty />} />
+
+                  {/* CMS ROUTES */}
+                  <Route path="cms/home" element={<HomepageForm />} />
+                  <Route path="cms/about" element={<AboutPageForm />} />
+                  <Route path="cms/contact" element={<ContactPageForm />} />
+                  <Route path="cms/blogs" element={<BlogListPage />} />
+                  <Route path="cms/blogs/create" element={<BlogCmsForm />} />
+                  <Route path="cms/blogs/edit/:id" element={<BlogCmsForm />} />
+
+                  <Route path="cms/categories" element={<CategoryListPage />} />
+                  <Route path="cms/header" element={<HeaderCmsForm />} />
+                  <Route path="cms/footer" element={<FooterCmsForm />} />
+                  <Route path="cms/agent" element={<AgentFormCms />} />
+                  <Route path="cms/blog-banner" element={<BlogBannerPage />} />
+                  <Route path="cms/:section" element={<CMSPlaceholder />} />
+                  <Route path="cms/terms-conditions" element={<TermsCondionsForm />} />
+                  <Route path="cms/privacy-policy" element={<PrivacyPolicyForm />} />
+                  <Route path="profile" element={<UserProfile />} />
+
+                </Route>
+
+                {/* ---------- USER DASHBOARD ---------- */}
                 <Route
-                  path="sale/edit/:id"
+                  path="/user-dashboard"
                   element={
-                    <CreatePropertyPage isEditMode defaultTransactionType="Sale" />
+                    <ProtectedRoute allowUser={true}>
+                      <UserDashboardLayout />
+                    </ProtectedRoute>
                   }
-                />
-                <Route
-                  path="homestay/edit/:id"
-                  element={
-                    <CreatePropertyPage
-                      isEditMode
-                      defaultTransactionType="Home Stay"
-                    />
-                  }
-                />
+                >
+                  <Route path="favorites" element={<Favorites isDashboard={true} />} />
+                  <Route path="profile" element={<UserProfile />} />
+                  <Route index element={<Favorites isDashboard={true} />} />
+                </Route>
 
-                {/* BULK UPLOAD ROUTES */}
-                <Route
-                  path=":type/bulk-upload"
-                  element={<BulkUpload />}
-                />
-
-                {/* USERMANAGEMENT PAGES */}
-                <Route path="user-details" element={<UsersDetails />} />
-                <Route path="enquiry" element={<Enquires />} />
-
-                {/* ENQUIRY PAGES */}
-                <Route path="contact-enquiry" element={<ContactEnquiry />} />
-
-                {/* Subscription PAGES */}
-                <Route path="subscription" element={<Subscription />} />
-
-                {/* ---------- MASTER ROUTES ---------- */}
-                <Route path="masters" element={<Masters />} />
-                <Route path="masters/property-master" element={<PropertyMaster />} />
-                <Route path="masters/property" element={<PropertyPage />} />
-                <Route path="masters/zone-sub-area" element={<ZoneSubAreaPage />} />
-                <Route path="masters/block" element={<BlockPage />} />
-                <Route path="masters/property-type" element={<PropertTypePage />} />
-                <Route
-                  path="masters/availability-status"
-                  element={<AvailabilityStatusPage />}
-                />
-                <Route path="masters/unit" element={<UnitPage />} />
-                <Route path="masters/furnishing" element={<FurnishingPage />} />
-                <Route path="masters/parking" element={<ParkingPage />} />
-                <Route path="masters/pet-policy" element={<PetPolicyPage />} />
-                <Route path="masters/deposit" element={<DepositPage />} />
-                <Route path="masters/payment" element={<PaymentPage />} />
-                <Route path="masters/fee-tax" element={<FeeTaxPage />} />
-                <Route
-                  path="masters/legal-document"
-                  element={<LegalDocumentPage />}
-                />
-                <Route path="masters/floor-range" element={<FloorRange />} />
-                <Route path="masters/currency" element={<Currency />} />
-
-                {/* ---------- LANDLORD ROUTES ---------- */}
-                <Route path="landlords" element={<OwnersLandlords />} />
-                <Route path="landlords/:id" element={<OwnerView />} />
-
-                {/* ROLES */}
-                <Route path="roles" element={<Roles />} />
-
-                {/* ---------- STAFF ROUTES ---------- */}
-                <Route path="staffs" element={<Staffs />} />
-                <Route path="staffs/:id" element={<StaffView />} />
-
-                {/* ---------- TRASH ---------- */}
-                <Route path="trash" element={<ManageTrashProperty />} />
-
-                {/* CMS ROUTES */}
-                <Route path="cms/home" element={<HomepageForm />} />
-                <Route path="cms/about" element={<AboutPageForm />} />
-                <Route path="cms/contact" element={<ContactPageForm />} />
-                <Route path="cms/blogs" element={<BlogListPage />} />
-                <Route path="cms/blogs/create" element={<BlogCmsForm />} />
-                <Route path="cms/blogs/edit/:id" element={<BlogCmsForm />} />
-
-                <Route path="cms/categories" element={<CategoryListPage />} />
-                <Route path="cms/header" element={<HeaderCmsForm />} />
-                <Route path="cms/footer" element={<FooterCmsForm />} />
-                <Route path="cms/agent" element={<AgentFormCms />} />
-                <Route path="cms/blog-banner" element={<BlogBannerPage />} />
-                <Route path="cms/:section" element={<CMSPlaceholder />} />
-                <Route path="cms/terms-conditions" element={<TermsCondionsForm />} />
-                <Route path="cms/privacy-policy" element={<PrivacyPolicyForm />} />
-                <Route path="profile" element={<UserProfile />} />
-
-              </Route>
-
-              {/* ---------- USER DASHBOARD ---------- */}
-              <Route
-                path="/user-dashboard"
-                element={
-                  <ProtectedRoute allowUser={true}>
-                    <UserDashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="favorites" element={<Favorites isDashboard={true} />} />
-                <Route path="profile" element={<UserProfile />} />
-                <Route index element={<Favorites isDashboard={true} />} />
-              </Route>
-
-              {/* OTHER NON-DASHBOARD PAGES */}
-              <Route path="/manage-property" element={<ManageProperty />} />
-              <Route path="/filters" element={<FiltersPage />} />
+                {/* OTHER NON-DASHBOARD PAGES */}
+                <Route path="/manage-property" element={<ManageProperty />} />
+                <Route path="/filters" element={<FiltersPage />} />
 
 
-              {/* Pages with Public Layout */}
-              <Route element={<PublicLayout />}>
-                <Route path="/listing" element={<ListingPage />} />
-                <Route path="/" element={<HomePage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/blogs" element={<BlogPage />} />
-                <Route path="/blogs/:slug" element={<BlogDetailPage />} />
-                <Route path="/terms-conditions" element={<TermsConditionPage />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                {/* Pages with Public Layout */}
+                <Route element={<PublicLayout />}>
+                  <Route path="/listing" element={<ListingPage />} />
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/blogs" element={<BlogPage />} />
+                  <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+                  <Route path="/terms-conditions" element={<TermsConditionPage />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
-                <Route path="/property-showcase/:id/:slug?" element={<PropertyShowcasePage />} />
-                <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/property-showcase/:id/:slug?" element={<PropertyShowcasePage />} />
+                  <Route path="/favorites" element={<Favorites />} />
 
-              </Route>
+                </Route>
 
-              {/* CMS Dashboard */}
+                {/* CMS Dashboard */}
 
-            </Routes>
+              </Routes>
+            </SocketProvider>
           </FavoritesProvider>
         </PermissionProvider>
       </LanguageProvider>

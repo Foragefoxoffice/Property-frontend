@@ -71,18 +71,25 @@ const CustomSelect = ({ label, value, onChange, options = [], placeholder }) => 
 };
 
 const CustomDatePicker = ({ label, value, onChange }) => {
-  const [date, setDate] = React.useState(value ? new Date(value.format("YYYY-MM-DD")) : null);
+  const [open, setOpen] = React.useState(false);
+  const [date, setDate] = React.useState(value ? (dayjs.isDayjs(value) ? value.toDate() : new Date(value)) : null);
 
   React.useEffect(() => {
-    if (value && (!date || new Date(value.format("YYYY-MM-DD")).getTime() !== date.getTime())) {
-      setDate(new Date(value.format("YYYY-MM-DD")));
+    if (value) {
+      const parsedDate = dayjs.isDayjs(value) ? value.toDate() : new Date(value);
+      if (!date || parsedDate.getTime() !== date.getTime()) {
+        setDate(parsedDate);
+      }
+    } else {
+      setDate(null);
     }
   }, [value]); // eslint-disable-line
 
   const handleSelect = (selectedDate) => {
     if (!selectedDate) return;
     setDate(selectedDate);
-    onChange(dayjs(format(selectedDate, "yyyy-MM-dd")));
+    onChange(dayjs(selectedDate));
+    setOpen(false); // Close on selection
   };
 
   return (
@@ -90,9 +97,10 @@ const CustomDatePicker = ({ label, value, onChange }) => {
       <label className="text-sm font-medium text-gray-700 mb-1.5">
         {label}
       </label>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            type="button"
             variant="outline"
             className={`w-full justify-between text-left font-normal border border-gray-200 rounded-lg px-4 py-2.5 h-auto hover:bg-gray-50 ${!date && "text-muted-foreground"
               }`}
@@ -106,7 +114,7 @@ const CustomDatePicker = ({ label, value, onChange }) => {
             mode="single"
             selected={date}
             onSelect={handleSelect}
-            modifiers={{ disabled: { after: new Date(2100, 0, 1) } }}
+            disabled={{ after: new Date(2100, 0, 1) }}
             initialFocus={false}
           />
         </PopoverContent>
@@ -131,6 +139,8 @@ export default function Staffs({ openStaffView }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("en"); // Language tab state
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingUser, setViewingUser] = useState(null);
 
   // Pagination
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -275,11 +285,17 @@ export default function Staffs({ openStaffView }) {
     setShowModal(true);
   };
 
+  const openViewModal = (user) => {
+    setViewingUser(user);
+    setShowViewModal(true);
+    setOpenMenuIndex(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validation needs to check sub-fields
-    if (!form.firstName.en || !form.firstName.vi || !form.email || !form.employeeId || !form.role) {
+    if (!form.firstName.en || !form.firstName.vi || !form.email || !form.role) {
       CommonToaster("Please fill all required fields in both languages", "error");
       return;
     }
@@ -511,6 +527,16 @@ export default function Staffs({ openStaffView }) {
                         {/* Dropdown Menu */}
                         {openMenuIndex === i && (
                           <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
+                            <button
+                              onClick={() => openViewModal(user)}
+                              className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group"
+                            >
+                              <span className="w-8 flex justify-center">
+                                <Search size={15} className="text-[#41398B] group-hover:scale-110 transition" />
+                              </span>
+                              {t.viewFullDetails || "View Details"}
+                            </button>
+
                             {can("menuStaffs.staffs", "edit") && user.role !== "Super Admin" && (
                               <button
                                 onClick={() => {
@@ -628,6 +654,7 @@ export default function Staffs({ openStaffView }) {
                 {editMode ? t.editStaff : t.newStaff}
               </h2>
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
                 className="bg-gray-100 p-1.5 rounded-full text-gray-500 hover:bg-gray-200 transition"
               >
@@ -722,15 +749,14 @@ export default function Staffs({ openStaffView }) {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                            Employee ID <span className="text-red-500">*</span>
+                            Employee ID
                           </label>
                           <input
-                            placeholder="Enter Employee ID"
+                            placeholder={editMode ? "" : "Auto-generated"}
                             type="text"
-                            required
+                            disabled
                             value={form.employeeId}
-                            onChange={e => setForm({ ...form, employeeId: e.target.value })}
-                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 text-gray-500 outline-none cursor-not-allowed"
                           />
                         </div>
                       </div>
@@ -792,15 +818,14 @@ export default function Staffs({ openStaffView }) {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                            Mã Nhân Viên <span className="text-red-500">*</span>
+                            Mã Nhân Viên
                           </label>
                           <input
-                            placeholder="Nhập Mã Nhân Viên"
+                            placeholder={editMode ? "" : "Tự động tạo"}
                             type="text"
-                            required
+                            disabled
                             value={form.employeeId}
-                            onChange={e => setForm({ ...form, employeeId: e.target.value })}
-                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                            className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm bg-gray-50 text-gray-500 outline-none cursor-not-allowed"
                           />
                         </div>
                       </div>
@@ -919,6 +944,7 @@ export default function Staffs({ openStaffView }) {
             {/* Footer */}
             <div className="p-5 border-t border-gray-100 flex justify-end gap-3 bg-white">
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
                 className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition font-medium text-sm shadow-sm"
               >
@@ -930,6 +956,149 @@ export default function Staffs({ openStaffView }) {
                 className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md"
               >
                 {editMode ? t.updateStaff : t.addStaff}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* View Details Modal */}
+      {showViewModal && viewingUser && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
+              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <User className="text-[#41398B]" size={24} />
+                {t.userDetails || "Staff Details"}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowViewModal(false)}
+                className="bg-gray-100 p-1.5 rounded-full text-gray-500 hover:bg-gray-200 transition"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-8 overflow-y-auto flex-1 custom-scrollbar bg-white">
+              <div className="flex flex-col md:flex-row gap-8 items-start mb-8">
+                {/* Profile Image */}
+                <div className="w-32 h-32 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                  {viewingUser.profileImage ? (
+                    <img
+                      src={viewingUser.profileImage}
+                      alt="profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User size={48} className="text-gray-300" />
+                  )}
+                </div>
+
+                {/* Main Info */}
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                    {viewingUser.firstName?.[language] || viewingUser.firstName?.en} {viewingUser.lastName?.[language] || viewingUser.lastName?.en}
+                  </h3>
+                  <p className="text-[#41398B] font-medium mb-2 flex items-center gap-2">
+                    <Briefcase size={16} />
+                    {viewingUser.designation?.[language] || viewingUser.designation?.en || "No Designation"}
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-1 gap-y-3 gap-x-6">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                        <Mail size={14} className="text-gray-400" />
+                      </div>
+                      <span className="text-sm">{viewingUser.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                        <Phone size={14} className="text-gray-400" />
+                      </div>
+                      <span className="text-sm">{viewingUser.phone || "N/A"}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Details Sections */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Work Information */}
+                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#41398B]"></div>
+                    {language === "vi" ? "Thông Tin Công Việc" : "Work Information"}
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">Employee ID</p>
+                      <p className="text-sm font-medium text-gray-700">{viewingUser.employeeId}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">Role</p>
+                      <span className="inline-block px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
+                        {viewingUser.role}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">Department</p>
+                      <p className="text-sm font-medium text-gray-700">{viewingUser.department?.[language] || viewingUser.department?.en || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{language === "vi" ? "Ngày Vào Làm" : "Date of Joining"}</p>
+                      <p className="text-sm font-medium text-gray-700">
+                        {viewingUser.joiningDate ? format(new Date(viewingUser.joiningDate), "dd MMM yyyy") : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Personal Information */}
+                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#41398B]"></div>
+                    {t.personalInfo || (language === "vi" ? "Thông Tin Cá Nhân" : "Personal Information")}
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{language === "vi" ? "Ngày Sinh" : "Date of Birth"}</p>
+                      <p className="text-sm font-medium text-gray-700">
+                        {viewingUser.dob ? format(new Date(viewingUser.dob), "dd MMM yyyy") : "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{language === "vi" ? "Giới Tính" : "Gender"}</p>
+                      <p className="text-sm font-medium text-gray-700">
+                        {viewingUser.gender === "Male" ? (language === "vi" ? "Nam" : "Male") :
+                          viewingUser.gender === "Female" ? (language === "vi" ? "Nữ" : "Female") :
+                            (language === "vi" ? "Khác" : "Other") || viewingUser.gender || "N/A"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{t.status || (language === "vi" ? "Trạng thái" : "Status")}</p>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${viewingUser.status === "Active"
+                        ? "bg-green-50 text-green-700 border-green-100"
+                        : "bg-red-50 text-red-700 border-red-100"
+                        }`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${viewingUser.status === "Active" ? "bg-green-500" : "bg-red-500"}`}></div>
+                        {viewingUser.status === "Active" ? t.active : t.inactive}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-5 border-t border-gray-100 flex justify-end bg-gray-50/50">
+              <button
+                type="button"
+                onClick={() => setShowViewModal(false)}
+                className="px-8 py-2.5 rounded-xl bg-gray-900 text-white hover:bg-gray-800 transition font-bold text-sm shadow-lg shadow-gray-200"
+              >
+                {t.cancel || (language === "vi" ? "Đóng" : "Close")}
               </button>
             </div>
           </div>

@@ -23,6 +23,7 @@ import CommonSkeleton from "../../Common/CommonSkeleton";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { usePermissions } from "../../Context/PermissionContext";
+import { useSocket } from "../../Context/SocketContext";
 
 export default function Enquires() {
     const [enquiries, setEnquiries] = useState([]);
@@ -30,12 +31,15 @@ export default function Enquires() {
     const [loading, setLoading] = useState(true);
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+    const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState({ show: false, count: 0 });
     const [selectedIds, setSelectedIds] = useState([]);
+    const [messageModal, setMessageModal] = useState({ show: false, message: "", userName: "" });
 
     // Language
     const { language } = useLanguage();
     const t = translations[language];
     const { can } = usePermissions();
+    const { socket, isConnected } = useSocket();
 
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
@@ -58,6 +62,32 @@ export default function Enquires() {
             setLoading(false);
         }
     };
+
+    // Socket.IO listener for real-time notifications
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNewEnquiry = (data) => {
+            console.log('🔔 New enquiry received:', data);
+
+            // Add the new enquiry to the list
+            setEnquiries((prev) => [data.enquiry, ...prev]);
+
+            // Show notification toast
+            CommonToaster(
+                language === 'vi'
+                    ? `Yêu cầu mới từ ${data.enquiry.userName}`
+                    : `New enquiry from ${data.enquiry.userName}`,
+                "info"
+            );
+        };
+
+        socket.on('newEnquiry', handleNewEnquiry);
+
+        return () => {
+            socket.off('newEnquiry', handleNewEnquiry);
+        };
+    }, [socket, language]);
 
     const handleMarkRead = async (id, currentStatus) => {
         try {
@@ -119,21 +149,21 @@ export default function Enquires() {
     const isAllSelected = currentRows.length > 0 && selectedIds.length === currentRows.length;
     const isSomeSelected = selectedIds.length > 0 && selectedIds.length < currentRows.length;
 
-    const handleBulkDelete = async () => {
+    const handleBulkDeleteClick = () => {
         if (selectedIds.length === 0) return;
+        setBulkDeleteConfirm({ show: true, count: selectedIds.length });
+    };
 
-        const confirmMsg = t.bulkDeleteConfirm || `Are you sure you want to delete ${selectedIds.length} selected enquiries?`;
-
-        if (!window.confirm(confirmMsg)) return;
-
+    const handleBulkDelete = async () => {
         try {
             setLoading(true);
             await bulkDeleteEnquiries(selectedIds);
 
             setSelectedIds([]);
+            setBulkDeleteConfirm({ show: false, count: 0 });
             await fetchEnquiries();
 
-            const successMsg = t.bulkDeleteSuccess || `Successfully deleted ${selectedIds.length} enquiries!`;
+            const successMsg = t.bulkDeleteSuccess || `Successfully deleted ${bulkDeleteConfirm.count} enquiries!`;
             CommonToaster(successMsg, "success");
         } catch (error) {
             console.error(error);
@@ -180,7 +210,7 @@ export default function Enquires() {
 
                 {selectedIds.length > 0 && (
                     <button
-                        onClick={handleBulkDelete}
+                        onClick={handleBulkDeleteClick}
                         className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
                     >
                         <Trash2 className="w-4 h-4" />
@@ -292,10 +322,25 @@ export default function Enquires() {
                                                     </button>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className="block max-w-[150px] truncate text-gray-500 text-xs" title={item.message}>
-                                                    {item.message || "-"}
-                                                </span>
+                                            <td className="px-6 py-4">
+                                                {item.message && item.message.length > 50 ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="block max-w-[120px] truncate text-gray-500 text-xs" title={item.message}>
+                                                            {item.message}
+                                                        </span>
+                                                        <button
+                                                            onClick={() => setMessageModal({ show: true, message: item.message, userName: item.userName })}
+                                                            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#41398B] bg-[#41398B]/5 hover:bg-[#41398B]/10 rounded-md transition-colors border border-[#41398B]/10 whitespace-nowrap"
+                                                        >
+                                                            <Eye size={12} />
+                                                            {language === 'vi' ? 'Xem' : 'View'}
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <span className="block text-gray-500 text-xs">
+                                                        {item.message || "-"}
+                                                    </span>
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 text-center whitespace-nowrap">
                                                 <button
@@ -432,11 +477,14 @@ export default function Enquires() {
                                                     {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || "Untitled Property"}
                                                 </h2>
 
-                                                <p className="text-sm text-gray-500 mb-3 line-clamp-1">
-                                                    {getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
-                                                        getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
-                                                        "Description not available"}
-                                                </p>
+                                                <div
+                                                    className="text-sm text-gray-500 mb-3 line-clamp-2 ql-editor-summary"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
+                                                            getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                                                            "Description not available"
+                                                    }}
+                                                />
 
                                                 <div className="flex flex-wrap gap-3 mb-4">
                                                     {prop.propertyInformation?.informationBedrooms > 0 && (
@@ -509,6 +557,39 @@ export default function Enquires() {
                 </div>
             )}
 
+            {/* Bulk Delete Confirmation Modal */}
+            {bulkDeleteConfirm.show && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center mb-4">
+                            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                <AlertTriangle className="text-red-600 w-6 h-6" />
+                            </div>
+                            <h3 className="font-semibold text-lg text-gray-800">
+                                {t.deleteEnquiryQuestion || "Delete Enquiries?"}
+                            </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                            {t.bulkDeleteConfirm || `Are you sure you want to delete ${bulkDeleteConfirm.count} selected enquiries? This action cannot be undone.`}
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setBulkDeleteConfirm({ show: false, count: 0 })}
+                                className="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm transition"
+                            >
+                                {t.cancel}
+                            </button>
+                            <button
+                                onClick={handleBulkDelete}
+                                className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition"
+                            >
+                                {t.delete}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Delete Modal */}
             {deleteConfirm.show && (
                 <div className="fixed inset-0 border border-gray-200 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
@@ -536,6 +617,48 @@ export default function Enquires() {
                                 className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition"
                             >
                                 {t.delete}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Message Details Modal */}
+            {messageModal.show && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#41398B]/10 flex items-center justify-center">
+                                    <Mail className="text-[#41398B] w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg text-gray-800">
+                                        {language === 'vi' ? 'Chi tiết tin nhắn' : 'Message Details'}
+                                    </h3>
+                                    <p className="text-xs text-gray-500">
+                                        {language === 'vi' ? 'Từ' : 'From'}: {messageModal.userName || 'Unknown'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setMessageModal({ show: false, message: "", userName: "" })}
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 max-h-[60vh] overflow-y-auto">
+                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                {messageModal.message}
+                            </p>
+                        </div>
+                        <div className="flex justify-end mt-4">
+                            <button
+                                onClick={() => setMessageModal({ show: false, message: "", userName: "" })}
+                                className="px-5 py-2.5 bg-[#41398B] text-white rounded-lg hover:bg-[#352e7a] font-medium text-sm shadow-sm transition"
+                            >
+                                {language === 'vi' ? 'Đóng' : 'Close'}
                             </button>
                         </div>
                     </div>

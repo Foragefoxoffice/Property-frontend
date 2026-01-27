@@ -512,7 +512,7 @@ export default function ManageTrashProperty() {
 
       {/* FILTER MODAL */}
       {showFilterPopup && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center p-4">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center p-4 z-[9999]">
           <div className="bg-white rounded-2xl w-full max-w-5xl p-6 overflow-y-auto max-h-[90vh]">
             <div className="flex justify-end">
               <button

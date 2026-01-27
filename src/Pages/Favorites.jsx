@@ -185,11 +185,14 @@ export default function Favorites({ isDashboard = false }) {
                                                 <h3 className="font-bold text-gray-900 line-clamp-1 mb-1 group-hover:text-[#41398B] text-[20px] transition-colors">
                                                     {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || t.untitledProperty}
                                                 </h3>
-                                                <p className="text-sm text-gray-500 mb-1 line-clamp-1">
-                                                    {getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
-                                                        getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
-                                                        t.locationNA}
-                                                </p>
+                                                <div
+                                                    className="text-sm text-gray-500 mb-1 line-clamp-2 ql-editor-summary"
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
+                                                            getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                                                            t.locationNA
+                                                    }}
+                                                />
                                                 <p className="text-[#41398B] font-bold text-lg">{displayPrice}</p>
                                             </div>
                                         </div>

@@ -7,20 +7,29 @@ import {
     ChevronRight,
     ChevronsRight,
     Trash2,
+    AlertTriangle,
+    X,
+    Eye,
+    Mail
 } from "lucide-react";
 import CommonSkeleton from "../../Common/CommonSkeleton";
+import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { useNavigate } from "react-router-dom";
+import { useSocket } from "../../Context/SocketContext";
 
 export default function ContactEnquiry() {
     const navigate = useNavigate();
     const goBack = () => navigate(-1);
     const { language } = useLanguage();
     const isVI = language === "vi";
+    const { socket, isConnected } = useSocket();
 
     const [enquiries, setEnquiries] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
+    const [deleteConfirm, setDeleteConfirm] = useState({ show: false, count: 0 });
+    const [messageModal, setMessageModal] = useState({ show: false, message: "", userName: "" });
 
     // Pagination
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -41,6 +50,32 @@ export default function ContactEnquiry() {
     useEffect(() => {
         fetchEnquiries();
     }, []);
+
+    // Socket.IO listener for real-time contact enquiry notifications
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNewContactEnquiry = (data) => {
+            console.log('🔔 New contact enquiry received:', data);
+
+            // Add the new enquiry to the list
+            setEnquiries((prev) => [data.enquiry, ...prev]);
+
+            // Show notification toast
+            CommonToaster(
+                isVI
+                    ? `Yêu cầu liên hệ mới từ ${data.enquiry.firstName} ${data.enquiry.lastName}`
+                    : `New contact enquiry from ${data.enquiry.firstName} ${data.enquiry.lastName}`,
+                "info"
+            );
+        };
+
+        socket.on('newContactEnquiry', handleNewContactEnquiry);
+
+        return () => {
+            socket.off('newContactEnquiry', handleNewContactEnquiry);
+        };
+    }, [socket, isVI]);
 
     // Pagination logic
     const totalRows = enquiries.length;
@@ -79,15 +114,12 @@ export default function ContactEnquiry() {
     const isSomeSelected = selectedIds.length > 0 && selectedIds.length < visibleData.length;
 
     // Bulk delete handler
-    const handleBulkDelete = async () => {
+    const handleBulkDeleteClick = () => {
         if (selectedIds.length === 0) return;
+        setDeleteConfirm({ show: true, count: selectedIds.length });
+    };
 
-        const confirmMsg = isVI
-            ? `Bạn có chắc chắn muốn xóa ${selectedIds.length} yêu cầu đã chọn?`
-            : `Are you sure you want to delete ${selectedIds.length} selected enquiries?`;
-
-        if (!window.confirm(confirmMsg)) return;
-
+    const handleBulkDelete = async () => {
         try {
             setLoading(true);
             await axios.delete(`${import.meta.env.VITE_API_URL}/contact-enquiry/bulk-delete`, {
@@ -95,18 +127,19 @@ export default function ContactEnquiry() {
             });
 
             setSelectedIds([]);
+            setDeleteConfirm({ show: false, count: 0 });
             await fetchEnquiries();
 
             const successMsg = isVI
-                ? `Đã xóa ${selectedIds.length} yêu cầu thành công!`
-                : `Successfully deleted ${selectedIds.length} enquiries!`;
-            alert(successMsg);
+                ? `Đã xóa ${deleteConfirm.count} yêu cầu thành công!`
+                : `Successfully deleted ${deleteConfirm.count} enquiries!`;
+            CommonToaster(successMsg, "success");
         } catch (error) {
             console.error(error);
             const errorMsg = isVI
                 ? "Xóa thất bại. Vui lòng thử lại."
                 : "Failed to delete. Please try again.";
-            alert(errorMsg);
+            CommonToaster(errorMsg, "error");
         } finally {
             setLoading(false);
         }
@@ -129,7 +162,7 @@ export default function ContactEnquiry() {
 
                 {selectedIds.length > 0 && (
                     <button
-                        onClick={handleBulkDelete}
+                        onClick={handleBulkDeleteClick}
                         className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                     >
                         <Trash2 className="w-4 h-4" />
@@ -189,9 +222,24 @@ export default function ContactEnquiry() {
                                         <td className="px-6 py-3">{row.phone}</td>
                                         <td className="px-6 py-3">{row.subject}</td>
                                         <td className="px-6 py-3">
-                                            <div className="truncate max-w-xs" title={row.message}>
-                                                {row.message}
-                                            </div>
+                                            {row.message && row.message.length > 50 ? (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="block max-w-[150px] truncate text-gray-500 text-xs" title={row.message}>
+                                                        {row.message}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => setMessageModal({ show: true, message: row.message, userName: `${row.firstName} ${row.lastName}` })}
+                                                        className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#41398B] bg-[#41398B]/5 hover:bg-[#41398B]/10 rounded-md transition-colors border border-[#41398B]/10 whitespace-nowrap cursor-pointer"
+                                                    >
+                                                        <Eye size={12} />
+                                                        {isVI ? 'Xem' : 'View'}
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <span className="block text-gray-500 text-xs max-w-[150px] truncate">
+                                                    {row.message || "-"}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-3">{new Date(row.createdAt).toLocaleDateString()}</td>
                                     </tr>
@@ -230,6 +278,82 @@ export default function ContactEnquiry() {
                     </div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirm.show && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center mb-4">
+                            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                <AlertTriangle className="text-red-600 w-6 h-6" />
+                            </div>
+                            <h3 className="font-semibold text-lg text-gray-800">
+                                {isVI ? "Xác nhận xóa" : "Confirm Delete"}
+                            </h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                            {isVI
+                                ? `Bạn có chắc chắn muốn xóa ${deleteConfirm.count} yêu cầu đã chọn? Hành động này không thể hoàn tác.`
+                                : `Are you sure you want to delete ${deleteConfirm.count} selected enquiries? This action cannot be undone.`}
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setDeleteConfirm({ show: false, count: 0 })}
+                                className="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm transition"
+                            >
+                                {isVI ? "Hủy" : "Cancel"}
+                            </button>
+                            <button
+                                onClick={handleBulkDelete}
+                                className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition"
+                            >
+                                {isVI ? "Xóa" : "Delete"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Message Details Modal */}
+            {messageModal.show && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#41398B]/10 flex items-center justify-center">
+                                    <Mail className="text-[#41398B] w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg text-gray-800">
+                                        {isVI ? 'Chi tiết tin nhắn' : 'Message Details'}
+                                    </h3>
+                                    <p className="text-xs text-gray-500">
+                                        {isVI ? 'Từ' : 'From'}: {messageModal.userName || 'Unknown'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setMessageModal({ show: false, message: "", userName: "" })}
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition cursor-pointer"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 max-h-[60vh] overflow-y-auto">
+                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                                {messageModal.message}
+                            </p>
+                        </div>
+                        <div className="flex justify-end mt-4">
+                            <button
+                                onClick={() => setMessageModal({ show: false, message: "", userName: "" })}
+                                className="px-5 py-2.5 bg-[#41398B] text-white rounded-lg hover:bg-[#352e7a] font-medium text-sm shadow-sm transition cursor-pointer"
+                            >
+                                {isVI ? 'Đóng' : 'Close'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
