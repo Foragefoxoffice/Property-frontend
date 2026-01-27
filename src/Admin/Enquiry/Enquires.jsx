@@ -17,7 +17,7 @@ import {
     Trash2,
     AlertTriangle
 } from "lucide-react";
-import { getAllEnquiries, markEnquiryAsRead, deleteEnquiry } from "../../Api/action";
+import { getAllEnquiries, markEnquiryAsRead, deleteEnquiry, bulkDeleteEnquiries } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import CommonSkeleton from "../../Common/CommonSkeleton";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -30,6 +30,7 @@ export default function Enquires() {
     const [loading, setLoading] = useState(true);
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+    const [selectedIds, setSelectedIds] = useState([]);
 
     // Language
     const { language } = useLanguage();
@@ -99,6 +100,50 @@ export default function Enquires() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const currentRows = filteredEnquiries.slice(startIndex, startIndex + rowsPerPage);
 
+    // Bulk delete handlers (after currentRows is defined)
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            const allIds = currentRows.map((item) => item._id);
+            setSelectedIds(allIds);
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const handleSelectOne = (id) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
+    };
+
+    const isAllSelected = currentRows.length > 0 && selectedIds.length === currentRows.length;
+    const isSomeSelected = selectedIds.length > 0 && selectedIds.length < currentRows.length;
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+
+        const confirmMsg = t.bulkDeleteConfirm || `Are you sure you want to delete ${selectedIds.length} selected enquiries?`;
+
+        if (!window.confirm(confirmMsg)) return;
+
+        try {
+            setLoading(true);
+            await bulkDeleteEnquiries(selectedIds);
+
+            setSelectedIds([]);
+            await fetchEnquiries();
+
+            const successMsg = t.bulkDeleteSuccess || `Successfully deleted ${selectedIds.length} enquiries!`;
+            CommonToaster(successMsg, "success");
+        } catch (error) {
+            console.error(error);
+            const errorMsg = t.bulkDeleteError || "Failed to delete enquiries. Please try again.";
+            CommonToaster(errorMsg, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handlePrevPage = () => {
         setCurrentPage((prev) => Math.max(prev - 1, 1));
     };
@@ -132,6 +177,16 @@ export default function Enquires() {
             {/* Header */}
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-semibold text-gray-900">{t.enquires}</h1>
+
+                {selectedIds.length > 0 && (
+                    <button
+                        onClick={handleBulkDelete}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                        {t.delete || "Delete"} ({selectedIds.length})
+                    </button>
+                )}
             </div>
 
             {/* Search */}
@@ -161,6 +216,17 @@ export default function Enquires() {
                             <table className="w-full text-sm text-gray-700">
                                 <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
                                     <tr>
+                                        <th className="px-6 py-3 font-medium text-[#111111]">
+                                            <input
+                                                type="checkbox"
+                                                checked={isAllSelected}
+                                                ref={(el) => {
+                                                    if (el) el.indeterminate = isSomeSelected;
+                                                }}
+                                                onChange={handleSelectAll}
+                                                className="w-4 h-4 cursor-pointer"
+                                            />
+                                        </th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.name}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.email}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.number}</th>
@@ -177,6 +243,14 @@ export default function Enquires() {
                                             key={item._id}
                                             className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition duration-200`}
                                         >
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(item._id)}
+                                                    onChange={() => handleSelectOne(item._id)}
+                                                    className="w-4 h-4 cursor-pointer"
+                                                />
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center gap-3">
                                                     <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${item.isRead ? 'bg-gray-100 text-gray-500' : 'bg-[#41398B]/10 text-[#41398B]'}`}>
@@ -257,7 +331,7 @@ export default function Enquires() {
                                     ))}
                                     {currentRows.length === 0 && (
                                         <tr>
-                                            <td colSpan="8" className="py-16 text-center text-gray-500">
+                                            <td colSpan="9" className="py-16 text-center text-gray-500">
                                                 {t.noEnquiriesFound}
                                             </td>
                                         </tr>

@@ -264,11 +264,14 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     </h3>
 
                                     {/* Location / Nearby */}
-                                    <p className="text-[16px] text-gray-500 mb-4 line-clamp-3">
-                                        {getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
-                                            getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
-                                            'Location not specified'}
-                                    </p>
+                                    <div
+                                        className="text-[16px] text-gray-500 mb-4 line-clamp-3 ql-editor-summary"
+                                        dangerouslySetInnerHTML={{
+                                            __html: getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
+                                                getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
+                                                'Location not specified'
+                                        }}
+                                    />
 
                                     {/* Details */}
                                     <div className="flex items-center pt-3 border-t border-gray-200 justify-between">

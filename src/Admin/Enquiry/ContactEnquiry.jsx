@@ -6,6 +6,7 @@ import {
     ChevronLeft,
     ChevronRight,
     ChevronsRight,
+    Trash2,
 } from "lucide-react";
 import CommonSkeleton from "../../Common/CommonSkeleton";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -19,6 +20,7 @@ export default function ContactEnquiry() {
 
     const [enquiries, setEnquiries] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [selectedIds, setSelectedIds] = useState([]);
 
     // Pagination
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -57,6 +59,59 @@ export default function ContactEnquiry() {
     const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
     const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
+    // Checkbox handlers
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            const allIds = visibleData.map((item) => item._id);
+            setSelectedIds(allIds);
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const handleSelectOne = (id) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
+    };
+
+    const isAllSelected = visibleData.length > 0 && selectedIds.length === visibleData.length;
+    const isSomeSelected = selectedIds.length > 0 && selectedIds.length < visibleData.length;
+
+    // Bulk delete handler
+    const handleBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+
+        const confirmMsg = isVI
+            ? `Bạn có chắc chắn muốn xóa ${selectedIds.length} yêu cầu đã chọn?`
+            : `Are you sure you want to delete ${selectedIds.length} selected enquiries?`;
+
+        if (!window.confirm(confirmMsg)) return;
+
+        try {
+            setLoading(true);
+            await axios.delete(`${import.meta.env.VITE_API_URL}/contact-enquiry/bulk-delete`, {
+                data: { ids: selectedIds },
+            });
+
+            setSelectedIds([]);
+            await fetchEnquiries();
+
+            const successMsg = isVI
+                ? `Đã xóa ${selectedIds.length} yêu cầu thành công!`
+                : `Successfully deleted ${selectedIds.length} enquiries!`;
+            alert(successMsg);
+        } catch (error) {
+            console.error(error);
+            const errorMsg = isVI
+                ? "Xóa thất bại. Vui lòng thử lại."
+                : "Failed to delete. Please try again.";
+            alert(errorMsg);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="p-8 min-h-screen relative">
             <div className="flex justify-between items-center mb-6">
@@ -71,6 +126,16 @@ export default function ContactEnquiry() {
                         {isVI ? "Yêu cầu liên hệ" : "Contact Enquiries"}
                     </h2>
                 </div>
+
+                {selectedIds.length > 0 && (
+                    <button
+                        onClick={handleBulkDelete}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                        {isVI ? `Xóa (${selectedIds.length})` : `Delete (${selectedIds.length})`}
+                    </button>
+                )}
             </div>
 
             <div className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
@@ -80,6 +145,17 @@ export default function ContactEnquiry() {
                     <table className="w-full text-sm border-collapse">
                         <thead className="bg-gray-50 text-gray-700">
                             <tr>
+                                <th className="px-6 py-3 text-left font-medium">
+                                    <input
+                                        type="checkbox"
+                                        checked={isAllSelected}
+                                        ref={(el) => {
+                                            if (el) el.indeterminate = isSomeSelected;
+                                        }}
+                                        onChange={handleSelectAll}
+                                        className="w-4 h-4 cursor-pointer"
+                                    />
+                                </th>
                                 <th className="px-6 py-3 text-left font-medium">{isVI ? "Tên" : "First Name"}</th>
                                 <th className="px-6 py-3 text-left font-medium">{isVI ? "Họ" : "Last Name"}</th>
                                 <th className="px-6 py-3 text-left font-medium">Email</th>
@@ -92,13 +168,21 @@ export default function ContactEnquiry() {
                         <tbody>
                             {visibleData.length === 0 ? (
                                 <tr>
-                                    <td colSpan="7" className="text-center py-6 text-gray-500">
+                                    <td colSpan="8" className="text-center py-6 text-gray-500">
                                         {isVI ? "Không có dữ liệu." : "No records found."}
                                     </td>
                                 </tr>
                             ) : (
                                 visibleData.map((row, i) => (
                                     <tr key={i} className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}>
+                                        <td className="px-6 py-3">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.includes(row._id)}
+                                                onChange={() => handleSelectOne(row._id)}
+                                                className="w-4 h-4 cursor-pointer"
+                                            />
+                                        </td>
                                         <td className="px-6 py-3">{row.firstName}</td>
                                         <td className="px-6 py-3">{row.lastName}</td>
                                         <td className="px-6 py-3">{row.email}</td>

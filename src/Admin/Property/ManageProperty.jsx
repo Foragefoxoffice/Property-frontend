@@ -93,6 +93,28 @@ export default function ManageProperty({
         }
       }
 
+      // Add applied filters to params
+      if (appliedFilters) {
+        if (appliedFilters.projectId?.name) params.project = appliedFilters.projectId.name;
+        if (appliedFilters.zoneId?.name) params.zone = appliedFilters.zoneId.name;
+        if (appliedFilters.blockId?.name) params.block = appliedFilters.blockId.name;
+        if (appliedFilters.propertyType?.name) params.propertyType = appliedFilters.propertyType.name;
+        if (appliedFilters.propertyNumber) params.propertyNo = appliedFilters.propertyNumber;
+        if (appliedFilters.floorRange?.name) params.floor = appliedFilters.floorRange.name;
+        // Check for code first, then name
+        if (appliedFilters.currency?.code) {
+          params.currency = appliedFilters.currency.code;
+        } else if (appliedFilters.currency?.name) {
+          params.currency = appliedFilters.currency.name;
+        }
+        if (appliedFilters.priceFrom) params.priceFrom = appliedFilters.priceFrom;
+        if (appliedFilters.priceTo) params.priceTo = appliedFilters.priceTo;
+      }
+
+      if (searchTerm) {
+        params.keyword = searchTerm;
+      }
+
       const res = await getPropertiesByTransactionType(params);
 
       if (res?.data?.success) {
@@ -118,130 +140,20 @@ export default function ManageProperty({
   useEffect(() => {
     // reset to first page when transaction type changes
     setCurrentPage((prev) => (prev === 1 ? 1 : prev)); // keep page unless changed elsewhere
-    fetchProperties();
+
+    // Simple debounce for search
+    const timer = setTimeout(() => {
+      fetchProperties();
+    }, 300);
+
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterByTransactionType, currentPage, rowsPerPage, trashMode, activeTab]);
+  }, [filterByTransactionType, currentPage, rowsPerPage, trashMode, activeTab, appliedFilters, searchTerm]);
 
-  // client-side filtering / search applied to the current page
+  // client-side filtering REMOVED - backend now handles filtering
   const filteredProperties = useMemo(() => {
-    let list = properties || [];
-
-    // extra guard: if transaction type present, ensure items match (backend should already)
-    if (!trashMode && filterByTransactionType) {
-      list = list.filter((p) => {
-        const type =
-          p.listingInformation?.listingInformationTransactionType?.[language] ||
-          p.listingInformation?.listingInformationTransactionType?.en ||
-          "";
-
-        return (
-          type.toLowerCase().trim() ===
-          filterByTransactionType.toLowerCase().trim()
-        );
-      });
-    }
-
-    if (appliedFilters) {
-      const f = appliedFilters;
-
-      list = list.filter((property) => {
-        const info = property.listingInformation || {};
-        const pi = property.propertyInformation || {};
-
-        const matchTextObj = (apiObj, filterObj) => {
-          if (!filterObj || !filterObj.name) return true;
-          if (!apiObj) return false;
-
-          const apiEn = apiObj.en?.toLowerCase() || "";
-          const apiVi = apiObj.vi?.toLowerCase() || "";
-          const filterName = filterObj.name.toLowerCase();
-
-          return apiEn.includes(filterName) || apiVi.includes(filterName);
-        };
-
-        if (!matchTextObj(info.listingInformationProjectCommunity, f.projectId))
-          return false;
-        if (!matchTextObj(info.listingInformationZoneSubArea, f.zoneId))
-          return false;
-        if (!matchTextObj(info.listingInformationBlockName, f.blockId))
-          return false;
-        if (!matchTextObj(info.listingInformationPropertyType, f.propertyType))
-          return false;
-
-        if (
-          f.propertyNumber &&
-          !(
-            info.listingInformationPropertyNo?.en
-              ?.toLowerCase()
-              .includes(f.propertyNumber.toLowerCase()) ||
-            info.listingInformationPropertyNo?.vi
-              ?.toLowerCase()
-              .includes(f.propertyNumber.toLowerCase())
-          )
-        )
-          return false;
-
-        if (!matchTextObj(pi.informationFloors, f.floorRange)) return false;
-
-        if (
-          f.currency &&
-          f.currency.name &&
-          info.financialDetailsCurrency?.toLowerCase() !==
-          f.currency.name.toLowerCase()
-        )
-          return false;
-
-        const price = Number(info.financialDetailsPrice) || 0;
-        if (f.priceFrom && price < Number(f.priceFrom)) return false;
-        if (f.priceTo && price > Number(f.priceTo)) return false;
-
-        return true;
-      });
-    }
-
-    // Trash filter + Search (search is applied on current page)
-    list = list.filter((p) => {
-      if (trashMode && p.status !== "Archived") return false;
-      if (!trashMode && p.status === "Archived") return false;
-
-      const search = searchTerm.toLowerCase();
-      if (!search) return true;
-
-      const info = p.listingInformation || {};
-
-      const propertyId =
-        info.listingInformationPropertyId?.toString().toLowerCase() || "";
-
-      const propertyNo =
-        info.listingInformationPropertyNo?.[language]?.toLowerCase() ||
-        info.listingInformationPropertyNo?.en?.toLowerCase() ||
-        "";
-
-      const propertyType =
-        info.listingInformationPropertyType?.[language]?.toLowerCase() ||
-        info.listingInformationPropertyType?.en?.toLowerCase() ||
-        "";
-
-      const blockName =
-        info.listingInformationBlockName?.[language]?.toLowerCase() ||
-        info.listingInformationBlockName?.en?.toLowerCase() ||
-        "";
-
-      const status = p.status?.toLowerCase() || "";
-
-      return (
-        propertyId.includes(search) ||
-        propertyNo.includes(search) ||
-        propertyType.includes(search) ||
-        blockName.includes(search) ||
-        status.includes(search)
-      );
-    });
-
-
-
-    return list;
-  }, [properties, searchTerm, appliedFilters, language, trashMode, filterByTransactionType, activeTab]);
+    return properties || [];
+  }, [properties]);
 
   // currentRows = filtered (already representing the backend page after client-side filtering)
   const currentRows = filteredProperties;
@@ -584,7 +496,7 @@ export default function ManageProperty({
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-gray-900">{p.createdByName || p.createdBy?.name || "—"}</span>
+                      <span className="text-sm font-medium text-gray-900">{p.sentByName || p.sentBy?.name || p.createdByName || p.createdBy?.name || "—"}</span>
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -627,16 +539,14 @@ export default function ManageProperty({
                       )}
 
                       {can(permissionKey, 'view') && (
-                        <button
-                          onClick={() =>
-                            navigate(
-                              `/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`
-                            )
-                          }
+                        <Link
+                          to={`/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
                         >
                           <Eye className="w-4 h-4 text-gray-600" />
-                        </button>
+                        </Link>
                       )}
 
                       {can(permissionKey, 'preview') && (

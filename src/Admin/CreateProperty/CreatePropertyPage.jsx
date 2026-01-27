@@ -83,6 +83,8 @@ function mapApiToForm(api) {
     availableFrom:
       api.listingInformation?.listingInformationAvailableFrom?.split("T")[0] || "",
 
+    googleMapsIframe: safe(api.listingInformation?.listingInformationGoogleMapsIframe), // ✅ Added
+
     /* -----------------------------------------
        PROPERTY INFORMATION
     ------------------------------------------ */
@@ -163,6 +165,7 @@ function mapApiToForm(api) {
     ------------------------------------------ */
     videoVisibility: api.videoVisibility || false,
     floorImageVisibility: api.floorImageVisibility || false,
+    googleMapVisibility: api.listingInformationVisibility?.googleMap || false, // ✅ Added root mapping
     titleVisibility: api.titleVisibility || false,
     descriptionVisibility: api.descriptionVisibility || false,
     whatNearbyVisibility: api.whatNearbyVisibility || false,
@@ -178,6 +181,7 @@ function mapApiToForm(api) {
       dateListed: false,
       availableFrom: false,
       availabilityStatus: false,
+      googleMap: false, // ✅ Added
     },
 
     propertyInformationVisibility: api.propertyInformationVisibility || {
@@ -431,6 +435,7 @@ export default function CreatePropertyPage({
         listingInformationPropertyTitle: wrap(n.title),
 
         listingInformationAvailableFrom: n.availableFrom || "",
+        listingInformationGoogleMapsIframe: wrap(n.googleMapsIframe), // ✅ Added
       },
 
       /* ================================================
@@ -523,16 +528,18 @@ export default function CreatePropertyPage({
       whatNearbyVisibility: n.whatNearbyVisibility || false,
       propertyUtilityVisibility: n.propertyUtilityVisibility || false,
 
-      listingInformationVisibility: n.listingInformationVisibility || {
-        transactionType: false,
-        propertyId: false,
-        projectCommunity: false,
-        areaZone: false,
-        blockName: false,
-        propertyNo: false,
-        dateListed: false,
-        availableFrom: false,
-        availabilityStatus: false,
+      listingInformationVisibility: {
+        ...(n.listingInformationVisibility || {}),
+        transactionType: n.listingInformationVisibility?.transactionType || false,
+        propertyId: n.listingInformationVisibility?.propertyId || false,
+        projectCommunity: n.listingInformationVisibility?.projectCommunity || false,
+        areaZone: n.listingInformationVisibility?.areaZone || false,
+        blockName: n.listingInformationVisibility?.blockName || false,
+        propertyNo: n.listingInformationVisibility?.propertyNo || false,
+        dateListed: n.listingInformationVisibility?.dateListed || false,
+        availableFrom: n.listingInformationVisibility?.availableFrom || false,
+        availabilityStatus: n.listingInformationVisibility?.availabilityStatus || false,
+        googleMap: n.googleMapVisibility !== undefined ? n.googleMapVisibility : (n.listingInformationVisibility?.googleMap || false), // ✅ Merged
       },
 
       propertyInformationVisibility: n.propertyInformationVisibility || {

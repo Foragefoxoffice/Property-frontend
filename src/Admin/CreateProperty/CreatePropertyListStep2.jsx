@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Plus, X, ArrowRight, ArrowLeft, Eye } from "lucide-react";
-import { Select as AntdSelect, Switch } from "antd";
+import { Select as AntdSelect, Switch, Input } from "antd";
+const { TextArea } = Input;
 import { CommonToaster } from "@/Common/CommonToaster";
 
 
@@ -79,6 +80,8 @@ export default function CreatePropertyListStep2({
       agentFeeAgenda: "Agent Payment Agenda",
       feeTax: "Fees & taxes",
       legalDoc: "Legal Documents",
+      googleMapsIframe: "Google Maps Iframe Code", // ✅ Added
+      pasteIframe: "Paste the complete iframe code from Google Maps", // ✅ Added
     },
     vi: {
       propertyImages: "Hình Ảnh Bất Động Sản",
@@ -103,6 +106,8 @@ export default function CreatePropertyListStep2({
       agentFeeAgenda: "Chương trình thanh toán đại lý",
       feeTax: "Phí và thuế",
       legalDoc: "Văn bản pháp luật",
+      googleMapsIframe: "Mã nhúng bản đồ Google", // ✅ Added
+      pasteIframe: "Dán mã iframe hoàn chỉnh từ Google Maps", // ✅ Added
     },
   }[lang];
 
@@ -134,7 +139,9 @@ export default function CreatePropertyListStep2({
       id: "",
     },
     videoVisibility: initialData.videoVisibility || false,
-    floorImageVisibility: initialData.floorImageVisibility || false,
+    // floorImageVisibility: initialData.floorImageVisibility || false, // ❌ Removed
+    googleMapVisibility: initialData.googleMapVisibility || false, // ✅ Added
+    googleMapsIframe: initialData.googleMapsIframe || { en: "", vi: "" }, // ✅ Added
     financialVisibility: initialData.financialVisibility || {
       contractLength: false,
       deposit: false,
@@ -205,6 +212,8 @@ export default function CreatePropertyListStep2({
           initialData.depositPaymentTerms || prev.depositPaymentTerms,
         maintenanceFeeMonthly:
           initialData.maintenanceFeeMonthly || prev.maintenanceFeeMonthly,
+        googleMapsIframe: initialData.googleMapsIframe || prev.googleMapsIframe, // ✅ Added
+        googleMapVisibility: initialData.googleMapVisibility !== undefined ? initialData.googleMapVisibility : prev.googleMapVisibility, // ✅ Added
       }));
 
       // ✅ Also update media fields
@@ -570,37 +579,55 @@ export default function CreatePropertyListStep2({
         />
       </div>
 
-      <div className="flex flex-col w-full gap-1">
+      {/* 🗺️ GOOGLE MAPS IFRAME */}
+      <div className="flex flex-col w-full gap-1 mb-6">
         <div className="flex items-center justify-between mb-1">
-          <label className="text-sm text-[#131517] font-semibold"></label>
+          <label className="text-sm text-[#131517] font-semibold">
+            {t.googleMapsIframe}
+          </label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
               {lang === "en" ? "Hide" : "Trốn"}
             </span>
             <Switch
-              checked={form.floorImageVisibility}
+              checked={form.googleMapVisibility}
               style={{
-                backgroundColor: form.floorImageVisibility
+                backgroundColor: form.googleMapVisibility
                   ? "#41398B"
                   : "#d9d9d9",
               }}
               onChange={(val) => {
-                const updated = { ...form, floorImageVisibility: val };
+                const updated = { ...form, googleMapVisibility: val };
                 setForm(updated);
                 onChange && onChange(updated);
               }}
             />
           </div>
         </div>
-        <UploadBox
-          label={t.floorPlan}
-          recommended={t.recommendedImg}
-          files={floorPlans}
-          type="floor"
-          accept="image/*"
-          handleFileUpload={handleFileUpload}
-          handleRemove={handleRemove}
-        />
+
+        <div>
+          <p className="text-xs text-gray-500 mb-3">
+            {t.pasteIframe}
+          </p>
+          <textarea
+            rows={5}
+            placeholder='<iframe src="https://www.google.com/maps/embed?..." width="600" height="450" ...></iframe>'
+            value={form.googleMapsIframe?.[lang] || ""}
+            onChange={(e) => {
+              handleLocalizedChange(lang, "googleMapsIframe", e.target.value);
+            }}
+            className="w-full border border-[#B2B2B3] rounded-lg px-3 py-3 focus:ring-2 focus:ring-[#41398B]/20 outline-none transition-all resize-none text-sm placeholder-gray-400"
+          />
+          {/* Simple Preview */}
+          {form.googleMapsIframe?.[lang] && (
+            <div className="mt-4 rounded-xl overflow-hidden border border-gray-200 h-[300px] shadow-sm bg-gray-50 flex items-center justify-center">
+              <div
+                className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full"
+                dangerouslySetInnerHTML={{ __html: form.googleMapsIframe[lang] }}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 💰 FINANCIAL DETAILS */}

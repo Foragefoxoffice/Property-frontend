@@ -23,6 +23,8 @@ import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage.jsx";
 
 import { ToastContainer } from "react-toastify";
+import ScrollToTop from "./components/ScrollToTop.jsx";
+import ScrollUpButton from "./components/ScrollUpButton.jsx";
 
 // ADMIN PAGES
 import PropertyManager from "./Admin/Property/PropertyManager";
@@ -89,6 +91,8 @@ import PrivacyPolicyPage from "./Pages/PrivacyPolicyPage.jsx";
 createRoot(document.getElementById("root")).render(
   <HelmetProvider>
     <BrowserRouter>
+      <ScrollToTop />
+      <ScrollUpButton />
       <ToastContainer
         position="top-right"
         autoClose={1500}

@@ -200,8 +200,9 @@ const OwnersLandlords = ({ openOwnerView }) => {
       }
       setShowModal(false);
       fetchOwners();
-    } catch {
-      CommonToaster("Error saving owner", "error");
+    } catch (error) {
+      const msg = error?.response?.data?.error || error?.response?.data?.message || "Error saving owner";
+      CommonToaster(msg, "error");
     }
   };
 

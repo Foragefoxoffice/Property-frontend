@@ -111,8 +111,9 @@ export default function OwnerModal({ onClose, onSuccess }) {
       CommonToaster("New Landlord created", "success");
       onSuccess && onSuccess();
       onClose();
-    } catch {
-      CommonToaster("Failed to create Landlord", "error");
+    } catch (error) {
+      const msg = error?.response?.data?.error || error?.response?.data?.message || "Failed to create Landlord";
+      CommonToaster(msg, "error");
     }
   };
 

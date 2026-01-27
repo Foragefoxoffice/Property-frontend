@@ -209,6 +209,8 @@ export const translations = {
     monthSuffix: "/ month",
     nightSuffix: "/ night",
     actionBy: "Action By",
+    map: "Map", // ✅ Added
+    noMap: "No map available", // ✅ Added
     sentBy: "Sent By",
     requestedBy: "Requested by",
     approvedBy: "Approved by",
@@ -506,6 +508,8 @@ export const translations = {
     monthSuffix: "/ tháng",
     nightSuffix: "/ đêm",
     actionBy: "Người thực hiện",
+    map: "Bản đồ", // ✅ Added
+    noMap: "Không có bản đồ", // ✅ Added
     sentBy: "Gửi bởi",
     requestedBy: "Yêu cầu bởi",
     approvedBy: "Được duyệt bởi",

@@ -534,6 +534,7 @@ export const getFavorites = () => API.get("/favorites");
 export const getAllEnquiries = () => API.get("/favorites/admin/all");
 export const markEnquiryAsRead = (id, isRead) => API.put(`/favorites/admin/mark-read/${id}`, { isRead });
 export const deleteEnquiry = (id) => API.delete(`/favorites/admin/delete/${id}`);
+export const bulkDeleteEnquiries = (ids) => API.delete("/favorites/admin/bulk-delete", { data: { ids } });
 
 /* =========================================================
    📜 TERMS CONDITIONS PAGE CMS APIs

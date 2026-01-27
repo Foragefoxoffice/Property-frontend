@@ -159,7 +159,7 @@ export default function PropertyDetailsSection({ property }) {
     "Property Utility": useRef(null),
     "Payment Overview": useRef(null),
     Video: useRef(null),
-    "Floor Plans": useRef(null),
+    "Map": useRef(null),
   };
 
   const [previewUrl, setPreviewUrl] = useState(null); // Preview state
@@ -270,7 +270,7 @@ export default function PropertyDetailsSection({ property }) {
     { key: "Property Utility", label: t.propertyUtility },
     { key: "Payment Overview", label: t.paymentOverview },
     { key: "Video", label: t.video },
-    { key: "Floor Plans", label: t.floorPlans },
+    { key: "Map", label: t.map || "Map" }, // ✅ Updated
   ];
 
   return (
@@ -298,6 +298,41 @@ export default function PropertyDetailsSection({ property }) {
           id="scrollContainer"
           className="lg:col-span-2 overflow-y-auto lg:h-[85vh] pr-2 custom-scrollbar"
         >
+
+          {/* -------------------------------------------------------
+             ECOPARK SECTION (UI preserved)
+          ------------------------------------------------------- */}
+          <section className="bg-white p-6 rounded-2xl mb-6 md:mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {show(visList.projectCommunity) && (
+                <EcoparkItem
+                  label={`${t.projectCommunity}:`}
+                  value={getLocalizedValue(list?.listingInformationProjectCommunity)}
+                />
+              )}
+
+              {show(visList.areaZone) && (
+                <EcoparkItem
+                  label={`${t.areaZone}:`}
+                  value={getLocalizedValue(list?.listingInformationZoneSubArea)}
+                />
+              )}
+
+              {show(visList.blockName) && (
+                <EcoparkItem
+                  label={`${t.block}:`}
+                  value={getLocalizedValue(list?.listingInformationBlockName)}
+                />
+              )}
+              {(type === "Sale" || type === "Lease") &&
+                show(visList.availableFrom) && (
+                  <EcoparkItem
+                    label={`${t.availableFrom}:`}
+                    value={formatDate(list?.listingInformationAvailableFrom)}
+                  />
+                )}
+            </div>
+          </section>
           {/* -------------------------------------------------------
              OVERVIEW
           ------------------------------------------------------- */}
@@ -347,7 +382,7 @@ export default function PropertyDetailsSection({ property }) {
                 <OverviewCard
                   icon={<Ruler />}
                   label={`${t.size}:`}
-                  value={`${safeVal(info?.informationUnitSize)} ${t.sqft || 'm²'}`}
+                  value={`${safeVal(info?.informationUnitSize)} ${safeVal(info?.informationUnit) || '-'}`}
                 />
               )}
               {show(visProp.floorRange) && (
@@ -388,40 +423,7 @@ export default function PropertyDetailsSection({ property }) {
           )}
           {/*  */}
 
-          {/* -------------------------------------------------------
-             ECOPARK SECTION (UI preserved)
-          ------------------------------------------------------- */}
-          <section className="bg-white p-6 rounded-2xl mb-6 md:mb-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {show(visList.projectCommunity) && (
-                <EcoparkItem
-                  label={`${t.projectCommunity}:`}
-                  value={getLocalizedValue(list?.listingInformationProjectCommunity)}
-                />
-              )}
 
-              {show(visList.areaZone) && (
-                <EcoparkItem
-                  label={`${t.areaZone}:`}
-                  value={getLocalizedValue(list?.listingInformationZoneSubArea)}
-                />
-              )}
-
-              {show(visList.blockName) && (
-                <EcoparkItem
-                  label={`${t.block}:`}
-                  value={getLocalizedValue(list?.listingInformationBlockName)}
-                />
-              )}
-              {(type === "Sale" || type === "Lease") &&
-                show(visList.availableFrom) && (
-                  <EcoparkItem
-                    label={`${t.availableFrom}:`}
-                    value={formatDate(list?.listingInformationAvailableFrom)}
-                  />
-                )}
-            </div>
-          </section>
 
           {/* -------------------------------------------------------
              DESCRIPTION (UI preserved)
@@ -429,10 +431,12 @@ export default function PropertyDetailsSection({ property }) {
           {show(visWhatNearby) && (
             <section className="bg-white p-6 rounded-2xl mb-6 md:mb-12">
               <h2 className="text-xl font-semibold mb-5">{t.description}</h2>
-              <p className="text-gray-700 leading-6">
-                {getLocalizedValue(what?.whatNearbyDescription) ||
-                  t.noDescription}
-              </p>
+              <div
+                className="text-gray-700 leading-6 ql-editor-summary"
+                dangerouslySetInnerHTML={{
+                  __html: getLocalizedValue(what?.whatNearbyDescription) || t.noDescription
+                }}
+              />
             </section>
           )}
 
@@ -533,13 +537,34 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              FLOOR PLANS (UI preserved)
           ------------------------------------------------------- */}
-          {show(visFloor.floorImageVisibility) && (
+          {/* -------------------------------------------------------
+             MAP (Replaced Floor Plans)
+          ------------------------------------------------------- */}
+          {show(visList.googleMap) && (
             <section
-              ref={sectionRefs["Floor Plans"]}
+              ref={sectionRefs["Map"]}
               className="bg-white p-6 rounded-2xl"
             >
-              <h2 className="text-xl font-semibold mb-5">{t.floorPlans}</h2>
-              <SimpleSlider items={floorplans} type="image" />
+              <h2 className="text-xl font-semibold mb-5">{t.map || "Map"}</h2>
+
+              {list.listingInformationGoogleMapsIframe && (getLocalizedValue(list.listingInformationGoogleMapsIframe)) ? (
+                <div className="w-full h-[450px] rounded-lg overflow-hidden border border-gray-200">
+                  <div
+                    className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full"
+                    dangerouslySetInnerHTML={{
+                      __html: (() => {
+                        const raw = getLocalizedValue(list.listingInformationGoogleMapsIframe);
+                        if (!raw) return "";
+                        const txt = document.createElement("textarea");
+                        txt.innerHTML = raw;
+                        return txt.value;
+                      })()
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="text-gray-500 italic">{t.noMap || "No map available"}</div>
+              )}
             </section>
           )}
         </div>
@@ -808,11 +833,14 @@ export default function PropertyDetailsSection({ property }) {
                   </h3>
 
                   {/* Location */}
-                  <p className="text-sm text-gray-500 mb-4 line-clamp-1">
-                    {getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
-                      getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
-                      'Description not specified'}
-                  </p>
+                  <div
+                    className="text-sm text-gray-500 mb-4 line-clamp-1 ql-editor-summary"
+                    dangerouslySetInnerHTML={{
+                      __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
+                        getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                        'Description not specified'
+                    }}
+                  />
 
                   {/* Details */}
                   <div className="flex items-center pt-3 border-t border-gray-200 justify-between">

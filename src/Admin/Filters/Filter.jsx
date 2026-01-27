@@ -311,18 +311,31 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   ======================================================= */
   useEffect(() => {
     // resolve names when we have masters
-    const resolveName = (selectValue, allList, getNameFn) => {
+    // resolve names when we have masters
+    const resolveName = (selectValue, allList, getNameFn, extraField = null) => {
       if (!selectValue || !selectValue.id) return selectValue;
       const found = allList.find((x) => x._id === selectValue.id || x.id === selectValue.id);
       if (!found) return selectValue;
-      return { id: selectValue.id, name: getNameFn(found) || selectValue.name || "" };
+      const result = { id: selectValue.id, name: getNameFn(found) || selectValue.name || "" };
+      if (extraField && found[extraField]) {
+        result[extraField] = found[extraField];
+      }
+      return result;
     };
 
     setFilters((prev) => {
       const resolvedProject = resolveName(prev.projectId, projectsAll, (p) => p.name?.[lang] || "");
       const resolvedZone = resolveName(prev.zoneId, zonesAll, (z) => z.name?.[lang] || "");
       const resolvedBlock = resolveName(prev.blockId, blocksAll, (b) => b.name?.[lang] || "");
-      return { ...prev, projectId: resolvedProject, zoneId: resolvedZone, blockId: resolvedBlock };
+      const resolvedCurrency = resolveName(prev.currency, currencies, (c) => c.name || "", "code");
+
+      return {
+        ...prev,
+        projectId: resolvedProject,
+        zoneId: resolvedZone,
+        blockId: resolvedBlock,
+        currency: resolvedCurrency
+      };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsAll, zonesAll, blocksAll, lang]);
@@ -431,7 +444,11 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           label={t[lang].currency}
           name="currency"
           value={filters.currency}
-          onChange={update}
+          onChange={(name, valObj) => {
+            // Look up the code from the master list
+            const found = currencies.find(c => c.id === valObj.id);
+            update(name, { ...valObj, code: found?.code });
+          }}
           options={currencies}
           lang={lang}
         />

@@ -267,10 +267,33 @@ export default function ListingPage() {
     };
 
     const handleSearch = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setProperties([]);
         setPage(1);
         setHasMore(true);
         fetchProperties(1, true);
+    };
+
+    const handleClearFilters = () => {
+        const emptyFilters = {
+            propertyId: '',
+            keyword: '',
+            projectId: '',
+            zoneId: '',
+            blockId: '',
+            propertyType: '',
+            bedrooms: '',
+            bathrooms: '',
+            currency: '',
+            minPrice: '',
+            maxPrice: ''
+        };
+        setFilters(emptyFilters);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setProperties([]);
+        setPage(1);
+        setHasMore(true);
+        fetchProperties(1, true, emptyFilters);
     };
 
     const getLocalizedValue = (value) => {
@@ -309,12 +332,12 @@ export default function ListingPage() {
                         </div>
 
                         <div className="flex flex-wrap justify-between items-center gap-4">
-                            <div>
+                            {/* <div>
                                 <h1 className="text-3xl font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-1">
                                     {t.discoverDreamProperty}
                                 </h1>
                                 <p className="text-gray-900 text-md">{t.findPerfectPlace}</p>
-                            </div>
+                            </div> */}
 
                             <div className="flex items-center gap-3">
                                 <Select
@@ -338,19 +361,19 @@ export default function ListingPage() {
 
                 {/* Main Content */}
                 <div className="max-w-7xl mx-auto py-5 md:py-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-                        {/* Sidebar */}
-                        <aside className="lg:sticky lg:top-24 h-fit self-start w-full lg:w-auto">
-                            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 lg:p-6 shadow-xl border border-purple-100/50">
-                                {/* Category - Horizontal Scroll on Mobile */}
-                                <div className="mb-4">
-                                    <div className="flex lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <div className="flex flex-col gap-10">
+                        {/* Top Horizontal Filters */}
+                        <aside className="w-full">
+                            <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-sm border border-purple-100/50">
+                                {/* Category Tabs - Centered & Horizontal */}
+                                <div className="mb-8">
+                                    <div className="flex flex-wrap justify-center items-center gap-3 p-1.5 bg-gray-100/50 rounded-2xl w-fit mx-auto border border-gray-200/50">
                                         {['All', 'Lease', 'Sale', 'Home Stay'].map((cat) => (
                                             <button
                                                 key={cat}
-                                                className={`flex-none px-4 py-2 lg:py-3 lg:px-4 text-sm lg:text-md font-semibold rounded-xl cursor-pointer transition-all whitespace-nowrap ${selectedCategory === cat
-                                                    ? 'bg-gradient-to-r from-[#41398B] to-[#5b52a3] text-white'
-                                                    : 'bg-purple-50/50 text-gray-700 hover:bg-purple-100/70'
+                                                className={`px-6 py-2.5 cursor-pointer text-sm font-bold rounded-xl transition-all duration-300 transform active:scale-95 ${selectedCategory === cat
+                                                    ? 'bg-white text-[#41398B] shadow-md scale-105 ring-1 ring-black/5'
+                                                    : 'text-gray-500 hover:text-[#41398B] hover:bg-white/60'
                                                     }`}
                                                 onClick={() => setSelectedCategory(cat)}
                                             >
@@ -360,9 +383,9 @@ export default function ListingPage() {
                                     </div>
                                 </div>
 
-                                {/* Mobile Filter Toggle */}
+                                {/* Filter Toggle (Mobile Only) */}
                                 <button
-                                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 text-[#41398B] font-bold rounded-xl mb-4 shadow-sm active:bg-gray-50 transition-colors"
+                                    className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 text-[#41398B] font-bold rounded-xl mb-6 shadow-sm active:bg-gray-50 transition-colors"
                                     onClick={() => setShowFilters(!showFilters)}
                                 >
                                     <Filter size={18} />
@@ -372,127 +395,124 @@ export default function ListingPage() {
 
                                 {/* Detailed Filters */}
                                 <div className={`${showFilters ? 'block' : 'hidden'} lg:block`}>
-                                    <div className="border-t border-gray-200 mt-0 mb-4 hidden lg:block"></div>
-                                    <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2 hidden lg:block">{t.lookingFor}</h3>
-
-                                    {/* Property ID / Keyword Search */}
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.propertyIdOrKeyword}</label>
-                                        <input
-                                            type="text"
-                                            className="w-full px-4 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
-                                            placeholder={t.propertyIdOrKeyword}
-                                            value={filters.keyword}
-                                            onChange={(e) => handleFilterChange('keyword', e.target.value)}
-                                        />
-                                    </div>
-                                    <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2 hidden lg:block">{t.location}</h3>
-                                    {/* Project / Community */}
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.projectCommunity}</label>
-                                        <Select
-                                            className="custom-selects"
-                                            popupClassName="custom-dropdown"
-                                            value={filters.projectId || undefined}
-                                            onChange={(value) => handleFilterChange('projectId', value || '')}
-                                            placeholder={t.projectCommunity}
-                                            style={{ width: '100%' }}
-                                            size="large"
-                                            allowClear
-                                            showSearch
-                                            filterOption={(input, option) =>
-                                                (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                                            }
-                                        >
-                                            {projects.map((project) => (
-                                                <Select.Option key={project._id} value={getLocalizedValue(project.name)}>
-                                                    {getLocalizedValue(project.name) || 'Unnamed'}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </div>
-
-                                    {/* Area / Zone */}
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.areaZone}</label>
-                                        <Select
-                                            className="custom-selects"
-                                            popupClassName="custom-dropdown"
-                                            value={filters.zoneId || undefined}
-                                            onChange={(value) => handleFilterChange('zoneId', value || '')}
-                                            placeholder={t.areaZone}
-                                            style={{ width: '100%' }}
-                                            size="large"
-                                            allowClear
-                                            showSearch
-                                            filterOption={(input, option) =>
-                                                (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                                            }
-                                        >
-                                            {zones.map((zone) => (
-                                                <Select.Option key={zone._id} value={getLocalizedValue(zone.name)}>
-                                                    {getLocalizedValue(zone.name) || 'Unnamed'}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </div>
-
-                                    {/* Block Name */}
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.blockName}</label>
-                                        <Select
-                                            className="custom-selects"
-                                            popupClassName="custom-dropdown"
-                                            value={filters.blockId || undefined}
-                                            onChange={(value) => handleFilterChange('blockId', value || '')}
-                                            placeholder={t.blockName}
-                                            style={{ width: '100%' }}
-                                            size="large"
-                                            allowClear
-                                            showSearch
-                                            filterOption={(input, option) =>
-                                                (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                                            }
-                                        >
-                                            {blocks.map((block) => (
-                                                <Select.Option key={block._id} value={getLocalizedValue(block.name)}>
-                                                    {getLocalizedValue(block.name) || 'Unnamed'}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </div>
-
-                                    {/* Property Type */}
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.propertyType}</label>
-                                        <Select
-                                            className="custom-selects"
-                                            popupClassName="custom-dropdown"
-                                            value={filters.propertyType || undefined}
-                                            onChange={(value) => handleFilterChange('propertyType', value || '')}
-                                            placeholder={t.propertyType}
-                                            style={{ width: '100%' }}
-                                            size="large"
-                                            allowClear
-                                            showSearch
-                                            filterOption={(input, option) =>
-                                                (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                                            }
-                                        >
-                                            {propertyTypes.map((type) => (
-                                                <Select.Option key={type._id} value={getLocalizedValue(type.name)}>
-                                                    {getLocalizedValue(type.name) || 'Unnamed'}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </div>
-
-                                    {/* Bedrooms & Bathrooms */}
-                                    <div className="grid grid-cols-2 gap-3 mb-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6">
+                                        {/* Keyword */}
                                         <div>
-                                            <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.bedrooms}</label>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.propertyIdOrKeyword}</label>
+                                            <input
+                                                type="text"
+                                                className="w-full px-3 py-2 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
+                                                placeholder={t.propertyIdOrKeyword}
+                                                value={filters.keyword}
+                                                onChange={(e) => handleFilterChange('keyword', e.target.value)}
+                                            />
+                                        </div>
+
+                                        {/* Project */}
+                                        <div>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.projectCommunity}</label>
                                             <Select
-                                                className="custom-selects"
+                                                className="custom-selects w-full"
+                                                popupClassName="custom-dropdown"
+                                                value={filters.projectId || undefined}
+                                                onChange={(value) => handleFilterChange('projectId', value || '')}
+                                                placeholder={t.projectCommunity}
+                                                style={{ width: '100%' }}
+                                                size="large"
+                                                allowClear
+                                                showSearch
+                                                filterOption={(input, option) =>
+                                                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                                }
+                                            >
+                                                {projects.map((project) => (
+                                                    <Select.Option key={project._id} value={getLocalizedValue(project.name)}>
+                                                        {getLocalizedValue(project.name) || 'Unnamed'}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </div>
+
+                                        {/* Zone */}
+                                        <div>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.areaZone}</label>
+                                            <Select
+                                                className="custom-selects w-full"
+                                                popupClassName="custom-dropdown"
+                                                value={filters.zoneId || undefined}
+                                                onChange={(value) => handleFilterChange('zoneId', value || '')}
+                                                placeholder={t.areaZone}
+                                                style={{ width: '100%' }}
+                                                size="large"
+                                                allowClear
+                                                showSearch
+                                                filterOption={(input, option) =>
+                                                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                                }
+                                            >
+                                                {zones.map((zone) => (
+                                                    <Select.Option key={zone._id} value={getLocalizedValue(zone.name)}>
+                                                        {getLocalizedValue(zone.name) || 'Unnamed'}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </div>
+
+                                        {/* Block */}
+                                        <div>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.blockName}</label>
+                                            <Select
+                                                className="custom-selects w-full"
+                                                popupClassName="custom-dropdown"
+                                                value={filters.blockId || undefined}
+                                                onChange={(value) => handleFilterChange('blockId', value || '')}
+                                                placeholder={t.blockName}
+                                                style={{ width: '100%' }}
+                                                size="large"
+                                                allowClear
+                                                showSearch
+                                                filterOption={(input, option) =>
+                                                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                                }
+                                            >
+                                                {blocks.map((block) => (
+                                                    <Select.Option key={block._id} value={getLocalizedValue(block.name)}>
+                                                        {getLocalizedValue(block.name) || 'Unnamed'}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </div>
+
+                                        {/* Property Type */}
+                                        <div>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.propertyType}</label>
+                                            <Select
+                                                className="custom-selects w-full"
+                                                popupClassName="custom-dropdown"
+                                                value={filters.propertyType || undefined}
+                                                onChange={(value) => handleFilterChange('propertyType', value || '')}
+                                                placeholder={t.propertyType}
+                                                style={{ width: '100%' }}
+                                                size="large"
+                                                allowClear
+                                                showSearch
+                                                filterOption={(input, option) =>
+                                                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                                }
+                                            >
+                                                {propertyTypes.map((type) => (
+                                                    <Select.Option key={type._id} value={getLocalizedValue(type.name)}>
+                                                        {getLocalizedValue(type.name) || 'Unnamed'}
+                                                    </Select.Option>
+                                                ))}
+                                            </Select>
+                                        </div>
+
+                                        {/* Bedrooms */}
+                                        <div>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.bedrooms}</label>
+                                            <Select
+                                                className="custom-selects w-full"
                                                 popupClassName="custom-dropdown"
                                                 value={filters.bedrooms || undefined}
                                                 onChange={(value) => handleFilterChange('bedrooms', value || '')}
@@ -507,10 +527,12 @@ export default function ListingPage() {
                                                 <Select.Option value="4">4+</Select.Option>
                                             </Select>
                                         </div>
+
+                                        {/* Bathrooms */}
                                         <div>
-                                            <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.bathrooms}</label>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.bathrooms}</label>
                                             <Select
-                                                className="custom-selects"
+                                                className="custom-selects w-full"
                                                 popupClassName="custom-dropdown"
                                                 value={filters.bathrooms || undefined}
                                                 onChange={(value) => handleFilterChange('bathrooms', value || '')}
@@ -524,53 +546,50 @@ export default function ListingPage() {
                                                 <Select.Option value="3">3+</Select.Option>
                                             </Select>
                                         </div>
-                                    </div>
 
-                                    <div className="border-t border-gray-200 my-4"></div>
-                                    <h3 className="text-[22px] font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-2 hidden lg:block">{t.priceRange}</h3>
-
-                                    {/* Currency */}
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.currency}</label>
-                                        <Select
-                                            className="custom-selects"
-                                            popupClassName="custom-dropdown"
-                                            value={filters.currency || undefined}
-                                            onChange={(value) => handleFilterChange('currency', value || '')}
-                                            placeholder={t.currency}
-                                            style={{ width: '100%' }}
-                                            size="large"
-                                            allowClear
-                                        >
-                                            {currencies.map((curr) => {
-                                                const name = getLocalizedValue(curr.currencyName) || 'N/A';
-                                                const code = getLocalizedValue(curr.currencyCode) || '';
-                                                return (
-                                                    <Select.Option key={curr._id} value={code}>
-                                                        {name} ({code})
-                                                    </Select.Option>
-                                                );
-                                            })}
-                                        </Select>
-                                    </div>
-
-                                    {/* Min & Max Price */}
-                                    <div className="grid grid-cols-2 gap-3 mb-6">
+                                        {/* Currency */}
                                         <div>
-                                            <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.minPrice}</label>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.currency}</label>
+                                            <Select
+                                                className="custom-selects w-full"
+                                                popupClassName="custom-dropdown"
+                                                value={filters.currency || undefined}
+                                                onChange={(value) => handleFilterChange('currency', value || '')}
+                                                placeholder={t.currency}
+                                                style={{ width: '100%' }}
+                                                size="large"
+                                                allowClear
+                                            >
+                                                {currencies.map((curr) => {
+                                                    const name = getLocalizedValue(curr.currencyName) || 'N/A';
+                                                    const code = getLocalizedValue(curr.currencyCode) || '';
+                                                    return (
+                                                        <Select.Option key={curr._id} value={code}>
+                                                            {name} ({code})
+                                                        </Select.Option>
+                                                    );
+                                                })}
+                                            </Select>
+                                        </div>
+
+                                        {/* Min Price */}
+                                        <div>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.minPrice}</label>
                                             <input
                                                 type="number"
-                                                className="w-full px-3 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
+                                                className="w-full px-3 py-2 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
                                                 placeholder={t.minPrice}
                                                 value={filters.minPrice}
                                                 onChange={(e) => handleFilterChange('minPrice', e.target.value)}
                                             />
                                         </div>
+
+                                        {/* Max Price */}
                                         <div>
-                                            <label className="block text-sm font-bold text-[#2a2a2a] mb-2">{t.maxPrice}</label>
+                                            <label className="block text-xs font-bold text-[#2a2a2a] mb-1.5">{t.maxPrice}</label>
                                             <input
                                                 type="number"
-                                                className="w-full px-3 py-2.5 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
+                                                className="w-full px-3 py-2 border border-purple-200/60 rounded-lg text-sm bg-white/80 placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
                                                 placeholder={t.maxPrice}
                                                 value={filters.maxPrice}
                                                 onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
@@ -578,13 +597,21 @@ export default function ListingPage() {
                                         </div>
                                     </div>
 
-                                    {/* Search Button */}
-                                    <button
-                                        className="w-full px-6 py-3.5 bg-gradient-to-r from-[#41398B] to-[#5b52a3] text-white font-bold rounded-xl hover:shadow-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all"
-                                        onClick={handleSearch}
-                                    >
-                                        {t.applyFilters}
-                                    </button>
+                                    {/* Action Buttons */}
+                                    <div className="mt-8 flex justify-end items-center gap-4 border-t border-gray-100 pt-6">
+                                        <button
+                                            className="px-6 cursor-pointer py-2.5 text-gray-500 font-bold hover:text-[#41398B] transition-colors rounded-xl hover:bg-purple-50"
+                                            onClick={handleClearFilters}
+                                        >
+                                            {t.clearAll || (language === 'vi' ? 'Xóa hoàn toàn' : 'Clear All')}
+                                        </button>
+                                        <button
+                                            className="px-8 py-2.5 bg-gradient-to-r from-[#41398B] to-[#5b52a3] text-white font-bold rounded-xl hover:shadow-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-md shadow-purple-200"
+                                            onClick={handleSearch}
+                                        >
+                                            {t.applyFilters}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </aside>
@@ -603,14 +630,14 @@ export default function ListingPage() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-4 md:p-0">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 md:p-0">
                                         {properties.map((property, index) => {
                                             const isLastProperty = properties.length === index + 1;
                                             return (
                                                 <div
                                                     key={property._id}
                                                     ref={isLastProperty ? lastPropertyRef : null}
-                                                    className="card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-500 cursor-pointer"
+                                                    className="card-house style-default hover-image group bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-500 cursor-pointer"
                                                     onClick={() => {
                                                         const id = property.listingInformation?.listingInformationPropertyId || property._id;
                                                         const slug = getLocalizedValue(property.seoInformation?.slugUrl);
@@ -695,7 +722,7 @@ export default function ListingPage() {
                                                                 return (
                                                                     <>
                                                                         <span className="text-[22px] font-bold text-[#2a2a2a]">{displayPrice}</span>
-                                                                        {displaySuffix && <span className="text-sm text-gray-500 font-medium">{displaySuffix}</span>}
+                                                                        {displaySuffix && <span className="text-md text-gray-500 font-medium">{displaySuffix}</span>}
                                                                     </>
                                                                 );
                                                             })()}
@@ -710,11 +737,14 @@ export default function ListingPage() {
                                                         </h3>
 
                                                         {/* Location / Nearby */}
-                                                        <p className="text-[16px] text-gray-500 mb-4 line-clamp-3">
-                                                            {getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
-                                                                getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
-                                                                'Description not specified'}
-                                                        </p>
+                                                        <div
+                                                            className="text-[16px] text-gray-500 mb-4 line-clamp-3 ql-editor-summary"
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
+                                                                    getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
+                                                                    'Description not specified'
+                                                            }}
+                                                        />
 
                                                         {/* Details */}
                                                         <div className="flex items-center pt-3 border-t border-gray-200 justify-between">
@@ -761,7 +791,7 @@ export default function ListingPage() {
 
                                     {/* Loading More */}
                                     {loadingMore && (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
                                             {[1, 2, 3].map((item) => (
                                                 <div key={item} className="bg-white rounded-2xl overflow-hidden p-4">
                                                     <Skeleton.Image active className="!w-full !h-56 rounded-2xl mb-4" />
