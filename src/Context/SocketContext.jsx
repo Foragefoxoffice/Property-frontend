@@ -16,8 +16,11 @@ export const SocketProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        // Initialize socket connection
-        const socketInstance = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+        // Initialize socket connection - Ensure we use the base URL, not the /api/v1 path
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const socketTarget = apiUrl.replace(/\/api\/v1\/?$/, '') || apiUrl;
+
+        const socketInstance = io(socketTarget, {
             transports: ['websocket', 'polling'],
             reconnection: true,
             reconnectionDelay: 1000,
