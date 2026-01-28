@@ -17,6 +17,7 @@ import {
 import { Select as AntdSelect, Spin } from "antd";
 import { usePermissions } from "../../Context/PermissionContext";
 import { getListingProperties } from "../../Api/action";
+import { normalizeFancyText } from "../../utils/display";
 
 /* 💜 Skeleton Loader Component */
 const SkeletonLoader = () => (
@@ -369,7 +370,7 @@ export default function CreatePropertyPreview({
             <Field label={labels.view[lang]} value={safe(pi.informationView)} />
             <Field
               label={labels.propertyTitle[lang]}
-              value={safe(li.listingInformationPropertyTitle)}
+              value={normalizeFancyText(safe(li.listingInformationPropertyTitle))}
             />
           </Grid3>
         </Section>

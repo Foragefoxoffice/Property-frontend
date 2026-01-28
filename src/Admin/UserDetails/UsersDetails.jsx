@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Select } from "antd";
 import {
+    Search,
     ArrowLeft,
-    Plus,
     MoreVertical,
     X,
     Pencil,
@@ -44,6 +44,8 @@ export default function UsersDetails() {
     const [loading, setLoading] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sortBy, setSortBy] = useState("newest");
 
     // Pagination
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -83,12 +85,28 @@ export default function UsersDetails() {
         fetchUsers();
     }, []);
 
+    // Search and Sort Logic
+    const processedUsers = [...users]
+        .filter(user =>
+            user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.employeeId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => {
+            if (sortBy === "name-asc") return a.name.localeCompare(b.name);
+            if (sortBy === "name-desc") return b.name.localeCompare(a.name);
+            if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+            if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+            return 0;
+        });
+
     // Pagination logic
-    const totalRows = users.length;
+    const totalRows = processedUsers.length;
     const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
-    const visibleData = users.slice(startIndex, endIndex);
+    const visibleData = processedUsers.slice(startIndex, endIndex);
 
     useEffect(() => {
         if (currentPage > totalPages) setCurrentPage(totalPages);
@@ -198,39 +216,43 @@ export default function UsersDetails() {
     return (
         <div className="p-8 min-h-screen relative">
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                    {/* <button
-                        onClick={goBack}
-                        className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                    </button> */}
                     <h2 className="text-2xl font-semibold text-gray-900">
                         {isVI ? "Chi tiết người dùng" : "User Details"}
                     </h2>
                 </div>
-                {can("userManagement.userDetails", "add") && (
-                    <button
-                        onClick={() => {
-                            setShowModal(true);
-                            setEditingUser(null);
-                            setForm({
-                                name: "",
-                                email: "",
-                                phone: "",
-                                employeeId: "",
-                                password: "",
-                                role: "user",
-                                isVerified: false
-                            });
-                        }}
-                        className="flex items-center cursor-pointer gap-2 bg-[#41398B] hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm"
+
+                <div style={{ alignItems: "baseline" }} className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    {/* Search Field */}
+                    <div className="relative w-full sm:w-64">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder={isVI ? "Tìm kiếm..." : "Search users..."}
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-[#41398B] focus:border-transparent outline-none transition-all shadow-sm"
+                        />
+                    </div>
+
+                    {/* Sort Filter */}
+                    <Select
+                        value={sortBy}
+                        onChange={(value) => setSortBy(value)}
+                        className="w-full sm:w-48 custom-selects"
+                        popupClassName="custom-dropdown"
+                        placeholder={isVI ? "Sắp xếp theo" : "Sort by"}
                     >
-                        <Plus size={16} />
-                        {isVI ? "Thêm người dùng" : "Add User"}
-                    </button>
-                )}
+                        <Select.Option value="newest">{isVI ? "Mới nhất" : "Newest First"}</Select.Option>
+                        <Select.Option value="oldest">{isVI ? "Cũ nhất" : "Oldest First"}</Select.Option>
+                        <Select.Option value="name-asc">{isVI ? "Tên (A-Z)" : "Name (A-Z)"}</Select.Option>
+                        <Select.Option value="name-desc">{isVI ? "Tên (Z-A)" : "Name (Z-A)"}</Select.Option>
+                    </Select>
+                </div>
             </div>
 
             {/* Table */}

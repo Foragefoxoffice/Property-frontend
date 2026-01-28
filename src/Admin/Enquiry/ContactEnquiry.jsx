@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Select } from "antd";
 import {
+    Search,
     ArrowLeft,
     ChevronsLeft,
     ChevronLeft,
@@ -30,6 +32,8 @@ export default function ContactEnquiry() {
     const [selectedIds, setSelectedIds] = useState([]);
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, count: 0 });
     const [messageModal, setMessageModal] = useState({ show: false, message: "", userName: "" });
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sortBy, setSortBy] = useState("newest");
 
     // Pagination
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -77,12 +81,28 @@ export default function ContactEnquiry() {
         };
     }, [socket, isVI]);
 
+    // Search and Sort Logic
+    const processedEnquiries = [...enquiries]
+        .filter(item =>
+            item.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => {
+            if (sortBy === "name-asc") return a.firstName.localeCompare(b.firstName);
+            if (sortBy === "name-desc") return b.firstName.localeCompare(a.firstName);
+            if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+            if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+            return 0;
+        });
+
     // Pagination logic
-    const totalRows = enquiries.length;
+    const totalRows = processedEnquiries.length;
     const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = Math.min(startIndex + rowsPerPage, totalRows);
-    const visibleData = enquiries.slice(startIndex, endIndex);
+    const visibleData = processedEnquiries.slice(startIndex, endIndex);
 
     useEffect(() => {
         if (currentPage > totalPages) setCurrentPage(totalPages);
@@ -147,7 +167,7 @@ export default function ContactEnquiry() {
 
     return (
         <div className="p-8 min-h-screen relative">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={goBack}
@@ -160,15 +180,46 @@ export default function ContactEnquiry() {
                     </h2>
                 </div>
 
-                {selectedIds.length > 0 && (
-                    <button
-                        onClick={handleBulkDeleteClick}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                <div style={{ alignItems: "baseline" }} className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                    {/* Search Field */}
+                    <div className="relative w-full sm:w-64">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder={isVI ? "Tìm kiếm..." : "Search enquiries..."}
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-[#41398B] focus:border-transparent outline-none transition-all shadow-sm"
+                        />
+                    </div>
+
+                    {/* Sort Filter */}
+                    <Select
+                        value={sortBy}
+                        onChange={(value) => setSortBy(value)}
+                        className="w-full sm:w-48 custom-selects"
+                        popupClassName="custom-dropdown"
+                        placeholder={isVI ? "Sắp xếp theo" : "Sort by"}
                     >
-                        <Trash2 className="w-4 h-4" />
-                        {isVI ? `Xóa (${selectedIds.length})` : `Delete (${selectedIds.length})`}
-                    </button>
-                )}
+                        <Select.Option value="newest">{isVI ? "Mới nhất" : "Newest First"}</Select.Option>
+                        <Select.Option value="oldest">{isVI ? "Cũ nhất" : "Oldest First"}</Select.Option>
+                        <Select.Option value="name-asc">{isVI ? "Tên (A-Z)" : "Name (A-Z)"}</Select.Option>
+                        <Select.Option value="name-desc">{isVI ? "Tên (Z-A)" : "Name (Z-A)"}</Select.Option>
+                    </Select>
+
+                    {selectedIds.length > 0 && (
+                        <button
+                            onClick={handleBulkDeleteClick}
+                            className="flex items-center gap-2 px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-md cursor-pointer whitespace-nowrap"
+                        >
+                            <Trash2 size={16} />
+                            {isVI ? `Xóa (${selectedIds.length})` : `Delete (${selectedIds.length})`}
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>

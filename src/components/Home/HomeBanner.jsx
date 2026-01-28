@@ -25,6 +25,9 @@ export default function HomeBanner({ homePageData }) {
     const [projects, setProjects] = useState([]);
     const [zones, setZones] = useState([]);
     const [blocks, setBlocks] = useState([]);
+    const [projectsAll, setProjectsAll] = useState([]);
+    const [zonesAll, setZonesAll] = useState([]);
+    const [blocksAll, setBlocksAll] = useState([]);
     const [propertyTypes, setPropertyTypes] = useState([]);
     const [currencies, setCurrencies] = useState([]);
 
@@ -58,15 +61,23 @@ export default function HomeBanner({ homePageData }) {
                 // ✅ Filter to only show Active items in dropdowns
                 const filterActive = (items) => items.filter(item => item.status === "Active");
 
-                setProjects(filterActive(projectsRes.data?.data || []));
-                setZones(filterActive(zonesRes.data?.data || []));
-                setBlocks(filterActive(blocksRes.data?.data || []));
+                const activeProjects = filterActive(projectsRes.data?.data || []);
+                const activeZones = filterActive(zonesRes.data?.data || []);
+                const activeBlocks = filterActive(blocksRes.data?.data || []);
+
+                setProjectsAll(activeProjects);
+                setZonesAll(activeZones);
+                setBlocksAll(activeBlocks);
+
+                setProjects(activeProjects);
+                // Initial lists are empty until parent is selected, or we show all?
+                // The concept in Filter.jsx/ListingPage.jsx is: Zones empty until Project selected.
+                setZones([]);
+                setBlocks([]);
 
                 // ✅ Filter property types based on permissions
                 const activeTypes = filterActive(typesRes.data?.data || []);
                 const filteredTypes = activeTypes.filter(type => {
-                    const typeName = (type.name?.en || '').toLowerCase();
-
                     // Check permissions for each transaction type
                     const hasLeaseAccess = can('properties.lease', 'view');
                     const hasSaleAccess = can('properties.sale', 'view');
@@ -92,12 +103,66 @@ export default function HomeBanner({ homePageData }) {
     const getLocalizedValue = (value) => {
         if (!value) return '';
         if (typeof value === 'string') return value;
-        return value.en || value.vi || '';
+        return language === 'vi' ? (value.vi || value.en || '') : (value.en || value.vi || '');
     };
 
     const handleFilterChange = (key, value) => {
-        setFilters(prev => ({ ...prev, [key]: value }));
+        setFilters(prev => {
+            const newFilters = { ...prev, [key]: value };
+            // Hierarchical clearing logic
+            if (key === 'projectId') {
+                newFilters.zoneId = '';
+                newFilters.blockId = '';
+            } else if (key === 'zoneId') {
+                newFilters.blockId = '';
+            }
+            return newFilters;
+        });
     };
+
+    // ✅ Hierarchical Filtering Logic (Project -> Area -> Block)
+    useEffect(() => {
+        const selectedProjectName = filters.projectId;
+        if (!selectedProjectName) {
+            setZones([]);
+            setBlocks([]);
+            return;
+        }
+
+        const project = projectsAll.find(p => getLocalizedValue(p.name) === selectedProjectName);
+        const projectId = project?._id;
+
+        if (projectId) {
+            const filteredZones = zonesAll.filter(z => {
+                const pId = typeof z.property === 'string' ? z.property : z.property?._id;
+                return pId === projectId;
+            });
+            setZones(filteredZones);
+        } else {
+            setZones([]);
+        }
+    }, [filters.projectId, zonesAll, projectsAll]);
+
+    useEffect(() => {
+        const selectedZoneName = filters.zoneId;
+        if (!selectedZoneName) {
+            setBlocks([]);
+            return;
+        }
+
+        const zone = zonesAll.find(z => getLocalizedValue(z.name) === selectedZoneName);
+        const zoneId = zone?._id;
+
+        if (zoneId) {
+            const filteredBlocks = blocksAll.filter(b => {
+                const zId = typeof b.zone === 'string' ? b.zone : b.zone?._id;
+                return zId === zoneId;
+            });
+            setBlocks(filteredBlocks);
+        } else {
+            setBlocks([]);
+        }
+    }, [filters.zoneId, blocksAll, zonesAll]);
 
     const handleSearch = () => {
         // Navigate to listing page with filters
@@ -216,7 +281,7 @@ export default function HomeBanner({ homePageData }) {
                         {/* Project / Community */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                {language === 'en' ? 'Project / Community' : 'Dự Án / Cộng Đồng'}
+                                {t.projectCommunity}
                             </label>
                             <Select
                                 className="custom-selectss"
@@ -243,7 +308,7 @@ export default function HomeBanner({ homePageData }) {
                         {/* Area / Zone */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                {language === 'en' ? 'Area / Zone' : 'Khu Vực / Vùng'}
+                                {t.areaZone}
                             </label>
                             <Select
                                 className="custom-selectss"
@@ -270,7 +335,7 @@ export default function HomeBanner({ homePageData }) {
                         {/* Block Name */}
                         <div>
                             <label className="block text-md font-bold text-black mb-2">
-                                {language === 'en' ? 'Block Name' : 'Tên Khối'}
+                                {t.blockName}
                             </label>
                             <Select
                                 className="custom-selectss"

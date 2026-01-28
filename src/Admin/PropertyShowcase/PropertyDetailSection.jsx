@@ -19,7 +19,7 @@ import {
 import { FaWhatsapp } from "react-icons/fa";
 import { SiMessenger, SiZalo } from "react-icons/si";
 import { translations } from "../../Language/translations";
-import { safeVal, safeArray } from "@/utils/display";
+import { safeVal, safeArray, normalizeFancyText } from "@/utils/display";
 import { getAgent, addFavorite } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -162,6 +162,33 @@ export default function PropertyDetailsSection({ property }) {
     "Map": useRef(null),
   };
 
+  const [isVisibleRecent, setIsVisibleRecent] = useState(false);
+  const recentSectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisibleRecent(true);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      }
+    );
+
+    if (recentSectionRef.current) {
+      observer.observe(recentSectionRef.current);
+    }
+
+    return () => {
+      if (recentSectionRef.current) {
+        observer.unobserve(recentSectionRef.current);
+      }
+    };
+  }, []);
+
   const [previewUrl, setPreviewUrl] = useState(null); // Preview state
   const [agentData, setAgentData] = useState(null); // Agent CMS data
   const [agentLoading, setAgentLoading] = useState(true); // Loading state
@@ -172,6 +199,7 @@ export default function PropertyDetailsSection({ property }) {
     const fetchRecentProperties = async () => {
       try {
         setLoadingRecent(true);
+        // Fetch up to 4 to account for filtering current property
         const res = await getListingProperties({ page: 1, limit: 4, sortBy: 'newest' });
         let props = res.data?.data || [];
 
@@ -274,7 +302,7 @@ export default function PropertyDetailsSection({ property }) {
   ];
 
   return (
-    <div className="bg-[#F8F7FC] pb-40">
+    <div className="bg-[#F8F7FC] pb-30 px-4">
       {/* -------------------------------------------------------
          Tabs (UI preserved exactly)
       ------------------------------------------------------- */}
@@ -283,7 +311,7 @@ export default function PropertyDetailsSection({ property }) {
           <button
             key={tab.key}
             onClick={() => scrollTo(tab.key)}
-            className={`relative px-5 py-3 text-sm font-medium`}
+            className={`relative md:px-5 px-2 py-3 md:text-lg text-sm font-medium cursor-pointer`}
           >
             {tab.label}
           </button>
@@ -302,7 +330,8 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              ECOPARK SECTION (UI preserved)
           ------------------------------------------------------- */}
-          <section className="bg-white p-6 rounded-2xl mb-6 md:mb-10">
+          <section ref={sectionRefs["Overview"]} className="bg-white p-6 mt-4 rounded-2xl mb-6 md:mb-10">
+            <h2 className="text-xl font-semibold mb-5">{t.overview}</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {show(visList.projectCommunity) && (
                 <EcoparkItem
@@ -337,10 +366,8 @@ export default function PropertyDetailsSection({ property }) {
              OVERVIEW
           ------------------------------------------------------- */}
           <section
-            ref={sectionRefs["Overview"]}
             className="bg-white p-6 rounded-2xl mb-6 md:mb-12"
           >
-            <h2 className="text-xl font-semibold mb-5">{t.overview}</h2>
 
             <div className="grid grid-cols-2 ml-3 md:grid-cols-4 gap-8">
               {show(p.listingInformationVisibility?.propertyId) && (
@@ -676,7 +703,7 @@ export default function PropertyDetailsSection({ property }) {
           </div>
           <div>
             {/* Message Field */}
-            <div style={{ backgroundColor: "#e8e2ff" }} className="mt-6 p-6 rounded-xl">
+            <div style={{ backgroundColor: "#e8e2ff73" }} className="mt-6 p-6 rounded-xl">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t.message}
               </label>
@@ -715,172 +742,205 @@ export default function PropertyDetailsSection({ property }) {
       {/* -------------------------------------------------------
          RECENT PROPERTIES SECTION
       ------------------------------------------------------- */}
-      <div className="max-w-[1320px] mx-auto mt-16 px-4 md:px-0">
-        <h2 className="text-3xl font-semibold mb-8 text-[#1f1f1f]">
-          {t.recentProperties}
-        </h2>
+      <section ref={recentSectionRef} className="py-16 md:py-24 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff] mt-20">
+        <div className="max-w-[1320px] mx-auto px-4 md:px-0">
+          <div className="text-center mb-12 md:mb-20">
+            <p className={`text-sm font-semibold text-[#a4aeb5] uppercase tracking-wider mb-3 transition-opacity duration-1000 ${isVisibleRecent ? 'opacity-100' : 'opacity-0'}`}>
+              {t.recentProperties}
+            </p>
+            <h2 className={`text-4xl md:text-5xl font-semibold text-black transition-all duration-1000 delay-100 ${isVisibleRecent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+              {language === 'vi' ? 'Bất động sản mới được cập nhật' : 'Recently Updated Properties'}
+            </h2>
+          </div>
 
-        {loadingRecent ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="bg-white rounded-2xl overflow-hidden p-4">
-                <Skeleton.Image active className="!w-full !h-56 rounded-2xl mb-4" />
-                <Skeleton active paragraph={{ rows: 3 }} />
-              </div>
-            ))}
-          </div>
-        ) : recentProperties.length === 0 ? (
-          <div className="text-center py-10 text-gray-500">
-            {t.noRecentProperties}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
-            {recentProperties.map((prop, index) => (
-              <div
-                key={prop._id}
-                className="card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-700 cursor-pointer shadow-sm hover:shadow-lg"
-                onClick={() => {
-                  const id = prop.listingInformation?.listingInformationPropertyId || prop._id;
-                  const slug = getLocalizedValue(prop.seoInformation?.slugUrl);
-                  // Navigate to ID/Slug or just ID
-                  navigate(`/property-showcase/${id}${slug ? `/${slug}` : ''}`);
-                  window.scrollTo(0, 0);
-                }}
-              >
-                {/* Image */}
-                <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl m-3">
-                  <img
-                    style={{ width: "100%" }}
-                    src={prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
-                    alt={prop.listingInformation?.listingInformationBlockName}
-                    className="w-full h-full object-cover rounded-2xl transition-transform duration-500 group-hover:scale-105"
-                  />
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <span className={`px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-sm shadow-lg text-white ${(getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || '').toLowerCase().includes('sale') ? 'bg-[#eb4d4d]' :
-                      (getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || '').toLowerCase().includes('lease') ? 'bg-[#058135]' : 'bg-[#055381]'
-                      }`}>
-                      {getLocalizedValue(prop.listingInformation?.listingInformationTransactionType)}
-                    </span>
+          {loadingRecent ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="bg-white rounded-2xl overflow-hidden p-4">
+                  <Skeleton.Image active className="!w-full !h-56 rounded-2xl mb-4" />
+                  <Skeleton active paragraph={{ rows: 3 }} />
+                </div>
+              ))}
+            </div>
+          ) : recentProperties.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 bg-white/50 rounded-2xl">
+              <svg className="w-24 h-24 text-purple-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <h2 className="text-2xl font-bold text-gray-700 mb-2">{t.noRecentProperties}</h2>
+              <p className="text-gray-500">{t.checkBackSoon}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-9">
+              {recentProperties.map((prop, index) => (
+                <div
+                  key={prop._id}
+                  className={`card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-700 cursor-pointer shadow-sm hover:shadow-xl ${isVisibleRecent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                  style={{ transitionDelay: `${200 + index * 100}ms` }}
+                  onClick={() => {
+                    const id = prop.listingInformation?.listingInformationPropertyId || prop._id;
+                    const slug = getLocalizedValue(prop.seoInformation?.slugUrl);
+                    const url = `/property-showcase/${id}${slug ? `/${slug}` : ''}`;
+                    window.open(url, '_blank');
+                  }}
+                >
+                  {/* Image */}
+                  <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl">
+                    <img
+                      style={{ width: "100%" }}
+                      src={prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
+                      alt={getLocalizedValue(prop.listingInformation?.listingInformationBlockName)}
+                      className="w-full h-full object-cover rounded-2xl transition-transform duration-500 group-hover:scale-96"
+                    />
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <span className={`px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-sm shadow-lg text-white ${(() => {
+                        const trType = (getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || '').toLowerCase();
+                        if (trType.includes('lease') || trType.includes('rent')) return 'bg-[#058135]';
+                        if (trType.includes('sale') || trType.includes('sell')) return 'bg-[#eb4d4d]';
+                        if (trType.includes('home') || trType.includes('stay')) return 'bg-[#055381]';
+                        return 'bg-[#058135]';
+                      })()}`}>
+                        {(() => {
+                          const trType = (getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || '').toLowerCase();
+                          if (trType.includes('lease') || trType.includes('rent')) return t.forRent;
+                          if (trType.includes('sale') || trType.includes('sell')) return t.forSale;
+                          if (trType.includes('home') || trType.includes('stay')) return t.homestay;
+                          return getLocalizedValue(prop.listingInformation?.listingInformationTransactionType);
+                        })()}
+                      </span>
+                      {prop.listingInformation?.listingInformationPropertyType && (
+                        <span className="px-2 py-1.5 text-[11px] bg-[#41398B]/90 backdrop-blur-sm text-white font-bold uppercase tracking-wider rounded-sm shadow-lg">
+                          {getLocalizedValue(prop.listingInformation.listingInformationPropertyType)}
+                        </span>
+                      )}
+                    </div>
+                    {/* Favorite Button */}
+                    <div className="absolute top-3 right-3 z-20 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const pid = prop._id || prop.listingInformation?.listingInformationPropertyId;
+                          if (isFavorite(pid)) removeFavorite(pid);
+                          else addFavoriteContext(prop);
+                        }}
+                        className="p-1.5 bg-white rounded-md shadow-sm text-[#000] hover:scale-105 transition-transform cursor-pointer"
+                      >
+                        <Tooltip title={isFavorite(prop._id || prop.listingInformation?.listingInformationPropertyId)
+                          ? (language === 'vi' ? 'Xóa khỏi Yêu thích' : 'Remove from Favorites')
+                          : (language === 'vi' ? 'Thêm vào Yêu thích' : 'Add to Favorites')}>
+                          <Heart
+                            size={18}
+                            className={`${isFavorite(prop._id || prop.listingInformation?.listingInformationPropertyId) ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-[#2a2a2a]'}`}
+                          />
+                        </Tooltip>
+                      </button>
+                    </div>
                   </div>
-                  <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        const pid = prop._id || prop.listingInformation?.listingInformationPropertyId;
-                        if (isFavorite(pid)) removeFavorite(pid);
-                        else addFavoriteContext(prop);
+
+                  {/* Content */}
+                  <div className="pt-5 pb-5 px-4">
+                    {/* Price */}
+                    <div className="flex items-baseline gap-1 mb-2">
+                      {(() => {
+                        const trType = getLocalizedValue(prop.listingInformation?.listingInformationTransactionType);
+                        const pSale = prop.financialDetails?.financialDetailsPrice;
+                        const pLease = prop.financialDetails?.financialDetailsLeasePrice;
+                        const pNight = prop.financialDetails?.financialDetailsPricePerNight;
+                        const gPrice = prop.financialDetails?.financialDetailsPrice;
+                        const cData = prop.financialDetails?.financialDetailsCurrency;
+                        const cCode = (typeof cData === 'object' ? cData?.code : cData) || '';
+
+                        let dPrice = t.contactForPrice;
+                        let dSuffix = null;
+
+                        const fP = (val) => `${Number(val).toLocaleString()} ${cCode}`;
+
+                        if (trType === 'Sale' && pSale) {
+                          dPrice = fP(pSale);
+                        } else if (trType === 'Lease' && pLease) {
+                          dPrice = fP(pLease);
+                          dSuffix = ` ${t.monthSuffix}`;
+                        } else if (trType === 'Home Stay' && pNight) {
+                          dPrice = fP(pNight);
+                          dSuffix = ` ${t.nightSuffix}`;
+                        } else if (gPrice) {
+                          dPrice = fP(gPrice);
+                        }
+
+                        return (
+                          <>
+                            <span className="text-2xl font-bold text-[#2a2a2a]">{dPrice}</span>
+                            {dSuffix && <span className="text-sm text-gray-500 font-medium">{dSuffix}</span>}
+                          </>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-[18px] font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#41398B] transition-colors">
+                      {normalizeFancyText(
+                        getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) ||
+                        getLocalizedValue(prop.listingInformation?.listingInformationBlockName) ||
+                        getLocalizedValue(prop.listingInformation?.listingInformationProjectCommunity) ||
+                        t.untitledProperty
+                      )}
+                    </h3>
+
+                    {/* Location */}
+                    <div
+                      className="text-[16px] text-gray-500 mb-4 line-clamp-2 ql-editor-summary"
+                      dangerouslySetInnerHTML={{
+                        __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
+                          getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                          'Location not specified'
                       }}
-                      className="p-1.5 bg-white rounded-md shadow-sm text-[#000] hover:scale-105 transition-transform cursor-pointer"
-                    >
-                      <Tooltip title={isFavorite(prop._id || prop.listingInformation?.listingInformationPropertyId)
-                        ? (language === 'vi' ? 'Xóa khỏi Yêu thích' : 'Remove from Favorites')
-                        : (language === 'vi' ? 'Thêm vào Yêu thích' : 'Add to Favorites')}>
-                        <Heart
-                          size={18}
-                          className={`${isFavorite(prop._id || prop.listingInformation?.listingInformationPropertyId) ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-[#2a2a2a]'}`}
-                        />
-                      </Tooltip>
-                    </button>
+                    />
+
+                    {/* Details */}
+                    <div className="flex items-center pt-3 border-t border-gray-200 justify-between">
+                      {prop.propertyInformation?.informationBedrooms > 0 && (
+                        <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                          <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7h18M5 7v10M19 7v10M3 17h18M7 10h4a2 2 0 012 2v5M7 10a2 2 0 00-2 2v5" />
+                          </svg>
+                          <span className="font-medium text-lg">{prop.propertyInformation.informationBedrooms} {t.beds}</span>
+                        </div>
+                      )}
+                      {prop.propertyInformation?.informationBathrooms > 0 && (
+                        <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                          <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 14h16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2zM6 14V9a3 3 0 0 1 6 0" />
+                          </svg>
+                          <span className="font-medium text-lg">{prop.propertyInformation.informationBathrooms} {t.baths}</span>
+                        </div>
+                      )}
+                      {prop.propertyInformation?.informationUnitSize > 0 && (
+                        <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
+                          <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.4 4.6a2 2 0 0 1 0 2.8l-12 12a2 2 0 0 1-2.8 0l-2-2a2 2 0 0 1 0-2.8l12-12a2 2 0 0 1 2.8 0zM12 7l2 2M10 9l2 2M8 11l2 2" />
+                          </svg>
+                          <span className="font-medium text-lg">{prop.propertyInformation.informationUnitSize.toLocaleString()} {t.sqft}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {/* Content */}
-                <div className="pb-5 px-5">
-                  {/* Price */}
-                  <div className="flex items-baseline gap-1 mb-2">
-                    {(() => {
-                      const type = getLocalizedValue(prop.listingInformation?.listingInformationTransactionType);
-                      const priceSale = prop.financialDetails?.financialDetailsPrice;
-                      const priceLease = prop.financialDetails?.financialDetailsLeasePrice;
-                      const priceNight = prop.financialDetails?.financialDetailsPricePerNight;
-                      const genericPrice = prop.financialDetails?.financialDetailsPrice;
-                      const currencyData = prop.financialDetails?.financialDetailsCurrency;
-                      const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
-
-                      let displayPrice = t.contactForPrice;
-                      let displaySuffix = null;
-
-                      const formatP = (p) => `${Number(p).toLocaleString()} ${currencyCode}`;
-
-                      if (type === 'Sale' && priceSale) {
-                        displayPrice = formatP(priceSale);
-                      } else if (type === 'Lease' && priceLease) {
-                        displayPrice = formatP(priceLease);
-                        displaySuffix = ` ${t.monthSuffix}`;
-                      } else if (type === 'Home Stay' && priceNight) {
-                        displayPrice = formatP(priceNight);
-                        displaySuffix = ` ${t.nightSuffix}`;
-                      } else if (genericPrice) {
-                        displayPrice = formatP(genericPrice);
-                      }
-
-                      return (
-                        <>
-                          <span className="text-xl font-bold text-[#2a2a2a]">{displayPrice}</span>
-                          {displaySuffix && <span className="text-sm text-gray-500 font-medium">{displaySuffix}</span>}
-                        </>
-                      );
-                    })()}
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-[#41398B] transition-colors">
-                    {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) ||
-                      getLocalizedValue(prop.listingInformation?.listingInformationBlockName) ||
-                      getLocalizedValue(prop.listingInformation?.listingInformationProjectCommunity) ||
-                      t.untitledProperty}
-                  </h3>
-
-                  {/* Location */}
-                  <div
-                    className="text-sm text-gray-500 mb-4 line-clamp-1 ql-editor-summary"
-                    dangerouslySetInnerHTML={{
-                      __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
-                        getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
-                        'Description not specified'
-                    }}
-                  />
-
-                  {/* Details */}
-                  <div className="flex items-center pt-3 border-t border-gray-200 justify-between">
-                    {prop.propertyInformation?.informationBedrooms > 0 && (
-                      <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
-                        <Bed size={18} className="text-[#41398B]" />
-                        <span className="font-medium">{prop.propertyInformation.informationBedrooms} {t.beds}</span>
-                      </div>
-                    )}
-                    {prop.propertyInformation?.informationBathrooms > 0 && (
-                      <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
-                        <Bath size={18} className="text-[#41398B]" />
-                        <span className="font-medium">{prop.propertyInformation.informationBathrooms} {t.baths}</span>
-                      </div>
-                    )}
-                    {prop.propertyInformation?.informationUnitSize > 0 && (
-                      <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
-                        <Ruler size={18} className="text-[#41398B]" />
-                        <span className="font-medium">{prop.propertyInformation.informationUnitSize.toLocaleString()} {t.sqft || 'm²'}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Modal for Video Preview */}
-      {
-        previewUrl && (
-          <MediaPreviewModal
-            url={previewUrl}
-            type="video"
-            onClose={() => setPreviewUrl(null)}
-          />
-        )
-      }
-    </div >
+      {previewUrl && (
+        <MediaPreviewModal
+          url={previewUrl}
+          type="video"
+          onClose={() => setPreviewUrl(null)}
+        />
+      )}
+    </div>
   );
 }
 

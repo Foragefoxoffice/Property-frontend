@@ -6,6 +6,7 @@ import Header from '@/Admin/Header/Header';
 import Footer from '@/Admin/Footer/Footer';
 import { useLanguage } from '@/Language/LanguageContext';
 import { useFavorites } from '@/Context/FavoritesContext';
+import { normalizeFancyText } from '@/utils/display';
 
 export default function Favorites({ isDashboard = false }) {
     const { language } = useLanguage();
@@ -170,7 +171,7 @@ export default function Favorites({ isDashboard = false }) {
                                 return (
                                     <div key={fav._id} className="grid grid-cols-12 gap-4 p-5 items-center hover:bg-gray-50 transition-colors group">
                                         {/* Property Details */}
-                                        <div className="col-span-12 md:col-span-6 flex gap-4 cursor-pointer" onClick={() => window.location.href = `/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`}>
+                                        <div className="col-span-12 md:col-span-6 flex gap-4 cursor-pointer" onClick={() => window.open(`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`, '_blank')}>
                                             <div className="w-32 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 relative">
                                                 <img
                                                     src={prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
@@ -183,7 +184,7 @@ export default function Favorites({ isDashboard = false }) {
                                             </div>
                                             <div className="flex-grow">
                                                 <h3 className="font-bold text-gray-900 line-clamp-1 mb-1 group-hover:text-[#41398B] text-[20px] transition-colors">
-                                                    {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || t.untitledProperty}
+                                                    {normalizeFancyText(getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || t.untitledProperty)}
                                                 </h3>
                                                 <div
                                                     className="text-sm text-gray-500 mb-1 line-clamp-2 ql-editor-summary"

@@ -440,6 +440,8 @@ export default function ManageProperty({
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyId}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyNo}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyType}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.ownerName}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.ownerPhone}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.actionBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.sentBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.publishTheWebsite}</th>
@@ -466,6 +468,8 @@ export default function ManageProperty({
                   info.listingInformationBlockName?.[language] ||
                   info.listingInformationBlockName?.en ||
                   "—";
+                const ownerName = p.contactManagement?.contactManagementOwner?.[language] || p.contactManagement?.contactManagementOwner?.en || "—";
+                const ownerPhone = p.contactManagement?.contactManagementOwnerPhone?.join(", ") || "—";
 
                 return (
                   <tr
@@ -483,6 +487,10 @@ export default function ManageProperty({
                     <td className="px-6 py-6 capitalize whitespace-nowrap">{propertyNo}</td>
 
                     <td className="px-6 py-4 whitespace-nowrap">{propertyType}</td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">{ownerName}</td>
+
+                    <td className="px-6 py-4 whitespace-nowrap">{ownerPhone}</td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       {p.status === "Published" && (p.approvedByName || p.approvedBy) ? (
@@ -665,7 +673,7 @@ export default function ManageProperty({
 
       {/* Filters Modal */}
       {showFilterPopup && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 z-[9999]">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 z-[50]">
           <div className="bg-white rounded-2xl w-full max-w-5xl p-6 overflow-y-auto max-h-[90vh]">
             <div className="flex justify-end">
               <button onClick={() => setShowFilterPopup(false)} className="px-4 py-1 rounded-full cursor-pointer">

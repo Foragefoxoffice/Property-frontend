@@ -61,6 +61,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const { can } = usePermissions();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [activeLang, setActiveLang] = useState("EN");
 
   const [owners, setOwners] = useState([]);
@@ -223,14 +224,23 @@ const OwnersLandlords = ({ openOwnerView }) => {
   /* ==========================================================
      ✅ Filter Table
   ========================================================== */
-  const filteredOwners = owners.filter((item) =>
-    (item.ownerName?.[language] || "")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const filteredOwners = owners
+    .filter((item) => {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesName = (item.ownerName?.[language] || "").toLowerCase().includes(searchLower);
+      const matchesPhone = item.phoneNumbers?.some(phone => phone.toLowerCase().includes(searchLower));
+      return matchesName || matchesPhone;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name-asc") return (a.ownerName?.[language] || "").localeCompare(b.ownerName?.[language] || "");
+      if (sortBy === "name-desc") return (b.ownerName?.[language] || "").localeCompare(a.ownerName?.[language] || "");
+      if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+      return 0;
+    });
 
-  const firstPhone = (item) =>
-    item.phoneNumbers?.length ? item.phoneNumbers[0] : "-";
+  const displayPhones = (item) =>
+    item.phoneNumbers?.length ? item.phoneNumbers.join(", ") : "-";
 
   const firstEmail = (item) =>
     item.emailAddresses?.length ? item.emailAddresses[0] : "-";
@@ -255,16 +265,31 @@ const OwnersLandlords = ({ openOwnerView }) => {
         )}
       </div>
 
-      {/* SEARCH */}
-      <div className="flex items-center bg-white border rounded-full px-4 py-3 mb-6 max-w-md">
-        <Search size={18} className="text-gray-600 mr-2" />
-        <input
-          type="text"
-          placeholder={language === "vi" ? "Tìm kiếm" : "Search..."}
-          className="flex-1 outline-none"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      {/* SEARCH & SORT */}
+      <div className="flex flex-col md:flex-row items-start gap-4 mb-6">
+        <div className="flex items-center bg-white border rounded-full px-4 py-2.5 w-full md:max-w-md shadow-sm">
+          <Search size={18} className="text-gray-400 mr-2" />
+          <input
+            type="text"
+            placeholder={language === "vi" ? "Tìm kiếm..." : "Search owners..."}
+            className="flex-1 outline-none text-sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <Select
+          value={sortBy}
+          onChange={(value) => setSortBy(value)}
+          className="w-full md:w-48 custom-selects"
+          popupClassName="custom-dropdown"
+          placeholder={language === "vi" ? "Sắp xếp" : "Sort by"}
+        >
+          <Select.Option value="newest">{language === "vi" ? "Mới nhất" : "Newest First"}</Select.Option>
+          <Select.Option value="oldest">{language === "vi" ? "Cũ nhất" : "Oldest First"}</Select.Option>
+          <Select.Option value="name-asc">{language === "vi" ? "Tên (A-Z)" : "Name (A-Z)"}</Select.Option>
+          <Select.Option value="name-desc">{language === "vi" ? "Tên (Z-A)" : "Name (Z-A)"}</Select.Option>
+        </Select>
       </div>
 
       {/* TABLE */}
@@ -285,7 +310,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
               {filteredOwners.map((item) => (
                 <tr key={item._id} className="hover:bg-gray-100 transition">
                   <td className="px-6 py-4">{item.ownerName?.[language]}</td>
-                  <td className="px-6 py-4">{firstPhone(item)}</td>
+                  <td className="px-6 py-4">{displayPhones(item)}</td>
 
                   {/* ACTIONS */}
                   <td className="px-6 py-4 text-center">

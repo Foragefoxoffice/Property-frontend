@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 import {
-  getTrashProperties,
+  getPropertiesByTransactionType,
   permanentlyDeleteProperty,
   restoreProperty,
 } from "../../Api/action";
@@ -60,11 +60,37 @@ export default function ManageTrashProperty() {
     setLoading(true);
 
     try {
-      const res = await getTrashProperties({
+      const params = {
         type: selectedType === "All" ? "" : selectedType,
         page: currentPage,
         limit: rowsPerPage,
-      });
+        trashMode: "true"
+      };
+
+      // Add applied filters to params
+      if (appliedFilters) {
+        if (appliedFilters.projectId?.name) params.project = appliedFilters.projectId.name;
+        if (appliedFilters.zoneId?.name) params.zone = appliedFilters.zoneId.name;
+        if (appliedFilters.blockId?.name) params.block = appliedFilters.blockId.name;
+        if (appliedFilters.propertyType?.name) params.propertyType = appliedFilters.propertyType.name;
+        if (appliedFilters.propertyNumber) params.propertyNo = appliedFilters.propertyNumber;
+        if (appliedFilters.floorRange?.name) params.floor = appliedFilters.floorRange.name;
+
+        if (appliedFilters.currency?.code) {
+          params.currency = appliedFilters.currency.code;
+        } else if (appliedFilters.currency?.name) {
+          params.currency = appliedFilters.currency.name;
+        }
+
+        if (appliedFilters.priceFrom) params.priceFrom = appliedFilters.priceFrom;
+        if (appliedFilters.priceTo) params.priceTo = appliedFilters.priceTo;
+      }
+
+      if (searchTerm) {
+        params.keyword = searchTerm;
+      }
+
+      const res = await getPropertiesByTransactionType(params);
 
       if (res?.data?.success) {
         setProperties(res.data.data || []);
@@ -78,106 +104,21 @@ export default function ManageTrashProperty() {
     }
   };
 
-  // Refetch when filters/pagination/type changes
+  // Refetch when filters/pagination/type/search changes
   useEffect(() => {
-    fetchProperties();
+    const timer = setTimeout(() => {
+      fetchProperties();
+    }, 300);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line
-  }, [selectedType, currentPage, rowsPerPage]);
+  }, [selectedType, currentPage, rowsPerPage, appliedFilters, searchTerm]);
 
   /* ======================================================
-     CLIENT SIDE FILTERING / SEARCH
+     CLIENT SIDE FILTERING / SEARCH (REMOVED - Backend handles)
   ====================================================== */
-  const filteredRows = useMemo(() => {
-    let list = properties;
-
-    // Filter
-    if (appliedFilters) {
-      const f = appliedFilters;
-
-      list = list.filter((property) => {
-        const info = property.listingInformation || {};
-        const pi = property.propertyInformation || {};
-
-        const matchTextObj = (apiObj, filterObj) => {
-          if (!filterObj || !filterObj.name) return true;
-          if (!apiObj) return false;
-
-          const apiEn = apiObj.en?.toLowerCase() || "";
-          const apiVi = apiObj.vi?.toLowerCase() || "";
-          const filterName = filterObj.name.toLowerCase();
-
-          return apiEn.includes(filterName) || apiVi.includes(filterName);
-        };
-
-        if (!matchTextObj(info.listingInformationProjectCommunity, f.projectId))
-          return false;
-        if (!matchTextObj(info.listingInformationZoneSubArea, f.zoneId))
-          return false;
-        // Block removed from UI but keeping logic optional if needed or remove validly
-        // if (!matchTextObj(info.listingInformationBlockName, f.blockId)) return false;
-
-        if (!matchTextObj(info.listingInformationPropertyType, f.propertyType))
-          return false;
-
-        if (
-          f.propertyNumber &&
-          !(
-            info.listingInformationPropertyNo?.en
-              ?.toLowerCase()
-              .includes(f.propertyNumber.toLowerCase()) ||
-            info.listingInformationPropertyNo?.vi
-              ?.toLowerCase()
-              .includes(f.propertyNumber.toLowerCase())
-          )
-        )
-          return false;
-
-        if (!matchTextObj(pi.informationFloors, f.floorRange)) return false;
-
-        if (
-          f.currency &&
-          f.currency.name &&
-          info.financialDetailsCurrency?.toLowerCase() !==
-          f.currency.name.toLowerCase()
-        )
-          return false;
-
-        const price = Number(info.financialDetailsPrice) || 0;
-        if (f.priceFrom && price < Number(f.priceFrom)) return false;
-        if (f.priceTo && price > Number(f.priceTo)) return false;
-
-        return true;
-      });
-    }
-
-    // Search
-    if (searchTerm.trim() !== "") {
-      const search = searchTerm.toLowerCase();
-
-      list = list.filter((p) => {
-        const info = p.listingInformation || {};
-
-        const propertyId =
-          info.listingInformationPropertyId?.toString().toLowerCase() || "";
-
-        const propertyNo =
-          info.listingInformationPropertyNo?.[language]?.toLowerCase() ||
-          info.listingInformationPropertyNo?.en?.toLowerCase() ||
-          "";
-
-        return (
-          propertyId.includes(search) ||
-          propertyNo.includes(search) ||
-          p.status?.toLowerCase().includes(search)
-        );
-      });
-    }
-
-    return list;
-  }, [properties, searchTerm, language, appliedFilters]);
-
-  // Final rows
-  const currentRows = filteredRows;
+  const currentRows = useMemo(() => {
+    return properties || [];
+  }, [properties]);
 
   // Pagination helpers
   const startIndex =
@@ -312,6 +253,37 @@ export default function ManageTrashProperty() {
         />
       </div>
 
+      {/* ACTIVE FILTER BADGES + CLEAR BUTTON */}
+      {appliedFilters && (
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          {Object.entries(appliedFilters).map(([key, val]) =>
+            val && (typeof val === "string" ? val : val?.name) ? (
+              <span
+                key={key}
+                className="bg-[#41398B] text-white px-3 py-1 rounded-full text-sm flex items-center gap-2"
+              >
+                {key}: {typeof val === "string" ? val : val?.name}
+                <button
+                  onClick={() =>
+                    setAppliedFilters((prev) => ({ ...prev, [key]: "" }))
+                  }
+                  className="text-white ml-1 cursor-pointer"
+                >
+                  <X size={13} />
+                </button>
+              </span>
+            ) : null
+          )}
+
+          <button
+            onClick={() => setAppliedFilters(null)}
+            className="ml-2 text-sm underline text-red-600 cursor-pointer"
+          >
+            Clear All Filters
+          </button>
+        </div>
+      )}
+
       {/* BULK ACTIONS BAR */}
       {selectedRowKeys.length > 0 && (
         <div className="flex items-center gap-4 mb-4 bg-purple-50 p-4 rounded-xl border border-purple-100 animate-in fade-in slide-in-from-top-2">
@@ -347,7 +319,8 @@ export default function ManageTrashProperty() {
                 <th className="px-6 py-3">{t.propertyId}</th>
                 <th className="px-6 py-3">{t.propertyNo}</th>
                 <th className="px-6 py-3">{t.propertyType}</th>
-
+                <th className="px-6 py-3">{t.ownerName}</th>
+                <th className="px-6 py-3">{t.ownerPhone}</th>
                 <th className="px-6 py-3">{t.status}</th>
                 <th className="px-6 py-3 text-right"></th>
               </tr>
@@ -356,6 +329,8 @@ export default function ManageTrashProperty() {
             <tbody>
               {currentRows.map((p, i) => {
                 const info = p.listingInformation;
+                const ownerName = p.contactManagement?.contactManagementOwner?.[language] || p.contactManagement?.contactManagementOwner?.en || "—";
+                const ownerPhone = p.contactManagement?.contactManagementOwnerPhone?.join(", ") || "—";
 
                 return (
                   <tr
@@ -381,6 +356,10 @@ export default function ManageTrashProperty() {
                       {info?.listingInformationPropertyType?.[language] || info?.listingInformationPropertyType?.en || "—"}
                     </td>
 
+                    <td className="px-6 py-4">{ownerName}</td>
+
+                    <td className="px-6 py-4">{ownerPhone}</td>
+
                     <td className="px-6 py-4">
                       <span className="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
                         {p.status}
@@ -389,16 +368,14 @@ export default function ManageTrashProperty() {
 
                     <td className="px-6 py-4 text-right flex gap-2 justify-end">
                       {/* VIEW */}
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/property-showcase/${info?.listingInformationPropertyId}`
-                          )
-                        }
-                        className="p-2 border rounded-full hover:bg-gray-100"
+                      <a
+                        href={`/property-showcase/${info?.listingInformationPropertyId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 border rounded-full hover:bg-gray-100 flex items-center justify-center h-10 w-10"
                       >
                         <Eye className="w-4 h-4" />
-                      </button>
+                      </a>
 
                       {/* RESTORE */}
                       <button
@@ -512,7 +489,7 @@ export default function ManageTrashProperty() {
 
       {/* FILTER MODAL */}
       {showFilterPopup && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center p-4 z-[9999]">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center p-4 z-50">
           <div className="bg-white rounded-2xl w-full max-w-5xl p-6 overflow-y-auto max-h-[90vh]">
             <div className="flex justify-end">
               <button

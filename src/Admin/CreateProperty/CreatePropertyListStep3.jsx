@@ -99,6 +99,7 @@ export default function CreatePropertyListStep3({
       vi: "",
     },
     internalNotes: initialData.internalNotes || { en: "", vi: "" },
+    ownerPhone: initialData.contactManagement?.contactManagementOwnerPhone || [],
   });
 
   /* ✅ Sync existing edit data once dropdowns (owners/staffs) arrive */
@@ -124,11 +125,10 @@ export default function CreatePropertyListStep3({
       },
       internalNotes: cm.contactManagementInternalNotes || { en: "", vi: "" },
       source: cm.contactManagementSource || { en: "", vi: "" },
+      ownerPhone: cm.contactManagementOwnerPhone || [],
     };
 
-    setForm((prev) => ({ ...prev, ...updatedForm }));
-
-    // Pre-select owner 
+    // Pre-select owner & sync phone if missing
     if (updatedForm.owner?.en) {
       const matchOwner = owners.find(
         (o) =>
@@ -136,7 +136,13 @@ export default function CreatePropertyListStep3({
           o.ownerName?.vi === updatedForm.owner.vi
       );
       setSelectedOwner(matchOwner || null);
+
+      if (matchOwner && (!updatedForm.ownerPhone || updatedForm.ownerPhone.length === 0)) {
+        updatedForm.ownerPhone = matchOwner.phoneNumbers || [];
+      }
     }
+
+    setForm((prev) => ({ ...prev, ...updatedForm }));
 
     // Pre-select connecting point 
     if (updatedForm.connectingPoint?.en) {
@@ -277,6 +283,8 @@ export default function CreatePropertyListStep3({
                         }
                         : { en: "", vi: "" };
 
+                      const updatedOwnerPhone = selected?.phoneNumbers || [];
+
                       const updated = {
                         ...form,
                         owner: updatedOwner,
@@ -287,6 +295,7 @@ export default function CreatePropertyListStep3({
                         onChange({
                           contactManagement: {
                             contactManagementOwner: updated.owner,
+                            contactManagementOwnerPhone: updatedOwnerPhone,
                             contactManagementOwnerNotes: form.ownerNotes,
                             contactManagementConsultant: form.consultant,
                             contactManagementConnectingPoint:
@@ -305,10 +314,14 @@ export default function CreatePropertyListStep3({
                     }
                     className="w-full custom-select"
                     popupClassName="custom-dropdown"
-                    options={owners.map((opt) => ({
-                      label: opt.ownerName?.[lang] || opt.ownerName?.en,
-                      value: opt._id,
-                    }))}
+                    options={owners.map((opt) => {
+                      const phone = opt.phoneNumbers?.join(", ") || "";
+                      const name = opt.ownerName?.[lang] || opt.ownerName?.en;
+                      return {
+                        label: phone ? `${name} (${phone})` : name,
+                        value: opt._id,
+                      };
+                    })}
                     dropdownRender={(menu) => (
                       <>
                         {menu}
@@ -321,6 +334,14 @@ export default function CreatePropertyListStep3({
                       </>
                     )}
                   />
+                  {form.ownerPhone && form.ownerPhone.length > 0 && (
+                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-gray-500 px-1">
+                      <Phone size={12} className="text-[#41398B]" />
+                      <span className="font-medium tracking-wide">
+                        {form.ownerPhone.join(", ")}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {selectedOwner && (
@@ -441,6 +462,7 @@ export default function CreatePropertyListStep3({
                   vi: "",
                 },
                 contactManagementSource: form.source || { en: "", vi: "" },
+                contactManagementOwnerPhone: form.ownerPhone || [],
               },
             };
 

@@ -242,8 +242,11 @@ export default function Staffs({ openStaffView }) {
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { // 2MB limit
-      CommonToaster(t.maxImageSize || "Max image size 2MB", "error");
+    if (file.size > 1 * 1024 * 1024) { // 1MB limit
+      CommonToaster(
+        language === "vi" ? "Kích thước ảnh tối đa là 1MB" : "Max image size is 1MB",
+        "error"
+      );
       return;
     }
     const reader = new FileReader();
@@ -358,7 +361,8 @@ export default function Staffs({ openStaffView }) {
     return fullNameEn.includes(search) ||
       fullNameVi.includes(search) ||
       u.email.toLowerCase().includes(search) ||
-      u.employeeId.toLowerCase().includes(search);
+      u.employeeId.toLowerCase().includes(search) ||
+      u.phone.toLowerCase().includes(search);
   });
 
   const totalRows = filtered.length;
@@ -663,7 +667,7 @@ export default function Staffs({ openStaffView }) {
             </div>
 
             {/* Form Content */}
-            <div className="p-6 overflow-y-auto flex-1 custom-scrollbar bg-[#F9FAFB]">
+            <div className="p-6 pt-0 overflow-y-auto flex-1 custom-scrollbar bg-[#F9FAFB]">
               {/* Global Language Tabs */}
               <div className="flex gap-2 mb-6 border-b border-gray-200 sticky top-0 bg-[#F9FAFB] z-10 pt-2">
                 <button
@@ -691,6 +695,34 @@ export default function Staffs({ openStaffView }) {
               </div>
 
               <form id="staffForm" onSubmit={handleSubmit} className="space-y-6">
+                {/* Photo Upload Section */}
+                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center gap-4">
+                  <div className="relative group">
+                    <div className="w-32 h-32 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 shadow-inner group-hover:border-[#41398B] transition-colors">
+                      {photoPreview ? (
+                        <img
+                          src={photoPreview}
+                          alt="preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User size={48} className="text-gray-300" />
+                      )}
+                    </div>
+                    <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-2xl text-white text-xs font-medium">
+                      {language === "vi" ? "Thay đổi" : "Change Photo"}
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                      />
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    {language === "vi" ? "Kích thước tối đa 1MB (JPG, PNG)" : "Max size 1MB (JPG, PNG)"}
+                  </p>
+                </div>
 
                 {/* Top Section: Basic Info */}
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">

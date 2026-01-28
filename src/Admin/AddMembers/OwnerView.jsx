@@ -6,6 +6,7 @@ import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { useParams, useNavigate } from "react-router-dom";
+import { normalizeFancyText } from "../../utils/display";
 
 export default function OwnerView() {
   const { language } = useLanguage();
@@ -287,7 +288,7 @@ export default function OwnerView() {
                         <div className="flex items-center gap-1.5 mb-1.5">
                           <span className="text-sm">🏡</span>
                           <h4 className="text-sm font-bold text-gray-900 line-clamp-1">
-                            {title}
+                            {normalizeFancyText(title)}
                           </h4>
                         </div>
 
@@ -334,18 +335,16 @@ export default function OwnerView() {
                             <span>{postedDate}</span>
                           </div>
 
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const propertyId = prop.listingInformation?.listingInformationPropertyId || prop._id;
-                              const slug = getLocalizedValue(prop.seoInformation?.slugUrl);
-                              navigate(`/property-showcase/${propertyId}${slug ? `/${slug}` : ''}`);
-                            }}
+                          <a
+                            href={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}${getLocalizedValue(prop.seoInformation?.slugUrl) ? `/${getLocalizedValue(prop.seoInformation?.slugUrl)}` : ''}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
                             className="bg-[#41398B] hover:bg-[#352e7a] text-white p-2 rounded-lg transition-all shadow-sm"
                             title={language === 'vi' ? "Xem chi tiết" : "View Full Details"}
                           >
                             <ExternalLink size={14} />
-                          </button>
+                          </a>
                         </div>
                       </div>
                     </div>

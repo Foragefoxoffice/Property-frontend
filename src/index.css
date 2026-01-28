@@ -10,6 +10,10 @@ body {
   font-family: "Manrope", sans-serif;
 }
 
+/* .beds{
+  position: fixed;
+} */
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   /* IE and Edge */
@@ -179,7 +183,6 @@ body {
 }
 
 .hover-image .img-style img {
-  width: 300px;
   height: 220px;
   object-fit: cover;
   transition: all 1s;

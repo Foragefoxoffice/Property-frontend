@@ -6,6 +6,7 @@ import { useLanguage } from '@/Language/LanguageContext';
 import { translations } from '@/Language/translations';
 import { Heart } from 'lucide-react';
 import { useFavorites } from '@/Context/FavoritesContext';
+import { normalizeFancyText } from '@/utils/display';
 
 export default function HomeFeaturedProperties({ homePageData }) {
     const navigate = useNavigate();
@@ -175,7 +176,8 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     const id = property.listingInformation?.listingInformationPropertyId || property._id;
                                     const slug = getLocalizedValue(property.seoInformation?.slugUrl);
                                     // Navigate to ID/Slug or just ID
-                                    navigate(`/property-showcase/${id}${slug ? `/${slug}` : ''}`);
+                                    const url = `/property-showcase/${id}${slug ? `/${slug}` : ''}`;
+                                    window.open(url, '_blank');
                                 }}
                             >
                                 {/* Image */}
@@ -214,7 +216,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                 </div>
 
                                 {/* Content */}
-                                <div className="pt-5 pb-5 px-2">
+                                <div className="pt-5 pb-5 px-4">
                                     {/* Price */}
                                     <div className="flex items-baseline gap-0 mb-2">
                                         {(() => {
@@ -256,16 +258,18 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     </div>
 
                                     {/* Title */}
-                                    <h3 className="text-[22px] font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-[#41398B] transition-colors">
-                                        {getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
+                                    <h3 className="text-[18px] font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#41398B] transition-colors">
+                                        {normalizeFancyText(
+                                            getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
                                             getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
                                             getLocalizedValue(property.listingInformation?.listingInformationProjectCommunity) ||
-                                            t.untitledProperty}
+                                            t.untitledProperty
+                                        )}
                                     </h3>
 
                                     {/* Location / Nearby */}
                                     <div
-                                        className="text-[16px] text-gray-500 mb-4 line-clamp-3 ql-editor-summary"
+                                        className="text-[16px] text-gray-500 mb-4 line-clamp-2 ql-editor-summary"
                                         dangerouslySetInnerHTML={{
                                             __html: getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
                                                 getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
@@ -274,7 +278,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     />
 
                                     {/* Details */}
-                                    <div className="flex items-center pt-3 border-t border-gray-200 justify-between">
+                                    <div className="flex items-center pt-3 border-t border-gray-200 justify-between beds">
                                         {property.propertyInformation?.informationBedrooms > 0 && (
                                             <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
                                                 <svg

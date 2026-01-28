@@ -190,7 +190,7 @@ export default function PropertyShowcasePage() {
   return (
     <>
       <Header />
-      <div className="fade-in">
+      <div className="fade-in bg-[#F8F7FC]">
 
         <PropertyHome property={property} />
         <PropertyDetailsSection property={property} />

@@ -24,6 +24,7 @@ import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { usePermissions } from "../../Context/PermissionContext";
 import { useSocket } from "../../Context/SocketContext";
+import { normalizeFancyText } from "../../utils/display";
 
 export default function Enquires() {
     const [enquiries, setEnquiries] = useState([]);
@@ -474,7 +475,7 @@ export default function Enquires() {
                                         <div className="w-full md:w-7/12 flex flex-col">
                                             <div className="">
                                                 <h2 className="text-xl font-bold text-gray-900 mb-2 leading-tight">
-                                                    {getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || "Untitled Property"}
+                                                    {normalizeFancyText(getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || "Untitled Property")}
                                                 </h2>
 
                                                 <div
