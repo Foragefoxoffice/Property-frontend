@@ -278,7 +278,7 @@ export default function PropertyDetailsSection({ property }) {
       {/* -------------------------------------------------------
          Tabs (UI preserved exactly)
       ------------------------------------------------------- */}
-      <div className="sticky top-0 bg-[#F8F7FC] pt-4 z-10 flex md:justify-center border-b border-gray-200 mb-6 overflow-x-auto">
+      <div className="sticky top-0 bg-[#F8F7FC] pt-4 z-10 flex md:justify-center border-b border-gray-200 mb-6 overflow-x-auto scrollbar-hide">
         {TABS.map((tab) => (
           <button
             key={tab.key}
@@ -296,7 +296,7 @@ export default function PropertyDetailsSection({ property }) {
         ------------------------------------------------------- */}
         <div
           id="scrollContainer"
-          className="lg:col-span-2 overflow-y-auto lg:h-[85vh] pr-2 custom-scrollbar"
+          className="lg:col-span-2 pr-2"
         >
 
           {/* -------------------------------------------------------
@@ -572,7 +572,7 @@ export default function PropertyDetailsSection({ property }) {
         {/* -------------------------------------------------------
            RIGHT CONTACT CARD (UI preserved)
         ------------------------------------------------------- */}
-        <div className="lg:col-span-1 sticky top-6 h-fit">
+        <div className="lg:col-span-1 sticky top-26 h-fit">
           <div className=" bg-white rounded-xl border p-6 shadow-md">
             <h3 className="text-2xl text-[#41398B] font-semibold mb-4">{t.contact}</h3>
 
@@ -676,7 +676,7 @@ export default function PropertyDetailsSection({ property }) {
           </div>
           <div>
             {/* Message Field */}
-            <div className="mt-6">
+            <div style={{ backgroundColor: "#e8e2ff" }} className="mt-6 p-6 rounded-xl">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t.message}
               </label>
@@ -684,7 +684,7 @@ export default function PropertyDetailsSection({ property }) {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder={t.enterMessage}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] transition-all resize-none h-32 text-sm"
+                className="w-full px-4 py-3 bg-white rounded-xl border border-gray-500 focus:outline-none focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] transition-all resize-none h-32 text-sm"
               />
             </div>
 

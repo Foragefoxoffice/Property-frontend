@@ -246,6 +246,8 @@ export const getNextPropertyId = (transactionType) =>
   API.get(`/create-property/next-id`, {
     params: { transactionType },
   });
+export const validatePropertyNo = (data) =>
+  API.post("/create-property/validate-property-no", data);
 
 /* =========================================================
    📋 COPY PROPERTY APIs

@@ -1,4 +1,21 @@
 import React, { useState, useEffect } from "react";
+// import { Reorder } from "framer-motion";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Plus, X, ArrowRight, ArrowLeft, Eye } from "lucide-react";
 import { Select as AntdSelect, Switch, Input } from "antd";
 const { TextArea } = Input;
@@ -39,6 +56,16 @@ export default function CreatePropertyListStep2({
   dropdownLoading,
   dropdowns = {},
 }) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // 5px movement before drag starts (allows clicks on buttons)
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   useEffect(() => {
     console.log("initialData:", initialData);
   }, [initialData]);
@@ -396,6 +423,86 @@ export default function CreatePropertyListStep2({
   };
 
   /* =========================================================
+   📦 Sortable Item Component
+========================================================== */
+  const SortableItem = ({ f, i, type, setPreview, handleRemove }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id: f.url });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      zIndex: isDragging ? 20 : 1,
+    };
+
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        className={`relative w-56 h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group cursor-grab active:cursor-grabbing ${isDragging ? "opacity-40" : ""
+          }`}
+        {...attributes}
+        {...listeners}
+      >
+        {type === "video" ? (
+          <video
+            src={f.url}
+            className="w-full h-full object-cover"
+            muted
+            loop
+            playsInline
+          />
+        ) : (
+          <img
+            src={f.url}
+            className="w-full h-full object-contain"
+            alt=""
+          />
+        )}
+
+        {/* ✅ Thumbnail Badge for first image */}
+        {type === "image" && i === 0 && (
+          <div className="absolute top-2 left-2 bg-[#41398B] text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm z-10">
+            Thumbnail
+          </div>
+        )}
+
+        {/* Hover Overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              setPreview(f.url);
+            }}
+            className="bg-white rounded-full p-2 shadow hover:scale-105 transition"
+          >
+            <Eye className="w-4 h-4 cursor-pointer text-gray-700" />
+          </button>
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleRemove(type, i);
+            }}
+            className="bg-white rounded-full p-2 shadow hover:scale-105 transition"
+          >
+            <X className="w-4 h-4 text-gray-700 cursor-pointer" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  /* =========================================================
      📦 Upload Box Component
   ========================================================== */
   const UploadBox = ({
@@ -406,6 +513,8 @@ export default function CreatePropertyListStep2({
     accept,
     handleFileUpload,
     handleRemove,
+    onReorder,
+    sensors, // Pass sensors down
   }) => {
     const [preview, setPreview] = useState(null);
 
@@ -415,44 +524,35 @@ export default function CreatePropertyListStep2({
         <p className="text-xs text-gray-500 mb-3">{recommended}</p>
 
         <div className="flex flex-wrap gap-4">
-          {files.map((f, i) => (
-            <div
-              key={i}
-              className="relative w-56 h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group"
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(event) => {
+              const { active, over } = event;
+              if (active && over && active.id !== over.id) {
+                const oldIndex = files.findIndex((f) => f.url === active.id);
+                const newIndex = files.findIndex((f) => f.url === over.id);
+                const newOrder = arrayMove(files, oldIndex, newIndex);
+                onReorder(newOrder);
+              }
+            }}
+          >
+            <SortableContext
+              items={files.map((f) => f.url)}
+              strategy={rectSortingStrategy}
             >
-              {type === "video" ? (
-                <video
-                  src={f.url}
-                  className="w-full h-full object-cover"
-                  muted
-                  loop
-                  playsInline
+              {files.map((f, i) => (
+                <SortableItem
+                  key={f.url}
+                  f={f}
+                  i={i}
+                  type={type}
+                  setPreview={setPreview}
+                  handleRemove={handleRemove}
                 />
-              ) : (
-                <img
-                  src={f.url}
-                  className="w-full h-full object-contain"
-                  alt=""
-                />
-              )}
-
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
-                <button
-                  onClick={() => setPreview(f.url)}
-                  className="bg-white rounded-full p-2 shadow hover:scale-105 transition"
-                >
-                  <Eye className="w-4 h-4 cursor-pointer text-gray-700" />
-                </button>
-                <button
-                  onClick={() => handleRemove(type, i)}
-                  className="bg-white rounded-full p-2 shadow hover:scale-105 transition"
-                >
-                  <X className="w-4 h-4 text-gray-700 cursor-pointer" />
-                </button>
-              </div>
-            </div>
-          ))}
+              ))}
+            </SortableContext>
+          </DndContext>
 
           {/* Upload Button */}
           <label className="w-60 h-50 border border-dashed border-[#646466] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-all">
@@ -513,6 +613,24 @@ export default function CreatePropertyListStep2({
 
   if (dropdownLoading) return <SkeletonLoader />;
 
+  const handleReorder = (type, newOrder) => {
+    if (type === "image") {
+      setImages(newOrder);
+    } else if (type === "video") {
+      setVideos(newOrder);
+    } else if (type === "floor") {
+      setFloorPlans(newOrder);
+    }
+
+    onChange &&
+      onChange({
+        ...form,
+        propertyImages: type === "image" ? newOrder : images,
+        propertyVideos: type === "video" ? newOrder : videos,
+        floorPlans: type === "floor" ? newOrder : floorPlans,
+      });
+  };
+
   /* =========================================================
      🧱 RENDER
   ========================================================== */
@@ -543,6 +661,8 @@ export default function CreatePropertyListStep2({
         accept="image/*"
         handleFileUpload={handleFileUpload}
         handleRemove={handleRemove}
+        onReorder={(newOrder) => handleReorder("image", newOrder)}
+        sensors={sensors}
       />
 
       <div className="flex flex-col w-full gap-1">
@@ -576,8 +696,22 @@ export default function CreatePropertyListStep2({
           accept="video/*"
           handleFileUpload={handleFileUpload}
           handleRemove={handleRemove}
+          onReorder={(newOrder) => handleReorder("video", newOrder)}
+          sensors={sensors}
         />
       </div>
+
+      {/* <UploadBox
+        label={t.floorPlan}
+        recommended={t.recommendedImg}
+        files={floorPlans}
+        type="floor"
+        accept="image/*"
+        handleFileUpload={handleFileUpload}
+        handleRemove={handleRemove}
+        onReorder={(newOrder) => handleReorder("floor", newOrder)}
+        sensors={sensors}
+      /> */}
 
       {/* 🗺️ GOOGLE MAPS IFRAME */}
       <div className="flex flex-col w-full gap-1 mb-6">
@@ -614,7 +748,13 @@ export default function CreatePropertyListStep2({
             placeholder='<iframe src="https://www.google.com/maps/embed?..." width="600" height="450" ...></iframe>'
             value={form.googleMapsIframe?.[lang] || ""}
             onChange={(e) => {
-              handleLocalizedChange(lang, "googleMapsIframe", e.target.value);
+              let val = e.target.value;
+              // Auto-decode if user pastes escaped HTML
+              if (val.includes("&lt;") || val.includes("&gt;")) {
+                const doc = new DOMParser().parseFromString(val, "text/html");
+                val = doc.documentElement.textContent;
+              }
+              handleLocalizedChange(lang, "googleMapsIframe", val);
             }}
             className="w-full border border-[#B2B2B3] rounded-lg px-3 py-3 focus:ring-2 focus:ring-[#41398B]/20 outline-none transition-all resize-none text-sm placeholder-gray-400"
           />
@@ -622,8 +762,20 @@ export default function CreatePropertyListStep2({
           {form.googleMapsIframe?.[lang] && (
             <div className="mt-4 rounded-xl overflow-hidden border border-gray-200 h-[300px] shadow-sm bg-gray-50 flex items-center justify-center">
               <div
-                className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full"
-                dangerouslySetInnerHTML={{ __html: form.googleMapsIframe[lang] }}
+                className="w-full h-full flex items-center justify-center [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
+                dangerouslySetInnerHTML={{
+                  __html: (() => {
+                    let html = form.googleMapsIframe[lang] || "";
+                    // If it contains encoded entities, decode them first
+                    if (html.includes("&lt;") || html.includes("&gt;")) {
+                      const doc = new DOMParser().parseFromString(html, "text/html");
+                      html = doc.documentElement.textContent || "";
+                    }
+                    return html.trim().toLowerCase().startsWith("<iframe")
+                      ? html
+                      : `<p class="text-gray-400 text-xs px-10 text-center">Invalid iframe code. Please copy the "Embed a map" HTML from Google Maps.</p>`;
+                  })()
+                }}
               />
             </div>
           )}

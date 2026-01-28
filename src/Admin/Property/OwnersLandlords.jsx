@@ -276,9 +276,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
             <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
               <tr>
                 <th className="px-6 py-3 text-left">Name</th>
-                <th className="px-6 py-3 text-left">Gender</th>
                 <th className="px-6 py-3 text-left">Phone</th>
-                <th className="px-6 py-3 text-left">Email</th>
                 <th className="px-6 py-3 text-center">Actions</th>
               </tr>
             </thead>
@@ -287,9 +285,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
               {filteredOwners.map((item) => (
                 <tr key={item._id} className="hover:bg-gray-100 transition">
                   <td className="px-6 py-4">{item.ownerName?.[language]}</td>
-                  <td className="px-6 py-4">{item.gender}</td>
                   <td className="px-6 py-4">{firstPhone(item)}</td>
-                  <td className="px-6 py-4">{firstEmail(item)}</td>
 
                   {/* ACTIONS */}
                   <td className="px-6 py-4 text-center">
@@ -384,9 +380,7 @@ const OwnersSkeleton = () => {
         <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
           <tr>
             <th className="px-6 py-3 text-left">Name</th>
-            <th className="px-6 py-3 text-left">Gender</th>
             <th className="px-6 py-3 text-left">Phone</th>
-            <th className="px-6 py-3 text-left">Email</th>
             <th className="px-6 py-3 text-center">Actions</th>
           </tr>
         </thead>
@@ -398,13 +392,7 @@ const OwnersSkeleton = () => {
                 <div className="h-4 bg-gray-200 rounded w-32"></div>
               </td>
               <td className="px-6 py-4">
-                <div className="h-4 bg-gray-200 rounded w-20"></div>
-              </td>
-              <td className="px-6 py-4">
                 <div className="h-4 bg-gray-200 rounded w-24"></div>
-              </td>
-              <td className="px-6 py-4">
-                <div className="h-4 bg-gray-200 rounded w-28"></div>
               </td>
               <td className="px-6 py-4 flex justify-center gap-3">
                 <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
@@ -589,19 +577,7 @@ const AddEditOwnerModal = ({
             />
           </div>
 
-          {/* GENDER */}
-          <CustomSelect
-            label={text.gender}
-            name="gender"
-            lang={activeLang}
-            value={formData.gender}
-            onChange={(val) => setFormData((p) => ({ ...p, gender: val }))}
-            options={[
-              { value: "Male", label: activeLang === "VI" ? "Nam" : "Male" },
-              { value: "Female", label: activeLang === "VI" ? "Nữ" : "Female" },
-              { value: "Other", label: activeLang === "VI" ? "Khác" : "Other" },
-            ]}
-          />
+
 
           {/* PHONE */}
           <div className="mb-3">
@@ -635,45 +611,6 @@ const AddEditOwnerModal = ({
                     size={20}
                     onClick={() =>
                       setPhoneRows(phoneRows.filter((_, i) => i !== idx))
-                    }
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* EMAIL */}
-          <div className="mb-3">
-            <label className="font-medium text-sm">{text.email}</label>
-
-            {emailRows.map((row, idx) => (
-              <div key={idx} className="flex items-center gap-3 mt-3">
-                <input
-                  type="email"
-                  placeholder={text.emailPlaceholder}
-                  value={row.email}
-                  onChange={(e) => {
-                    const next = [...emailRows];
-                    next[idx].email = e.target.value;
-                    setEmailRows(next);
-                  }}
-                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full"
-                />
-
-                {idx === emailRows.length - 1 ? (
-                  <CirclePlus
-                    className="cursor-pointer"
-                    size={22}
-                    onClick={() =>
-                      setEmailRows([...emailRows, { email: "" }])
-                    }
-                  />
-                ) : (
-                  <X
-                    className="cursor-pointer"
-                    size={20}
-                    onClick={() =>
-                      setEmailRows(emailRows.filter((_, i) => i !== idx))
                     }
                   />
                 )}

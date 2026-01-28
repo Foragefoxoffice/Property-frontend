@@ -175,18 +175,7 @@ export default function OwnerModal({ onClose, onSuccess }) {
             />
           </div>
 
-          {/* Gender */}
-          <SimpleSelect
-            label={text.gender}
-            lang={activeLang}
-            value={form.gender}
-            onChange={(val) => setForm((p) => ({ ...p, gender: val }))}
-            options={[
-              { value: "Male", label: activeLang === "VI" ? "Nam" : "Male" },
-              { value: "Female", label: activeLang === "VI" ? "Nữ" : "Female" },
-              { value: "Other", label: activeLang === "VI" ? "Khác" : "Other" },
-            ]}
-          />
+
 
           {/* Phone Numbers */}
           <div>
@@ -227,44 +216,6 @@ export default function OwnerModal({ onClose, onSuccess }) {
             ))}
           </div>
 
-          {/* Email */}
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">
-              {text.email}
-            </label>
-
-            {emailRows.map((row, idx) => (
-              <div key={idx} className="flex gap-3 mt-2">
-                <input
-                  type="email"
-                  placeholder={text.placeholderEmail}
-                  className="border border-gray-300 rounded-lg px-3 py-3 flex-1"
-                  value={row.email}
-                  onChange={(e) => {
-                    const next = [...emailRows];
-                    next[idx].email = e.target.value;
-                    setEmailRows(next);
-                  }}
-                />
-
-                {idx === emailRows.length - 1 ? (
-                  <CirclePlus
-                    className="cursor-pointer"
-                    size={22}
-                    onClick={() => setEmailRows([...emailRows, { email: "" }])}
-                  />
-                ) : (
-                  <X
-                    className="cursor-pointer"
-                    size={20}
-                    onClick={() =>
-                      setEmailRows(emailRows.filter((_, i) => i !== idx))
-                    }
-                  />
-                )}
-              </div>
-            ))}
-          </div>
 
           {/* Social Media */}
           <div>

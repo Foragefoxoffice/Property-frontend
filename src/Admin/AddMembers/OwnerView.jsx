@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, PhoneCall, Facebook } from "lucide-react";
-import { getAllOwners } from "../../Api/action";
+import { ArrowLeft, PhoneCall, Facebook, MapPin, Calendar, ExternalLink, Bed, Bath, Ruler, Clover } from "lucide-react";
+import { getAllOwners, getListingProperties } from "../../Api/action";
+import { Spin } from "antd";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
@@ -11,11 +12,21 @@ export default function OwnerView() {
   const t = translations[language];
   const [owner, setOwner] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState([]);
+  const [loadingProps, setLoadingProps] = useState(false);
   const { id } = useParams();
 
   const navigate = useNavigate();
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const getLocalizedValue = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return language === "vi"
+      ? value.vi || value.en || ""
+      : value.en || value.vi || "";
   };
 
   useEffect(() => {
@@ -38,6 +49,22 @@ export default function OwnerView() {
 
     if (id) fetchOwner();
   }, [id, language]);
+
+  useEffect(() => {
+    const fetchOwnerProperties = async () => {
+      if (!owner || !owner.ownerName?.en) return;
+      try {
+        setLoadingProps(true);
+        const res = await getListingProperties({ owner: owner.ownerName.en });
+        setProperties(res.data.data || []);
+      } catch (error) {
+        console.error("Error fetching owner properties:", error);
+      } finally {
+        setLoadingProps(false);
+      }
+    };
+    fetchOwnerProperties();
+  }, [owner]);
 
 
   if (loading)
@@ -107,7 +134,7 @@ export default function OwnerView() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f9f9fc] to-[#f4f3fb] px-4 sm:px-6 py-10 flex justify-center">
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-5xl">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <button
@@ -143,27 +170,7 @@ export default function OwnerView() {
                 </div>
               ))}
 
-            {/* ✅ ALL EMAIL ADDRESSES */}
-            {owner.emailAddresses?.length > 0 &&
-              owner.emailAddresses.map((email, i) => (
-                <div key={i} className="flex items-center gap-2 text-gray-600 mt-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect width="20" height="16" x="2" y="4" rx="2" />
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
-                  <span className="text-sm">{email || "-"}</span>
-                </div>
-              ))}
+
 
             {/* ✅ NOTES */}
             <h3 className="font-medium text-gray-800 mt-5">
@@ -203,6 +210,154 @@ export default function OwnerView() {
                 );
               })}
           </div>
+        </div>
+
+        {/* ✅ OWNER PROPERTIES LIST */}
+        <div className="bg-white rounded-2xl shadow-md p-6 sm:p-8 border border-gray-100 mt-6 overflow-hidden">
+          <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+            {language === "vi" ? "Danh sách bất động sản" : "Properties List"}
+          </h3>
+
+          {loadingProps ? (
+            <div className="flex justify-center py-10">
+              <Spin size="large" />
+            </div>
+          ) : properties.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {properties.map((prop) => {
+                const type = prop.listingInformation?.listingInformationTransactionType?.en || "";
+                const title = language === 'vi'
+                  ? prop.listingInformation?.listingInformationPropertyTitle?.vi || prop.listingInformation?.listingInformationPropertyTitle?.en
+                  : prop.listingInformation?.listingInformationPropertyTitle?.en || prop.listingInformation?.listingInformationPropertyTitle?.vi;
+
+                const location = language === 'vi'
+                  ? prop.listingInformation?.listingInformationProjectCommunity?.vi || prop.listingInformation?.listingInformationProjectCommunity?.en
+                  : prop.listingInformation?.listingInformationProjectCommunity?.en || prop.listingInformation?.listingInformationProjectCommunity?.vi;
+
+                const view = language === 'vi'
+                  ? prop.propertyInformation?.informationView?.vi || prop.propertyInformation?.informationView?.en
+                  : prop.propertyInformation?.informationView?.en || prop.propertyInformation?.informationView?.vi;
+
+                const unit = language === 'vi'
+                  ? prop.propertyInformation?.informationUnit?.vi || prop.propertyInformation?.informationUnit?.en
+                  : prop.propertyInformation?.informationUnit?.en || prop.propertyInformation?.informationUnit?.vi;
+
+                const priceSale = prop.financialDetails?.financialDetailsPrice;
+                const priceLease = prop.financialDetails?.financialDetailsLeasePrice;
+                const priceNight = prop.financialDetails?.financialDetailsPricePerNight;
+                const currency = prop.financialDetails?.financialDetailsCurrency?.code || "₫";
+
+                let displayPrice = "";
+                let suffix = "";
+                if (type === "Sale") displayPrice = priceSale;
+                else if (type === "Lease") { displayPrice = priceLease; suffix = language === 'vi' ? "/ tháng" : "/ month"; }
+                else if (type === "Home Stay") { displayPrice = priceNight; suffix = language === 'vi' ? "/ đêm" : "/ night"; }
+
+                const formattedPrice = displayPrice ? `${Number(displayPrice).toLocaleString()} ${currency}` : (language === 'vi' ? "Liên hệ" : "Contact");
+
+                const postedDate = prop.createdAt ? new Date(prop.createdAt).toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                }) : "-";
+
+                return (
+                  <div
+                    key={prop._id}
+                    className="flex flex-col sm:flex-row bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all group"
+                  >
+                    {/* Image Area */}
+                    <div className="relative w-full sm:w-1/3 h-48 sm:h-auto overflow-hidden">
+                      <img
+                        src={prop.imagesVideos?.propertyImages?.[0] || "/dummy-img.jpg"}
+                        alt={title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span className="bg-white/90 backdrop-blur-sm px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-gray-800 shadow-sm border border-gray-100">
+                          {language === 'vi' ? prop.listingInformation?.listingInformationTransactionType?.vi : prop.listingInformation?.listingInformationTransactionType?.en}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="flex-1 p-4 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <span className="text-sm">🏡</span>
+                          <h4 className="text-sm font-bold text-gray-900 line-clamp-1">
+                            {title}
+                          </h4>
+                        </div>
+
+                        <div className="space-y-1 mb-3">
+                          {view && (
+                            <div className="flex items-center gap-1.5 text-gray-500 text-[13px]">
+                              <Clover size={12} className="text-green-500" />
+                              <span>{view}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1.5 text-gray-500 text-[13px]">
+                            <MapPin size={12} className="text-red-500" />
+                            <span className="line-clamp-1">{language === 'vi' ? "Vị trí: " : "Location: "}{location}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1.5 mb-0">
+                          <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded-lg border border-gray-100 text-[13px] text-gray-600">
+                            <Bed size={12} />
+                            <span>{prop.propertyInformation?.informationBedrooms || 0}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded-lg border border-gray-100 text-[13px] text-gray-600">
+                            <Bath size={12} />
+                            <span>{prop.propertyInformation?.informationBathrooms || 0}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded-lg border border-gray-100 text-[13px] text-gray-600">
+                            <Ruler size={12} />
+                            <span>{prop.propertyInformation?.informationUnitSize || 0} {unit || "m²"}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-0 border-t border-gray-100 flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{language === 'vi' ? "GIÁ" : "PRICE"}</p>
+                          <p className="text-md font-bold text-[#41398B] whitespace-nowrap">
+                            {formattedPrice} <span className="text-[12px] font-medium text-gray-500">{suffix}</span>
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="hidden xs:flex items-center gap-1 text-[10px] text-gray-400">
+                            <Calendar size={12} />
+                            <span>{postedDate}</span>
+                          </div>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const propertyId = prop.listingInformation?.listingInformationPropertyId || prop._id;
+                              const slug = getLocalizedValue(prop.seoInformation?.slugUrl);
+                              navigate(`/property-showcase/${propertyId}${slug ? `/${slug}` : ''}`);
+                            }}
+                            className="bg-[#41398B] hover:bg-[#352e7a] text-white p-2 rounded-lg transition-all shadow-sm"
+                            title={language === 'vi' ? "Xem chi tiết" : "View Full Details"}
+                          >
+                            <ExternalLink size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+              <p className="text-sm font-medium">{language === "vi" ? "Chưa có bất động sản nào được gán cho chủ sở hữu này." : "No properties found for this owner."}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

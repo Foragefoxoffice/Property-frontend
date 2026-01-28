@@ -6,9 +6,17 @@ import {
   Mail,
   UserCog,
   X,
+  MapPin,
+  Calendar,
+  ExternalLink,
+  Bed,
+  Bath,
+  Ruler,
+  Clover,
 } from "lucide-react";
-import { Select as AntdSelect } from "antd";
+import { Select as AntdSelect, Spin } from "antd";
 import { usePermissions } from "../../Context/PermissionContext";
+import { getListingProperties } from "../../Api/action";
 
 /* 💜 Skeleton Loader Component */
 const SkeletonLoader = () => (
@@ -112,6 +120,14 @@ export default function CreatePropertyPreview({
   // media preview state
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewType, setPreviewType] = useState(null);
+
+  const getLocalizedValue = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return lang === "vi"
+      ? value.vi || value.en || ""
+      : value.en || value.vi || "";
+  };
 
   const labels = {
     reviewTitle: {
@@ -731,6 +747,26 @@ const MediaGrid = ({ files = [], type, onPreview }) => {
 
 /* === Popups === */
 const OwnerPopupCard = ({ onClose, data, lang }) => {
+  const [properties, setProperties] = useState([]);
+  const [loadingProps, setLoadingProps] = useState(false);
+
+  useEffect(() => {
+    const fetchOwnerProperties = async () => {
+      const ownerNameEn = data.ownerName?.en || (typeof data.ownerName === "string" ? data.ownerName : "");
+      if (!ownerNameEn) return;
+      try {
+        setLoadingProps(true);
+        const res = await getListingProperties({ owner: ownerNameEn });
+        setProperties(res.data.data || []);
+      } catch (error) {
+        console.error("Error fetching owner properties:", error);
+      } finally {
+        setLoadingProps(false);
+      }
+    };
+    fetchOwnerProperties();
+  }, [data]);
+
   const safeText = (obj) =>
     typeof obj === "object" ? obj?.[lang] || obj?.en || "" : obj || "";
 
@@ -763,7 +799,6 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
           <h2 className="text-2xl font-semibold mt-4">
             {safeText(data.ownerName)}
           </h2>
-          <p className="text-gray-500 text-sm mt-1">{data.gender}</p>
         </div>
 
         {/* Details Sections */}
@@ -790,23 +825,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
             )}
           </div>
 
-          {/* Email */}
-          <div>
-            <h4 className="text-md font-semibold text-gray-700 mb-1">Email</h4>
-            {data.emailAddresses?.length ? (
-              data.emailAddresses.map((mail, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 text-md text-gray-700 justify-center"
-                >
-                  <Mail size={16} className="text-gray-500" />
-                  {mail}
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400 text-sm">—</p>
-            )}
-          </div>
+
 
           {/* Social Media */}
           <div>
@@ -856,6 +875,140 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
               {safeText(data.ownerNotes) ||
                 (lang === "vi" ? "Không có ghi chú" : "No notes")}
             </p>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="text-md font-semibold text-gray-700 mb-3 text-center">
+              {lang === "vi" ? "Danh sách bất động sản" : "Properties List"}
+            </h4>
+            {loadingProps ? (
+              <div className="flex justify-center py-4">
+                <Spin size="small" />
+              </div>
+            ) : properties.length > 0 ? (
+              <div className="max-h-96 overflow-y-auto space-y-4 text-left p-1">
+                {properties.map((prop) => {
+                  const type = prop.listingInformation?.listingInformationTransactionType?.en || "";
+                  const title = lang === 'vi'
+                    ? prop.listingInformation?.listingInformationPropertyTitle?.vi || prop.listingInformation?.listingInformationPropertyTitle?.en
+                    : prop.listingInformation?.listingInformationPropertyTitle?.en || prop.listingInformation?.listingInformationPropertyTitle?.vi;
+
+                  const location = lang === 'vi'
+                    ? prop.listingInformation?.listingInformationProjectCommunity?.vi || prop.listingInformation?.listingInformationProjectCommunity?.en
+                    : prop.listingInformation?.listingInformationProjectCommunity?.en || prop.listingInformation?.listingInformationProjectCommunity?.vi;
+
+                  const view = lang === 'vi'
+                    ? prop.propertyInformation?.informationView?.vi || prop.propertyInformation?.informationView?.en
+                    : prop.propertyInformation?.informationView?.en || prop.propertyInformation?.informationView?.vi;
+
+                  const unit = lang === 'vi'
+                    ? prop.propertyInformation?.informationUnit?.vi || prop.propertyInformation?.informationUnit?.en
+                    : prop.propertyInformation?.informationUnit?.en || prop.propertyInformation?.informationUnit?.vi;
+
+                  const priceSale = prop.financialDetails?.financialDetailsPrice;
+                  const priceLease = prop.financialDetails?.financialDetailsLeasePrice;
+                  const priceNight = prop.financialDetails?.financialDetailsPricePerNight;
+                  const currency = prop.financialDetails?.financialDetailsCurrency?.code || "₫";
+
+                  let displayPrice = "";
+                  let suffix = "";
+                  if (type === "Sale") displayPrice = priceSale;
+                  else if (type === "Lease") { displayPrice = priceLease; suffix = lang === 'vi' ? "/ tháng" : "/ month"; }
+                  else if (type === "Home Stay") { displayPrice = priceNight; suffix = lang === 'vi' ? "/ đêm" : "/ night"; }
+
+                  const formattedPrice = displayPrice ? `${Number(displayPrice).toLocaleString()} ${currency}` : (lang === 'vi' ? "Liên hệ" : "Contact");
+
+                  const postedDate = prop.createdAt ? new Date(prop.createdAt).toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  }) : "-";
+
+                  return (
+                    <div
+                      key={prop._id}
+                      className="flex flex-col sm:flex-row bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-all group"
+                    >
+                      {/* Image Area */}
+                      <div className="relative w-full sm:w-1/3 h-40 sm:h-auto overflow-hidden">
+                        <img
+                          src={prop.imagesVideos?.propertyImages?.[0] || "/dummy-img.jpg"}
+                          alt={title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-2 left-2">
+                          <span className="bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-gray-800 shadow-sm border border-gray-100">
+                            {lang === 'vi' ? prop.listingInformation?.listingInformationTransactionType?.vi : prop.listingInformation?.listingInformationTransactionType?.en}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content Area */}
+                      <div className="flex-1 p-4 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-1.5 mb-1.5">
+                            <span className="text-sm">🏡</span>
+                            <h4 className="text-sm font-bold text-gray-900 line-clamp-1">
+                              {title}
+                            </h4>
+                          </div>
+
+                          <div className="space-y-1 mb-3">
+                            {view && (
+                              <div className="flex items-center gap-1.5 text-gray-500 text-[11px]">
+                                <Clover size={12} className="text-green-500" />
+                                <span>{view}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-1.5 text-gray-500 text-[11px]">
+                              <MapPin size={12} className="text-red-500" />
+                              <span>{lang === 'vi' ? "Vị trí: " : "Location: "}{location}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap gap-1.5 mb-4">
+                            <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-md border border-gray-100 text-[10px] text-gray-600">
+                              <Bed size={12} />
+                              <span>{prop.propertyInformation?.informationBedrooms || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-md border border-gray-100 text-[10px] text-gray-600">
+                              <Bath size={12} />
+                              <span>{prop.propertyInformation?.informationBathrooms || 0}</span>
+                            </div>
+                            <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-md border border-gray-100 text-[10px] text-gray-600">
+                              <Ruler size={12} />
+                              <span>{prop.propertyInformation?.informationUnitSize || 0} {unit || "m²"}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                          <div>
+                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{lang === 'vi' ? "GIÁ" : "PRICE"}</p>
+                            <p className="text-sm font-bold text-[#41398B]">
+                              {formattedPrice} <span className="text-[10px] font-medium text-gray-500">{suffix}</span>
+                            </p>
+                          </div>
+
+                          <a
+                            href={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}${prop.seoInformation?.slugUrl ? `/${getLocalizedValue(prop.seoInformation.slugUrl)}` : ''}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#41398B] hover:bg-[#352e7a] text-white p-2 rounded-lg transition-all shadow-sm"
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-sm text-center">
+                {lang === "vi" ? "Chưa có bất động sản nào." : "No properties found."}
+              </p>
+            )}
           </div>
         </div>
       </div>

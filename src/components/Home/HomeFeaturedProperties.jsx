@@ -168,7 +168,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                         {properties.map((property, index) => (
                             <div
                                 key={property._id}
-                                className={`card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-700 cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+                                className={`card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-700 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
                                     }`}
                                 style={{ transitionDelay: `${200 + index * 100}ms` }}
                                 onClick={() => {

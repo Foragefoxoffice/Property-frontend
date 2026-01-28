@@ -49,6 +49,7 @@ function mapApiToForm(api) {
   const safeStr = (v) => (v ? v : "");
 
   return {
+    _id: api._id,
     /* -----------------------------------------
        LISTING INFORMATION
     ------------------------------------------ */
@@ -665,7 +666,8 @@ export default function CreatePropertyPage({
 
     } catch (err) {
       console.log(err);
-      CommonToaster("Property save failed", "error");
+      const errorMsg = err.response?.data?.message || "Property save failed";
+      CommonToaster(errorMsg, "error");
     }
   };
 

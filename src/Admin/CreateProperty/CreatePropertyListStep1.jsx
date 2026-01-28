@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, memo } from "react";
 import { ArrowRight, CirclePlus, Trash2 } from "lucide-react";
-import { getNextPropertyId } from "../../Api/action";
+import { getNextPropertyId, validatePropertyNo } from "../../Api/action";
+import { CommonToaster } from "../../Common/CommonToaster";
 import { Select as AntdSelect, Switch } from "antd";
 import iconOptions from "../../data/iconOptions";
 import { Calendar } from "@/components/ui/calendar";
@@ -472,7 +473,7 @@ export default function CreatePropertyListStep1({
 
     setForm((prev) => ({
       ...prev,
-      unit: fullObj,          // store localized object
+      unit: fullObj,
     }));
 
     onChange &&
@@ -1646,7 +1647,7 @@ export default function CreatePropertyListStep1({
         {/* Next */}
         <div className="text-end flex justify-end">
           <button
-            onClick={() => {
+            onClick={async () => {
               const syncLangFields = [
                 "title",
                 "address",
@@ -1663,6 +1664,25 @@ export default function CreatePropertyListStep1({
                   if (!val.en || val.en.trim() === "") val.en = val.vi || "";
                 }
               });
+
+              // ✅ VALIDATE PROPERTY NO BEFORE PROCEEDING
+              try {
+                if (updatedForm.propertyNo?.en || updatedForm.propertyNo?.vi) {
+                  await validatePropertyNo({
+                    propertyNo: updatedForm.propertyNo,
+                    transactionType: updatedForm.transactionType,
+                    excludeId: initialData?._id, // if editing
+                  });
+                }
+              } catch (err) {
+                console.error("❌ Property No Validation Error:", err);
+                const errorMsg = err.response?.data?.message || "Property No already exists";
+                // Show error ONLY if it's about the property number
+                if (errorMsg.toLowerCase().includes("property no")) {
+                  CommonToaster(errorMsg, "error");
+                  return; // 🛑 Stop here
+                }
+              }
 
               onChange && onChange(updatedForm);
               onNext({
