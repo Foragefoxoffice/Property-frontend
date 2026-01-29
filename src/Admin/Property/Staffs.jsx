@@ -181,7 +181,8 @@ export default function Staffs({ openStaffView }) {
     dob: null,
     gender: null,
     joiningDate: null,
-    status: "Active"
+    status: "Active",
+    password: ""
   };
 
   const [form, setForm] = useState(initialFormState);
@@ -325,7 +326,8 @@ export default function Staffs({ openStaffView }) {
       staffsJoiningDate: form.joiningDate ? form.joiningDate.toISOString() : null,
       staffsNotes_en: "",
       staffsNotes_vi: "",
-      status: form.status
+      status: form.status,
+      password: form.password
     };
 
     try {
@@ -792,6 +794,37 @@ export default function Staffs({ openStaffView }) {
                           />
                         </div>
                       </div>
+
+                      {!editMode && (
+                        <div className="mt-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Password <span className="text-red-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <input
+                              placeholder="Enter Password or Generate Random"
+                              type="text"
+                              required
+                              value={form.password}
+                              onChange={e => setForm({ ...form, password: e.target.value })}
+                              className="w-full border border-gray-200 rounded-lg pl-4 pr-32 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const randomPass = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-2) + "!";
+                                setForm({ ...form, password: randomPass });
+                              }}
+                              className="absolute right-2 top-1.5 px-3 py-1.5 bg-[#41398B] text-white text-xs font-medium rounded-md hover:bg-[#41398be3] transition shadow-sm"
+                            >
+                              Generate
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1.5 italic">
+                            A copy of this password will be sent to the staff's email address.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -861,6 +894,37 @@ export default function Staffs({ openStaffView }) {
                           />
                         </div>
                       </div>
+
+                      {!editMode && (
+                        <div className="mt-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                            Mật khẩu <span className="text-red-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <input
+                              placeholder="Nhập mật khẩu hoặc tạo ngẫu nhiên"
+                              type="text"
+                              required
+                              value={form.password}
+                              onChange={e => setForm({ ...form, password: e.target.value })}
+                              className="w-full border border-gray-200 rounded-lg pl-4 pr-32 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const randomPass = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-2) + "!";
+                                setForm({ ...form, password: randomPass });
+                              }}
+                              className="absolute right-2 top-1.5 px-3 py-1.5 bg-[#41398B] text-white text-xs font-medium rounded-md hover:bg-[#41398be3] transition shadow-sm"
+                            >
+                              Tạo mã
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1.5 italic">
+                            Một bản sao của mật khẩu này sẽ được gửi đến địa chỉ email của nhân viên.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
