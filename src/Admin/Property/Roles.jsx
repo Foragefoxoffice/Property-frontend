@@ -199,14 +199,14 @@ export default function Roles() {
                     ...newPerms[mainKey],
                     [subKey]: {
                         ...newPerms[mainKey][subKey],
-                        [type]: value
+                        [type]: type === 'hide' ? !value : value
                     }
                 };
             } else {
                 // Direct (Landlords)
                 newPerms[mainKey] = {
                     ...newPerms[mainKey],
-                    [type]: value
+                    [type]: type === 'hide' ? !value : value
                 };
             }
             return { ...prev, permissions: newPerms };
@@ -243,7 +243,7 @@ export default function Roles() {
         }
     };
 
-    const toggleSection = (sectionKey, isHidden) => {
+    const toggleSection = (sectionKey, isAccessible) => {
         setForm(prev => {
             const newPerms = { ...prev.permissions };
             const section = permissionStructure.find(s => s.key === sectionKey);
@@ -255,7 +255,7 @@ export default function Roles() {
                     }
                     newPerms[sectionKey][sub.key] = {
                         ...newPerms[sectionKey][sub.key],
-                        hide: isHidden
+                        hide: !isAccessible
                     };
                 });
             }
@@ -264,17 +264,19 @@ export default function Roles() {
     };
 
     const renderToggle = (mainKey, subKey, control) => {
-        let checked = false;
+        let value = false;
         if (subKey) {
-            checked = form.permissions[mainKey]?.[subKey]?.[control] || false;
+            value = form.permissions[mainKey]?.[subKey]?.[control] || false;
         } else {
-            checked = form.permissions[mainKey]?.[control] || false;
+            value = form.permissions[mainKey]?.[control] || false;
         }
+
+        const checked = control === 'hide' ? !value : value;
 
         return (
             <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg mb-1 border border-gray-200">
                 <span className="text-gray-700 capitalize text-sm font-medium">
-                    {control === 'hide' ? t.hideTab : control === 'preview' ? t.preview : control === 'bulkUpload' ? t.bulkUpload : control === 'view' ? t.view : control === 'add' ? t.add : control === 'edit' ? t.edit : control === 'delete' ? t.deletePermission : control === 'copy' ? t.copy : control.charAt(0).toUpperCase() + control.slice(1)}
+                    {control === 'hide' ? t.accessTab : control === 'preview' ? t.preview : control === 'bulkUpload' ? t.bulkUpload : control === 'view' ? t.view : control === 'add' ? t.add : control === 'edit' ? t.edit : control === 'delete' ? t.deletePermission : control === 'copy' ? t.copy : control.charAt(0).toUpperCase() + control.slice(1)}
                 </span>
                 <Switch
                     size="small"
@@ -428,9 +430,9 @@ export default function Roles() {
 
                                     <div className="space-y-6">
                                         {permissionStructure.map((section) => {
-                                            // Check if all submodules in this section are hidden
-                                            const isSectionHidden = !section.isDirect && section.subModules.every(
-                                                sub => form.permissions[section.key]?.[sub.key]?.hide
+                                            // Check if all submodules in this section are accessible
+                                            const isSectionAccessible = !section.isDirect && section.subModules.every(
+                                                sub => !form.permissions[section.key]?.[sub.key]?.hide
                                             );
 
                                             return (
@@ -445,13 +447,13 @@ export default function Roles() {
                                                         {!section.isDirect && (
                                                             <div className="flex items-center gap-3">
                                                                 <span className="text-sm font-medium text-gray-600">
-                                                                    {t.hideTab || "Hide"}
+                                                                    {t.accessTab || "Access"}
                                                                 </span>
                                                                 <Switch
                                                                     size="small"
-                                                                    checked={isSectionHidden}
+                                                                    checked={isSectionAccessible}
                                                                     onChange={(val) => toggleSection(section.key, val)}
-                                                                    className={`${isSectionHidden ? 'bg-[#41398B]' : 'bg-gray-300'}`}
+                                                                    className={`${isSectionAccessible ? 'bg-[#41398B]' : 'bg-gray-300'}`}
                                                                 />
                                                             </div>
                                                         )}

@@ -49,6 +49,9 @@ export const PermissionProvider = ({ children }) => {
     const isHidden = (path) => {
         if (!userRole) return true;
 
+        // Super Admin has access to everything
+        if (userRole.toLowerCase() === 'super admin') return false;
+
         if (userRole.toLowerCase() === 'admin' && !permissions) return false;
 
         if (!permissions) return true;
@@ -68,6 +71,9 @@ export const PermissionProvider = ({ children }) => {
     const can = (path, action) => {
         if (!userRole) return false;
 
+        // Super Admin has access to everything
+        if (userRole.toLowerCase() === 'super admin') return true;
+
         if (userRole.toLowerCase() === 'admin' && !permissions) return true;
 
         if (!permissions) return false;
@@ -83,7 +89,7 @@ export const PermissionProvider = ({ children }) => {
         }
 
         const value = current[action];
-        return value !== true && value !== "true";
+        return value === true || value === "true";
     };
 
     return (

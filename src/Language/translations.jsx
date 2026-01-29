@@ -80,7 +80,7 @@ export const translations = {
     active: "Active",
     inactive: "Inactive",
     // Permission Labels
-    hideTab: "Hide Tab",
+    accessTab: "Access Tab",
     preview: "Preview",
     add: "Add",
     edit: "Edit",
@@ -386,7 +386,7 @@ export const translations = {
     active: "Hoạt Động",
     inactive: "Không Hoạt Động",
     // Permission Labels
-    hideTab: "Ẩn Tab",
+    accessTab: "Quyền truy cập Tab",
     view: "Xem",
     preview: "Xem trước",
     add: "Thêm",

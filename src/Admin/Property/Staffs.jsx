@@ -797,31 +797,8 @@ export default function Staffs({ openStaffView }) {
 
                       {!editMode && (
                         <div className="mt-4">
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                            Password <span className="text-red-500">*</span>
-                          </label>
-                          <div className="relative">
-                            <input
-                              placeholder="Enter Password or Generate Random"
-                              type="text"
-                              required
-                              value={form.password}
-                              onChange={e => setForm({ ...form, password: e.target.value })}
-                              className="w-full border border-gray-200 rounded-lg pl-4 pr-32 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const randomPass = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-2) + "!";
-                                setForm({ ...form, password: randomPass });
-                              }}
-                              className="absolute right-2 top-1.5 px-3 py-1.5 bg-[#41398B] text-white text-xs font-medium rounded-md hover:bg-[#41398be3] transition shadow-sm"
-                            >
-                              Generate
-                            </button>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1.5 italic">
-                            A copy of this password will be sent to the staff's email address.
+                          <p className="text-sm text-gray-500 italic bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            Password will be auto-generated and sent to the staff's email address.
                           </p>
                         </div>
                       )}
@@ -897,31 +874,8 @@ export default function Staffs({ openStaffView }) {
 
                       {!editMode && (
                         <div className="mt-4">
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                            Mật khẩu <span className="text-red-500">*</span>
-                          </label>
-                          <div className="relative">
-                            <input
-                              placeholder="Nhập mật khẩu hoặc tạo ngẫu nhiên"
-                              type="text"
-                              required
-                              value={form.password}
-                              onChange={e => setForm({ ...form, password: e.target.value })}
-                              className="w-full border border-gray-200 rounded-lg pl-4 pr-32 py-2.5 text-sm focus:ring-2 focus:ring-[#41398B] outline-none"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const randomPass = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-2) + "!";
-                                setForm({ ...form, password: randomPass });
-                              }}
-                              className="absolute right-2 top-1.5 px-3 py-1.5 bg-[#41398B] text-white text-xs font-medium rounded-md hover:bg-[#41398be3] transition shadow-sm"
-                            >
-                              Tạo mã
-                            </button>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1.5 italic">
-                            Một bản sao của mật khẩu này sẽ được gửi đến địa chỉ email của nhân viên.
+                          <p className="text-sm text-gray-500 italic bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            Mật khẩu sẽ được tạo tự động và gửi đến email của nhân viên.
                           </p>
                         </div>
                       )}
@@ -1042,14 +996,14 @@ export default function Staffs({ openStaffView }) {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition font-medium text-sm shadow-sm"
+                className="px-6 py-2.5 cursor-pointer rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition font-medium text-sm shadow-sm"
               >
                 {t.cancel}
               </button>
               <button
                 type="submit"
                 form="staffForm"
-                className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md"
+                className="px-6 py-2.5 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md"
               >
                 {editMode ? t.updateStaff : t.addStaff}
               </button>

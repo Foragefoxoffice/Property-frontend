@@ -5,7 +5,7 @@ import { LogOut, ChevronDown, Heart, Lock, Menu, X } from "lucide-react";
 import ChangePasswordModal from "./ChangePasswordModal";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
-import { getHeader } from "../../Api/action";
+import { getHeader, getAllProperties, getAllZoneSubAreas } from "../../Api/action";
 import AnimatedNavLink from "../../components/AnimatedNavLink";
 import { useFavorites } from "../../Context/FavoritesContext";
 import { Tooltip } from "antd";
@@ -16,10 +16,17 @@ export default function Header({ showNavigation = true }) {
   const [showPropertiesDropdown, setShowPropertiesDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showPropertiesMobile, setShowPropertiesMobile] = useState(false);
+  const [showProjectsMobile, setShowProjectsMobile] = useState(false);
+  const [activeProjectMobile, setActiveProjectMobile] = useState(null);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [headerLogo, setHeaderLogo] = useState("/images/login/logo.png");
   const { language, toggleLanguage } = useLanguage();
   const { favorites, clearFavorites } = useFavorites();
+
+  const [projects, setProjects] = useState([]);
+  const [zones, setZones] = useState([]);
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [activeProject, setActiveProject] = useState(null);
 
   const labels = {
     logout: { en: "Logout", vi: "Đăng xuất" },
@@ -37,6 +44,7 @@ export default function Header({ showNavigation = true }) {
     dashboard: { en: "Dashboard", vi: "Trang tổng quan" },
     myFavorites: { en: "My Favorites", vi: "Yêu thích của tôi" },
     visitSite: { en: "Visit Site", vi: "Truy cập trang web" },
+    project: { en: "Project", vi: "Dự án" },
   };
 
   // Fetch header logo from CMS
@@ -56,6 +64,35 @@ export default function Header({ showNavigation = true }) {
 
     fetchHeaderData();
   }, []);
+
+  // Fetch Projects and Zones for the "Project" menu
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const [projectsRes, zonesRes] = await Promise.all([
+          getAllProperties({ status: "Active" }),
+          getAllZoneSubAreas({ status: "Active" })
+        ]);
+
+        if (projectsRes.data?.success) {
+          setProjects(projectsRes.data.data.filter(p => p.status === "Active"));
+        }
+        if (zonesRes.data?.success) {
+          setZones(zonesRes.data.data.filter(z => z.status === "Active"));
+        }
+      } catch (error) {
+        console.error("Error fetching dropdown data for Header:", error);
+      }
+    };
+
+    fetchDropdownData();
+  }, []);
+
+  const getLocalizedValue = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return language === "vi" ? (value.vi || value.en || "") : (value.en || value.vi || "");
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -323,6 +360,100 @@ export default function Header({ showNavigation = true }) {
                           {item.label}
                         </motion.button>
                       ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Project Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setShowProjectDropdown(true)}
+              onMouseLeave={() => {
+                setShowProjectDropdown(false);
+                setActiveProject(null);
+              }}
+            >
+              <div className="flex items-center gap-1 font-semibold text-[16px]">
+                <AnimatedNavLink
+                  onClick={() => navigate("/listing")}
+                  text={labels.project[language]}
+                  hasDropdown={true}
+                  isDropdownOpen={showProjectDropdown}
+                />
+                <motion.div
+                  animate={{ rotate: showProjectDropdown ? 180 : 0 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  <ChevronDown className="w-4 h-4 text-[#000]" />
+                </motion.div>
+              </div>
+
+              <AnimatePresence>
+                {showProjectDropdown && (
+                  <motion.div
+                    initial={{ scaleY: 0, opacity: 0 }}
+                    animate={{ scaleY: 1, opacity: 1 }}
+                    exit={{ scaleY: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    style={{ transformOrigin: "center top" }}
+                    className="absolute left-0 top-full mt-3 w-[250px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-50  border border-gray-100"
+                  >
+                    <div className="py-1">
+                      {projects.map((project, index) => {
+                        const projectZones = zones.filter(z => {
+                          const pId = typeof z.property === 'string' ? z.property : z.property?._id;
+                          return pId === project._id;
+                        });
+
+                        return (
+                          <div
+                            key={project._id}
+                            className="relative group/proj"
+                            onMouseEnter={() => setActiveProject(project._id)}
+                          >
+                            <button
+                              onClick={() => {
+                                navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}`);
+                                setShowProjectDropdown(false);
+                              }}
+                              className={`w-full cursor-pointer text-left px-5 py-3 text-[15px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-semibold transition-colors flex items-center justify-between ${index < projects.length - 1 ? 'border-b border-gray-100' : ''}`}
+                            >
+                              <span>{getLocalizedValue(project.name)}</span>
+                              {projectZones.length > 0 && (
+                                <ChevronDown className="w-4 h-4 -rotate-90 text-gray-400 group-hover/proj:text-[#41398B]" />
+                              )}
+                            </button>
+
+                            {/* Nested Areas/Zones Dropdown */}
+                            <AnimatePresence>
+                              {activeProject === project._id && projectZones.length > 0 && (
+                                <motion.div
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: -10 }}
+                                  className="absolute left-full top-0 ml-0.5 w-[220px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-[60] border border-gray-100 overflow-hidden text-black"
+                                >
+                                  {projectZones.map((zone, zIdx) => (
+                                    <button
+                                      key={zone._id}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}&zoneId=${encodeURIComponent(getLocalizedValue(zone.name))}`);
+                                        setShowProjectDropdown(false);
+                                      }}
+                                      className={`w-full cursor-pointer text-left px-5 py-3 text-[14px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-medium transition-colors ${zIdx < projectZones.length - 1 ? 'border-b border-gray-100' : ''}`}
+                                    >
+                                      {getLocalizedValue(zone.name)}
+                                    </button>
+                                  ))}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        );
+                      })}
                     </div>
                   </motion.div>
                 )}
@@ -658,6 +789,99 @@ export default function Header({ showNavigation = true }) {
                             </Link>
                           </div>
                         ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Projects Mobile Dropdown */}
+                <div className="flex flex-col border-b border-gray-100 pb-2">
+                  <button
+                    onClick={() => setShowProjectsMobile(!showProjectsMobile)}
+                    className="flex items-center justify-between w-full py-3 text-[16px] font-medium text-gray-700 hover:text-[#41398B] transition-colors"
+                  >
+                    {labels.project[language]}
+                    <motion.div
+                      animate={{ rotate: showProjectsMobile ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronDown size={18} />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {showProjectsMobile && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden pl-4 flex flex-col gap-1"
+                      >
+                        {projects.map((project) => {
+                          const projectZones = zones.filter(z => {
+                            const pId = typeof z.property === 'string' ? z.property : z.property?._id;
+                            return pId === project._id;
+                          });
+
+                          return (
+                            <div key={project._id} className="flex flex-col">
+                              <button
+                                onClick={() => {
+                                  if (projectZones.length > 0) {
+                                    setActiveProjectMobile(activeProjectMobile === project._id ? null : project._id);
+                                  } else {
+                                    navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}`);
+                                    setIsMobileMenuOpen(false);
+                                  }
+                                }}
+                                className="flex items-center justify-between w-full py-2 text-gray-600 hover:text-[#41398B] text-sm font-medium"
+                              >
+                                {getLocalizedValue(project.name)}
+                                {projectZones.length > 0 && (
+                                  <motion.div
+                                    animate={{ rotate: activeProjectMobile === project._id ? 180 : 0 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <ChevronDown size={14} />
+                                  </motion.div>
+                                )}
+                              </button>
+
+                              <AnimatePresence>
+                                {activeProjectMobile === project._id && projectZones.length > 0 && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden pl-4 flex flex-col gap-1"
+                                  >
+                                    <button
+                                      onClick={() => {
+                                        navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}`);
+                                        setIsMobileMenuOpen(false);
+                                      }}
+                                      className="text-left py-2 text-xs text-gray-500 hover:text-[#41398B]"
+                                    >
+                                      View All in {getLocalizedValue(project.name)}
+                                    </button>
+                                    {projectZones.map((zone) => (
+                                      <button
+                                        key={zone._id}
+                                        onClick={() => {
+                                          navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}&zoneId=${encodeURIComponent(getLocalizedValue(zone.name))}`);
+                                          setIsMobileMenuOpen(false);
+                                        }}
+                                        className="text-left py-2 text-xs text-gray-500 hover:text-[#41398B]"
+                                      >
+                                        {getLocalizedValue(zone.name)}
+                                      </button>
+                                    ))}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          );
+                        })}
                       </motion.div>
                     )}
                   </AnimatePresence>
