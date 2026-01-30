@@ -33,7 +33,7 @@ export default function HomePageForm() {
     const [bannerLoading, setBannerLoading] = useState(false);
     const [aboutLoading, setAboutLoading] = useState(false);
     const [featureLoading, setFeatureLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
     const [bannerImageUrl, setBannerImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
 
@@ -390,55 +390,6 @@ export default function HomePageForm() {
                                         className="mb-6"
                                         items={[
                                             {
-                                                key: 'en',
-                                                label: (
-                                                    <span className="text-sm font-semibold font-['Manrope']">
-                                                        English (EN)
-                                                    </span>
-                                                ),
-                                                children: (
-                                                    <>
-                                                        <Form.Item
-                                                            label={
-                                                                <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                    Hero Title
-                                                                </span>
-                                                            }
-                                                            name="heroTitle_en"
-                                                            rules={[
-                                                                { required: true, message: 'Please enter hero title in English' },
-                                                                { max: 200, message: 'Maximum 200 characters allowed' }
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                placeholder="Your Trusted Property Partner"
-                                                                size="large"
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            />
-                                                        </Form.Item>
-
-                                                        <Form.Item
-                                                            label={
-                                                                <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                    Hero Description
-                                                                </span>
-                                                            }
-                                                            name="heroDescription_en"
-                                                            rules={[
-                                                                { required: true, message: 'Please enter hero description in English' },
-                                                                { max: 500, message: 'Maximum 500 characters allowed' }
-                                                            ]}
-                                                        >
-                                                            <TextArea
-                                                                placeholder="Find your dream property with us"
-                                                                rows={4}
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                            />
-                                                        </Form.Item>
-                                                    </>
-                                                )
-                                            },
-                                            {
                                                 key: 'vn',
                                                 label: (
                                                     <span className="text-sm font-semibold font-['Manrope']">
@@ -482,6 +433,55 @@ export default function HomePageForm() {
                                                                 placeholder="Tìm bất động sản mơ ước của bạn cùng chúng tôi"
                                                                 rows={4}
                                                                 className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            />
+                                                        </Form.Item>
+                                                    </>
+                                                )
+                                            },
+                                            {
+                                                key: 'en',
+                                                label: (
+                                                    <span className="text-sm font-semibold font-['Manrope']">
+                                                        English (EN)
+                                                    </span>
+                                                ),
+                                                children: (
+                                                    <>
+                                                        <Form.Item
+                                                            label={
+                                                                <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                    Hero Title
+                                                                </span>
+                                                            }
+                                                            name="heroTitle_en"
+                                                            rules={[
+                                                                { required: true, message: 'Please enter hero title in English' },
+                                                                { max: 200, message: 'Maximum 200 characters allowed' }
+                                                            ]}
+                                                        >
+                                                            <Input
+                                                                placeholder="Your Trusted Property Partner"
+                                                                size="large"
+                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            />
+                                                        </Form.Item>
+
+                                                        <Form.Item
+                                                            label={
+                                                                <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                    Hero Description
+                                                                </span>
+                                                            }
+                                                            name="heroDescription_en"
+                                                            rules={[
+                                                                { required: true, message: 'Please enter hero description in English' },
+                                                                { max: 500, message: 'Maximum 500 characters allowed' }
+                                                            ]}
+                                                        >
+                                                            <TextArea
+                                                                placeholder="Find your dream property with us"
+                                                                rows={4}
+                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
                                                             />
                                                         </Form.Item>
                                                     </>
@@ -603,6 +603,143 @@ export default function HomePageForm() {
                                         onChange={setActiveTab}
                                         className="mb-6"
                                         items={[
+                                            {
+                                                key: 'vn',
+                                                label: (
+                                                    <span className="text-sm font-semibold font-['Manrope']">
+                                                        Tiếng Việt (VN)
+                                                    </span>
+                                                ),
+                                                children: (
+                                                    <>
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Về Chúng Tôi</span>}
+                                                            name="homeAboutTitle_vn"
+                                                            rules={[
+                                                                { required: true, message: 'Vui lòng nhập tiêu đề' },
+                                                                { max: 200, message: 'Tối đa 200 ký tự' }
+                                                            ]}
+                                                        >
+                                                            <Input
+                                                                placeholder="Chúng Tôi Là Ai"
+                                                                size="large"
+                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            />
+                                                        </Form.Item>
+
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả</span>}
+                                                            name="homeAboutDescription_vn"
+                                                            rules={[
+                                                                { required: true, message: 'Vui lòng nhập mô tả' },
+                                                                { max: 1000, message: 'Tối đa 1000 ký tự' }
+                                                            ]}
+                                                        >
+                                                            <TextArea
+                                                                placeholder="Chúng tôi là nhà cung cấp giải pháp bất động sản hàng đầu..."
+                                                                rows={4}
+                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
+                                                            />
+                                                        </Form.Item>
+
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Văn Bản Nút</span>}
+                                                            name="homeAboutButtonText_vn"
+                                                            rules={[
+                                                                { required: true, message: 'Vui lòng nhập văn bản nút' },
+                                                                { max: 50, message: 'Tối đa 50 ký tự' }
+                                                            ]}
+                                                        >
+                                                            <Input
+                                                                placeholder="Tìm Hiểu Thêm"
+                                                                size="large"
+                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            />
+                                                        </Form.Item>
+
+                                                        {/* Step 1 VN */}
+                                                        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                                                            <h4 className="font-semibold text-[#374151] mb-3">Bước 1</h4>
+                                                            <Form.Item
+                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Bước 1</span>}
+                                                                name="homeAboutStep1Title_vn"
+                                                                rules={[{ required: true, message: 'Yêu cầu nhập' }]}
+                                                            >
+                                                                <Input
+                                                                    placeholder="Tìm Kiếm Bất Động Sản"
+                                                                    size="large"
+                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Bước 1</span>}
+                                                                name="homeAboutStep1Des_vn"
+                                                                rules={[{ required: true, message: 'Yêu cầu nhập' }]}
+                                                            >
+                                                                <TextArea
+                                                                    placeholder="Duyệt qua danh sách bất động sản phong phú của chúng tôi"
+                                                                    rows={3}
+                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                                />
+                                                            </Form.Item>
+                                                        </div>
+
+                                                        {/* Step 2 VN */}
+                                                        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                                                            <h4 className="font-semibold text-[#374151] mb-3">Bước 2</h4>
+                                                            <Form.Item
+                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Bước 2</span>}
+                                                                name="homeAboutStep2Title_vn"
+                                                                rules={[{ required: true, message: 'Yêu cầu nhập' }]}
+                                                            >
+                                                                <Input
+                                                                    placeholder="Lên Lịch Tham Quan"
+                                                                    size="large"
+                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Bước 2</span>}
+                                                                name="homeAboutStep2Des_vn"
+                                                                rules={[{ required: true, message: 'Yêu cầu nhập' }]}
+                                                            >
+                                                                <TextArea
+                                                                    placeholder="Đặt lịch xem nhà vào thời gian thuận tiện của bạn"
+                                                                    rows={3}
+                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                                />
+                                                            </Form.Item>
+                                                        </div>
+
+                                                        {/* Step 3 VN */}
+                                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                                            <h4 className="font-semibold text-[#374151] mb-3">Bước 3</h4>
+                                                            <Form.Item
+                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Bước 3</span>}
+                                                                name="homeAboutStep3Title_vn"
+                                                                rules={[{ required: true, message: 'Yêu cầu nhập' }]}
+                                                            >
+                                                                <Input
+                                                                    placeholder="Nhận Chìa Khóa"
+                                                                    size="large"
+                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                />
+                                                            </Form.Item>
+                                                            <Form.Item
+                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Bước 3</span>}
+                                                                name="homeAboutStep3Des_vn"
+                                                                rules={[{ required: true, message: 'Yêu cầu nhập' }]}
+                                                            >
+                                                                <TextArea
+                                                                    placeholder="Hoàn tất quy trình và chuyển vào ở"
+                                                                    rows={3}
+                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                                />
+                                                            </Form.Item>
+                                                        </div>
+                                                    </>
+                                                )
+                                            },
                                             {
                                                 key: 'en',
                                                 label: (
@@ -739,143 +876,6 @@ export default function HomePageForm() {
                                                         </div>
                                                     </>
                                                 )
-                                            },
-                                            {
-                                                key: 'vn',
-                                                label: (
-                                                    <span className="text-sm font-semibold font-['Manrope']">
-                                                        Tiếng Việt (VN)
-                                                    </span>
-                                                ),
-                                                children: (
-                                                    <>
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Về Chúng Tôi</span>}
-                                                            name="homeAboutTitle_vn"
-                                                            rules={[
-                                                                { required: true, message: 'Vui lòng nhập tiêu đề' },
-                                                                { max: 200, message: 'Tối đa 200 ký tự' }
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                placeholder="Chúng Tôi Là Ai"
-                                                                size="large"
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            />
-                                                        </Form.Item>
-
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả</span>}
-                                                            name="homeAboutDescription_vn"
-                                                            rules={[
-                                                                { required: true, message: 'Vui lòng nhập mô tả' },
-                                                                { max: 1000, message: 'Tối đa 1000 ký tự' }
-                                                            ]}
-                                                        >
-                                                            <TextArea
-                                                                placeholder="Chúng tôi là nhà cung cấp giải pháp bất động sản hàng đầu..."
-                                                                rows={4}
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                            />
-                                                        </Form.Item>
-
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Văn Bản Nút</span>}
-                                                            name="homeAboutButtonText_vn"
-                                                            rules={[
-                                                                { required: true, message: 'Vui lòng nhập văn bản nút' },
-                                                                { max: 50, message: 'Tối đa 50 ký tự' }
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                placeholder="Tìm Hiểu Thêm"
-                                                                size="large"
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            />
-                                                        </Form.Item>
-
-                                                        {/* Step 1 VN */}
-                                                        <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                                                            <h4 className="font-semibold text-[#374151] mb-3">Bước 1</h4>
-                                                            <Form.Item
-                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Bước 1</span>}
-                                                                name="homeAboutStep1Title_vn"
-                                                                rules={[{ required: true, message: 'Bắt buộc' }]}
-                                                            >
-                                                                <Input
-                                                                    placeholder="Tìm Kiếm Bất Động Sản"
-                                                                    size="large"
-                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                                />
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Bước 1</span>}
-                                                                name="homeAboutStep1Des_vn"
-                                                                rules={[{ required: true, message: 'Bắt buộc' }]}
-                                                            >
-                                                                <TextArea
-                                                                    placeholder="Duyệt qua danh sách bất động sản phong phú của chúng tôi"
-                                                                    rows={3}
-                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                                />
-                                                            </Form.Item>
-                                                        </div>
-
-                                                        {/* Step 2 VN */}
-                                                        <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                                                            <h4 className="font-semibold text-[#374151] mb-3">Bước 2</h4>
-                                                            <Form.Item
-                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Bước 2</span>}
-                                                                name="homeAboutStep2Title_vn"
-                                                                rules={[{ required: true, message: 'Bắt buộc' }]}
-                                                            >
-                                                                <Input
-                                                                    placeholder="Lên Lịch Xem Nhà"
-                                                                    size="large"
-                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                                />
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Bước 2</span>}
-                                                                name="homeAboutStep2Des_vn"
-                                                                rules={[{ required: true, message: 'Bắt buộc' }]}
-                                                            >
-                                                                <TextArea
-                                                                    placeholder="Đặt lịch xem nhà theo thời gian thuận tiện"
-                                                                    rows={3}
-                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                                />
-                                                            </Form.Item>
-                                                        </div>
-
-                                                        {/* Step 3 VN */}
-                                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                                            <h4 className="font-semibold text-[#374151] mb-3">Bước 3</h4>
-                                                            <Form.Item
-                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Bước 3</span>}
-                                                                name="homeAboutStep3Title_vn"
-                                                                rules={[{ required: true, message: 'Bắt buộc' }]}
-                                                            >
-                                                                <Input
-                                                                    placeholder="Nhận Chìa Khóa"
-                                                                    size="large"
-                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                                />
-                                                            </Form.Item>
-                                                            <Form.Item
-                                                                label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Bước 3</span>}
-                                                                name="homeAboutStep3Des_vn"
-                                                                rules={[{ required: true, message: 'Bắt buộc' }]}
-                                                            >
-                                                                <TextArea
-                                                                    placeholder="Hoàn tất thủ tục và chuyển vào"
-                                                                    rows={3}
-                                                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                                />
-                                                            </Form.Item>
-                                                        </div>
-                                                    </>
-                                                )
                                             }
                                         ]}
                                     />
@@ -957,45 +957,6 @@ export default function HomePageForm() {
                                         className="mb-6"
                                         items={[
                                             {
-                                                key: 'en',
-                                                label: (
-                                                    <span className="text-sm font-semibold font-['Manrope']">
-                                                        English (EN)
-                                                    </span>
-                                                ),
-                                                children: (
-                                                    <>
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Feature Title</span>}
-                                                            name="homeFeatureTitle_en"
-                                                            rules={[
-                                                                { max: 200, message: 'Maximum 200 characters allowed' }
-                                                            ]}
-                                                        >
-                                                            <Input
-                                                                placeholder="Our Key Features"
-                                                                size="large"
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            />
-                                                        </Form.Item>
-
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Feature Description</span>}
-                                                            name="homeFeatureDescription_en"
-                                                            rules={[
-                                                                { max: 1000, message: 'Maximum 1000 characters allowed' }
-                                                            ]}
-                                                        >
-                                                            <TextArea
-                                                                placeholder="Discover what makes us unique..."
-                                                                rows={4}
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                            />
-                                                        </Form.Item>
-                                                    </>
-                                                )
-                                            },
-                                            {
                                                 key: 'vn',
                                                 label: (
                                                     <span className="text-sm font-semibold font-['Manrope']">
@@ -1008,11 +969,12 @@ export default function HomePageForm() {
                                                             label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Tính Năng</span>}
                                                             name="homeFeatureTitle_vn"
                                                             rules={[
+                                                                { required: true, message: 'Vui lòng nhập tiêu đề' },
                                                                 { max: 200, message: 'Tối đa 200 ký tự' }
                                                             ]}
                                                         >
                                                             <Input
-                                                                placeholder="Tính Năng Chính Của Chúng Tôi"
+                                                                placeholder="Tại Sao Chọn Chúng Tôi"
                                                                 size="large"
                                                                 className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                             />
@@ -1022,13 +984,55 @@ export default function HomePageForm() {
                                                             label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Tính Năng</span>}
                                                             name="homeFeatureDescription_vn"
                                                             rules={[
-                                                                { max: 1000, message: 'Tối đa 1000 ký tự' }
+                                                                { required: true, message: 'Vui lòng nhập mô tả' },
+                                                                { max: 500, message: 'Tối đa 500 ký tự' }
                                                             ]}
                                                         >
                                                             <TextArea
-                                                                placeholder="Khám phá điều gì làm cho chúng tôi độc đáo..."
+                                                                placeholder="Chúng tôi cung cấp các dịch vụ tốt nhất..."
                                                                 rows={4}
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
+                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            />
+                                                        </Form.Item>
+                                                    </>
+                                                )
+                                            },
+                                            {
+                                                key: 'en',
+                                                label: (
+                                                    <span className="text-sm font-semibold font-['Manrope']">
+                                                        English (EN)
+                                                    </span>
+                                                ),
+                                                children: (
+                                                    <>
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Feature Title</span>}
+                                                            name="homeFeatureTitle_en"
+                                                            rules={[
+                                                                { required: true, message: 'Please enter feature title in English' },
+                                                                { max: 200, message: 'Maximum 200 characters allowed' }
+                                                            ]}
+                                                        >
+                                                            <Input
+                                                                placeholder="Why Choose Us"
+                                                                size="large"
+                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            />
+                                                        </Form.Item>
+
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Feature Description</span>}
+                                                            name="homeFeatureDescription_en"
+                                                            rules={[
+                                                                { required: true, message: 'Please enter feature description in English' },
+                                                                { max: 500, message: 'Maximum 500 characters allowed' }
+                                                            ]}
+                                                        >
+                                                            <TextArea
+                                                                placeholder="We provide the best services..."
+                                                                rows={4}
+                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
                                                             />
                                                         </Form.Item>
                                                     </>

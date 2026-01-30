@@ -90,7 +90,7 @@ export default function BlogSeoForm({
     const { can } = usePermissions();
     const { language } = useLanguage();
     const t = translations[language];
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vi');
     const [previewImage, setPreviewImage] = useState(null);
     const [ogImages, setOgImages] = useState([]);
 
@@ -249,142 +249,6 @@ export default function BlogSeoForm({
                                 items={[
                                     {
                                         forceRender: true,
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                {/* Meta Title */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Title
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'metaTitle', 'en']}
-                                                    rules={[
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Enter meta title for SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Meta Description */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Description
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'metaDescription', 'en']}
-                                                    rules={[
-                                                        { max: 500, message: 'Maximum 500 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Enter meta description for SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Meta Keywords */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Keywords
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'metaKeywords', 'en']}
-                                                    initialValue={[]}
-                                                >
-                                                    <KeywordTagsInput
-                                                        placeholder="Type keyword & press Enter"
-                                                        disabled={!can('blogs.blogCms', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Canonical URL */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Canonical URL
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'canonicalUrl', 'en']}
-                                                >
-                                                    <Input
-                                                        placeholder="https://example.com/blog/my-post"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Schema Type */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Schema Type
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'schemaType', 'en']}
-                                                >
-                                                    <Select
-                                                        placeholder="Select Schema Type"
-                                                        size="large"
-                                                        className="w-full"
-                                                        options={[
-                                                            { label: 'Article', value: 'Article' },
-                                                            { label: 'BlogPosting', value: 'BlogPosting' },
-                                                            { label: 'NewsArticle', value: 'NewsArticle' },
-                                                            { label: 'WebPage', value: 'WebPage' },
-                                                        ]}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* OG Title */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            OG Title (Social Sharing)
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'ogTitle', 'en']}
-                                                >
-                                                    <Input
-                                                        placeholder="Enter Open Graph title"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                {/* OG Description */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            OG Description
-                                                        </span>
-                                                    }
-                                                    name={['seoInformation', 'ogDescription', 'en']}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Enter Open Graph description"
-                                                        rows={3}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
-                                    {
-                                        forceRender: true,
                                         key: 'vi',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -512,6 +376,142 @@ export default function BlogSeoForm({
                                                 >
                                                     <TextArea
                                                         placeholder="Nhập mô tả Open Graph"
+                                                        rows={3}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                    />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        forceRender: true,
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                {/* Meta Title */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Meta Title
+                                                        </span>
+                                                    }
+                                                    name={['seoInformation', 'metaTitle', 'en']}
+                                                    rules={[
+                                                        { max: 200, message: 'Maximum 200 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Enter meta title for SEO"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Meta Description */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Meta Description
+                                                        </span>
+                                                    }
+                                                    name={['seoInformation', 'metaDescription', 'en']}
+                                                    rules={[
+                                                        { max: 500, message: 'Maximum 500 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="Enter meta description for SEO"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Meta Keywords */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Meta Keywords
+                                                        </span>
+                                                    }
+                                                    name={['seoInformation', 'metaKeywords', 'en']}
+                                                    initialValue={[]}
+                                                >
+                                                    <KeywordTagsInput
+                                                        placeholder="Type keyword & press Enter"
+                                                        disabled={!can('blogs.blogCms', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Canonical URL */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Canonical URL
+                                                        </span>
+                                                    }
+                                                    name={['seoInformation', 'canonicalUrl', 'en']}
+                                                >
+                                                    <Input
+                                                        placeholder="https://example.com/blog/my-post"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Schema Type */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Schema Type
+                                                        </span>
+                                                    }
+                                                    name={['seoInformation', 'schemaType', 'en']}
+                                                >
+                                                    <Select
+                                                        placeholder="Select Schema Type"
+                                                        size="large"
+                                                        className="w-full"
+                                                        options={[
+                                                            { label: 'Article', value: 'Article' },
+                                                            { label: 'BlogPosting', value: 'BlogPosting' },
+                                                            { label: 'NewsArticle', value: 'NewsArticle' },
+                                                            { label: 'WebPage', value: 'WebPage' },
+                                                        ]}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* OG Title */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            OG Title (Social Sharing)
+                                                        </span>
+                                                    }
+                                                    name={['seoInformation', 'ogTitle', 'en']}
+                                                >
+                                                    <Input
+                                                        placeholder="Enter Open Graph title"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                {/* OG Description */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            OG Description
+                                                        </span>
+                                                    }
+                                                    name={['seoInformation', 'ogDescription', 'en']}
+                                                >
+                                                    <TextArea
+                                                        placeholder="Enter Open Graph description"
                                                         rows={3}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
                                                     />

@@ -41,7 +41,7 @@ export default function BlogMainForm({
     const { can } = usePermissions();
     const { language } = useLanguage();
     const t = translations[language];
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
     const [mainImageUrl, setMainImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
@@ -215,6 +215,95 @@ export default function BlogMainForm({
                                 onChange={setActiveTab}
                                 className="mb-6"
                                 items={[
+                                    {
+                                        forceRender: true,
+                                        key: 'vn',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                🇻🇳 Tiếng Việt (VN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                {/* CONTENT SECTION */}
+                                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-6">
+                                                    <h4 className="text-md font-bold text-gray-700 mb-4 font-['Manrope'] flex items-center gap-2">
+                                                        <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                        </svg>
+                                                        Nội Dung
+                                                    </h4>
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Tiêu Đề Blog
+                                                            </span>
+                                                        }
+                                                        name={['title', 'vi']}
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập tiêu đề blog' },
+                                                            { max: 200, message: 'Tối đa 200 ký tự' }
+                                                        ]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Nhập tiêu đề blog..."
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Nội Dung Blog
+                                                            </span>
+                                                        }
+                                                        name={['content', 'vi']}
+                                                        rules={[{ required: true, message: 'Vui lòng nhập nội dung' }]}
+                                                    >
+                                                        <ReactQuill
+                                                            ref={quillRefVi}
+                                                            theme="snow"
+                                                            modules={modulesVi}
+                                                            formats={formats}
+                                                            className="h-[400px] mb-12 rounded-lg bg-white"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* METADATA SECTION */}
+                                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                                    <h4 className="text-md font-bold text-gray-700 mb-4 font-['Manrope'] flex items-center gap-2">
+                                                        <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                        </svg>
+                                                        Metadata & Cài Đặt
+                                                    </h4>
+
+                                                    {/* Tags VI */}
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Tags (VI)
+                                                            </span>
+                                                        }
+                                                        name={['tags', 'vi']}
+                                                    >
+                                                        <Select
+                                                            mode="tags"
+                                                            placeholder="Thêm thẻ..."
+                                                            size="large"
+                                                            className="rounded-[10px]"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <p className="text-sm text-gray-500 font-['Manrope'] italic">
+                                                        * Các trường Author, Category, Published Status và Featured Image được chia sẻ giữa cả hai ngôn ngữ.
+                                                    </p>
+                                                </div>
+                                            </>
+                                        )
+                                    },
                                     {
                                         forceRender: true,
                                         key: 'en',
@@ -439,95 +528,6 @@ export default function BlogMainForm({
                                                             </Form.Item>
                                                         </div>
                                                     </Form.Item>
-                                                </div>
-                                            </>
-                                        )
-                                    },
-                                    {
-                                        forceRender: true,
-                                        key: 'vn',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                🇻🇳 Tiếng Việt (VN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                {/* CONTENT SECTION */}
-                                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-6">
-                                                    <h4 className="text-md font-bold text-gray-700 mb-4 font-['Manrope'] flex items-center gap-2">
-                                                        <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                        </svg>
-                                                        Nội Dung
-                                                    </h4>
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Tiêu Đề Blog
-                                                            </span>
-                                                        }
-                                                        name={['title', 'vi']}
-                                                        rules={[
-                                                            { required: true, message: 'Vui lòng nhập tiêu đề blog' },
-                                                            { max: 200, message: 'Tối đa 200 ký tự' }
-                                                        ]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Nhập tiêu đề blog..."
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Nội Dung Blog
-                                                            </span>
-                                                        }
-                                                        name={['content', 'vi']}
-                                                        rules={[{ required: true, message: 'Vui lòng nhập nội dung' }]}
-                                                    >
-                                                        <ReactQuill
-                                                            ref={quillRefVi}
-                                                            theme="snow"
-                                                            modules={modulesVi}
-                                                            formats={formats}
-                                                            className="h-[400px] mb-12 rounded-lg bg-white"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* METADATA SECTION */}
-                                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                                                    <h4 className="text-md font-bold text-gray-700 mb-4 font-['Manrope'] flex items-center gap-2">
-                                                        <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                                        </svg>
-                                                        Metadata & Cài Đặt
-                                                    </h4>
-
-                                                    {/* Tags VI */}
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Tags (VI)
-                                                            </span>
-                                                        }
-                                                        name={['tags', 'vi']}
-                                                    >
-                                                        <Select
-                                                            mode="tags"
-                                                            placeholder="Thêm thẻ..."
-                                                            size="large"
-                                                            className="rounded-[10px]"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <p className="text-sm text-gray-500 font-['Manrope'] italic">
-                                                        * Các trường Author, Category, Published Status và Featured Image được chia sẻ giữa cả hai ngôn ngữ.
-                                                    </p>
                                                 </div>
                                             </>
                                         )

@@ -26,7 +26,7 @@ export default function AboutPageVisionMissionForm({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
         if (headerLang) {
@@ -80,110 +80,6 @@ export default function AboutPageVisionMissionForm({
                                 onChange={setActiveTab}
                                 className="mb-6"
                                 items={[
-                                    {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                {/* Vision Section */}
-                                                <div className="mb-8 p-5 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 rounded-xl border border-blue-100">
-                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
-                                                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                        </svg>
-                                                        Our Vision
-                                                    </h4>
-
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Vision Title
-                                                            </span>
-                                                        }
-                                                        name="aboutVisionTitle_en"
-                                                        rules={[
-                                                            { max: 200, message: 'Maximum 200 characters allowed' }
-                                                        ]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Our Vision for the Future"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Vision Description
-                                                            </span>
-                                                        }
-                                                        name="aboutVisionDescription_en"
-                                                        rules={[
-                                                            { max: 1000, message: 'Maximum 1000 characters allowed' }
-                                                        ]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Describe your vision for the company's future..."
-                                                            rows={4}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* Mission Section */}
-                                                <div className="mb-6 p-5 bg-gradient-to-br from-green-50/50 to-teal-50/50 rounded-xl border border-green-100">
-                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
-                                                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                                                        </svg>
-                                                        Our Mission
-                                                    </h4>
-
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Mission Title
-                                                            </span>
-                                                        }
-                                                        name="aboutMissionTitle_en"
-                                                        rules={[
-                                                            { max: 200, message: 'Maximum 200 characters allowed' }
-                                                        ]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Our Mission Statement"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Mission Description
-                                                            </span>
-                                                        }
-                                                        name="aboutMissionDescription_en"
-                                                        rules={[
-                                                            { max: 1000, message: 'Maximum 1000 characters allowed' }
-                                                        ]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Describe your mission and core values..."
-                                                            rows={4}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-                                            </>
-                                        )
-                                    },
                                     {
                                         key: 'vn',
                                         label: (
@@ -280,6 +176,110 @@ export default function AboutPageVisionMissionForm({
                                                     >
                                                         <TextArea
                                                             placeholder="Mô tả sứ mệnh và giá trị cốt lõi..."
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                {/* Vision Section */}
+                                                <div className="mb-8 p-5 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 rounded-xl border border-blue-100">
+                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
+                                                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                        Our Vision
+                                                    </h4>
+
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Vision Title
+                                                            </span>
+                                                        }
+                                                        name="aboutVisionTitle_en"
+                                                        rules={[
+                                                            { max: 200, message: 'Maximum 200 characters allowed' }
+                                                        ]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Our Vision for the Future"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Vision Description
+                                                            </span>
+                                                        }
+                                                        name="aboutVisionDescription_en"
+                                                        rules={[
+                                                            { max: 1000, message: 'Maximum 1000 characters allowed' }
+                                                        ]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Describe your vision for the company's future..."
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* Mission Section */}
+                                                <div className="mb-6 p-5 bg-gradient-to-br from-green-50/50 to-teal-50/50 rounded-xl border border-green-100">
+                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
+                                                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                                        </svg>
+                                                        Our Mission
+                                                    </h4>
+
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Mission Title
+                                                            </span>
+                                                        }
+                                                        name="aboutMissionTitle_en"
+                                                        rules={[
+                                                            { max: 200, message: 'Maximum 200 characters allowed' }
+                                                        ]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Our Mission Statement"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Mission Description
+                                                            </span>
+                                                        }
+                                                        name="aboutMissionDescription_en"
+                                                        rules={[
+                                                            { max: 1000, message: 'Maximum 1000 characters allowed' }
+                                                        ]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Describe your mission and core values..."
                                                             rows={4}
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
                                                         />

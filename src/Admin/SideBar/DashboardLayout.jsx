@@ -20,6 +20,7 @@ const DashboardLayout = () => {
     const [openUserManagement, setOpenUserManagement] = useState(false);
     const [openManageStaffs, setOpenManageStaffs] = useState(false);
     const [openOtherEnquiry, setOpenOtherEnquiry] = useState(false);
+    const [openSettings, setOpenSettings] = useState(false);
 
     // Sync sidebar state with current URL
     React.useEffect(() => {
@@ -59,6 +60,10 @@ const DashboardLayout = () => {
 
         if (path.includes('/dashboard/contact-enquiry')) {
             setOpenOtherEnquiry(true);
+        }
+
+        if (path.includes('/dashboard/settings/notification') || path.includes('/dashboard/settings/testimonials')) {
+            setOpenSettings(true);
         }
     }, [location.pathname]);
 
@@ -448,7 +453,6 @@ const DashboardLayout = () => {
                             </div>
                         )}
 
-
                         {/* OTHER ENQUIRY DROPDOWN */}
                         {(!isHidden("otherEnquiry.contactEnquiry")) && (
                             <div className="w-full">
@@ -478,6 +482,53 @@ const DashboardLayout = () => {
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Phone /> </span>
                                                 <span>{t.contactEnquiry}</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* SETTINGS DROPDOWN */}
+                        {(!isHidden("settings.notification") || !isHidden("settings.testimonials")) && (
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenSettings(!openSettings)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-full
+                 hover:bg-[#41398B] hover:text-white transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white">
+                                            <SettingsIcon className="w-4 h-4" />
+                                        </span>
+                                        <span>{t.settings}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openSettings ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {openSettings && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        {/* NOTIFICATION */}
+                                        <button
+                                            onClick={() => navigate("/dashboard/settings/notification")}
+                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                       ${isActive("/dashboard/settings/notification") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                     `}
+                                        >
+                                            <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <MessageSquare /> </span>
+                                            <span>{t.notification}</span>
+                                        </button>
+
+                                        {/* TESTIMONIALS */}
+                                        {!isHidden("settings.testimonials") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/settings/testimonials")}
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                   ${isActive("/dashboard/settings/testimonials") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                                 `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <MessageSquare /> </span>
+                                                <span>{t.testimonials}</span>
                                             </button>
                                         )}
                                     </div>
@@ -524,7 +575,6 @@ const DashboardLayout = () => {
                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><Trash /></span>
                             <span>{t.trash}</span>
                         </button>
-
                     </div>
                 </div>
 

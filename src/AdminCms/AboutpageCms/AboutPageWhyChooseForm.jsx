@@ -33,7 +33,7 @@ export default function AboutPageWhyChooseForm({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
     const [iconUploading, setIconUploading] = useState(null); // Track which icon is uploading
 
     useEffect(() => {
@@ -128,71 +128,6 @@ export default function AboutPageWhyChooseForm({
                                 className="mb-6"
                                 items={[
                                     {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Section Title
-                                                        </span>
-                                                    }
-                                                    name="aboutWhyChooseTitle_en"
-                                                    rules={[
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Why Choose Us"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Section Description
-                                                        </span>
-                                                    }
-                                                    name="aboutWhyChooseDescription_en"
-                                                    rules={[
-                                                        { max: 1000, message: 'Maximum 1000 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Describe why customers should choose you"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Button Text
-                                                        </span>
-                                                    }
-                                                    name="aboutWhyChooseButtonText_en"
-                                                    rules={[
-                                                        { max: 50, message: 'Maximum 50 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Learn More"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
-                                    {
                                         key: 'vn',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -250,6 +185,71 @@ export default function AboutPageWhyChooseForm({
                                                 >
                                                     <Input
                                                         placeholder="Tìm Hiểu Thêm"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Section Title
+                                                        </span>
+                                                    }
+                                                    name="aboutWhyChooseTitle_en"
+                                                    rules={[
+                                                        { max: 200, message: 'Maximum 200 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Why Choose Us"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Section Description
+                                                        </span>
+                                                    }
+                                                    name="aboutWhyChooseDescription_en"
+                                                    rules={[
+                                                        { max: 1000, message: 'Maximum 1000 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="Describe why customers should choose you"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                    />
+                                                </Form.Item>
+
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Button Text
+                                                        </span>
+                                                    }
+                                                    name="aboutWhyChooseButtonText_en"
+                                                    rules={[
+                                                        { max: 50, message: 'Maximum 50 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Learn More"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                     />

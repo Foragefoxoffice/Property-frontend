@@ -69,7 +69,7 @@ export default function CreatePropertyListStep2({
   useEffect(() => {
     console.log("initialData:", initialData);
   }, [initialData]);
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState("vi");
   const {
     currencies = [],
     deposits = [],
@@ -638,7 +638,7 @@ export default function CreatePropertyListStep2({
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
       {/* 🌐 Language Tabs */}
       <div className="flex mb-6 border-b border-gray-200">
-        {["en", "vi"].map((lng) => (
+        {["vi", "en"].map((lng) => (
           <button
             key={lng}
             className={`px-6 py-2 text-sm font-medium ${lang === lng
@@ -647,7 +647,7 @@ export default function CreatePropertyListStep2({
               }`}
             onClick={() => setLang(lng)}
           >
-            {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
+            {lng === "vi" ? "Tiếng Việt (VI)" : "English (EN)"}
           </button>
         ))}
       </div>

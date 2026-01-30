@@ -45,7 +45,7 @@ export default function FooterCmsForm() {
     const [uploading, setUploading] = useState(false);
     const [iconUploading, setIconUploading] = useState(null); // Track which icon is uploading
     const [previewImage, setPreviewImage] = useState(null);
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     // Translation object
     const translations = {
@@ -282,86 +282,6 @@ export default function FooterCmsForm() {
                                 className="mb-6"
                                 items={[
                                     {
-                                        key: 'en',
-                                        label: <span className="font-semibold font-['Manrope']">{t.tabs.en}</span>,
-                                        children: (
-                                            <div className="space-y-4 pt-4">
-                                                {/* Address Section */}
-                                                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-                                                    <h3 className="text-md font-bold text-gray-700 mb-4 font-['Manrope']">Address Section</h3>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Address Label</span>}
-                                                        name="footerAddressLable_en"
-                                                        rules={[{ required: true, message: 'Please enter address label' }]}
-                                                    >
-                                                        <Input placeholder="e.g. Find Us" className="h-11 rounded-lg" />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Address Content</span>}
-                                                        name="footerAddress_en"
-                                                        rules={[{ required: true, message: 'Please enter address' }]}
-                                                    >
-                                                        <TextArea rows={3} placeholder="123 Street Name, City, Country" className="rounded-lg" />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Copyright Text</span>}
-                                                        name="footerCopyRight_en"
-                                                    >
-                                                        <Input placeholder="e.g. 183 Housing Solutions" className="h-11 rounded-lg" />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* Labels Section */}
-                                                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-                                                    <h3 className="text-md font-bold text-gray-700 mb-4 font-['Manrope']">Section Labels</h3>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-gray-700 font-['Manrope']">Number Label</span>}
-                                                            name="footerNumberLable_en"
-                                                        >
-                                                            <Input placeholder="e.g. Call Us" className="h-11 rounded-lg" />
-                                                        </Form.Item>
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-gray-700 font-['Manrope']">Email Label</span>}
-                                                            name="footerEmailLable_en"
-                                                        >
-                                                            <Input placeholder="e.g. Email Us" className="h-11 rounded-lg" />
-                                                        </Form.Item>
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-gray-700 font-['Manrope']">"Our Company" Label</span>}
-                                                            name="footerOurCompanyLable_en"
-                                                        >
-                                                            <Input placeholder="e.g. Our Company" className="h-11 rounded-lg" />
-                                                        </Form.Item>
-                                                        <Form.Item
-                                                            label={<span className="font-semibold text-gray-700 font-['Manrope']">"Quick Links" Label</span>}
-                                                            name="footerQuickLinksLable_en"
-                                                        >
-                                                            <Input placeholder="e.g. Quick Links" className="h-11 rounded-lg" />
-                                                        </Form.Item>
-                                                    </div>
-                                                </div>
-
-                                                {/* Newsletter Section */}
-                                                <div className="bg-purple-50 p-5 rounded-xl border border-purple-100">
-                                                    <h3 className="text-md font-bold text-[#41398B] mb-4 font-['Manrope']">Newsletter Section</h3>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Join Our News Title</span>}
-                                                        name="footerJoinOurNewsTitle_en"
-                                                    >
-                                                        <Input placeholder="e.g. Subscribe to our Newsletter" className="h-11 rounded-lg" />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Join Our News Description</span>}
-                                                        name="footerJoinOurNewsDescription_en"
-                                                    >
-                                                        <TextArea rows={3} placeholder="Stay updated with our latest news..." className="rounded-lg" />
-                                                    </Form.Item>
-                                                </div>
-                                            </div>
-                                        )
-                                    },
-                                    {
                                         key: 'vn',
                                         label: <span className="font-semibold font-['Manrope']">{t.tabs.vn}</span>,
                                         children: (
@@ -436,6 +356,86 @@ export default function FooterCmsForm() {
                                                         name="footerJoinOurNewsDescription_vn"
                                                     >
                                                         <TextArea rows={3} placeholder="Cập nhật tin tức mới nhất..." className="rounded-lg" />
+                                                    </Form.Item>
+                                                </div>
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: <span className="font-semibold font-['Manrope']">{t.tabs.en}</span>,
+                                        children: (
+                                            <div className="space-y-4 pt-4">
+                                                {/* Address Section */}
+                                                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                                                    <h3 className="text-md font-bold text-gray-700 mb-4 font-['Manrope']">Address Section</h3>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Address Label</span>}
+                                                        name="footerAddressLable_en"
+                                                        rules={[{ required: true, message: 'Please enter address label' }]}
+                                                    >
+                                                        <Input placeholder="e.g. Find Us" className="h-11 rounded-lg" />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Address Content</span>}
+                                                        name="footerAddress_en"
+                                                        rules={[{ required: true, message: 'Please enter address' }]}
+                                                    >
+                                                        <TextArea rows={3} placeholder="123 Street Name, City, Country" className="rounded-lg" />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Copyright Text</span>}
+                                                        name="footerCopyRight_en"
+                                                    >
+                                                        <Input placeholder="e.g. 183 Housing Solutions" className="h-11 rounded-lg" />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* Labels Section */}
+                                                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                                                    <h3 className="text-md font-bold text-gray-700 mb-4 font-['Manrope']">Section Labels</h3>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-gray-700 font-['Manrope']">Number Label</span>}
+                                                            name="footerNumberLable_en"
+                                                        >
+                                                            <Input placeholder="e.g. Call Us" className="h-11 rounded-lg" />
+                                                        </Form.Item>
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-gray-700 font-['Manrope']">Email Label</span>}
+                                                            name="footerEmailLable_en"
+                                                        >
+                                                            <Input placeholder="e.g. Email Us" className="h-11 rounded-lg" />
+                                                        </Form.Item>
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-gray-700 font-['Manrope']">"Our Company" Label</span>}
+                                                            name="footerOurCompanyLable_en"
+                                                        >
+                                                            <Input placeholder="e.g. Our Company" className="h-11 rounded-lg" />
+                                                        </Form.Item>
+                                                        <Form.Item
+                                                            label={<span className="font-semibold text-gray-700 font-['Manrope']">"Quick Links" Label</span>}
+                                                            name="footerQuickLinksLable_en"
+                                                        >
+                                                            <Input placeholder="e.g. Quick Links" className="h-11 rounded-lg" />
+                                                        </Form.Item>
+                                                    </div>
+                                                </div>
+
+                                                {/* Newsletter Section */}
+                                                <div className="bg-purple-50 p-5 rounded-xl border border-purple-100">
+                                                    <h3 className="text-md font-bold text-[#41398B] mb-4 font-['Manrope']">Newsletter Section</h3>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Join Our News Title</span>}
+                                                        name="footerJoinOurNewsTitle_en"
+                                                    >
+                                                        <Input placeholder="e.g. Subscribe to our Newsletter" className="h-11 rounded-lg" />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-gray-700 font-['Manrope']">Join Our News Description</span>}
+                                                        name="footerJoinOurNewsDescription_en"
+                                                    >
+                                                        <TextArea rows={3} placeholder="Stay updated with our latest news..." className="rounded-lg" />
                                                     </Form.Item>
                                                 </div>
                                             </div>

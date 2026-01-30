@@ -30,7 +30,7 @@ export default function BlogMetadataForm({
     categories,
     isEditMode
 }) {
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
     const [mainImageUrl, setMainImageUrl] = useState('');
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);

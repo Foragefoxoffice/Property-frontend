@@ -98,7 +98,7 @@ export default function UserProfile() {
         status: "Active"
     });
 
-    const [activeTab, setActiveTab] = useState("en"); // For Staff Multilingual
+    const [activeTab, setActiveTab] = useState("vi"); // For Staff Multilingual
 
     // Password Form State
     const [passwordData, setPasswordData] = useState({
@@ -444,16 +444,6 @@ export default function UserProfile() {
                         <div className="flex gap-2">
                             <button
                                 type="button"
-                                onClick={() => setActiveTab("en")}
-                                className={`flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-full transition-all ${activeTab === "en"
-                                    ? "bg-[#41398B] text-white"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                    }`}
-                            >
-                                <Languages size={14} /> English
-                            </button>
-                            <button
-                                type="button"
                                 onClick={() => setActiveTab("vi")}
                                 className={`flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-full transition-all ${activeTab === "vi"
                                     ? "bg-[#41398B] text-white"
@@ -461,6 +451,16 @@ export default function UserProfile() {
                                     }`}
                             >
                                 <Languages size={14} /> Tiếng Việt
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("en")}
+                                className={`flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-full transition-all ${activeTab === "en"
+                                    ? "bg-[#41398B] text-white"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                    }`}
+                            >
+                                <Languages size={14} /> English
                             </button>
                         </div>
                     </div>

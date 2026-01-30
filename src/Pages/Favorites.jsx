@@ -41,7 +41,12 @@ export default function Favorites({ isDashboard = false }) {
         removedSuccess: "Removed from favorites",
         removeFail: "Failed to remove favorite",
         removeProperty: "Remove Property",
-        sendEnquiry: "Send Enquiry"
+        sendEnquiry: "Send Enquiry",
+        message: "Message",
+        optional: "Optional",
+        enterMessage: "Enter your message",
+        favoritesEnquiryDesc: "Send an enquiry to the property owner.",
+        send: "Send"
     } : {
         pageTitle: "Mục Yêu Thích",
         listing: "Danh Sách",
@@ -62,7 +67,12 @@ export default function Favorites({ isDashboard = false }) {
         removedSuccess: "Đã xóa khỏi danh sách yêu thích",
         removeFail: "Xóa thất bại",
         removeProperty: "Xóa Bất Động Sản",
-        sendEnquiry: "Gửi Yêu Cầu"
+        sendEnquiry: "Gửi Yêu Cầu",
+        message: "Tin nhắn",
+        optional: "Tùy chọn",
+        enterMessage: "Nhập tin nhắn của bạn",
+        favoritesEnquiryDesc: "Gửi yêu cầu đến chủ sở hữu bất động sản.",
+        send: "Gửi"
     };
 
     const handleDelete = async () => {
@@ -260,20 +270,18 @@ export default function Favorites({ isDashboard = false }) {
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                         <div className="flex flex-col mb-4">
                             <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                {language === 'vi' ? 'Gửi Yêu Cầu' : 'Send Enquiry'}
+                                {t.favoritesEnquiryTitle}
                             </h3>
                             <p className="text-gray-500 text-sm mb-4">
-                                {language === 'vi'
-                                    ? 'Gửi yêu cầu cho tất cả các bất động sản trong danh sách yêu thích của bạn.'
-                                    : 'Send an enquiry for all properties in your favorites list.'}
+                                {t.favoritesEnquiryDesc}
                             </p>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                {language === 'vi' ? 'Tin nhắn (Tùy chọn)' : 'Message (Optional)'}
+                                {t.message}
                             </label>
                             <textarea
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
-                                placeholder={language === 'vi' ? 'Nhập tin nhắn...' : 'Enter your message...'}
+                                placeholder={t.enterMessage}
                                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] transition-all resize-none h-32 text-sm"
                             />
                         </div>
@@ -291,7 +299,7 @@ export default function Favorites({ isDashboard = false }) {
                                 onClick={handleSendEnquiry}
                                 className="flex-1 px-4 py-2.5 bg-[#41398B] text-white font-semibold rounded-xl hover:bg-[#352e7a] transition-colors shadow-lg"
                             >
-                                {language === 'vi' ? 'Gửi' : 'Send'}
+                                {t.send || "Send"}
                             </button>
                         </div>
                     </div>

@@ -87,7 +87,7 @@ export default function AboutPageSeoForm({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
         if (headerLang) {
@@ -196,169 +196,6 @@ export default function AboutPageSeoForm({
                                 onChange={setActiveTab}
                                 className="mb-6"
                                 items={[
-                                    {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                {/* Meta Title */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Title
-                                                        </span>
-                                                    }
-                                                    name="aboutSeoMetaTitle_en"
-                                                    rules={[
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Enter meta title for SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Meta Description */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Description
-                                                        </span>
-                                                    }
-                                                    name="aboutSeoMetaDescription_en"
-                                                    rules={[
-                                                        { max: 500, message: 'Maximum 500 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Enter meta description for SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Meta Keywords */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Keywords
-                                                        </span>
-                                                    }
-                                                    name="aboutSeoMetaKeywords_en"
-                                                    initialValue={[]}
-                                                >
-                                                    <KeywordTagsInput
-                                                        placeholder="Type keyword & press Enter"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Slug URL */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Slug URL
-                                                        </span>
-                                                    }
-                                                    name="aboutSeoSlugUrl_en"
-                                                >
-                                                    <Input
-                                                        placeholder="about"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Canonical URL */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Canonical URL
-                                                        </span>
-                                                    }
-                                                    name="aboutSeoCanonicalUrl_en"
-                                                >
-                                                    <Input
-                                                        placeholder="https://example.com/about"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Schema Type */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Schema Type
-                                                        </span>
-                                                    }
-                                                    name="aboutSeoSchemaType_en"
-                                                >
-                                                    <Select
-                                                        placeholder="Select Schema Type"
-                                                        size="large"
-                                                        className="w-full"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                        options={[
-                                                            { label: 'Product', value: 'Product' },
-                                                            { label: 'RealEstateAgent', value: 'RealEstateAgent' },
-                                                            { label: 'Residence', value: 'Residence' },
-                                                            { label: 'Apartment', value: 'Apartment' },
-                                                            { label: 'SingleFamilyResidence', value: 'SingleFamilyResidence' },
-                                                            { label: 'House', value: 'House' },
-                                                            { label: 'Hotel', value: 'Hotel' },
-                                                            { label: 'Place', value: 'Place' },
-                                                            { label: 'LocalBusiness', value: 'LocalBusiness' },
-                                                        ]}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* OG Title */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            OG Title (Social Sharing)
-                                                        </span>
-                                                    }
-                                                    name="aboutSeoOgTitle_en"
-                                                >
-                                                    <Input
-                                                        placeholder="Enter Open Graph title"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* OG Description */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            OG Description
-                                                        </span>
-                                                    }
-                                                    name="aboutSeoOgDescription_en"
-                                                >
-                                                    <TextArea
-                                                        placeholder="Enter Open Graph description"
-                                                        rows={3}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
                                     {
                                         key: 'vn',
                                         label: (
@@ -514,6 +351,169 @@ export default function AboutPageSeoForm({
                                                 >
                                                     <TextArea
                                                         placeholder="Nhập mô tả Open Graph"
+                                                        rows={3}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
+                                                    />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                {/* Meta Title */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Meta Title
+                                                        </span>
+                                                    }
+                                                    name="aboutSeoMetaTitle_en"
+                                                    rules={[
+                                                        { max: 200, message: 'Maximum 200 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Enter meta title for SEO"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={true}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Meta Description */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Meta Description
+                                                        </span>
+                                                    }
+                                                    name="aboutSeoMetaDescription_en"
+                                                    rules={[
+                                                        { max: 500, message: 'Maximum 500 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="Enter meta description for SEO"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Meta Keywords */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Meta Keywords
+                                                        </span>
+                                                    }
+                                                    name="aboutSeoMetaKeywords_en"
+                                                    initialValue={[]}
+                                                >
+                                                    <KeywordTagsInput
+                                                        placeholder="Type keyword & press Enter"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Slug URL */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Slug URL
+                                                        </span>
+                                                    }
+                                                    name="aboutSeoSlugUrl_en"
+                                                >
+                                                    <Input
+                                                        placeholder="about"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={true}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Canonical URL */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Canonical URL
+                                                        </span>
+                                                    }
+                                                    name="aboutSeoCanonicalUrl_en"
+                                                >
+                                                    <Input
+                                                        placeholder="https://example.com/about"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Schema Type */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Schema Type
+                                                        </span>
+                                                    }
+                                                    name="aboutSeoSchemaType_en"
+                                                >
+                                                    <Select
+                                                        placeholder="Select Schema Type"
+                                                        size="large"
+                                                        className="w-full"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
+                                                        options={[
+                                                            { label: 'Product', value: 'Product' },
+                                                            { label: 'RealEstateAgent', value: 'RealEstateAgent' },
+                                                            { label: 'Residence', value: 'Residence' },
+                                                            { label: 'Apartment', value: 'Apartment' },
+                                                            { label: 'SingleFamilyResidence', value: 'SingleFamilyResidence' },
+                                                            { label: 'House', value: 'House' },
+                                                            { label: 'Hotel', value: 'Hotel' },
+                                                            { label: 'Place', value: 'Place' },
+                                                            { label: 'LocalBusiness', value: 'LocalBusiness' },
+                                                        ]}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* OG Title */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            OG Title (Social Sharing)
+                                                        </span>
+                                                    }
+                                                    name="aboutSeoOgTitle_en"
+                                                >
+                                                    <Input
+                                                        placeholder="Enter Open Graph title"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.aboutUs', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* OG Description */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            OG Description
+                                                        </span>
+                                                    }
+                                                    name="aboutSeoOgDescription_en"
+                                                >
+                                                    <TextArea
+                                                        placeholder="Enter Open Graph description"
                                                         rows={3}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
                                                         disabled={!can('cms.aboutUs', 'edit')}

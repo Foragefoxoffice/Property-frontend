@@ -33,7 +33,7 @@ export default function AboutOverviewForm({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
         if (headerLang) {
@@ -140,31 +140,6 @@ export default function AboutOverviewForm({
                                 className="mb-6"
                                 items={[
                                     {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Title</span>}
-                                                    name="aboutOverviewTitle_en"
-                                                    rules={[{ max: 200, message: 'Max 200 characters' }]}
-                                                >
-                                                    <Input placeholder="Company Overview" size="large" className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
-                                                </Form.Item>
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Description</span>}
-                                                    name="aboutOverviewDescription_en"
-                                                >
-                                                    <TextArea placeholder="Description..." rows={4} className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
-                                    {
                                         key: 'vn',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -185,6 +160,31 @@ export default function AboutOverviewForm({
                                                     name="aboutOverviewDescription_vn"
                                                 >
                                                     <TextArea placeholder="Mô tả..." rows={4} className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Title</span>}
+                                                    name="aboutOverviewTitle_en"
+                                                    rules={[{ max: 200, message: 'Max 200 characters' }]}
+                                                >
+                                                    <Input placeholder="Company Overview" size="large" className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Description</span>}
+                                                    name="aboutOverviewDescription_en"
+                                                >
+                                                    <TextArea placeholder="Description..." rows={4} className="rounded-[10px]" disabled={!can('cms.aboutUs', 'edit')} />
                                                 </Form.Item>
                                             </>
                                         )

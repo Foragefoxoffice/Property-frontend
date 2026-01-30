@@ -522,6 +522,13 @@ export const getSubscriptions = () => API.get("/subscription");
 export const deleteSubscription = (id) => API.delete(`/subscription/${id}`);
 
 /* =========================================================
+   🔔 NOTIFICATION SETTINGS APIs
+========================================================= */
+export const getNotificationSettings = () => API.get("/notification-settings");
+export const updateNotificationSettings = (data) => API.put("/notification-settings", data);
+
+
+/* =========================================================
    ✨ EXPORT DEFAULT
 ========================================================= */
 /* =========================================================
@@ -577,6 +584,16 @@ export const uploadPrivacyPolicyPageImage = (file) => {
     withCredentials: true,
   });
 };
+
+/* =========================================================
+   🌟 TESTIMONIAL APIs
+========================================================= */
+export const getAdminTestimonials = () => API.get("/testimonials/admin");
+export const getVisibleTestimonials = () => API.get("/testimonials");
+export const createTestimonial = (data) => API.post("/testimonials", data);
+export const toggleTestimonialVisibility = (id) => API.put(`/testimonials/${id}/visibility`);
+export const deleteTestimonial = (id) => API.delete(`/testimonials/${id}`);
+export const syncGoogleReviews = (data) => API.post("/testimonials/sync", data);
 
 export default API;
 

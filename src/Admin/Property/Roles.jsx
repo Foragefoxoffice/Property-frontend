@@ -103,6 +103,14 @@ export default function Roles() {
             key: "masters",
             isDirect: true,
             controls: ["hide"]
+        },
+        {
+            label: t.settings,
+            key: "settings",
+            subModules: [
+                { key: "notification", label: t.notification, controls: ["hide"] },
+                { key: "testimonials", label: t.testimonials, controls: ["hide"] }
+            ]
         }
     ];
 

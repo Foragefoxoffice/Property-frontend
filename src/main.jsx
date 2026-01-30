@@ -88,6 +88,8 @@ import TermsCondionsForm from "./AdminCms/TermsCondionsCms/TermsCondionsForm.jsx
 import TermsConditionPage from "./Pages/TermsConditionPage.jsx";
 import PrivacyPolicyForm from "./AdminCms/PrivacyPolicyCms/PrivacyPolicyForm.jsx";
 import PrivacyPolicyPage from "./Pages/PrivacyPolicyPage.jsx";
+import Notification from "./Admin/Notification/Notification.jsx";
+import TestimonialsCms from "./AdminCms/TestimonialCms/TestimonialsCms.jsx";
 
 createRoot(document.getElementById("root")).render(
   <HelmetProvider>
@@ -246,7 +248,10 @@ createRoot(document.getElementById("root")).render(
                   <Route path="cms/:section" element={<CMSPlaceholder />} />
                   <Route path="cms/terms-conditions" element={<TermsCondionsForm />} />
                   <Route path="cms/privacy-policy" element={<PrivacyPolicyForm />} />
+                  <Route path="settings/notification" element={<Notification />} />
+                  <Route path="settings/testimonials" element={<TestimonialsCms />} />
                   <Route path="profile" element={<UserProfile />} />
+
 
                 </Route>
 

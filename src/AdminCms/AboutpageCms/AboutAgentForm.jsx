@@ -33,7 +33,7 @@ export default function AboutAgentForm({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
         if (headerLang) {
@@ -140,51 +140,6 @@ export default function AboutAgentForm({
                                 className="mb-6"
                                 items={[
                                     {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Title</span>}
-                                                    name="aboutAgentTitle_en"
-                                                    rules={[{ max: 200, message: 'Max 200 characters' }]}
-                                                >
-                                                    <Input placeholder="Meet Our Agents" size="large" className="rounded-[10px]" />
-                                                </Form.Item>
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Subtitle</span>}
-                                                    name="aboutAgentSubTitle_en"
-                                                    rules={[{ max: 200, message: 'Max 200 characters' }]}
-                                                >
-                                                    <Input placeholder="Professional & Experienced" size="large" className="rounded-[10px]" />
-                                                </Form.Item>
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Description</span>}
-                                                    name="aboutAgentDescription_en"
-                                                >
-                                                    <TextArea placeholder="Short description..." rows={3} className="rounded-[10px]" />
-                                                </Form.Item>
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Content</span>}
-                                                    name="aboutAgentContent_en"
-                                                >
-                                                    <TextArea placeholder="Detailed content..." rows={5} className="rounded-[10px]" />
-                                                </Form.Item>
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Button Text</span>}
-                                                    name="aboutAgentButtonText_en"
-                                                    rules={[{ max: 50, message: 'Max 50 characters' }]}
-                                                >
-                                                    <Input placeholder="Contact Us" size="large" className="rounded-[10px]" />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
-                                    {
                                         key: 'vn',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -225,6 +180,51 @@ export default function AboutAgentForm({
                                                     rules={[{ max: 50, message: 'Tối đa 50 ký tự' }]}
                                                 >
                                                     <Input placeholder="Liên Hệ Ngay" size="large" className="rounded-[10px]" />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Title</span>}
+                                                    name="aboutAgentTitle_en"
+                                                    rules={[{ max: 200, message: 'Max 200 characters' }]}
+                                                >
+                                                    <Input placeholder="Meet Our Agents" size="large" className="rounded-[10px]" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Subtitle</span>}
+                                                    name="aboutAgentSubTitle_en"
+                                                    rules={[{ max: 200, message: 'Max 200 characters' }]}
+                                                >
+                                                    <Input placeholder="Professional & Experienced" size="large" className="rounded-[10px]" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Description</span>}
+                                                    name="aboutAgentDescription_en"
+                                                >
+                                                    <TextArea placeholder="Short description..." rows={3} className="rounded-[10px]" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Content</span>}
+                                                    name="aboutAgentContent_en"
+                                                >
+                                                    <TextArea placeholder="Detailed content..." rows={5} className="rounded-[10px]" />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Button Text</span>}
+                                                    name="aboutAgentButtonText_en"
+                                                    rules={[{ max: 50, message: 'Max 50 characters' }]}
+                                                >
+                                                    <Input placeholder="Contact Us" size="large" className="rounded-[10px]" />
                                                 </Form.Item>
                                             </>
                                         )

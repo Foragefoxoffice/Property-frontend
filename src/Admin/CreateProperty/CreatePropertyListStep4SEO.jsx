@@ -110,7 +110,7 @@ export default function CreatePropertyListStep4SEO({
     ogImages: [],
   };
 
-  const [activeLang, setActiveLang] = useState("en");
+  const [activeLang, setActiveLang] = useState("vi");
 
   const [seo, setSeo] = useState(
     initialData.seoInformation
@@ -229,7 +229,7 @@ export default function CreatePropertyListStep4SEO({
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-6">
       {/* 🌐 LANGUAGE TABS (Same UI as Step-2) */}
       <div className="flex mb-6 border-b border-gray-200">
-        {["en", "vi"].map((lng) => (
+        {["vi", "en"].map((lng) => (
           <button
             key={lng}
             onClick={() => setActiveLang(lng)}
@@ -238,7 +238,7 @@ export default function CreatePropertyListStep4SEO({
               : "text-gray-500 hover:text-black"
               }`}
           >
-            {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
+            {lng === "vi" ? "Tiếng Việt (VI)" : "English (EN)"}
           </button>
         ))}
       </div>

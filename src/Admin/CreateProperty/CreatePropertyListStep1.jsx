@@ -295,7 +295,7 @@ export default function CreatePropertyListStep1({
   }, [initialData]);
 
   const { can } = usePermissions();
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState("vi");
   const getToday = () => new Date().toISOString().split("T")[0];
 
   // ✅ Filter property types based on permissions
@@ -709,7 +709,7 @@ export default function CreatePropertyListStep1({
     <div className="min-h-screen bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
       {/* Language Toggle */}
       <div className="flex mb-6 border-b border-gray-200">
-        {["en", "vi"].map((lng) => (
+        {["vi", "en"].map((lng) => (
           <button
             key={lng}
             className={`px-6 py-2 text-sm font-medium ${lang === lng
@@ -718,7 +718,7 @@ export default function CreatePropertyListStep1({
               }`}
             onClick={() => setLang(lng)}
           >
-            {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
+            {lng === "vi" ? "Tiếng Việt (VI)" : "English (EN)"}
           </button>
         ))}
       </div>

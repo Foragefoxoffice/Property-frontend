@@ -22,7 +22,7 @@ export default function CategoryListPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
-    const [activeTab, setActiveTab] = useState("en");
+    const [activeTab, setActiveTab] = useState("vi");
 
     const [formData, setFormData] = useState({
         name: { en: "", vi: "" }
@@ -332,17 +332,6 @@ export default function CategoryListPage() {
                             <div className="flex gap-2 mb-6 border-b border-gray-200 bg-[#F9FAFB]">
                                 <button
                                     type="button"
-                                    onClick={() => setActiveTab("en")}
-                                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === "en"
-                                        ? "text-[#41398B] border-b-2 border-[#41398B]"
-                                        : "text-gray-500 hover:text-gray-700"
-                                        }`}
-                                >
-                                    <Languages size={16} />
-                                    English
-                                </button>
-                                <button
-                                    type="button"
                                     onClick={() => setActiveTab("vi")}
                                     className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === "vi"
                                         ? "text-[#41398B] border-b-2 border-[#41398B]"
@@ -351,6 +340,17 @@ export default function CategoryListPage() {
                                 >
                                     <Languages size={16} />
                                     Tiếng Việt
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab("en")}
+                                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === "en"
+                                        ? "text-[#41398B] border-b-2 border-[#41398B]"
+                                        : "text-gray-500 hover:text-gray-700"
+                                        }`}
+                                >
+                                    <Languages size={16} />
+                                    English
                                 </button>
                             </div>
 

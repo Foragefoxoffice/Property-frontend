@@ -105,7 +105,7 @@ export default function CreatePropertyPreview({
 
   console.log("💾 PREVIEW RECEIVED DATA:", propertyData);
 
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState("vi");
   const [loading, setLoading] = useState(false);
 
   // owners & staffs for popup lookup
@@ -277,7 +277,7 @@ export default function CreatePropertyPreview({
       <div className="max-w-6xl mx-auto py-6 px-3 sm:px-1">
         {/* 🌐 Language Tabs */}
         <div className="flex mb-6 border-b border-gray-200">
-          {["en", "vi"].map((lng) => (
+          {["vi", "en"].map((lng) => (
             <button
               key={lng}
               className={`px-6 py-2 text-sm font-medium ${lang === lng
@@ -286,7 +286,7 @@ export default function CreatePropertyPreview({
                 }`}
               onClick={() => setLang(lng)}
             >
-              {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
+              {lng === "vi" ? "Tiếng Việt (VI)" : "English (EN)"}
             </button>
           ))}
         </div>

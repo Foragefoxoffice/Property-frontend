@@ -118,7 +118,7 @@ const t = {
    MAIN FILTERS COMPONENT
 ====================================================== */
 export default function FiltersPage({ onApply, defaultFilters }) {
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState("vi");
   const { can } = usePermissions();
 
   // master lists (full objects)
@@ -368,14 +368,14 @@ export default function FiltersPage({ onApply, defaultFilters }) {
     <div className="min-h-screen rounded-2xl p-10">
       {/* language toggle */}
       <div className="flex mb-6 border-b border-gray-200">
-        {["en", "vi"].map((lng) => (
+        {["vi", "en"].map((lng) => (
           <button
             key={lng}
             className={`px-6 py-2 text-sm font-medium ${lang === lng ? "border-b-2 border-[#41398B] text-black" : "text-gray-500 hover:text-black"
               }`}
             onClick={() => setLang(lng)}
           >
-            {lng === "en" ? "English (EN)" : "Tiếng Việt (VI)"}
+            {lng === "vi" ? "Tiếng Việt (VI)" : "English (EN)"}
           </button>
         ))}
       </div>
