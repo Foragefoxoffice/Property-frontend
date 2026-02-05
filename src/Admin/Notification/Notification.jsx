@@ -34,7 +34,7 @@ export default function Notification() {
             }
         } catch (error) {
             console.error("Error fetching notification settings:", error);
-            CommonToaster("Failed to fetch settings", "error");
+            CommonToaster(t.failedToFetchSettings, "error");
         } finally {
             setLoading(false);
         }
@@ -46,11 +46,11 @@ export default function Notification() {
             setSaving(true);
             const res = await updateNotificationSettings(settings);
             if (res.data?.success) {
-                CommonToaster("Settings updated successfully", "success");
+                CommonToaster(t.settingsUpdated, "success");
             }
         } catch (error) {
             console.error("Error updating notification settings:", error);
-            CommonToaster(error.response?.data?.message || "Failed to update settings", "error");
+            CommonToaster(error.response?.data?.message || t.failedToUpdate || "Failed to update settings", "error");
         } finally {
             setSaving(false);
         }

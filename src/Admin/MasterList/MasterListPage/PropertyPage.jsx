@@ -22,12 +22,15 @@ import {
 import { CommonToaster } from "../../../Common/CommonToaster";
 import CommonSkeleton from "../../../Common/CommonSkeleton";
 import { useLanguage } from "../../../Language/LanguageContext";
+import { translations } from "../../../Language/translations";
 import { useNavigate } from "react-router-dom";
+import { translateError } from "../../../utils/translateError";
 
 export default function PropertyPage() {
   const navigate = useNavigate();
   const goBack = () => navigate(-1);
   const { language } = useLanguage();
+  const t = translations[language];
   const isVI = language === "vi";
 
   const [showModal, setShowModal] = useState(false);
@@ -140,7 +143,7 @@ export default function PropertyPage() {
       }
 
       CommonToaster(
-        isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
+        translateError(msg, t),
         "error"
       );
     }
@@ -160,16 +163,10 @@ export default function PropertyPage() {
       setDeleteConfirm({ show: false, id: null });
       fetchProperties();
     } catch (error) {
-      const msg = error.response?.data?.error || "Unknown error";
+      const msg = error.response?.data?.error || error.response?.data?.message || "Unknown error";
 
       CommonToaster(
-        msg.includes("Zone") || msg.includes("Block")
-          ? (isVI
-            ? "Không thể xóa dự án vì còn khu vực hoặc khối."
-            : "Cannot delete project because Zone & Block exist.")
-          : (isVI
-            ? "Không thể xóa dự án."
-            : "Failed to delete project."),
+        translateError(msg, t),
         "error"
       );
     }

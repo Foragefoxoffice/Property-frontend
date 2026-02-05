@@ -13,6 +13,7 @@ import { translations } from "../../Language/translations";
 import { useNavigate, useParams } from "react-router-dom";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { bulkUploadProperties } from "../../Api/action";
+import { translateError } from "../../utils/translateError";
 
 export default function BulkUpload() {
   const { type } = useParams(); // 'lease', 'sale', or 'homestay'
@@ -233,7 +234,7 @@ export default function BulkUpload() {
     link.click();
     document.body.removeChild(link);
 
-    CommonToaster("Template downloaded successfully", "success");
+    CommonToaster(t.templateDownloaded, "success");
   };
 
   // Handle file selection
@@ -241,7 +242,7 @@ export default function BulkUpload() {
     const file = e.target.files[0];
     if (file) {
       if (!file.name.endsWith(".csv")) {
-        CommonToaster("Please select a CSV file", "error");
+        CommonToaster(t.pleaseSelectCSV, "error");
         return;
       }
       setSelectedFile(file);
@@ -388,7 +389,7 @@ export default function BulkUpload() {
   // Handle file upload - Phase 1: Validate only
   const handleUpload = async () => {
     if (!selectedFile) {
-      CommonToaster("Please select a file first", "error");
+      CommonToaster(t.selectFileFirst, "error");
       return;
     }
 
@@ -497,8 +498,8 @@ export default function BulkUpload() {
     } catch (error) {
       console.error("Upload error:", error);
       console.error("Error response:", error.response);
-      const errorMessage = error.response?.data?.error || "Failed to process CSV file";
-      CommonToaster(errorMessage, "error");
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to process CSV file";
+      CommonToaster(translateError(errorMessage, t), "error");
       setUploadProgress(0);
     } finally {
       setUploading(false);
@@ -531,7 +532,7 @@ export default function BulkUpload() {
         setUploadProgress(100);
 
         CommonToaster(
-          `Successfully uploaded ${results.successful} properties!`,
+          `${t.uploadSuccessful} ${results.successful}!`,
           "success"
         );
 
@@ -548,8 +549,8 @@ export default function BulkUpload() {
       }
     } catch (error) {
       console.error("Upload error:", error);
-      const errorMessage = error.response?.data?.error || "Failed to upload properties";
-      CommonToaster(errorMessage, "error");
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || "Failed to upload properties";
+      CommonToaster(translateError(errorMessage, t), "error");
       setUploadProgress(0);
     } finally {
       setUploading(false);

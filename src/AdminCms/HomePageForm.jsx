@@ -21,10 +21,14 @@ import {
 } from '../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { validateVietnameseFields } from '@/utils/formValidation';
+import { useLanguage } from '@/Language/LanguageContext';
+import { translations } from '@/Language/translations';
 
 const { TextArea } = Input;
 
 export default function HomePageForm() {
+    const { language } = useLanguage();
+    const t = translations[language];
     const [bannerForm] = Form.useForm();
     const [aboutForm] = Form.useForm();
     const [featureForm] = Form.useForm();
@@ -115,7 +119,7 @@ export default function HomePageForm() {
                 aboutForm.resetFields();
                 featureForm.resetFields();
             } else {
-                CommonToaster('Failed to fetch page data', 'error');
+                CommonToaster(t.failedToFetch, 'error');
                 console.error(error);
             }
         } finally {
@@ -136,11 +140,11 @@ export default function HomePageForm() {
 
             bannerForm.setFieldsValue({ backgroundImage: uploadedUrl });
             setBannerImageUrl(uploadedUrl);
-            CommonToaster('Image uploaded successfully!', 'success');
+            CommonToaster(t.imageUploaded, 'success');
 
             return false;
         } catch (error) {
-            CommonToaster('Failed to upload image', 'error');
+            CommonToaster(t.failedToUploadImage, 'error');
             console.error(error);
             return false;
         } finally {
@@ -151,12 +155,12 @@ export default function HomePageForm() {
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            CommonToaster('You can only upload image files!', 'error');
+            CommonToaster(t.onlyImageFiles, 'error');
             return Upload.LIST_IGNORE;
         }
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            CommonToaster('Image must be smaller than 5MB!', 'error');
+            CommonToaster(t.imageTooLarge, 'error');
             return Upload.LIST_IGNORE;
         }
         handleImageUpload(file);
@@ -201,20 +205,20 @@ export default function HomePageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('Banner section updated successfully!', 'success');
+                CommonToaster(t.bannerUpdated, 'success');
             } else {
                 // For first time creation, need about data too
                 const aboutValues = await aboutForm.validateFields();
                 await createHomePage({ ...payload, ...aboutValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t.homePageCreated, 'success');
             }
 
             fetchPageData();
         } catch (error) {
             if (error.errorFields) {
-                CommonToaster('Please fill in the About Us section first', 'error');
+                CommonToaster(t.fillAboutFirst, 'error');
             } else {
-                CommonToaster(error.response?.data?.message || 'Failed to save banner section', 'error');
+                CommonToaster(error.response?.data?.message || t.failedToSaveBanner, 'error');
                 console.error(error);
             }
         } finally {
@@ -246,20 +250,20 @@ export default function HomePageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('About section updated successfully!', 'success');
+                CommonToaster(t.aboutUpdated, 'success');
             } else {
                 // For first time creation, need banner data too
                 const bannerValues = await bannerForm.validateFields();
                 await createHomePage({ ...payload, ...bannerValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t.homePageCreated, 'success');
             }
 
             fetchPageData();
         } catch (error) {
             if (error.errorFields) {
-                CommonToaster('Please fill in the Banner section first', 'error');
+                CommonToaster(t.fillBannerFirst, 'error');
             } else {
-                CommonToaster(error.response?.data?.message || 'Failed to save about section', 'error');
+                CommonToaster(error.response?.data?.message || t.failedToSaveAbout, 'error');
                 console.error(error);
             }
         } finally {
@@ -306,21 +310,21 @@ export default function HomePageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('Features section updated successfully!', 'success');
+                CommonToaster(t.featuresUpdated, 'success');
             } else {
                 // For first time creation, need banner and about data too
                 const bannerValues = await bannerForm.validateFields();
                 const aboutValues = await aboutForm.validateFields();
                 await createHomePage({ ...payload, ...bannerValues, ...aboutValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t.homePageCreated, 'success');
             }
 
             fetchPageData();
         } catch (error) {
             if (error.errorFields) {
-                CommonToaster('Please fill in the Banner and About sections first', 'error');
+                CommonToaster(t.fillBannerAboutFirst, 'error');
             } else {
-                CommonToaster(error.response?.data?.message || 'Failed to save features section', 'error');
+                CommonToaster(error.response?.data?.message || t.failedToSaveFeatures, 'error');
                 console.error(error);
             }
         } finally {

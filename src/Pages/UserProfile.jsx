@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { User, Phone, Mail, Lock, Eye, EyeOff, Save, Loader2, Calendar as CalendarIcon, Upload, Briefcase, Languages, AlertCircle } from "lucide-react";
+import { User, Phone, Mail, Lock, Eye, EyeOff, Save, Loader2, Calendar as CalendarIcon, Upload, Briefcase, Languages, AlertCircle, Camera } from "lucide-react";
 import { getMe, updateUser, updatePassword, getAllStaffs, updateStaff } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
 import { useLanguage } from "../Language/LanguageContext";
@@ -133,6 +133,9 @@ export default function UserProfile() {
                         employeeId: userData.employeeId || "",
                         profileImage: userData.profileImage || "",
                     });
+                    // Sync image to local storage for Header
+                    localStorage.setItem("userImage", userData.profileImage || "");
+                    window.dispatchEvent(new Event("userProfileUpdated"));
                 } else {
                     setIsStaff(true);
                     // Fetch Staff Record
@@ -164,6 +167,9 @@ export default function UserProfile() {
                             joiningDate: foundStaff.staffsJoiningDate || null,
                             status: foundStaff.status || "Active"
                         });
+                        // Sync image to local storage for Header
+                        localStorage.setItem("userImage", foundStaff.staffsImage || "");
+                        window.dispatchEvent(new Event("userProfileUpdated"));
                     } else {
                         // Fallback if staff record not found (shouldn't happen for admin usually)
                         console.warn("Staff record not found linked to this account.");
@@ -351,6 +357,32 @@ export default function UserProfile() {
                     </h2>
                     <form onSubmit={handleUserUpdate} className="space-y-6">
 
+                        {/* Profile Image Upload */}
+                        <div className="flex flex-col items-center justify-center mb-6">
+                            <div className="relative group">
+                                <div className="w-28 h-28 rounded-full border-4 border-gray-50 shadow-sm overflow-hidden bg-gray-100 flex items-center justify-center">
+                                    {userForm.profileImage ? (
+                                        <img src={userForm.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <User className="w-12 h-12 text-gray-300" />
+                                    )}
+                                </div>
+                                <label className="absolute inset-0 rounded-full flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity z-10">
+                                    <Upload className="text-white" size={24} />
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handlePhotoUpload}
+                                    />
+                                </label>
+                                <div className="absolute bottom-0 right-0 bg-[#41398B] text-white p-1.5 rounded-full shadow-md border-2 border-white z-20 pointer-events-none">
+                                    <Camera size={14} />
+                                </div>
+                            </div>
+                            <p className="mt-2 text-sm text-gray-500">{t?.uploadPhoto || "Upload Photo"}</p>
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Name */}
                             <div>
@@ -466,6 +498,39 @@ export default function UserProfile() {
                     </div>
 
                     <form onSubmit={handleStaffUpdate} className="space-y-6">
+
+                        {/* Profile Image Upload */}
+                        <div className="flex flex-col items-center justify-center mb-8">
+                            <div className="relative group">
+                                <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                                    {staffForm.profileImage ? (
+                                        <img src={staffForm.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-4xl font-bold text-gray-300 select-none">
+                                            {staffForm.firstName?.en ? staffForm.firstName.en.charAt(0).toUpperCase() : ""}
+                                            {staffForm.lastName?.en ? staffForm.lastName.en.charAt(0).toUpperCase() : ""}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Hover Overlay */}
+                                <label className="absolute inset-0 rounded-full flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity z-10">
+                                    <Upload className="text-white" size={24} />
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handlePhotoUpload}
+                                    />
+                                </label>
+
+                                {/* Edit Icon Badge */}
+                                <div className="absolute bottom-1 right-1 bg-[#41398B] text-white p-2 rounded-full shadow-md border-2 border-white z-20 pointer-events-none">
+                                    <Camera size={16} />
+                                </div>
+                            </div>
+                            <p className="mt-3 text-sm text-gray-500 font-medium">{t?.uploadPhoto || "Upload Photo"}</p>
+                        </div>
                         {/* Common Fields */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>

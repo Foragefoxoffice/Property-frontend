@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Tags, User, UserCheck, UserLockIcon, PersonStanding, SettingsIcon, UserPlus2, MessageSquare, Phone, CheckCheck } from "lucide-react";
+import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Tags, User, UserCheck, UserLockIcon, PersonStanding, SettingsIcon, UserPlus2, MessageSquare, Phone, CheckCheck, Star } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "../Header/Header";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -527,7 +527,7 @@ const DashboardLayout = () => {
                                    ${isActive("/dashboard/settings/testimonials") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                                  `}
                                             >
-                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <MessageSquare /> </span>
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Star /> </span>
                                                 <span>{t.testimonials}</span>
                                             </button>
                                         )}

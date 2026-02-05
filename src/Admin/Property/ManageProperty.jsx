@@ -25,6 +25,7 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { translateError } from "../../utils/translateError";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "antd";
 import FiltersPage from "../Filters/Filter";
@@ -179,23 +180,23 @@ export default function ManageProperty({
   const handleRestore = async (id) => {
     try {
       await restoreProperty(id);
-      CommonToaster("Property restored", "success");
+      CommonToaster(t.propertyRestored, "success");
       // remove from UI
       setProperties((prev) => prev.filter((p) => p._id !== id));
       // optionally adjust totalRows
       setTotalRows((prev) => Math.max(prev - 1, 0));
     } catch (err) {
-      CommonToaster("Failed to restore property", "error");
+      CommonToaster(t.failedToRestore, "error");
     }
   };
 
   const handleApprove = async (id) => {
     try {
       await updatePropertyListing(id, { status: "Published" });
-      CommonToaster("Property Approved Successfully", "success");
+      CommonToaster(t.propertyApproved, "success");
       fetchProperties();
     } catch (err) {
-      CommonToaster("Failed to approve property", "error");
+      CommonToaster(t.failedToApprove, "error");
     }
   };
 
@@ -203,28 +204,18 @@ export default function ManageProperty({
     try {
       if (trashMode) {
         await permanentlyDeleteProperty(deleteConfirm.id);
-        CommonToaster(
-          language === "vi"
-            ? "Đã xóa vĩnh viễn bất động sản"
-            : "Property permanently deleted",
-          "success"
-        );
+        CommonToaster(t.propertyPermanentlyDeleted, "success");
       } else {
         await deletePropertyListing(deleteConfirm.id);
-        CommonToaster(
-          language === "vi" ? "Đã chuyển vào thùng rác" : "Moved to trash",
-          "success"
-        );
+        CommonToaster(t.movedToTrash, "success");
       }
 
       setProperties((prev) => prev.filter((p) => p._id !== deleteConfirm.id));
       setTotalRows((prev) => Math.max(prev - 1, 0));
     } catch (err) {
       console.error("Error deleting property:", err);
-      CommonToaster(
-        language === "vi" ? "Xóa bất động sản thất bại" : "Failed to delete property",
-        "error"
-      );
+      const msg = err?.response?.data?.error || err?.response?.data?.message || t.failedToDeleteProperty;
+      CommonToaster(translateError(msg, t), "error");
     } finally {
       setDeleteConfirm({ show: false, id: null });
     }
@@ -293,14 +284,14 @@ export default function ManageProperty({
       if (target === "Home Stay") res = await copyPropertyToHomeStay(id);
 
       if (res?.data?.success) {
-        CommonToaster("Property copied successfully", "success");
+        CommonToaster(t.propertyCopied, "success");
         // add new item into current page (or you may want to refetch)
         setProperties((prev) => [res.data.data, ...prev]);
         setTotalRows((prev) => prev + 1);
       }
     } catch (err) {
       console.error(err);
-      CommonToaster("Copy failed", "error");
+      CommonToaster(t.copyFailed, "error");
     } finally {
       setCopyFullLoading(false);
     }
@@ -424,7 +415,7 @@ export default function ManageProperty({
             onClick={() => setAppliedFilters(null)}
             className="ml-2 text-sm underline text-red-600 cursor-pointer"
           >
-            Clear All Filters
+            {t.clearAllFilters}
           </button>
         </div>
       )}
@@ -445,7 +436,7 @@ export default function ManageProperty({
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.actionBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.sentBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.publishTheWebsite}</th>
-                <th className="px-6 py-3 font-medium text-[#111111] text-right whitespace-nowrap"></th>
+                <th className="px-6 py-3 font-medium text-[#111111] text-right whitespace-nowrap sticky right-0 bg-[#EAE9EE] z-10 shadow-[-4px_0_8px_rgba(0,0,0,0.05)]"></th>
               </tr>
             </thead>
 
@@ -474,7 +465,7 @@ export default function ManageProperty({
                 return (
                   <tr
                     key={p._id || i}
-                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition align-middle`}
+                    className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition align-middle group`}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
@@ -520,21 +511,17 @@ export default function ManageProperty({
                             }`}
                         >
                           {p.status === "Published"
-                            ? language === "vi"
-                              ? "Đã đăng"
-                              : "Published"
+                            ? t.published
                             : p.status === "Draft"
-                              ? language === "vi"
-                                ? "Bản nháp"
-                                : "Draft"
+                              ? t.draft
                               : p.status === "Pending"
-                                ? (language === "vi" ? "Đang chờ duyệt" : "Pending Approval")
+                                ? t.pendingApproval
                                 : p.status || "—"}
                         </span>
                       </div>
                     </td>
 
-                    <td className="px-6 py-4 text-right flex justify-end gap-3">
+                    <td className={`px-6 py-4 text-right flex justify-end gap-3 sticky right-0 z-10 shadow-[-4px_0_8px_rgba(0,0,0,0.05)] ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} group-hover:bg-gray-100`}>
                       {/* Approve Button */}
                       {isApprover && p.status === "Pending" && (
                         <button
@@ -603,7 +590,7 @@ export default function ManageProperty({
               {currentRows.length === 0 && (
                 <tr>
                   <td colSpan="6" className="text-center py-6 text-gray-500">
-                    {language === "vi" ? "Không tìm thấy bất động sản" : "No properties found"}
+                    {t.noPropertiesFound}
                   </td>
                 </tr>
               )}
@@ -650,21 +637,21 @@ export default function ManageProperty({
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
             <div className="flex items-center mb-4">
               <h3 className="text-lg font-semibold text-black-800">
-                {trashMode ? (language === "vi" ? "Bạn có chắc chắn tuyệt đối không?" : "Are you absolutely sure?") : (language === "vi" ? "Chuyển vào thùng rác?" : "Move to Trash?")}
+                {trashMode ? t.areYouAbsolutelySure : t.moveToTrashQuestion}
               </h3>
             </div>
 
             <p className="text-gray-600 text-sm mb-6">
-              {trashMode ? (language === "vi" ? "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn tài khoản của bạn và xóa dữ liệu khỏi máy chủ của chúng tôi." : "This action cannot be undone. This will permanently delete your account and remove your data from our servers.") : (language === "vi" ? "Bất động sản sẽ được chuyển vào thùng rác và có thể khôi phục lại sau này." : "This property will be moved to trash and can be restored later.")}
+              {trashMode ? t.permanentlyDeleteMessage : t.moveToTrashMessage}
             </p>
 
             <div className="flex justify-end gap-3">
               <button onClick={() => setDeleteConfirm({ show: false, id: null })} className="px-5 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 cursor-pointer">
-                {language === "vi" ? "Hủy" : "Cancel"}
+                {t.cancel}
               </button>
 
               <button onClick={handleDelete} className={`px-6 py-2 rounded-full text-white  cursor-pointer ${trashMode ? "bg-red-600 hover:bg-red-700" : "bg-red-600 hover:bg-red-700"}`}>
-                {trashMode ? (language === "vi" ? "Xóa vĩnh viễn" : "Delete Permanently") : (language === "vi" ? "Chuyển vào thùng rác" : "Move to Trash")}
+                {trashMode ? t.deletePermanently : t.moveToTrash}
               </button>
             </div>
           </div>
@@ -698,7 +685,7 @@ export default function ManageProperty({
         <div className="fixed inset-0 bg-black/40 z-[9999] flex justify-center items-center">
           <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center gap-4">
             <div className="animate-spin w-12 h-12 border-4 border-[#41398B] border-t-transparent rounded-full"></div>
-            <p className="text-gray-700 text-lg font-medium">Copying Property...</p>
+            <p className="text-gray-700 text-lg font-medium">{t.copyingProperty}</p>
           </div>
         </div>
       )}

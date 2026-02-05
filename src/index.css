@@ -14,6 +14,10 @@ body {
   position: fixed;
 } */
 
+button {
+  cursor: pointer !important;
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   /* IE and Edge */

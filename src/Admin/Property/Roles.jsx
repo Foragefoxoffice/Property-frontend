@@ -18,6 +18,7 @@ import CommonSkeleton from "../../Common/CommonSkeleton";
 import { usePermissions } from "../../Context/PermissionContext";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { translateError } from "../../utils/translateError";
 
 const { Panel } = Collapse;
 
@@ -151,7 +152,7 @@ export default function Roles() {
             const res = await getRoles();
             setRoles(res.data.data || []);
         } catch {
-            CommonToaster("Failed to fetch roles", "error");
+            CommonToaster(t.failedToFetchRoles, "error");
         } finally {
             setLoading(false);
         }
@@ -226,28 +227,30 @@ export default function Roles() {
         try {
             if (editMode && editingRole?._id) {
                 await updateRole(editingRole._id, form);
-                CommonToaster("Role updated successfully", "success");
+                CommonToaster(t.roleUpdated, "success");
             } else {
                 await createRole(form);
-                CommonToaster("Role create successfully", "success");
+                CommonToaster(t.roleCreated, "success");
             }
             await refreshPermissions();
             setShowModal(false);
             fetchRoles();
         } catch (err) {
-            CommonToaster(err.response?.data?.error || "Error saving role", "error");
+            const msg = err.response?.data?.error || err.response?.data?.message || t.errorSavingRole;
+            CommonToaster(translateError(msg, t), "error");
         }
     };
 
     const handleDelete = async () => {
         try {
             await deleteRole(deleteConfirm.id);
-            CommonToaster("Role deleted successfully", "success");
+            CommonToaster(t.roleDeleted, "success");
             await refreshPermissions();
             setDeleteConfirm({ show: false, id: null });
             fetchRoles();
         } catch (err) {
-            CommonToaster(err.response?.data?.error || "Error deleting role", "error");
+            const msg = err.response?.data?.error || err.response?.data?.message || t.errorDeletingRole;
+            CommonToaster(translateError(msg, t), "error");
         }
     };
 

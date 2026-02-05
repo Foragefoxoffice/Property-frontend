@@ -27,6 +27,15 @@ export default function Header({ showNavigation = true }) {
   const [zones, setZones] = useState([]);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [activeProject, setActiveProject] = useState(null);
+  const [userImage, setUserImage] = useState(localStorage.getItem("userImage") || "");
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      setUserImage(localStorage.getItem("userImage") || "");
+    };
+    window.addEventListener("userProfileUpdated", handleProfileUpdate);
+    return () => window.removeEventListener("userProfileUpdated", handleProfileUpdate);
+  }, []);
 
   const labels = {
     logout: { en: "Logout", vi: "Đăng xuất" },
@@ -150,6 +159,31 @@ export default function Header({ showNavigation = true }) {
 
             {/* Language Toggle */}
             <div className="inline-flex items-center gap-1 rounded-full bg-gray-200 p-1">
+              {/* Vietnamese Flag */}
+              <button
+                onClick={() => toggleLanguage("vi")}
+                aria-pressed={language === "vi"}
+                title="Tiếng Việt"
+                className={`h-8 w-8 rounded-full flex items-center justify-center transition cursor-pointer ${language === "vi"
+                  ? "bg-white shadow scale-105"
+                  : "hover:bg-white/20"
+                  }`}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                  <defs>
+                    <clipPath id="vn_clip_staff">
+                      <circle cx="12" cy="12" r="12"></circle>
+                    </clipPath>
+                  </defs>
+                  <g clipPath="url(#vn_clip_staff)">
+                    <rect width="24" height="24" fill="#DA251D"></rect>
+                    <polygon
+                      fill="#FFCE00"
+                      points="12.000,4.500 13.763,9.573 19.133,9.682 14.853,12.927 16.408,18.068 12.000,15.000 7.592,18.068 9.147,12.927 4.867,9.682 10.237,9.573"
+                    ></polygon>
+                  </g>
+                </svg>
+              </button>
               {/* English Flag */}
               <button
                 onClick={() => toggleLanguage("en")}
@@ -179,31 +213,6 @@ export default function Header({ showNavigation = true }) {
                   </g>
                 </svg>
               </button>
-              {/* Vietnamese Flag */}
-              <button
-                onClick={() => toggleLanguage("vi")}
-                aria-pressed={language === "vi"}
-                title="Tiếng Việt"
-                className={`h-8 w-8 rounded-full flex items-center justify-center transition cursor-pointer ${language === "vi"
-                  ? "bg-white shadow scale-105"
-                  : "hover:bg-white/20"
-                  }`}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                  <defs>
-                    <clipPath id="vn_clip_staff">
-                      <circle cx="12" cy="12" r="12"></circle>
-                    </clipPath>
-                  </defs>
-                  <g clipPath="url(#vn_clip_staff)">
-                    <rect width="24" height="24" fill="#DA251D"></rect>
-                    <polygon
-                      fill="#FFCE00"
-                      points="12.000,4.500 13.763,9.573 19.133,9.682 14.853,12.927 16.408,18.068 12.000,15.000 7.592,18.068 9.147,12.927 4.867,9.682 10.237,9.573"
-                    ></polygon>
-                  </g>
-                </svg>
-              </button>
             </div>
 
             {/* User Profile */}
@@ -214,8 +223,12 @@ export default function Header({ showNavigation = true }) {
                 onMouseLeave={() => setShowLogout(false)}
               >
                 <div className="flex items-center gap-2 cursor-pointer hover:bg-white/10 rounded-full px-3 py-1.5 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-[#41398B] text-white flex items-center justify-center text-sm font-bold">
-                    {initials}
+                  <div className="w-8 h-8 rounded-full bg-[#41398B] text-white flex items-center justify-center text-sm font-bold overflow-hidden border border-white/20">
+                    {userImage ? (
+                      <img src={userImage} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      initials
+                    )}
                   </div>
                   <span className="text-[#41398B] text-sm font-medium">
                     {userName ? userName.split(" ")[0] : "Admin"}
@@ -515,6 +528,35 @@ export default function Header({ showNavigation = true }) {
 
           {/* Language Toggle */}
           <div className="inline-flex items-center gap-1 rounded-full bg-gray-100 p-1">
+            {/* Vietnamese Flag */}
+            <button
+              onClick={() => toggleLanguage("vi")}
+              aria-pressed={language === "vi"}
+              title="Tiếng Việt"
+              className={`h-8 w-8 rounded-full flex items-center justify-center transition ring-1 ring-black/5 cursor-pointer ${language === "vi"
+                ? "bg-white shadow scale-105"
+                : "hover:bg-white/70"
+                }`}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                <defs>
+                  <clipPath id="vn_clip">
+                    <circle cx="12" cy="12" r="12"></circle>
+                  </clipPath>
+                </defs>
+                <g clipPath="url(#vn_clip)">
+                  <rect width="24" height="24" fill="#DA251D"></rect>
+                  <polygon
+                    fill="#FFCE00"
+                    points="
+                      12.000,4.500 13.763,9.573 19.133,9.682 14.853,12.927
+                      16.408,18.068 12.000,15.000 7.592,18.068 9.147,12.927
+                      4.867,9.682 10.237,9.573
+                    "
+                  ></polygon>
+                </g>
+              </svg>
+            </button>
             {/* English Flag */}
             <button
               onClick={() => toggleLanguage("en")}
@@ -600,35 +642,6 @@ export default function Header({ showNavigation = true }) {
                 </g>
               </svg>
             </button>
-            {/* Vietnamese Flag */}
-            <button
-              onClick={() => toggleLanguage("vi")}
-              aria-pressed={language === "vi"}
-              title="Tiếng Việt"
-              className={`h-8 w-8 rounded-full flex items-center justify-center transition ring-1 ring-black/5 cursor-pointer ${language === "vi"
-                ? "bg-white shadow scale-105"
-                : "hover:bg-white/70"
-                }`}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                <defs>
-                  <clipPath id="vn_clip">
-                    <circle cx="12" cy="12" r="12"></circle>
-                  </clipPath>
-                </defs>
-                <g clipPath="url(#vn_clip)">
-                  <rect width="24" height="24" fill="#DA251D"></rect>
-                  <polygon
-                    fill="#FFCE00"
-                    points="
-                      12.000,4.500 13.763,9.573 19.133,9.682 14.853,12.927
-                      16.408,18.068 12.000,15.000 7.592,18.068 9.147,12.927
-                      4.867,9.682 10.237,9.573
-                    "
-                  ></polygon>
-                </g>
-              </svg>
-            </button>
           </div>
 
           {/* Login/Register or Profile */}
@@ -639,7 +652,7 @@ export default function Header({ showNavigation = true }) {
               onMouseLeave={() => setShowLogout(false)}
             >
               <div
-                className="w-9 h-9 rounded-full bg-[#41398B] text-white 
+                className="w-9 h-9 rounded-full bg-[#41398B] text-white overflow-hidden
                flex items-center justify-center text-sm font-bold 
                cursor-pointer shadow-sm hover:bg-[#352e7a] transition-colors"
                 onClick={() => {
@@ -651,7 +664,11 @@ export default function Header({ showNavigation = true }) {
                   }
                 }}
               >
-                {initials}
+                {userImage ? (
+                  <img src={userImage} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  initials
+                )}
               </div>
               <AnimatePresence>
                 {showLogout && (

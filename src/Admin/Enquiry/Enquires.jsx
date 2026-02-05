@@ -25,6 +25,7 @@ import { translations } from "../../Language/translations";
 import { usePermissions } from "../../Context/PermissionContext";
 import { useSocket } from "../../Context/SocketContext";
 import { normalizeFancyText } from "../../utils/display";
+import { translateError } from "../../utils/translateError";
 
 export default function Enquires() {
     const [enquiries, setEnquiries] = useState([]);
@@ -58,7 +59,7 @@ export default function Enquires() {
                 setEnquiries(res.data.data || []);
             }
         } catch {
-            CommonToaster("Failed to fetch enquiries", "error");
+            CommonToaster(t.failedToFetchEnquiries, "error");
         } finally {
             setLoading(false);
         }
@@ -76,9 +77,7 @@ export default function Enquires() {
 
             // Show notification toast
             CommonToaster(
-                language === 'vi'
-                    ? `Yêu cầu mới từ ${data.enquiry.userName}`
-                    : `New enquiry from ${data.enquiry.userName}`,
+                `${t.newEnquiryFrom} ${data.enquiry.userName}`,
                 "info"
             );
         };
@@ -99,7 +98,7 @@ export default function Enquires() {
             CommonToaster(currentStatus ? t.markAsUnread : t.markAsRead, "success");
         } catch (error) {
             console.error(error);
-            CommonToaster("Failed to update status", "error");
+            CommonToaster(t.failedToUpdateStatus, "error");
         }
     };
 
@@ -112,10 +111,11 @@ export default function Enquires() {
             await deleteEnquiry(deleteConfirm.id);
             setEnquiries(prev => prev.filter(item => item._id !== deleteConfirm.id));
             setDeleteConfirm({ show: false, id: null });
-            CommonToaster("Enquiry deleted successfully", "success");
+            CommonToaster(t.enquiryDeleted, "success");
         } catch (error) {
             console.error(error);
-            CommonToaster("Failed to delete enquiry", "error");
+            const msg = error.response?.data?.error || error.response?.data?.message || t.failedToDeleteEnquiry;
+            CommonToaster(translateError(msg, t), "error");
         }
     };
 
@@ -168,8 +168,8 @@ export default function Enquires() {
             CommonToaster(successMsg, "success");
         } catch (error) {
             console.error(error);
-            const errorMsg = t.bulkDeleteError || "Failed to delete enquiries. Please try again.";
-            CommonToaster(errorMsg, "error");
+            const errorMsg = error.response?.data?.error || error.response?.data?.message || t.bulkDeleteError || "Failed to delete enquiries. Please try again.";
+            CommonToaster(translateError(errorMsg, t), "error");
         } finally {
             setLoading(false);
         }
@@ -307,7 +307,7 @@ export default function Enquires() {
                                                         {item.userPhone}
                                                     </div>
                                                 ) : (
-                                                    <span className="text-sm text-gray-300 italic">No number</span>
+                                                    <span className="text-sm text-gray-300 italic">{t.noNumber}</span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -334,7 +334,7 @@ export default function Enquires() {
                                                             className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#41398B] bg-[#41398B]/5 hover:bg-[#41398B]/10 rounded-md transition-colors border border-[#41398B]/10 whitespace-nowrap"
                                                         >
                                                             <Eye size={12} />
-                                                            {language === 'vi' ? 'Xem' : 'View'}
+                                                            {t.view}
                                                         </button>
                                                     </div>
                                                 ) : (
@@ -635,10 +635,10 @@ export default function Enquires() {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-lg text-gray-800">
-                                        {language === 'vi' ? 'Chi tiết tin nhắn' : 'Message Details'}
+                                        {t.messageDetails}
                                     </h3>
                                     <p className="text-xs text-gray-500">
-                                        {language === 'vi' ? 'Từ' : 'From'}: {messageModal.userName || 'Unknown'}
+                                        {t.from}: {messageModal.userName || 'Unknown'}
                                     </p>
                                 </div>
                             </div>
@@ -659,7 +659,7 @@ export default function Enquires() {
                                 onClick={() => setMessageModal({ show: false, message: "", userName: "" })}
                                 className="px-5 py-2.5 bg-[#41398B] text-white rounded-lg hover:bg-[#352e7a] font-medium text-sm shadow-sm transition"
                             >
-                                {language === 'vi' ? 'Đóng' : 'Close'}
+                                {t.close}
                             </button>
                         </div>
                     </div>

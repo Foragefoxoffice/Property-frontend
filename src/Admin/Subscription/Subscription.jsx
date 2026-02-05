@@ -34,7 +34,7 @@ export default function Subscription() {
             const res = await getSubscriptions();
             setSubscriptions(res.data.data || []);
         } catch {
-            CommonToaster("Failed to fetch subscriptions", "error");
+            CommonToaster(t.failedToFetchSubscriptions, "error");
         } finally {
             setLoading(false);
         }
@@ -43,11 +43,11 @@ export default function Subscription() {
     const handleDelete = async () => {
         try {
             await deleteSubscription(deleteConfirm.id);
-            CommonToaster("Subscription deleted successfully", "success");
+            CommonToaster(t.subscriptionDeleted, "success");
             setDeleteConfirm({ show: false, id: null });
             fetchSubscriptions();
         } catch {
-            CommonToaster("Error deleting subscription", "error");
+            CommonToaster(t.errorDeletingSubscription, "error");
         }
     };
 
@@ -85,7 +85,7 @@ export default function Subscription() {
                         <Search className="absolute top-2.5 left-3 text-gray-400 w-4 h-4" />
                         <input
                             type="text"
-                            placeholder="Search email..."
+                            placeholder={t.searchEmail}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
@@ -96,7 +96,7 @@ export default function Subscription() {
                         onClick={exportToCSV}
                         className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#41398B] rounded-full font-medium transition shadow-sm text-sm"
                     >
-                        <CloudDownload size={16} /> Export CSV
+                        <CloudDownload size={16} /> {t.exportCSV}
                     </button>
                 </div>
             </div>
@@ -145,7 +145,7 @@ export default function Subscription() {
                                 {filteredSubscriptions.length === 0 && (
                                     <tr>
                                         <td colSpan="4" className="py-12 text-center text-gray-500">
-                                            No subscriptions found.
+                                            {t.noSubscriptionsFound}
                                         </td>
                                     </tr>
                                 )}
@@ -162,9 +162,9 @@ export default function Subscription() {
                         <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
                             <Trash2 size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">Delete Subscription?</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">{t.deleteSubscriptionQuestion}</h3>
                         <p className="text-gray-500 text-sm mb-6 text-center leading-relaxed">
-                            Are you sure you want to delete this subscription? This action cannot be undone.
+                            {t.deleteSubscriptionConfirm}
                         </p>
                         <div className="flex justify-center gap-3">
                             <button onClick={() => setDeleteConfirm({ show: false, id: null })} className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">{t.cancel}</button>

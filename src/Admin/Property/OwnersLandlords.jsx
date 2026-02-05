@@ -18,6 +18,7 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { translateError } from "../../utils/translateError";
 import { Select } from "antd";
 import { useNavigate } from "react-router-dom";
 import { usePermissions } from "../../Context/PermissionContext";
@@ -99,7 +100,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
       const res = await getAllOwners();
       setOwners(res.data.data || []);
     } catch {
-      CommonToaster("Failed to load owners", "error");
+      CommonToaster(t.failedToLoadOwners, "error");
     } finally {
       setLoading(false);
     }
@@ -194,16 +195,16 @@ const OwnersLandlords = ({ openOwnerView }) => {
     try {
       if (editMode) {
         await updateOwner(editingOwner._id, payload);
-        CommonToaster("Owner updated", "success");
+        CommonToaster(t.ownerUpdated, "success");
       } else {
         await createOwner(payload);
-        CommonToaster("Owner created", "success");
+        CommonToaster(t.ownerCreated, "success");
       }
       setShowModal(false);
       fetchOwners();
     } catch (error) {
-      const msg = error?.response?.data?.error || error?.response?.data?.message || "Error saving owner";
-      CommonToaster(msg, "error");
+      const msg = error?.response?.data?.error || error?.response?.data?.message || t.errorSavingOwner;
+      CommonToaster(translateError(msg, t), "error");
     }
   };
 
@@ -213,11 +214,12 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const handleDelete = async () => {
     try {
       await deleteOwner(deleteConfirm.id);
-      CommonToaster("Owner deleted", "success");
+      CommonToaster(t.ownerDeleted, "success");
       setDeleteConfirm({ show: false, id: null });
       fetchOwners();
-    } catch {
-      CommonToaster("Delete failed", "error");
+    } catch (error) {
+      const msg = error?.response?.data?.error || error?.response?.data?.message || t.deleteFailed;
+      CommonToaster(translateError(msg, t), "error");
     }
   };
 
@@ -600,6 +602,25 @@ const AddEditOwnerModal = ({
               }
               className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm mt-1"
             />
+          </div>
+
+          {/* GENDER */}
+          <div className="mb-3">
+            <label className="font-medium text-sm">{text.gender}</label>
+            <select
+              value={formData.gender}
+              onChange={(e) =>
+                setFormData({ ...formData, gender: e.target.value })
+              }
+              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm mt-1 bg-white"
+            >
+              <option value="" disabled>
+                {activeLang === "VI" ? "Chọn giới tính" : "Select Gender"}
+              </option>
+              <option value="Male">{activeLang === "VI" ? "Nam" : "Male"}</option>
+              <option value="Female">{activeLang === "VI" ? "Nữ" : "Female"}</option>
+              <option value="Other">{activeLang === "VI" ? "Khác" : "Other"}</option>
+            </select>
           </div>
 
 

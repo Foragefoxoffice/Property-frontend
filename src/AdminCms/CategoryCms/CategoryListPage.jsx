@@ -7,6 +7,7 @@ import { usePermissions } from "../../Context/PermissionContext";
 import { CommonToaster } from "@/Common/CommonToaster";
 import { translations } from "../../Language/translations";
 import CommonSkeleton from "../../Common/CommonSkeleton";
+import { translateError } from "../../utils/translateError";
 
 export default function CategoryListPage() {
     const { language } = useLanguage();
@@ -41,7 +42,7 @@ export default function CategoryListPage() {
             setCategories(res.data.data);
         } catch (error) {
             console.error(error);
-            CommonToaster(t.errorFetching || "Failed to fetch categories", "error");
+            CommonToaster(t.errorFetchingCategories, "error");
         } finally {
             setLoading(false);
         }
@@ -63,7 +64,8 @@ export default function CategoryListPage() {
             setDeleteId(null);
         } catch (error) {
             console.error("Delete Error:", error);
-            CommonToaster(error.response?.data?.error || t.errorDeletingCategory, "error");
+            const msg = error.response?.data?.error || error.response?.data?.message || t.errorDeletingCategory;
+            CommonToaster(translateError(msg, t), "error");
         } finally {
             setSubmitLoading(false);
         }
@@ -113,7 +115,8 @@ export default function CategoryListPage() {
             fetchCategories();
         } catch (error) {
             console.error(error);
-            CommonToaster(error.response?.data?.error || t.errorSavingCategory, "error");
+            const msg = error.response?.data?.error || error.response?.data?.message || t.errorSavingCategory;
+            CommonToaster(translateError(msg, t), "error");
         } finally {
             setSubmitLoading(false);
         }
@@ -389,7 +392,7 @@ export default function CategoryListPage() {
                                         disabled={submitLoading}
                                         className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white text-sm font-medium shadow-md transition disabled:opacity-70"
                                     >
-                                        {submitLoading ? (language === 'vi' ? 'Đang lưu...' : 'Saving...') : (editingCategory ? t.update : t.create)}
+                                        {submitLoading ? t.saving : (editingCategory ? t.update : t.create)}
                                     </button>
                                 </div>
                             </form>
@@ -426,7 +429,7 @@ export default function CategoryListPage() {
                                     disabled={submitLoading}
                                     className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 text-sm font-medium shadow-sm"
                                 >
-                                    {submitLoading ? (language === 'vi' ? 'Đang xóa...' : 'Deleting...') : t.yesDelete}
+                                    {submitLoading ? t.deleting : t.yesDelete}
                                 </button>
                             </div>
                         </div>

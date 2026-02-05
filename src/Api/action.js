@@ -593,7 +593,21 @@ export const getVisibleTestimonials = () => API.get("/testimonials");
 export const createTestimonial = (data) => API.post("/testimonials", data);
 export const toggleTestimonialVisibility = (id) => API.put(`/testimonials/${id}/visibility`);
 export const deleteTestimonial = (id) => API.delete(`/testimonials/${id}`);
-export const syncGoogleReviews = (data) => API.post("/testimonials/sync", data);
+export const uploadTestimonialImage = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
 
 export default API;
 

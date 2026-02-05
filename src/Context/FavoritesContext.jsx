@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getFavorites, addFavorite as apiAddFavorite, removeFavorite as apiRemoveFavorite } from '@/Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { useLanguage } from '@/Language/LanguageContext';
+import { translations } from '@/Language/translations';
 
 const FavoritesContext = createContext();
 
@@ -10,6 +11,7 @@ export const useFavorites = () => useContext(FavoritesContext);
 
 export const FavoritesProvider = ({ children }) => {
     const { language } = useLanguage();
+    const t = translations[language];
     // Initialize from localStorage
     const [favorites, setFavorites] = useState(() => {
         try {
@@ -43,21 +45,21 @@ export const FavoritesProvider = ({ children }) => {
     const addFavorite = async (property) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            CommonToaster(language === 'vi' ? 'Vui lòng đăng nhập để thêm vào yêu thích' : 'Please login to add to favorites', 'error');
+            CommonToaster(t.loginToAddFavorite, 'error');
             return false;
         }
 
         if (!property) return false;
         if (typeof property === 'string') {
             console.error("addFavorite requires a property object, not an ID");
-            CommonToaster('Error adding favorite', 'error');
+            CommonToaster(t.errorAddingFavorite, 'error');
             return false;
         }
 
         const propId = property._id || property.listingInformation?.listingInformationPropertyId;
 
         if (isFavorite(propId)) {
-            CommonToaster('Property already in favorites', 'warning');
+            CommonToaster(t.alreadyInFavorites, 'warning');
             return false;
         }
 
@@ -68,7 +70,7 @@ export const FavoritesProvider = ({ children }) => {
         };
 
         setFavorites(prev => [...prev, newFav]);
-        CommonToaster('Added to favorites', 'success');
+        CommonToaster(t.addedToFavorites, 'success');
         return true;
     };
 
@@ -80,7 +82,7 @@ export const FavoritesProvider = ({ children }) => {
             return f._id !== propertyId && fPropId !== propertyId;
         }));
 
-        CommonToaster('Removed from favorites', 'success');
+        CommonToaster(t.removedFromFavorites, 'success');
         return true;
     };
 
@@ -89,13 +91,13 @@ export const FavoritesProvider = ({ children }) => {
         const message = typeof messageProp === 'string' ? messageProp : "";
 
         if (favorites.length === 0) {
-            CommonToaster('No favorites to send', 'warning');
+            CommonToaster(t.noFavoritesToSend, 'warning');
             return;
         }
 
         const token = localStorage.getItem('token');
         if (!token) {
-            CommonToaster('Please login to send enquiry', 'error');
+            CommonToaster(t.loginToSendEnquiry, 'error');
             return;
         }
 
@@ -109,16 +111,16 @@ export const FavoritesProvider = ({ children }) => {
             ).filter(Boolean);
 
             if (propertyIds.length === 0) {
-                CommonToaster('Invalid favorites data', 'error');
+                CommonToaster(t.invalidFavorites, 'error');
                 return;
             }
 
             await apiAddFavorite(propertyIds, message); // Pass message to API
-            CommonToaster('Enquiry sent successfully', 'success');
+            CommonToaster(t.enquirySent, 'success');
 
         } catch (error) {
             console.error('Error sending enquiry:', error);
-            CommonToaster('Error sending enquiry', 'error');
+            CommonToaster(t.errorSendingEnquiry, 'error');
         } finally {
             setActionLoading(null);
         }

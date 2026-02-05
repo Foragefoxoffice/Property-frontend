@@ -3,7 +3,10 @@ import { X, CirclePlus } from "lucide-react";
 import { useLanguage } from "../../Language/LanguageContext";
 import { createOwner } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
+import { translations } from "../../Language/translations";
 import { Select } from "antd";
+
+import { translateError } from "../../utils/translateError";
 
 /* ======================================================
    UI TEXT
@@ -67,6 +70,7 @@ const SimpleSelect = ({ label, value, onChange, options, lang }) => (
 ====================================================== */
 export default function OwnerModal({ onClose, onSuccess }) {
   const { language } = useLanguage();
+  const t = translations[language];
 
   const [activeLang, setActiveLang] = useState("EN");
   const text = uiText[activeLang];
@@ -108,12 +112,12 @@ export default function OwnerModal({ onClose, onSuccess }) {
 
     try {
       await createOwner(payload);
-      CommonToaster("New Landlord created", "success");
+      CommonToaster(t.ownerCreated, "success");
       onSuccess && onSuccess();
       onClose();
     } catch (error) {
-      const msg = error?.response?.data?.error || error?.response?.data?.message || "Failed to create Landlord";
-      CommonToaster(msg, "error");
+      const msg = error?.response?.data?.error || error?.response?.data?.message || t.errorSavingOwner;
+      CommonToaster(translateError(msg, t), "error");
     }
   };
 
@@ -176,6 +180,19 @@ export default function OwnerModal({ onClose, onSuccess }) {
           </div>
 
 
+
+          {/* Gender */}
+          <SimpleSelect
+            label={text.gender}
+            value={form.gender}
+            onChange={(val) => setForm((p) => ({ ...p, gender: val }))}
+            options={[
+              { value: "Male", label: activeLang === "VI" ? "Nam" : "Male" },
+              { value: "Female", label: activeLang === "VI" ? "Nữ" : "Female" },
+              { value: "Other", label: activeLang === "VI" ? "Khác" : "Other" },
+            ]}
+            lang={activeLang}
+          />
 
           {/* Phone Numbers */}
           <div>

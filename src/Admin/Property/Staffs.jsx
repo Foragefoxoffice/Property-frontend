@@ -30,6 +30,7 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations"; // Import global translations
+import { translateError } from "../../utils/translateError";
 import { usePermissions } from "../../Context/PermissionContext";
 import { Select } from "antd";
 import dayjs from "dayjs";
@@ -234,7 +235,7 @@ export default function Staffs({ openStaffView }) {
       setUsers(mappedStaffs);
 
     } catch {
-      CommonToaster(t.failedFetch || "Failed to fetch data", "error");
+      CommonToaster(t.failedToFetchData, "error");
     } finally {
       setLoading(false);
     }
@@ -244,10 +245,7 @@ export default function Staffs({ openStaffView }) {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 1 * 1024 * 1024) { // 1MB limit
-      CommonToaster(
-        language === "vi" ? "Kích thước ảnh tối đa là 1MB" : "Max image size is 1MB",
-        "error"
-      );
+      CommonToaster(t.maxImageSize1MB, "error");
       return;
     }
     const reader = new FileReader();
@@ -300,7 +298,7 @@ export default function Staffs({ openStaffView }) {
 
     // Validation needs to check sub-fields
     if (!form.firstName.en || !form.firstName.vi || !form.email || !form.role) {
-      CommonToaster("Please fill all required fields in both languages", "error");
+      CommonToaster(t.fillRequiredFields, "error");
       return;
     }
 
@@ -333,26 +331,28 @@ export default function Staffs({ openStaffView }) {
     try {
       if (editMode && editingUser?._id) {
         await updateStaff(editingUser._id, payload);
-        CommonToaster(t.staffUpdated || "Staff updated successfully", "success");
+        CommonToaster(t.staffUpdated, "success");
       } else {
         await createStaff(payload);
-        CommonToaster(t.staffCreated || "Staff created successfully", "success");
+        CommonToaster(t.staffCreated, "success");
       }
       setShowModal(false);
       fetchUsersAndRoles();
     } catch (err) {
-      CommonToaster(err.response?.data?.error || t.errorSaving || "Error saving staff", "error");
+      const msg = err.response?.data?.error || err.response?.data?.message || t.errorSaving;
+      CommonToaster(translateError(msg, t), "error");
     }
   };
 
   const handleDelete = async () => {
     try {
       await deleteStaff(deleteConfirm.id);
-      CommonToaster(t.staffDeleted || "Staff deleted successfully", "success");
+      CommonToaster(t.staffDeleted, "success");
       setDeleteConfirm({ show: false, id: null });
       fetchUsersAndRoles();
     } catch (err) {
-      CommonToaster(err.response?.data?.error || t.errorDeleting || "Error deleting staff", "error");
+      const msg = err.response?.data?.error || err.response?.data?.message || t.errorDeleting;
+      CommonToaster(translateError(msg, t), "error");
     }
   };
 
