@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Heart, User, ChevronDown, LogOut } from "lucide-react";
+import { Heart, User, ChevronDown, LogOut, MessageSquare } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Header from "../../Admin/Header/Header";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -46,6 +46,16 @@ const UserDashboardLayout = () => {
                         >
                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white"><Heart size={20} /></span>
                             <span className="font-medium">{t.myFavorites}</span>
+                        </button>
+                        {/* GIVE TESTIMONIAL */}
+                        <button
+                            onClick={() => navigate("/user-dashboard/give-testimonial")}
+                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition 
+                                ${isActive("/user-dashboard/give-testimonial") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                            `}
+                        >
+                            <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white"><MessageSquare size={20} /></span>
+                            <span className="font-medium">{t.giveTestimonial}</span>
                         </button>
                     </div>
                 </div>

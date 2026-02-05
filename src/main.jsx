@@ -90,6 +90,7 @@ import PrivacyPolicyForm from "./AdminCms/PrivacyPolicyCms/PrivacyPolicyForm.jsx
 import PrivacyPolicyPage from "./Pages/PrivacyPolicyPage.jsx";
 import Notification from "./Admin/Notification/Notification.jsx";
 import TestimonialsCms from "./AdminCms/TestimonialCms/TestimonialsCms.jsx";
+import GiveTestimonial from "./Pages/GiveTestimonial.jsx";
 
 createRoot(document.getElementById("root")).render(
   <HelmetProvider>
@@ -266,6 +267,7 @@ createRoot(document.getElementById("root")).render(
                 >
                   <Route path="favorites" element={<Favorites isDashboard={true} />} />
                   <Route path="profile" element={<UserProfile />} />
+                  <Route path="give-testimonial" element={<GiveTestimonial />} />
                   <Route index element={<Favorites isDashboard={true} />} />
                 </Route>
 

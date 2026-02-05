@@ -591,6 +591,7 @@ export const uploadPrivacyPolicyPageImage = (file) => {
 export const getAdminTestimonials = () => API.get("/testimonials/admin");
 export const getVisibleTestimonials = () => API.get("/testimonials");
 export const createTestimonial = (data) => API.post("/testimonials", data);
+export const submitTestimonial = (data) => API.post("/testimonials/submit", data);
 export const toggleTestimonialVisibility = (id) => API.put(`/testimonials/${id}/visibility`);
 export const deleteTestimonial = (id) => API.delete(`/testimonials/${id}`);
 export const uploadTestimonialImage = (file) => {
