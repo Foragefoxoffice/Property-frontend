@@ -521,7 +521,7 @@ export default function ManageProperty({
                       </div>
                     </td>
 
-                    <td className={`px-6 py-4 text-right flex justify-end gap-3 sticky right-0 z-10 shadow-[-4px_0_8px_rgba(0,0,0,0.05)] ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} group-hover:bg-gray-100`}>
+                    <td className={`px-3 py-4 text-right flex justify-end gap-3 sticky right-0 z-10 shadow-[-4px_0_8px_rgba(0,0,0,0.05)] ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} group-hover:bg-gray-100`}>
                       {/* Approve Button */}
                       {isApprover && p.status === "Pending" && (
                         <button
