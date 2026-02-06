@@ -587,7 +587,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
       if (!ownerNameEn) return;
       try {
         setLoadingProps(true);
-        const res = await getListingProperties({ owner: ownerNameEn });
+        const res = await getListingProperties({ owner: ownerNameEn, status: "all" });
         setProperties(res.data.data || []);
       } catch (error) {
         console.error("Error fetching owner properties:", error);
@@ -750,9 +750,16 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
                           alt={title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
-                        <div className="absolute top-2 left-2">
-                          <span className="bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-gray-800 shadow-sm border border-gray-100">
+                        <div className="absolute top-2 left-2 flex flex-col gap-1">
+                          <span className="bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider text-gray-800 shadow-sm border border-gray-100 w-fit">
                             {lang === 'vi' ? prop.listingInformation?.listingInformationTransactionType?.vi : prop.listingInformation?.listingInformationTransactionType?.en}
+                          </span>
+                          <span className={`px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider text-white shadow-sm w-fit ${prop.status === 'Published' ? 'bg-green-500' :
+                              prop.status === 'Draft' ? 'bg-gray-500' :
+                                prop.status === 'Pending' ? 'bg-orange-500' :
+                                  'bg-red-500'
+                            }`}>
+                            {prop.status}
                           </span>
                         </div>
                       </div>
