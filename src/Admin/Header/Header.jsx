@@ -54,6 +54,7 @@ export default function Header({ showNavigation = true }) {
     myFavorites: { en: "My Favorites", vi: "Yêu thích của tôi" },
     visitSite: { en: "Visit Site", vi: "Truy cập trang web" },
     project: { en: "Project", vi: "Dự án" },
+    viewAllIn: { en: "View All in", vi: "Xem tất cả trong" },
   };
 
   // Fetch header logo from CMS
@@ -448,6 +449,16 @@ export default function Header({ showNavigation = true }) {
                                   exit={{ opacity: 0, x: -10 }}
                                   className="absolute left-full top-0 ml-0.5 w-[220px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-[60] border border-gray-100 overflow-hidden text-black"
                                 >
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}`);
+                                      setShowProjectDropdown(false);
+                                    }}
+                                    className="w-full cursor-pointer text-left px-5 py-3 text-[14px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-medium transition-colors border-b border-gray-100"
+                                  >
+                                    {labels.viewAllIn[language]} {getLocalizedValue(project.name)}
+                                  </button>
                                   {projectZones.map((zone, zIdx) => (
                                     <button
                                       key={zone._id}
@@ -879,7 +890,7 @@ export default function Header({ showNavigation = true }) {
                                       }}
                                       className="text-left py-2 text-xs text-gray-500 hover:text-[#41398B]"
                                     >
-                                      View All in {getLocalizedValue(project.name)}
+                                      {labels.viewAllIn[language]} {getLocalizedValue(project.name)}
                                     </button>
                                     {projectZones.map((zone) => (
                                       <button

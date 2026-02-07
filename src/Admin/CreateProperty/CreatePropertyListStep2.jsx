@@ -1221,12 +1221,15 @@ export default function CreatePropertyListStep2({
               </label>
             </div>
             <input
-              type="number"
+              type="text"
               placeholder={t.typehere}
-              value={form.financialDetailsAgentFee}
-              onChange={(e) =>
-                handleChange("financialDetailsAgentFee", e.target.value)
-              }
+              value={formatNumber(form.financialDetailsAgentFee)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                if (!isNaN(raw)) {
+                  handleChange("financialDetailsAgentFee", raw);
+                }
+              }}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -1538,12 +1541,15 @@ export default function CreatePropertyListStep2({
               </label>
             </div>
             <input
-              type="number"
+              type="text"
               placeholder={t.typehere}
-              value={form.financialDetailsAgentFee}
-              onChange={(e) =>
-                handleChange("financialDetailsAgentFee", e.target.value)
-              }
+              value={formatNumber(form.financialDetailsAgentFee)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                if (!isNaN(raw)) {
+                  handleChange("financialDetailsAgentFee", raw);
+                }
+              }}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>

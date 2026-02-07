@@ -51,6 +51,13 @@ const formatDMY = (dateStr) => {
   return `${day}/${month}/${year}`;
 };
 
+const formatNumber = (value) => {
+  if (!value && value !== 0) return "—";
+  const numeric = value.toString().replace(/,/g, "");
+  if (isNaN(numeric)) return value;
+  return Number(numeric).toLocaleString("en-US");
+};
+
 /* === Media Preview Modal === */
 const MediaPreviewModal = ({ url, type, onClose }) => {
   return (
@@ -447,7 +454,7 @@ export default function CreatePropertyPreview({
               <>
                 <Field
                   label={labels.price[lang]}
-                  value={fd.financialDetailsPrice}
+                  value={formatNumber(fd.financialDetailsPrice)}
                 />
                 <Field
                   label={labels.deposit[lang]}
@@ -461,7 +468,7 @@ export default function CreatePropertyPreview({
                   label={labels.contractTerms[lang]}
                   value={safe(fd.financialDetailsContractTerms)}
                 />
-                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                <Field label="Agent Fee" value={formatNumber(fd.financialDetailsAgentFee)} />
                 <Field
                   label="Fee / Tax"
                   value={safe(fd.financialDetailsFeeTax)}
@@ -478,7 +485,7 @@ export default function CreatePropertyPreview({
               <>
                 <Field
                   label={labels.leasePrice[lang]}
-                  value={fd.financialDetailsLeasePrice}
+                  value={formatNumber(fd.financialDetailsLeasePrice)}
                 />
                 <Field
                   label={labels.contractLength[lang]}
@@ -492,7 +499,7 @@ export default function CreatePropertyPreview({
                   label={labels.paymentTerms[lang]}
                   value={safe(fd.financialDetailsMainFee)}
                 />
-                <Field label="Agent Fee" value={fd.financialDetailsAgentFee} />
+                <Field label="Agent Fee" value={formatNumber(fd.financialDetailsAgentFee)} />
                 <Field
                   label="Agent Payment Agenda"
                   value={safe(fd.financialDetailsAgentPaymentAgenda)}
@@ -505,7 +512,7 @@ export default function CreatePropertyPreview({
               <>
                 <Field
                   label={labels.pricePerNight[lang]}
-                  value={fd.financialDetailsPricePerNight}
+                  value={formatNumber(fd.financialDetailsPricePerNight)}
                 />
                 <Field
                   label={labels.checkIn[lang]}
