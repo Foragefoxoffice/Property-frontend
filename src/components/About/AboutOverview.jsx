@@ -32,7 +32,7 @@ export default function AboutOverview({ data }) {
     };
 
     return (
-        <section ref={ref} className="py-24 pb-0 px-6 bg-white">
+        <section ref={ref} className="md:py-14 py-9 pb-0 md:px-6 px-2 bg-white">
             <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
 
                 {/* Header Text */}
@@ -42,18 +42,18 @@ export default function AboutOverview({ data }) {
                     variants={{
                         visible: { transition: { staggerChildren: 0.2 } }
                     }}
-                    className="mb-10 max-w-4xl"
+                    className="mb-8 max-w-4xl"
                 >
                     <motion.span
                         variants={itemVariants}
-                        className="text-gray-400 text-sm font-bold tracking-[0.2em] uppercase mb-4 block font-['Manrope']"
+                        className="text-gray-400 text-sm font-bold tracking-[0.2em] uppercase md:mb-4 mb-2 block font-['Manrope']"
                     >
                         {title}
                     </motion.span>
 
                     <motion.h2
                         variants={itemVariants}
-                        className="text-4xl md:text-4xl lg:text-5xl font-semibold text-[#1a1a1a] font-['Manrope'] leading-tight"
+                        className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#1a1a1a] font-['Manrope'] leading-tight"
                     >
                         {description}
                     </motion.h2>

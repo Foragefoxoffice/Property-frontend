@@ -59,7 +59,11 @@ export default function BlogSidebar() {
                         placeholder={language === 'vi' ? 'Tìm kiếm...' : 'Search...'}
                         className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] transition-all"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setSearchTerm(value);
+                            navigate(`/blogs?search=${value}`);
+                        }}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 navigate(`/blogs?search=${searchTerm}`);

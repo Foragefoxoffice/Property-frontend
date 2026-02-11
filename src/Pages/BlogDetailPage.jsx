@@ -195,13 +195,13 @@ export default function BlogDetailPage() {
                     </div>
 
                     <div className="container mx-auto px-4 relative z-10 text-center -mt-10">
-                        <div className="mb-6 animate-fade-in-down">
+                        <div className="md:mb-6 mb-4 animate-fade-in-down">
                             <span className="inline-block px-5 py-2 bg-[#41398B] shadow-lg shadow-[#41398B]/30 rounded-full text-sm font-bold tracking-wider uppercase text-white transform hover:scale-105 transition-transform duration-300">
                                 {blog.category?.name?.[language] || blog.category?.name?.en || 'Uncategorized'}
                             </span>
                         </div>
 
-                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold mb-8 max-w-5xl mx-auto leading-tight drop-shadow-lg capitalize tracking-tight">
+                        <h1 className="text-2xl md:text-4xl font-extrabold mb-8 max-w-5xl mx-auto leading-tight drop-shadow-lg capitalize tracking-tight">
                             {getLocalized(blog.title)}
                         </h1>
 
@@ -227,13 +227,13 @@ export default function BlogDetailPage() {
                     </div>
                 </div>
 
-                <div className="container mx-auto px-4 py-16 -mt-32 relative z-20">
+                <div className="container mx-auto px-4 md:py-16 py-8 -mt-32 relative z-20">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                         {/* Main Content Column */}
                         <div className="lg:col-span-8">
-                            <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 ring-1 ring-black/5">
+                            <div className="bg-white rounded-3xl shadow-xl p-4 md:p-8 border border-gray-100 ring-1 ring-black/5">
                                 {/* Share Buttons (Mobile Top) */}
-                                <div className="flex lg:hidden gap-4 mb-8 pb-8 border-b border-gray-100 justify-center">
+                                <div className="flex lg:hidden hidden gap-4 mb-8 pb-8 border-b border-gray-100 justify-center">
                                     <button className="p-3 rounded-full bg-gray-50 hover:bg-[#1DA1F2] hover:text-white text-gray-500 transition-all duration-300"><Twitter size={20} /></button>
                                     <button className="p-3 rounded-full bg-gray-50 hover:bg-[#4267B2] hover:text-white text-gray-500 transition-all duration-300"><Facebook size={20} /></button>
                                     <button className="p-3 rounded-full bg-gray-50 hover:bg-[#0077b5] hover:text-white text-gray-500 transition-all duration-300"><Linkedin size={20} /></button>

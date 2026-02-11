@@ -126,7 +126,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
     };
 
     return (
-        <section ref={sectionRef} className="py-10 px-6 md:py-16 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff]">
+        <section ref={sectionRef} className="py-8 md:px-6 px-4 md:py-16 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff] mx-auto">
             <div className="max-w-7xl mx-auto">
                 {/* Section Header */}
                 <div className="text-center mb-8 md:mb-16">
@@ -138,7 +138,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                     </p>
                     {description && (
                         <h2
-                            className={`text-4xl md:text-5xl font-semibold text-black transition-all duration-1000 delay-100 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+                            className={`text-2xl md:text-4xl font-semibold text-black transition-all duration-1000 delay-100 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
                                 }`}
                         >
                             {description}
@@ -169,7 +169,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                         {properties.map((property, index) => (
                             <div
                                 key={property._id}
-                                className={`card-house style-default hover-image group bg-white rounded-2xl overflow-hidden transition-all duration-700 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+                                className={`card-house style-default hover-image group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
                                     }`}
                                 style={{ transitionDelay: `${200 + index * 100}ms` }}
                                 onClick={() => {
@@ -181,7 +181,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                 }}
                             >
                                 {/* Image */}
-                                <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl">
+                                <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl flex-shrink-0">
                                     <img style={{ width: "100%" }}
                                         src={property.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
                                         alt={getLocalizedValue(property.listingInformation?.listingInformationBlockName)}
@@ -216,7 +216,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                 </div>
 
                                 {/* Content */}
-                                <div className="pt-5 pb-5 px-4">
+                                <div className="pt-3 md:pt-5 pb-5 md:px-4 px-2 flex flex-col flex-grow">
                                     {/* Price */}
                                     <div className="flex items-baseline gap-0 mb-2">
                                         {(() => {
@@ -250,7 +250,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
 
                                             return (
                                                 <>
-                                                    <span className="text-2xl font-bold text-[#2a2a2a]">{displayPrice}</span>
+                                                    <span className="text-xl font-bold text-[#2a2a2a]">{displayPrice}</span>
                                                     {displaySuffix && <span className="text-sm text-gray-500 font-medium">{displaySuffix}</span>}
                                                 </>
                                             );
@@ -258,7 +258,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     </div>
 
                                     {/* Title */}
-                                    <h3 className="text-[18px] font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#41398B] transition-colors">
+                                    <h3 className="text-[16px] font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem] group-hover:text-[#41398B] transition-colors">
                                         {normalizeFancyText(
                                             getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
                                             getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
@@ -269,7 +269,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
 
                                     {/* Location / Nearby */}
                                     <div
-                                        className="text-[16px] text-gray-500 mb-4 line-clamp-2 ql-editor-summary"
+                                        className="text-[15px] text-gray-500 mb-4 line-clamp-2 min-h-[3rem] ql-editor-summary"
                                         dangerouslySetInnerHTML={{
                                             __html: getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
                                                 getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
@@ -278,7 +278,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     />
 
                                     {/* Details */}
-                                    <div className="flex items-center pt-3 border-t border-gray-200 justify-between beds">
+                                    <div className="flex items-center pt-3 border-t border-gray-200 justify-between beds mt-auto">
                                         {property.propertyInformation?.informationBedrooms > 0 && (
                                             <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
                                                 <svg
@@ -294,7 +294,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                                         d="M3 7h18M5 7v10M19 7v10M3 17h18M7 10h4a2 2 0 012 2v5M7 10a2 2 0 00-2 2v5"
                                                     />
                                                 </svg>
-                                                <span className="font-medium text-lg">{property.propertyInformation.informationBedrooms} {t.beds}</span>
+                                                <span className="font-medium text-[15px]">{property.propertyInformation.informationBedrooms} {t.beds}</span>
                                             </div>
                                         )}
                                         {property.propertyInformation?.informationBathrooms > 0 && (
@@ -302,7 +302,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                                 <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 14h16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2zM6 14V9a3 3 0 0 1 6 0" />
                                                 </svg>
-                                                <span className="font-medium text-lg">{property.propertyInformation.informationBathrooms} {t.baths}</span>
+                                                <span className="font-medium text-[15px]">{property.propertyInformation.informationBathrooms} {t.baths}</span>
                                             </div>
                                         )}
                                         {property.propertyInformation?.informationUnitSize > 0 && (
@@ -310,7 +310,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                                 <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.4 4.6a2 2 0 0 1 0 2.8l-12 12a2 2 0 0 1-2.8 0l-2-2a2 2 0 0 1 0-2.8l12-12a2 2 0 0 1 2.8 0zM12 7l2 2M10 9l2 2M8 11l2 2" />
                                                 </svg>
-                                                <span className="font-medium text-lg">{property.propertyInformation.informationUnitSize.toLocaleString()} {t.sqft}</span>
+                                                <span className="font-medium text-[15px]">{property.propertyInformation.informationUnitSize.toLocaleString()} {t.sqft}</span>
                                             </div>
                                         )}
                                     </div>
@@ -322,10 +322,10 @@ export default function HomeFeaturedProperties({ homePageData }) {
 
                 {/* View All Button */}
                 {!loading && properties.length > 0 && (
-                    <div className="text-center mt-8">
+                    <div className="text-center md:mt-8 mt-4">
                         <button
                             onClick={handleButtonClick}
-                            className="mt-4 cursor-pointer px-8 py-3.5 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:translate-y-0 transform opacity-100 translate-y-0"
+                            className="mt-4 cursor-pointer px-6 py-3 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:translate-y-0 transform opacity-100 translate-y-0"
                         >
                             {buttonText}
                         </button>

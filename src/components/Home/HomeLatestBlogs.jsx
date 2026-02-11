@@ -67,9 +67,9 @@ export default function HomeLatestBlogs({ homePageData }) {
         : (homePageData?.homeBlogDescription_vn || 'Cập nhật xu hướng bất động sản mới nhất, thông tin thị trường và lời khuyên từ chuyên gia');
 
     return (
-        <section ref={sectionRef} className="py-10 md:py-20 px-6 bg-white">
+        <section ref={sectionRef} className="py-10 md:py-20 px-4 md:px-6 bg-white">
             <div className="max-w-7xl mx-auto">
-                <div className="text-center mb-16">
+                <div className="text-center mb-8 md:mb-16">
                     <p
                         className={`text-sm font-semibold text-[#a4aeb5] uppercase tracking-wider mb-3 transition-all duration-1000 ease-out opacity-100 translate-y-0'}`}
                     >
@@ -77,7 +77,7 @@ export default function HomeLatestBlogs({ homePageData }) {
                     </p>
                     {description && (
                         <h2
-                            className={`text-3xl md:text-4xl font-bold text-gray-900 max-w-2xl mx-auto leading-tight transition-all duration-1000 delay-100 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                            className={`text-2xl md:text-4xl font-bold text-gray-900 max-w-2xl mx-auto leading-tight transition-all duration-1000 delay-100 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
                         >
                             {description}
                         </h2>
@@ -114,7 +114,7 @@ export default function HomeLatestBlogs({ homePageData }) {
                                     </div>
                                 )}
 
-                                <div className="p-6 flex-1 flex flex-col">
+                                <div className="md:p-6 p-4 flex-1 flex flex-col">
                                     <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
                                         <span className="bg-purple-50 text-[#41398B] px-3 py-1 rounded-full font-semibold text-xs">
                                             {blog.category?.name?.[language] || blog.category?.name?.en || 'News'}

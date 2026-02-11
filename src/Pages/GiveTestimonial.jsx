@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Star, MessageSquare, Send, Loader2, User, Camera, X } from "lucide-react";
-import { submitTestimonial, uploadTestimonialImage, getMe } from "../Api/action";
+import { Star, MessageSquare, Send, Loader2 } from "lucide-react";
+import { submitTestimonial, getMe } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
 import { useLanguage } from "../Language/LanguageContext";
 import { translations } from "../Language/translations";
@@ -13,8 +13,6 @@ export default function GiveTestimonial() {
     const [hover, setHover] = useState(0);
     const [text, setText] = useState("");
     const [loading, setLoading] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState(null);
     const [userData, setUserData] = useState(null);
 
     useEffect(() => {
@@ -23,9 +21,6 @@ export default function GiveTestimonial() {
                 const res = await getMe();
                 if (res.data.success) {
                     setUserData(res.data.data);
-                    if (res.data.data.profileImage) {
-                        setPreviewUrl(res.data.data.profileImage);
-                    }
                 }
             } catch (err) {
                 console.error("Failed to fetch user data", err);
@@ -33,19 +28,6 @@ export default function GiveTestimonial() {
         };
         fetchUserData();
     }, []);
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-            setPreviewUrl(URL.createObjectURL(file));
-        }
-    };
-
-    const handleRemoveImage = () => {
-        setSelectedFile(null);
-        setPreviewUrl(userData?.profileImage || null);
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -56,13 +38,8 @@ export default function GiveTestimonial() {
 
         setLoading(true);
         try {
-            let profile_photo_url = userData?.profileImage || "";
-            if (selectedFile) {
-                const uploadRes = await uploadTestimonialImage(selectedFile);
-                if (uploadRes.data.success) {
-                    profile_photo_url = uploadRes.data.url;
-                }
-            }
+            // Automatically use the user's existing profile image
+            const profile_photo_url = userData?.profileImage || "";
 
             await submitTestimonial({
                 rating,
@@ -73,9 +50,6 @@ export default function GiveTestimonial() {
             CommonToaster(t.testimonialSubmitted, "success");
             setText("");
             setRating(5);
-            setSelectedFile(null);
-            // Don't reset previewUrl if it's the user's default
-            setPreviewUrl(userData?.profileImage || null);
         } catch (error) {
             console.error("Error submitting testimonial:", error);
             CommonToaster(error.response?.data?.error || "Failed to submit testimonial", "error");
@@ -95,41 +69,8 @@ export default function GiveTestimonial() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
-                        {/* Left Side: Photo & Rating */}
+                        {/* Rating */}
                         <div className="space-y-6">
-                            {/* Profile Photo */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-3">{t.profilePhoto}</label>
-                                <div className="flex items-center gap-4">
-                                    <div className="relative group">
-                                        <div className="w-24 h-24 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 overflow-hidden flex items-center justify-center transition-all group-hover:border-[#41398B]/50">
-                                            {previewUrl ? (
-                                                <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <User className="w-10 h-10 text-gray-300" />
-                                            )}
-                                        </div>
-                                        {selectedFile && (
-                                            <button
-                                                type="button"
-                                                onClick={handleRemoveImage}
-                                                className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-all"
-                                            >
-                                                <X size={14} />
-                                            </button>
-                                        )}
-                                    </div>
-                                    <div className="flex-1">
-                                        <label className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] text-[#1E293B] rounded-xl text-sm font-semibold cursor-pointer hover:bg-[#F1F5F9] transition-all">
-                                            <Camera size={18} className="text-[#41398B]" />
-                                            {t.uploadPhoto}
-                                            <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Rating */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-3">{t.rating}</label>
                                 <div className="flex gap-2">
@@ -155,7 +96,7 @@ export default function GiveTestimonial() {
                             </div>
                         </div>
 
-                        {/* Right Side: Content */}
+                        {/* Content */}
                         <div className="space-y-6">
                             {/* Testimonial Content */}
                             <div>
@@ -180,7 +121,7 @@ export default function GiveTestimonial() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 px-10 py-3.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-full font-bold transition-all disabled:opacity-70 shadow-xl shadow-[#41398B]/20 active:scale-95"
+                            className="flex items-center gap-2 px-8 py-2 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-lg font-bold transition-all disabled:opacity-70 shadow-xl shadow-[#41398B]/20 active:scale-95"
                         >
                             {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
                             {t.submit}

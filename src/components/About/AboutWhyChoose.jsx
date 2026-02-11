@@ -62,11 +62,11 @@ export default function AboutWhyChoose({ data }) {
     };
 
     return (
-        <section ref={ref} className="py-20 px-6 bg-[#0B0B0B] overflow-hidden text-white">
+        <section ref={ref} className="md:py-20 py-8 md:px-6 px-4 bg-[#0B0B0B] overflow-hidden text-white mx-auto">
             <div className="max-w-7xl mx-auto flex flex-col">
 
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end md:mb-16 mb-8 md:gap-8 gap-4">
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
@@ -76,7 +76,7 @@ export default function AboutWhyChoose({ data }) {
                         <span className="text-gray-400 text-xs font-bold tracking-[0.2em] uppercase mb-4 block">
                             {subTitle}
                         </span>
-                        <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+                        <h2 className="text-2xl md:text-4xl font-bold leading-tight">
                             {title}
                         </h2>
                     </motion.div>
@@ -88,7 +88,7 @@ export default function AboutWhyChoose({ data }) {
                     >
                         <Link
                             to={buttonLink}
-                            className="inline-block px-8 py-4 bg-white text-black font-semibold rounded-lg hover:bg-[#41398B] hover:text-white transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
+                            className="inline-block px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-[#41398B] hover:text-white transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl"
                         >
                             {buttonText}
                         </Link>
@@ -97,7 +97,7 @@ export default function AboutWhyChoose({ data }) {
 
                 {/* Features Grid */}
                 <motion.div
-                    className="grid grid-cols-1 md:grid-cols-3 gap-12"
+                    className="grid grid-cols-1 md:grid-cols-3 md:gap-12 gap-8"
                     variants={containerVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
@@ -110,7 +110,7 @@ export default function AboutWhyChoose({ data }) {
                                 className="group flex flex-col items-start"
                             >
                                 <div className={`
-                                    w-25 h-25 rounded-full flex items-center justify-center mb-8 transition-all duration-500
+                                    w-25 h-25 rounded-full flex items-center justify-center md:mb-8 mb-4 transition-all duration-500
                                     bg-transparent border border-white/20 group-hover:bg-[#41398B] group-hover:border-[#41398B] 
                                 `}>
                                     {box.icon ? (
@@ -124,11 +124,11 @@ export default function AboutWhyChoose({ data }) {
                                     )}
                                 </div>
 
-                                <h3 className="text-3xl font-bold mb-4">
+                                <h3 className="text-2xl font-bold mb-3">
                                     {language === 'en' ? (box.title_en || box.title) : (box.title_vn || box.title_en || box.title)}
                                 </h3>
 
-                                <p className="text-gray-400 text-lg leading-relaxed text-base group-hover:text-gray-300 transition-colors duration-300">
+                                <p className="text-gray-400 text-md leading-relaxed text-base group-hover:text-gray-300 transition-colors duration-300">
                                     {language === 'en' ? (box.description_en || box.description) : (box.description_vn || box.description_en || box.description)}
                                 </p>
                             </motion.div>

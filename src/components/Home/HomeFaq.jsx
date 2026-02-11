@@ -122,7 +122,7 @@ export default function HomeFaq({ homePageData }) {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-10 md:py-20 px-6 bg-white overflow-hidden">
+        <section ref={sectionRef} className="py-10 md:py-20 px-4 md:px-6 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-24">
                 {/* Left Side: Contact Card */}
                 <div
@@ -135,7 +135,7 @@ export default function HomeFaq({ homePageData }) {
 
                     {/* Content */}
                     <div className="relative z-10 p-6 md:p-12 flex flex-col h-full items-start">
-                        <h2 className="text-4xl md:text-5xl font-semibold text-white mb-2 md:mb-6 leading-tight">
+                        <h2 className="text-3xl md:text-4xl font-semibold text-white mb-2 md:mb-6 leading-tight">
                             {cardTitle}
                         </h2>
                         <p className="text-white/90 text-lg mb-2 md:mb-8 leading-relaxed max-w-md">
@@ -143,7 +143,7 @@ export default function HomeFaq({ homePageData }) {
                         </p>
                         <button
                             onClick={handleButtonClick}
-                            className="mt-4 px-8 py-3.5 bg-black cursor-pointer text-white font-semibold rounded-md hover:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:translate-y-0 transform opacity-100 translate-y-0"
+                            className="mt-4 px-6 py-3 bg-black cursor-pointer text-white font-semibold rounded-md hover:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:translate-y-0 transform opacity-100 translate-y-0"
                         >
                             {buttonText}
                         </button>
@@ -153,13 +153,13 @@ export default function HomeFaq({ homePageData }) {
                 {/* Right Side: FAQ */}
                 <div className="flex flex-col justify-start pt-4">
                     <span
-                        className={`text-md font-semibold tracking-[0.2em] text-gray-400 uppercase mb-3 transition-all duration-700 delay-300 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                        className={`text-sm font-semibold tracking-[0.2em] text-gray-400 uppercase mb-3 transition-all duration-700 delay-300 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                             }`}
                     >
                         {faqSectionSubtitle}
                     </span>
                     <h2
-                        className={`text-4xl md:text-5xl font-semibold text-[#1a1a1a] mb-3 md:mb-9 leading-tight transition-all duration-700 delay-500 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                        className={`text-2xl md:text-4xl font-semibold text-[#1a1a1a] mb-3 md:mb-5 leading-tight transition-all duration-700 delay-500 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                             }`}
                     >
                         {faqSectionTitle}
@@ -174,10 +174,10 @@ export default function HomeFaq({ homePageData }) {
                                 style={{ transitionDelay: `${700 + index * 100}ms` }}
                             >
                                 <button
-                                    className="w-full py-6 flex items-center justify-between text-left group cursor-pointer"
+                                    className="w-full py-4 flex items-center justify-between text-left group cursor-pointer"
                                     onClick={() => toggleAccordion(index)}
                                 >
-                                    <span className="text-lg md:text-xl font-medium text-[#1a1a1a] pr-8 group-hover:text-[#41398B] transition-colors duration-300">
+                                    <span className="text-md md:text-lg font-medium text-[#1a1a1a] pr-8 group-hover:text-[#41398B] transition-colors duration-300">
                                         {language === 'en' ? (faq.header_en || faq.header) : (faq.header_vn || faq.header_en || faq.header)}
                                     </span>
                                     <span className={`transform transition-transform duration-300 ${openIndex === index ? 'rotate-180 text-[#41398B]' : 'rotate-0 text-gray-400 group-hover:text-[#41398B]'}`}>
@@ -190,7 +190,7 @@ export default function HomeFaq({ homePageData }) {
                                     className={`overflow-hidden transition-all duration-500 ease-in-out ${openIndex === index ? 'max-h-96 opacity-100 mb-8' : 'max-h-0 opacity-0'
                                         }`}
                                 >
-                                    <p className="text-gray-500 leading-relaxed text-lg">
+                                    <p className="text-gray-500 leading-relaxed text-[16px]">
                                         {language === 'en' ? (faq.content_en || faq.content) : (faq.content_vn || faq.content_en || faq.content)}
                                     </p>
                                 </div>

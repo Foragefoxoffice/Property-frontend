@@ -61,7 +61,7 @@ export default function AboutAgent({ data }) {
     };
 
     return (
-        <section ref={ref} className="py-24 px-6 bg-white overflow-hidden">
+        <section ref={ref} className="md:py-24 py-8 md:px-6 px-4 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
@@ -81,21 +81,21 @@ export default function AboutAgent({ data }) {
 
                         <motion.h2
                             variants={itemVariants}
-                            className="text-4xl md:text-5xl lg:text-5xl font-bold text-[#1a1a1a] mb-9 font-['Manrope']"
+                            className="text-2xl md:text-4xl lg:text-4xl font-bold text-[#1a1a1a] md:mb-6 mb-4 font-['Manrope']"
                         >
                             {title}
                         </motion.h2>
 
                         <motion.p
                             variants={itemVariants}
-                            className="text-xl font-bold text-[#1a1a1a] mb-4 font-['Manrope']"
+                            className="md:text-xl text-lg font-bold text-[#1a1a1a] mb-2 font-['Manrope']"
                         >
                             {stats}
                         </motion.p>
 
                         <motion.p
                             variants={itemVariants}
-                            className="text-gray-500 text-lg leading-relaxed mb-10 font-['Manrope']"
+                            className="text-gray-500 text-md leading-relaxed mb-8 font-['Manrope']"
                         >
                             {description}
                         </motion.p>
@@ -103,7 +103,7 @@ export default function AboutAgent({ data }) {
                         <motion.div variants={itemVariants}>
                             <a
                                 href={buttonLink}
-                                className="inline-flex items-center justify-center bg-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-[#41398B] transition-colors duration-300 group"
+                                className="inline-flex items-center justify-center bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#41398B] transition-colors duration-300 group"
                             >
                                 {buttonText}
                                 <ArrowRight className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" />

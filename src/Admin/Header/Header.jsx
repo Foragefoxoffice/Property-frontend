@@ -55,6 +55,7 @@ export default function Header({ showNavigation = true }) {
     visitSite: { en: "Visit Site", vi: "Truy cập trang web" },
     project: { en: "Project", vi: "Dự án" },
     viewAllIn: { en: "View All in", vi: "Xem tất cả trong" },
+    viewAllProperty: { en: "View All Properties", vi: "Xem tất cả bất động sản" },
   };
 
   // Fetch header logo from CMS
@@ -290,7 +291,7 @@ export default function Header({ showNavigation = true }) {
         isOpen={showChangePasswordModal}
         onClose={() => setShowChangePasswordModal(false)}
       />
-      <div className="max-w-[1400px] mx-auto px-6 py-5 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-2 md:px-6 md:py-5 py-2 flex items-center justify-between relative">
         {/* Mobile Menu Button */}
         <button
           className="lg:hidden p-2 text-gray-600 hover:text-[#41398B] transition-colors rounded-lg hover:bg-gray-50"
@@ -299,14 +300,25 @@ export default function Header({ showNavigation = true }) {
         >
           <Menu size={24} />
         </button>
-        {/* Left Logo */}
+
+        {/* Logo Section */}
         <div className="flex items-center">
+          {/* Desktop Logo */}
           <img
-            className="hidden lg:block h-8 md:h-12 object-contain cursor-pointer"
+            className="hidden lg:block h-8 md:h-10 object-contain cursor-pointer"
             src={getLogoUrl(headerLogo)}
             alt="Logo"
             onClick={() => navigate("/")}
           />
+          {/* Mobile Logo (Centered) */}
+          <div className="lg:hidden absolute left-15 flex items-center justify-center">
+            <img
+              className="h-6 object-contain cursor-pointer"
+              src={getLogoUrl(headerLogo)}
+              alt="Logo"
+              onClick={() => navigate("/")}
+            />
+          </div>
         </div>
 
         {/* Center Navigation */}
@@ -349,13 +361,14 @@ export default function Header({ showNavigation = true }) {
                     exit={{ scaleY: 0, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeOut" }}
                     style={{ transformOrigin: "center top" }}
-                    className="absolute left-0 top-full mt-3 w-[220px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-50 overflow-hidden border border-gray-100"
+                    className="absolute left-0 top-full mt-0 w-[220px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-50 overflow-hidden border border-gray-100"
                   >
-                    <div className="py-1">
+                    <div className="py-0">
                       {[
-                        { label: labels.propertiesLease[language], path: "/listing?type=Lease", delay: 0 },
-                        { label: labels.propertiesSale[language], path: "/listing?type=Sale", delay: 0.05 },
-                        { label: labels.propertiesHomestay[language], path: "/listing?type=Home Stay", delay: 0.1 }
+                        { label: labels.viewAllProperty[language], path: "/listing", delay: 0 },
+                        { label: labels.propertiesLease[language], path: "/listing?type=Lease", delay: 0.05 },
+                        { label: labels.propertiesSale[language], path: "/listing?type=Sale", delay: 0.1 },
+                        { label: labels.propertiesHomestay[language], path: "/listing?type=Home Stay", delay: 0.15 }
                       ].map((item, index) => (
                         <motion.button
                           key={index}
@@ -368,7 +381,7 @@ export default function Header({ showNavigation = true }) {
                             ease: [0.5, 0, 0, 1]
                           }}
                           whileHover={{ backgroundColor: "#f8f7ff" }}
-                          className={`w-full cursor-pointer text-left px-5 py-3 text-[15px] text-[#2a2a2a] hover:text-[#41398B] font-semibold transition-colors ${index < 2 ? 'border-b border-gray-100' : ''
+                          className={`w-full cursor-pointer text-left px-5 py-3 text-[15px] text-[#2a2a2a] hover:text-[#41398B] font-semibold transition-colors ${index < 3 ? 'border-b border-gray-100' : ''
                             }`}
                         >
                           {item.label}
@@ -412,9 +425,9 @@ export default function Header({ showNavigation = true }) {
                     exit={{ scaleY: 0, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeOut" }}
                     style={{ transformOrigin: "center top" }}
-                    className="absolute left-0 top-full mt-3 w-[250px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-50  border border-gray-100"
+                    className="absolute left-0 top-full mt-0 w-[250px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-50  border border-gray-100"
                   >
-                    <div className="py-1">
+                    <div className="py-0">
                       {projects.map((project, index) => {
                         const projectZones = zones.filter(z => {
                           const pId = typeof z.property === 'string' ? z.property : z.property?._id;
@@ -511,7 +524,7 @@ export default function Header({ showNavigation = true }) {
         )}
 
         {/* Right Side */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center md:gap-4 gap-2">
 
           {/* Favorites Indicator */}
           <Tooltip title={language === 'vi' ? 'Mục yêu thích' : 'Favorites'}>
@@ -663,7 +676,7 @@ export default function Header({ showNavigation = true }) {
               onMouseLeave={() => setShowLogout(false)}
             >
               <div
-                className="w-9 h-9 rounded-full bg-[#41398B] text-white overflow-hidden
+                className="md:w-9 w-7 md:h-9 h-7 rounded-full bg-[#41398B] text-white overflow-hidden
                flex items-center justify-center text-sm font-bold 
                cursor-pointer shadow-sm hover:bg-[#352e7a] transition-colors"
                 onClick={() => {
@@ -688,7 +701,7 @@ export default function Header({ showNavigation = true }) {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: -5 }}
                     transition={{ duration: 0.18, ease: "easeOut" }}
-                    className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-20 origin-top-right overflow-hidden"
+                    className="absolute right-0 mt-0 w-52 bg-white border border-gray-200 rounded-lg shadow-lg z-20 origin-top-right overflow-hidden"
                   >
                     <button
                       onClick={() => {
@@ -772,19 +785,21 @@ export default function Header({ showNavigation = true }) {
               </div>
 
               {/* Menu Items */}
-              <div className="flex-1 overflow-y-auto py-4 px-4 flex flex-col gap-2">
-                <div onClick={() => setIsMobileMenuOpen(false)}>
-                  <AnimatedNavLink
-                    text={labels.homepages[language]}
+              <div className="flex-1 overflow-y-auto py-2 px-4 flex flex-col">
+                <div onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100">
+                  <button
                     onClick={() => navigate("/")}
-                  />
+                    className="flex items-center justify-between w-full py-4 text-[16px] font-medium text-gray-700 hover:text-[#41398B] transition-colors"
+                  >
+                    {labels.homepages[language]}
+                  </button>
                 </div>
 
                 {/* Properties Mobile Dropdown */}
-                <div className="flex flex-col border-b border-gray-100 pb-2">
+                <div className="flex flex-col border-b border-gray-100">
                   <button
                     onClick={() => setShowPropertiesMobile(!showPropertiesMobile)}
-                    className="flex items-center justify-between w-full py-3 text-[16px] font-medium text-gray-700 hover:text-[#41398B] transition-colors"
+                    className="flex items-center justify-between w-full py-4 text-[16px] font-medium text-gray-700 hover:text-[#41398B] transition-colors"
                   >
                     {labels.properties[language]}
                     <motion.div
@@ -804,6 +819,7 @@ export default function Header({ showNavigation = true }) {
                         className="overflow-hidden pl-4 flex flex-col gap-1"
                       >
                         {[
+                          { label: labels.viewAllProperty[language], path: "/listing" },
                           { label: labels.propertiesLease[language], path: "/listing?type=Lease" },
                           { label: labels.propertiesSale[language], path: "/listing?type=Sale" },
                           { label: labels.propertiesHomestay[language], path: "/listing?type=Home Stay" }
@@ -823,10 +839,10 @@ export default function Header({ showNavigation = true }) {
                 </div>
 
                 {/* Projects Mobile Dropdown */}
-                <div className="flex flex-col border-b border-gray-100 pb-2">
+                <div className="flex flex-col border-b border-gray-100">
                   <button
                     onClick={() => setShowProjectsMobile(!showProjectsMobile)}
-                    className="flex items-center justify-between w-full py-3 text-[16px] font-medium text-gray-700 hover:text-[#41398B] transition-colors"
+                    className="flex items-center justify-between w-full py-4 text-[16px] font-medium text-gray-700 hover:text-[#41398B] transition-colors"
                   >
                     {labels.project[language]}
                     <motion.div
@@ -915,32 +931,34 @@ export default function Header({ showNavigation = true }) {
                   </AnimatePresence>
                 </div>
 
-                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2 border-b border-gray-100">
-                  <Link to="/about" className="block text-gray-700 hover:text-[#41398B] font-medium">
+                <div onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100">
+                  <Link to="/about" className="block py-4 text-gray-700 hover:text-[#41398B] font-medium text-[16px] transition-colors">
                     {labels.aboutus[language]}
                   </Link>
                 </div>
 
-                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2 border-b border-gray-100">
-                  <Link to="/blogs" className="block text-gray-700 hover:text-[#41398B] font-medium">
+                <div onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100">
+                  <Link to="/blogs" className="block py-4 text-gray-700 hover:text-[#41398B] font-medium text-[16px] transition-colors">
                     {labels.blog[language]}
                   </Link>
                 </div>
 
-                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2 border-b border-gray-100">
-                  <Link to="/contact" className="block text-gray-700 hover:text-[#41398B] font-medium">
+                <div onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100">
+                  <Link to="/contact" className="block py-4 text-gray-700 hover:text-[#41398B] font-medium text-[16px] transition-colors">
                     {labels.contacts[language]}
                   </Link>
                 </div>
 
-                <div onClick={() => setIsMobileMenuOpen(false)} className="py-2">
-                  <Link to="/favorites" className="flex items-center gap-2 text-gray-700 hover:text-[#41398B] font-medium w-full">
-                    {labels.myFavorites[language]}
-                    {favorites.length > 0 && (
-                      <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                        {favorites.length}
-                      </span>
-                    )}
+                <div onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100">
+                  <Link to="/favorites" className="flex items-center justify-between py-4 text-gray-700 hover:text-[#41398B] font-medium text-[16px] transition-colors w-full">
+                    <span className="flex items-center gap-2">
+                      {labels.myFavorites[language]}
+                      {favorites.length > 0 && (
+                        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                          {favorites.length}
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 </div>
 

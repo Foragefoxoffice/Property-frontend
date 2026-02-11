@@ -74,7 +74,7 @@ export default function AboutHistory({ data }) {
     };
 
     return (
-        <section ref={ref} className="py-14 pb-24 px-4 bg-[#F9FAFB] overflow-hidden">
+        <section ref={ref} className="md:py-14 py-8 md:pb-18 pb-10 px-4 bg-[#F9FAFB] overflow-hidden">
             <div className="max-w-8xl mx-auto flex flex-col items-center">
 
                 {/* Header */}
@@ -82,12 +82,12 @@ export default function AboutHistory({ data }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                     transition={{ duration: 0.6 }}
-                    className="text-center mb-8 md:mb-20"
+                    className="text-center mb-8 md:mb-18"
                 >
                     <span className="text-gray-400 text-sm font-bold tracking-[0.2em] uppercase mb-4 block">
                         {sectionTitle}
                     </span>
-                    <h2 className="text-4xl md:text-5xl font-semibold text-[#1a1a1a]">
+                    <h2 className="text-2xl md:text-4xl font-semibold text-[#1a1a1a]">
                         {sectionDescription}
                     </h2>
                 </motion.div>
@@ -102,7 +102,7 @@ export default function AboutHistory({ data }) {
                     {/* Background Line (Desktop) */}
                     <div className="hidden lg:block absolute top-[128px] left-0 w-full h-[4px] bg-gray-200" />
 
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-4 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 md:gap-4 relative z-10">
                         {timelineData.map((item, index) => (
                             <motion.div
                                 key={index}
@@ -110,24 +110,24 @@ export default function AboutHistory({ data }) {
                                 className="flex flex-col items-start lg:items-center text-left lg:text-center group"
                             >
                                 {/* Date */}
-                                <h3 className="text-4xl md:text-5xl font-semibold text-[#1a1a1a] mb-2 group-hover:text-[#41398B] transition-colors duration-300">
+                                <h3 className="text-2xl md:text-3xl font-semibold text-[#1a1a1a] mb-2 group-hover:text-[#41398B] transition-colors duration-300">
                                     {language === 'en' ? (item.date_en || item.date) : (item.date_vn || item.date_en || item.date)}
                                 </h3>
 
                                 {/* Title */}
-                                <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-8 h-8 flex items-end justify-center">
+                                <h4 className="text-[12px] font-medium text-gray-400 uppercase tracking-wider md:mb-8 mb-4 h-8 flex items-end justify-center">
                                     {language === 'en' ? (item.title_en || item.title) : (item.title_vn || item.title_en || item.title)}
                                 </h4>
 
                                 {/* Circle Indicator */}
-                                <div className="relative flex items-center justify-center w-full mb-8 h-4">
+                                <div className="relative flex items-center md:justify-center justify-start w-full md:mb-8 mb-4 h-4">
 
                                     {/* The Dot */}
                                     <div className="w-5 h-5 rounded-full bg-[#41398B] border-[4px] border-white ring-1 ring-[#41398B] group-hover:bg-[#41398B] group-hover:ring-[#41398B] transition-all duration-300 z-10 lg:mx-auto shadow-sm scale-100 group-hover:scale-125" />
                                 </div>
 
                                 {/* Description */}
-                                <p className="text-gray-500 text-md leading-relaxed max-w-xs mx-auto">
+                                <p className="text-gray-500 text-[12px] md:text-[14px] leading-relaxed max-w-xs mx-auto">
                                     {language === 'en' ? (item.description_en || item.description) : (item.description_vn || item.description_en || item.description)}
                                 </p>
                             </motion.div>

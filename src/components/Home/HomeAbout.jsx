@@ -32,9 +32,9 @@ export default function HomeAbout({ homePageData }) {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-10 md:py-20 px-6 bg-white overflow-hidden">
+        <section ref={sectionRef} className="py-8 md:py-20 px-4 md:px-6 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-16 gap-8 items-start">
                     {/* Left Side - About Us Content */}
                     <div
                         className={`space-y-6 transition-all duration-1000 ease-out ${isVisible
@@ -50,7 +50,7 @@ export default function HomeAbout({ homePageData }) {
                         </p>
 
                         <h2
-                            className={`text-4xl md:text-5xl font-semibold text-black leading-tight transition-all duration-1000 delay-100 ease-out ${isVisible
+                            className={`text-2xl md:mb-2 mb-2 md:text-4xl font-semibold text-black leading-tight transition-all duration-1000 delay-100 ease-out ${isVisible
                                 ? 'opacity-100 translate-y-0'
                                 : 'opacity-0 translate-y-12'
                                 }`}
@@ -62,7 +62,7 @@ export default function HomeAbout({ homePageData }) {
                         </h2>
 
                         <p
-                            className={`text-lg text-gray-600 leading-relaxed transition-all duration-1000 delay-200 ease-out ${isVisible
+                            className={`text-md md:text-md text-gray-600 leading-relaxed transition-all duration-1000 delay-200 mb-0 md:mb-3 ease-out ${isVisible
                                 ? 'opacity-100 translate-y-0'
                                 : 'opacity-0 translate-y-12'
                                 }`}
@@ -74,7 +74,7 @@ export default function HomeAbout({ homePageData }) {
                         </p>
 
                         <button
-                            className={`mt-4 px-8 py-3.5 bg-black cursor-pointer text-white font-semibold rounded-md hover:bg-gray-800 transition-all duration-300 delay-300 hover:delay-0 hover:shadow-xl hover:-translate-y-1 active:translate-y-0 transform ${isVisible
+                            className={`mt-4 px-6 py-3 bg-black cursor-pointer text-white font-semibold rounded-md hover:bg-gray-800 transition-all duration-300 delay-300 hover:delay-0 hover:shadow-xl hover:-translate-y-1 active:translate-y-0 transform ${isVisible
                                 ? 'opacity-100 translate-y-0'
                                 : 'opacity-0 translate-y-12'
                                 }`}
@@ -97,12 +97,12 @@ export default function HomeAbout({ homePageData }) {
                                 }`}
                         >
                             <div className="flex-shrink-0">
-                                <span className="text-3xl font-semibold text-black transition-colors duration-300 hover:text-gray-600">
+                                <span className="text-xl md:text-2xl font-semibold text-black transition-colors duration-300 hover:text-gray-600">
                                     01.
                                 </span>
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-semibold text-[#2a2a2a]">
+                                <h3 className="text-lg md:text-xl font-semibold text-[#2a2a2a]">
                                     {language === 'en'
                                         ? (homePageData?.homeAboutStep1Title_en || 'Buy A New Home')
                                         : (homePageData?.homeAboutStep1Title_vn || 'Mua Nhà Mới')
@@ -125,12 +125,12 @@ export default function HomeAbout({ homePageData }) {
                                 }`}
                         >
                             <div className="flex-shrink-0">
-                                <span className="text-3xl font-semibold text-black transition-colors duration-300 hover:text-gray-600">
+                                <span className="text-xl md:text-2xl font-semibold text-black transition-colors duration-300 hover:text-gray-600">
                                     02.
                                 </span>
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-semibold text-[#2a2a2a]">
+                                <h3 className="text-lg md:text-xl font-semibold text-[#2a2a2a]">
                                     {language === 'en'
                                         ? (homePageData?.homeAboutStep2Title_en || 'Rent A Home')
                                         : (homePageData?.homeAboutStep2Title_vn || 'Thuê Nhà')
@@ -153,12 +153,12 @@ export default function HomeAbout({ homePageData }) {
                                 }`}
                         >
                             <div className="flex-shrink-0">
-                                <span className="text-3xl font-semibold text-black transition-colors duration-300 hover:text-gray-600">
+                                <span className="text-xl md:text-2xl font-semibold text-black transition-colors duration-300 hover:text-gray-600">
                                     03.
                                 </span>
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-semibold text-[#2a2a2a]">
+                                <h3 className="text-lg md:text-xl font-semibold text-[#2a2a2a]">
                                     {language === 'en'
                                         ? (homePageData?.homeAboutStep3Title_en || 'Sell A Home')
                                         : (homePageData?.homeAboutStep3Title_vn || 'Bán Nhà')

@@ -44,43 +44,43 @@ export default function AboutMissionVission({ data }) {
     }, []);
 
     return (
-        <section ref={sectionRef} className="py-14 px-6 bg-[#fff] overflow-hidden">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
+        <section ref={sectionRef} className="md:py-14 py-8 px-2 md:px-6 bg-[#fff] overflow-hidden mx-auto">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-7 lg:gap-20">
 
                 {/* Our Vision */}
                 <div
-                    className={`flex flex-col items-start p-8 rounded-3xl transition-all duration-700 ease-out transform group shadow-sm hover:-translate-y-2 hover:bg-gray-50/50
+                    className={`flex flex-col items-start md:p-8 p-4 rounded-3xl transition-all duration-700 ease-out transform group shadow-sm hover:-translate-y-2 hover:bg-gray-50/50
                         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
                 >
-                    <div className="flex flex-col gap-4 mb-4 w-full">
-                        <div className="w-16 h-16 rounded-2xl bg-[#41398B]/10 flex items-center justify-center group-hover:bg-[#41398B] transition-colors duration-500">
+                    <div className="flex flex-col gap-3 mb-3 w-full">
+                        <div className="md:w-16 md:h-16 w-12 h-12 rounded-2xl bg-[#41398B]/10 flex items-center justify-center group-hover:bg-[#41398B] transition-colors duration-500">
                             <Crown className="w-8 h-8 text-[#41398B] group-hover:text-white transition-colors duration-500" strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-3xl lg:text-4xl font-bold text-[#1a1a1a] leading-tight group-hover:text-[#41398B] transition-colors duration-300">
+                        <h2 className="text-2xl lg:text-2xl font-bold text-[#1a1a1a] leading-tight group-hover:text-[#41398B] transition-colors duration-300">
                             {visionTitle}
                         </h2>
                     </div>
 
-                    <p className="text-gray-500 text-lg leading-relaxed">
+                    <p className="text-gray-500 text-[16px] leading-relaxed">
                         {visionDesc}
                     </p>
                 </div>
 
                 {/* Our Mission */}
                 <div
-                    className={`flex flex-col items-start p-8 rounded-3xl transition-all duration-700 ease-out delay-200 transform group shadow-sm hover:-translate-y-2 hover:bg-gray-50/50
+                    className={`flex flex-col items-start md:p-8 p-4 rounded-3xl transition-all duration-700 ease-out delay-200 transform group shadow-sm hover:-translate-y-2 hover:bg-gray-50/50
                         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
                 >
-                    <div className="flex flex-col gap-4 mb-4 w-full">
-                        <div className="w-16 h-16 rounded-2xl bg-[#41398B]/10 flex items-center justify-center group-hover:bg-[#41398B] transition-colors duration-500">
+                    <div className="flex flex-col gap-3 mb-3 w-full">
+                        <div className="md:w-16 md:h-16 w-12 h-12 rounded-2xl bg-[#41398B]/10 flex items-center justify-center group-hover:bg-[#41398B] transition-colors duration-500">
                             <Target className="w-8 h-8 text-[#41398B] group-hover:text-white transition-colors duration-500" strokeWidth={1.5} />
                         </div>
-                        <h2 className="text-3xl lg:text-4xl font-bold text-[#1a1a1a] leading-tight group-hover:text-[#41398B] transition-colors duration-300">
+                        <h2 className="text-2xl lg:text-2xl font-bold text-[#1a1a1a] leading-tight group-hover:text-[#41398B] transition-colors duration-300">
                             {missionTitle}
                         </h2>
                     </div>
 
-                    <p className="text-gray-500 text-lg leading-relaxed">
+                    <p className="text-gray-500 text-[16px] leading-relaxed">
                         {missionDesc}
                     </p>
                 </div>

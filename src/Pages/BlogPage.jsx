@@ -108,7 +108,7 @@ export default function BlogPage() {
                     backgroundImage={bannerBg}
                 />
 
-                <div className="container mx-auto px-4 py-12">
+                <div className="container mx-auto py-12">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                         {/* Main Content */}
                         <div className="lg:col-span-8">
@@ -127,7 +127,7 @@ export default function BlogPage() {
                                                         />
                                                     </div>
                                                 )}
-                                                <div className="p-6 flex-1 flex flex-col">
+                                                <div className="p-4 flex-1 flex flex-col">
                                                     <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
                                                         <span className="bg-purple-50 text-[#41398B] px-3 py-1 rounded-full font-semibold text-xs">
                                                             {blog.category?.name?.[language] || blog.category?.name?.en || 'News'}

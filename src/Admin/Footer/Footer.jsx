@@ -108,8 +108,8 @@ export default function Footer() {
 
     return (
         <footer className="bg-[#161616] text-white pt-12 md:pt-16 pb-8 font-['Manrope']">
-            <div className="container mx-auto px-4 max-w-7xl">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 border-b border-gray-800 pb-12">
+            <div className="container mx-auto px-3 md:px-4 max-w-7xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-12 mb-8 border-b border-gray-800 pb-12">
                     {/* Left Column - Contact Info */}
                     <div className="lg:col-span-4 space-y-8">
                         {footerData?.footerLogo && (
@@ -132,7 +132,7 @@ export default function Footer() {
                             </div>
 
                             {/* Phone */}
-                            <div className="space-y-1 mb-3">
+                            <div className="space-y-1 mb-3 grid">
                                 <h4 className="text-[#898989] text-[15px] font-medium inline-block mr-2">{t('footerNumberLable')}</h4>
                                 <div className="inline-flex flex-wrap gap-2">
                                     {footerData?.footerNumber?.map((num, i) => (
@@ -159,8 +159,8 @@ export default function Footer() {
 
                     {/* Middle Column 1 - Our Company */}
                     <div className="lg:col-span-2 lg:col-start-6 pt-2">
-                        <h3 className="text-[16px] font-bold text-white mb-6">{t('footerOurCompanyLable')}</h3>
-                        <ul className="space-y-4">
+                        <h3 className="text-[16px] font-bold text-white md:mb-6 mb-2">{t('footerOurCompanyLable')}</h3>
+                        <ul className="md:space-y-4 space-y-2">
                             <li><Link to="/listing?type=Sale" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForSale')}</Link></li>
                             <li><Link to="/listing?type=Lease" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForLease')}</Link></li>
                             <li><Link to="/listing?type=Home Stay" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('propertyForHomeStay')}</Link></li>
@@ -169,8 +169,8 @@ export default function Footer() {
 
                     {/* Middle Column 2 - Quick Links */}
                     <div className="lg:col-span-2 pt-2">
-                        <h3 className="text-[16px] font-bold text-white mb-6">{t('footerQuickLinksLable')}</h3>
-                        <ul className="space-y-4">
+                        <h3 className="text-[16px] font-bold text-white md:mb-6 mb-2">{t('footerQuickLinksLable')}</h3>
+                        <ul className="md:space-y-4 space-y-2">
                             <li><Link to="/about" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('aboutUs')}</Link></li>
                             <li><Link to="/contact" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('contactUs')}</Link></li>
                             <li><Link to="/blogs" className="text-[#898989] hover:text-white transition-colors text-[15px]">{st('latestNews')}</Link></li>

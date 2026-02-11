@@ -202,23 +202,23 @@ export default function HomeBanner({ homePageData }) {
 
     return (
         <>
-            <div className="relative min-h-[70vh] md:min-h-[100vh] bg-cover bg-center bg-no-repeat"
+            <div className="relative min-h-[70vh] md:min-h-[100vh] bg-cover bg-center bg-no-repeat place-content-center"
                 style={{
                     backgroundImage: homePageData?.backgroundImage
                         ? `url(${getImageUrl(homePageData.backgroundImage)})`
                         : 'url("/images/property/home-banner.jpg")'
                 }}>
-                <div className="absolute inset-0 bg-black/40"></div>
-                <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+                <div className="absolute inset-0 bg-black/50"></div>
+                <div className="relative z-10 max-w-7xl mx-auto px-6 py-0">
                     {/* Title & Description */}
                     <div className="text-center mb-12">
-                        <h1 className="text-5xl md:text-8xl font-medium text-white mb-4 animate-fadeInUp">
+                        <h1 className="text-3xl md:text-6xl font-medium text-white mb-4 animate-fadeInUp">
                             {language === 'en'
                                 ? (homePageData?.heroTitle_en || 'Find The Best Place')
                                 : (homePageData?.heroTitle_vn || 'Tìm Nơi Tốt Nhất')
                             }
                         </h1>
-                        <p className="text-xl text-gray-200 font-medium max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
+                        <p className="md:text-xl text-lg text-gray-200 font-medium max-w-2xl mx-auto animate-fadeInUp animation-delay-200">
                             {language === 'en'
                                 ? (homePageData?.heroDescription_en || 'This stunning coastal villa in Malibu offers panoramic ocean views, open-concept living, and elegant modern design.')
                                 : (homePageData?.heroDescription_vn || 'Biệt thự ven biển tuyệt đẹp này ở Malibu mang đến tầm nhìn toàn cảnh ra đại dương, không gian sống mở và thiết kế hiện đại thanh lịch.')
@@ -229,11 +229,11 @@ export default function HomeBanner({ homePageData }) {
             </div>
 
             {/* Filter Card */}
-            <div className='mt-[-80px] relative z-20 animate-slideUpFade animation-delay-400'>
+            <div className='mt-[-80px] mx-4 md:mx-0 relative z-20 animate-slideUpFade animation-delay-400'>
                 {/* Tabs */}
                 <div className="flex gap-3 justify-center">
                     <button
-                        className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Lease'
+                        className={`px-2 py-2 md:py-3 md:px-8 rounded-t-md font-medium text-base cursor-pointer transition-all ${selectedTab === 'For Lease'
                             ? 'bg-[#fff] text-[#41398B]'
                             : 'bg-[#00000066] text-[#fff] hover:bg-gray-200 hover:text-[#41398B]'
                             }`}
@@ -242,7 +242,7 @@ export default function HomeBanner({ homePageData }) {
                         {t.forRent}
                     </button>
                     <button
-                        className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'For Sale'
+                        className={`px-2 py-2 md:py-3 md:px-8 rounded-t-md font-medium text-base cursor-pointer transition-all ${selectedTab === 'For Sale'
                             ? 'bg-[#fff] text-[#41398B]'
                             : 'bg-[#00000066] text-[#fff] hover:bg-gray-200 hover:text-[#41398B]'
                             }`}
@@ -251,7 +251,7 @@ export default function HomeBanner({ homePageData }) {
                         {t.forSale}
                     </button>
                     <button
-                        className={`px-2 py-3 md:py-3 md:px-8 rounded-t-md font-semibold text-base cursor-pointer transition-all ${selectedTab === 'Home Stay'
+                        className={`px-2 py-2 md:py-3 md:px-8 rounded-t-md font-medium text-base cursor-pointer transition-all ${selectedTab === 'Home Stay'
                             ? 'bg-[#fff] text-[#41398B]'
                             : 'bg-[#00000066] text-[#fff] hover:bg-gray-200 hover:text-[#41398B]'
                             }`}
@@ -263,9 +263,10 @@ export default function HomeBanner({ homePageData }) {
 
                 <div className="bg-white rounded-2xl shadow-sm p-6 max-w-7xl mx-auto">
                     {/* Main Filters Row - Horizontal Layout */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6 pt-2">
+                    {/* Filters Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
                         {/* Looking For (Keyword) */}
-                        <div>
+                        <div className="order-1">
                             <label className="block text-md font-bold text-black mb-2">
                                 {language === 'en' ? 'Looking For' : 'Tìm Kiếm'}
                             </label>
@@ -279,7 +280,7 @@ export default function HomeBanner({ homePageData }) {
                         </div>
 
                         {/* Project / Community */}
-                        <div>
+                        <div className={`order-2 ${showMoreFilters ? 'block' : 'hidden lg:block'}`}>
                             <label className="block text-md font-bold text-black mb-2">
                                 {t.projectCommunity}
                             </label>
@@ -306,7 +307,7 @@ export default function HomeBanner({ homePageData }) {
                         </div>
 
                         {/* Area / Zone */}
-                        <div>
+                        <div className={`order-3 ${showMoreFilters ? 'block' : 'hidden lg:block'}`}>
                             <label className="block text-md font-bold text-black mb-2">
                                 {t.areaZone}
                             </label>
@@ -333,7 +334,7 @@ export default function HomeBanner({ homePageData }) {
                         </div>
 
                         {/* Block Name */}
-                        <div>
+                        <div className={`order-4 ${showMoreFilters ? 'block' : 'hidden lg:block'}`}>
                             <label className="block text-md font-bold text-black mb-2">
                                 {t.blockName}
                             </label>
@@ -359,37 +360,28 @@ export default function HomeBanner({ homePageData }) {
                             </Select>
                         </div>
 
-                        {/* Bottom Row - Show More Button & Search Button */}
-                        <div className="flex items-end gap-3">
-                            {/* Show More Filters Button */}
+                        {/* Buttons section */}
+                        <div className="order-last lg:order-5 flex items-center gap-3">
                             <button
-                                className="flex items-center gap-2 px-4 py-3 border cursor-pointer border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-all"
+                                className="flex items-center gap-2 px-4 py-2.5 border cursor-pointer border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-all"
                                 onClick={() => setShowMoreFilters(!showMoreFilters)}
                             >
-                                <SlidersHorizontal />
+                                <SlidersHorizontal size={20} />
+                                <span className="lg:hidden">{language === 'en' ? 'Filters' : 'Bộ lọc'}</span>
                             </button>
-
-                            {/* Search Button */}
                             <button
-                                className="px-8 py-2.5 bg-[#41398B] hover:bg-[#41398be1] text-white font-bold rounded-lg hover:shadow-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all"
+                                className="flex-1 px-8 py-2.5 bg-[#41398B] hover:bg-[#41398be1] text-white font-bold rounded-lg hover:shadow-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all"
                                 onClick={handleSearch}
                             >
                                 {language === 'en' ? 'Search' : 'Tìm Kiếm'}
                             </button>
                         </div>
-                    </div>
 
-                    {/* Expandable More Filters Section */}
-                    <div
-                        className={`overflow-hidden transition-all duration-500 ease-in-out ${showMoreFilters ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
-                            }`}
-                    >
-                        <div className={`mb-6 transform transition-all duration-500 ${showMoreFilters ? 'translate-y-0' : '-translate-y-4'
-                            }`}>
-                            {/* Hidden Filters Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
+                        {/* Expandable Advanced Filters */}
+                        {showMoreFilters && (
+                            <div className="lg:contents grid gap-4 md:block">
                                 {/* Bedrooms */}
-                                <div>
+                                <div className="order-5 lg:order-6">
                                     <label className="block text-md font-bold text-black mb-2">
                                         {language === 'en' ? 'Bedrooms' : 'Phòng Ngủ'}
                                     </label>
@@ -411,7 +403,7 @@ export default function HomeBanner({ homePageData }) {
                                 </div>
 
                                 {/* Bathrooms */}
-                                <div>
+                                <div className="order-6 lg:order-7">
                                     <label className="block text-md font-bold text-black mb-2">
                                         {language === 'en' ? 'Bathrooms' : 'Phòng Tắm'}
                                     </label>
@@ -432,7 +424,7 @@ export default function HomeBanner({ homePageData }) {
                                 </div>
 
                                 {/* Property Type */}
-                                <div>
+                                <div className="order-7 lg:order-8">
                                     <label className="block text-md font-bold text-black mb-2">
                                         {language === 'en' ? 'Property Type' : 'Loại Bất Động Sản'}
                                     </label>
@@ -459,7 +451,7 @@ export default function HomeBanner({ homePageData }) {
                                 </div>
 
                                 {/* Currency */}
-                                <div>
+                                <div className="order-8 lg:order-9">
                                     <label className="block text-md font-bold text-black mb-2">
                                         {language === 'en' ? 'Currency' : 'Tiền Tệ'}
                                     </label>
@@ -486,7 +478,7 @@ export default function HomeBanner({ homePageData }) {
                                 </div>
 
                                 {/* Min Price */}
-                                <div>
+                                <div className="order-9 lg:order-10">
                                     <label className="block text-md font-bold text-black mb-2">
                                         {language === 'en' ? 'Min Price' : 'Giá Tối Thiểu'}
                                     </label>
@@ -500,7 +492,7 @@ export default function HomeBanner({ homePageData }) {
                                 </div>
 
                                 {/* Max Price */}
-                                <div>
+                                <div className="order-10 lg:order-11">
                                     <label className="block text-md font-bold text-black mb-2">
                                         {language === 'en' ? 'Max Price' : 'Giá Tối Đa'}
                                     </label>
@@ -513,7 +505,7 @@ export default function HomeBanner({ homePageData }) {
                                     />
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </div>

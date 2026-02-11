@@ -186,10 +186,6 @@ export default function ListingPage() {
             setZones([]);
         }
 
-        // When project changes, we don't necessarily want to clear if it's the initial load from URL,
-        // but for user interaction, it should clear. The concept in Filter.jsx does clear.
-        // To avoid clearing on mount (URL params), we could check if it's a manual change, 
-        // but the Filter.jsx logic is simple.
     }, [filters.projectId, zonesAll, projectsAll]);
 
     useEffect(() => {
@@ -239,6 +235,17 @@ export default function ListingPage() {
             fetchProperties(1, true);
         }
     }, [sortBy]);
+
+    // Live search for keyword with debounce
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            // Only trigger if keyword is different from what's in searchParams
+            if (filters.keyword !== (searchParams.get('keyword') || '')) {
+                handleSearch(false);
+            }
+        }, 600);
+        return () => clearTimeout(timer);
+    }, [filters.keyword]);
 
     useEffect(() => {
         if (page > 1) {
@@ -333,8 +340,10 @@ export default function ListingPage() {
         });
     };
 
-    const handleSearch = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    const handleSearch = (shouldScroll = true) => {
+        if (shouldScroll) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         setProperties([]);
         setPage(1);
         setHasMore(true);
@@ -396,42 +405,16 @@ export default function ListingPage() {
                 {/* Modern Header */}
                 <div className="">
                     <div className="max-w-9xl md:px-28 px-6 mx-auto py-5">
-                        <div className="flex items-center gap-3 text-sm mb-4">
+                        <div className="flex items-center gap-3 text-sm">
                             <a href="/" className="text-gray-500 hover:text-[#41398B] font-medium transition-colors">{t.home}</a>
                             <span className="text-gray-300">/</span>
                             <span className="text-[#41398B] font-semibold">{t.properties}</span>
-                        </div>
-
-                        <div className="flex flex-wrap justify-between items-center gap-4">
-                            {/* <div>
-                                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#41398B] to-[#6b5dd3] bg-clip-text text-transparent mb-1">
-                                    {t.discoverDreamProperty}
-                                </h1>
-                                <p className="text-gray-900 text-md">{t.findPerfectPlace}</p>
-                            </div> */}
-
-                            <div className="flex items-center gap-3">
-                                <Select
-                                    className="custom-selects"
-                                    popupClassName="custom-dropdown"
-                                    value={sortBy}
-                                    onChange={(value) => setSortBy(value)}
-                                    style={{ width: 180 }}
-                                    size="large"
-                                >
-                                    <Select.Option value="default">{t.defaultSort}</Select.Option>
-                                    <Select.Option value="price-low">{t.priceLowHigh}</Select.Option>
-                                    <Select.Option value="price-high">{t.priceHighLow}</Select.Option>
-                                    <Select.Option value="newest">{t.newest}</Select.Option>
-                                    <Select.Option value="oldest">{t.oldest}</Select.Option>
-                                </Select>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Main Content */}
-                <div className="max-w-9xl px-6 md:px-28 mx-auto py-5 md:py-10">
+                <div className="max-w-7xl mx-auto py-5 md:py-10">
                     <div className="flex flex-col gap-10">
                         {/* Top Horizontal Filters */}
                         <aside className="w-full">
@@ -454,9 +437,25 @@ export default function ListingPage() {
                             </div>
 
                             {/* Main Filter Card */}
-                            <div className="bg-white rounded-b-2xl shadow-sm p-8 border border-gray-100">
+                            <div className="bg-white rounded-b-2xl shadow-sm md:p-8 p-4 border border-gray-100">
                                 {/* Detailed Filters - Main Row */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-6 pt-2">
+                                <div className="flex justify-end">
+                                    <Select
+                                        className="custom-selects"
+                                        popupClassName="custom-dropdown"
+                                        value={sortBy}
+                                        onChange={(value) => setSortBy(value)}
+                                        style={{ width: 180 }}
+                                        size="large"
+                                    >
+                                        <Select.Option value="default">{t.defaultSort}</Select.Option>
+                                        <Select.Option value="price-low">{t.priceLowHigh}</Select.Option>
+                                        <Select.Option value="price-high">{t.priceHighLow}</Select.Option>
+                                        <Select.Option value="newest">{t.newest}</Select.Option>
+                                        <Select.Option value="oldest">{t.oldest}</Select.Option>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-0 pt-2">
                                     {/* Looking For (Keyword) */}
                                     <div>
                                         <label className="block text-[15px] font-bold text-black mb-3">
@@ -468,11 +467,16 @@ export default function ListingPage() {
                                             placeholder={language === 'en' ? 'Search keyword' : 'Từ khóa tìm kiếm'}
                                             value={filters.keyword}
                                             onChange={(e) => handleFilterChange('keyword', e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    handleSearch();
+                                                }
+                                            }}
                                         />
                                     </div>
 
                                     {/* Project / Community */}
-                                    <div>
+                                    <div className={showFilters ? "block" : "hidden md:block"}>
                                         <label className="block text-[15px] font-bold text-black mb-3">{t.projectCommunity}</label>
                                         <Select
                                             className="custom-selectss w-full"
@@ -497,7 +501,7 @@ export default function ListingPage() {
                                     </div>
 
                                     {/* Area / Zone */}
-                                    <div>
+                                    <div className={showFilters ? "block" : "hidden md:block"}>
                                         <label className="block text-[15px] font-bold text-black mb-3">{t.areaZone}</label>
                                         <Select
                                             className="custom-selectss w-full"
@@ -522,7 +526,7 @@ export default function ListingPage() {
                                     </div>
 
                                     {/* Block Name */}
-                                    <div>
+                                    <div className={showFilters ? "block" : "hidden md:block"}>
                                         <label className="block text-[15px] font-bold text-black mb-3">{t.blockName}</label>
                                         <Select
                                             className="custom-selectss w-full"
@@ -547,7 +551,7 @@ export default function ListingPage() {
                                     </div>
 
                                     {/* Action Buttons Col */}
-                                    <div className="flex items-center gap-3 xl:col-span-2 mt-auto">
+                                    <div className={`${showFilters ? 'hidden md:flex' : 'flex'} items-center gap-3 xl:col-span-2 mt-auto`}>
                                         {/* Show More Filters Button */}
                                         <button
                                             className={`flex items-center justify-center p-[11px] border cursor-pointer border-[#d1d5dc] rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-all ${showFilters ? 'bg-purple-50 border-[#41398B] text-[#41398B]' : ''}`}
@@ -685,6 +689,26 @@ export default function ListingPage() {
                                             </div>
                                         </div>
 
+                                        {/* Mobile Only Action Buttons at Bottom */}
+                                        <div className="md:hidden flex items-center gap-3 mt-8">
+                                            {/* Show More Filters Button */}
+                                            <button
+                                                className={`flex items-center justify-center p-[11px] border cursor-pointer border-[#d1d5dc] rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-all ${showFilters ? 'bg-purple-50 border-[#41398B] text-[#41398B]' : ''}`}
+                                                onClick={() => setShowFilters(!showFilters)}
+                                                style={{ minWidth: '50px' }}
+                                            >
+                                                <SlidersHorizontal size={22} />
+                                            </button>
+
+                                            {/* Search Button */}
+                                            <button
+                                                className="flex-1 px-10 py-[12px] bg-[#41398B] hover:bg-[#352e7a] text-white font-bold rounded-lg hover:shadow-xl cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-all text-base"
+                                                onClick={handleSearch}
+                                            >
+                                                {t.search}
+                                            </button>
+                                        </div>
+
                                         {/* Bottom Action Link */}
                                         <div className="mt-6 flex justify-end">
                                             <button
@@ -714,7 +738,7 @@ export default function ListingPage() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 md:p-0">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-2 md:p-0">
                                         {properties.map((property, index) => {
                                             const isLastProperty = properties.length === index + 1;
                                             return (
@@ -767,7 +791,7 @@ export default function ListingPage() {
                                                     </div>
 
                                                     {/* Content */}
-                                                    <div className="pt-2 pb-5 px-4">
+                                                    <div className="pt-2 pb-5 px-3">
                                                         {/* Price */}
                                                         <div className="flex items-baseline gap-0 mb-0">
                                                             {(() => {
@@ -806,7 +830,7 @@ export default function ListingPage() {
 
                                                                 return (
                                                                     <>
-                                                                        <span className="text-[22px] font-bold text-[#2a2a2a]">{displayPrice}</span>
+                                                                        <span className="text-[20px] font-bold text-[#2a2a2a]">{displayPrice}</span>
                                                                         {displaySuffix && <span className="text-md text-gray-500 font-medium">{displaySuffix}</span>}
                                                                     </>
                                                                 );
@@ -814,7 +838,7 @@ export default function ListingPage() {
                                                         </div>
 
                                                         {/* Title */}
-                                                        <h3 className="text-[18px] font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#41398B] transition-colors">
+                                                        <h3 className="md:text-[17px] text-[15px] font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#41398B] transition-colors">
                                                             {normalizeFancyText(
                                                                 getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
                                                                 getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
@@ -825,7 +849,7 @@ export default function ListingPage() {
 
                                                         {/* Location / Nearby */}
                                                         <div
-                                                            className="text-[16px] text-gray-500 mb-4 line-clamp-2 ql-editor-summary"
+                                                            className="md:text-[16px] text-[14px] text-gray-500 mb-4 line-clamp-2 ql-editor-summary"
                                                             dangerouslySetInnerHTML={{
                                                                 __html: getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
                                                                     getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
@@ -850,7 +874,7 @@ export default function ListingPage() {
                                                                             d="M3 7h18M5 7v10M19 7v10M3 17h18M7 10h4a2 2 0 012 2v5M7 10a2 2 0 00-2 2v5"
                                                                         />
                                                                     </svg>
-                                                                    <span className="font-medium text-lg">{property.propertyInformation.informationBedrooms} Bed</span>
+                                                                    <span className="font-medium text-[14px]">{property.propertyInformation.informationBedrooms} Bed</span>
                                                                 </div>
                                                             )}
                                                             {property.propertyInformation?.informationBathrooms > 0 && (
@@ -858,7 +882,7 @@ export default function ListingPage() {
                                                                     <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 14h16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2zM6 14V9a3 3 0 0 1 6 0" />
                                                                     </svg>
-                                                                    <span className="font-medium text-lg">{property.propertyInformation.informationBathrooms} Bath</span>
+                                                                    <span className="font-medium text-[14px]">{property.propertyInformation.informationBathrooms} Bath</span>
                                                                 </div>
                                                             )}
                                                             {property.propertyInformation?.informationUnitSize > 0 && (
@@ -866,7 +890,7 @@ export default function ListingPage() {
                                                                     <svg className="w-6 h-6 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.4 4.6a2 2 0 0 1 0 2.8l-12 12a2 2 0 0 1-2.8 0l-2-2a2 2 0 0 1 0-2.8l12-12a2 2 0 0 1 2.8 0zM12 7l2 2M10 9l2 2M8 11l2 2" />
                                                                     </svg>
-                                                                    <span className="font-medium text-lg">{property.propertyInformation.informationUnitSize.toLocaleString()} Sqft</span>
+                                                                    <span className="font-medium text-[14px]">{property.propertyInformation.informationUnitSize.toLocaleString()} Sqft</span>
                                                                 </div>
                                                             )}
                                                         </div>

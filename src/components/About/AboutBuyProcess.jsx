@@ -72,7 +72,7 @@ export default function AboutBuyProcess({ data }) {
     };
 
     return (
-        <section ref={ref} className="py-20 px-6 bg-white overflow-hidden">
+        <section ref={ref} className="md:py-20 py-8 md:px-6 px-3 bg-white overflow-hidden mx-auto">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
 
                 {/* Left Column: Text & Steps */}
@@ -82,11 +82,11 @@ export default function AboutBuyProcess({ data }) {
                     animate={isInView ? "visible" : "hidden"}
                     variants={containerVariants}
                 >
-                    <motion.div variants={itemVariants} className="mb-10">
-                        <span className="text-gray-400 text-sm font-semibold tracking-[0.2em] uppercase mb-4 block">
+                    <motion.div variants={itemVariants} className="md:mb-10 mb-8">
+                        <span className="text-gray-400 text-sm font-semibold tracking-[0.2em] uppercase md:mb-4 mb-2 block">
                             {subTitle}
                         </span>
-                        <h2 className="text-4xl md:text-5xl font-semibold text-[#1a1a1a]">
+                        <h2 className="text-2xl md:text-4xl font-semibold text-[#1a1a1a]">
                             {title}
                         </h2>
                     </motion.div>
@@ -107,7 +107,7 @@ export default function AboutBuyProcess({ data }) {
                                     `}
                                 ></div>
 
-                                <h3 className={`text-2xl font-semibold mb-2 transition-colors duration-300 ${index === activeIndex ? 'text-[#41398B]' : 'text-[#000]'}`}>
+                                <h3 className={`text-xl font-semibold mb-2 transition-colors duration-300 ${index === activeIndex ? 'text-[#41398B]' : 'text-[#000]'}`}>
                                     {language === 'en' ? (step.title_en || step.title) : (step.title_vn || step.title_en || step.title)}
                                 </h3>
                                 <p className="text-gray-500 leading-relaxed">

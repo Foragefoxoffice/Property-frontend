@@ -43,38 +43,38 @@ export default function HomeTestimonials({ homePageData }) {
 
     const variants = {
         enter: (direction) => ({
-            x: direction > 0 ? 300 : -300,
-            opacity: 0,
+            x: direction > 0 ? '100%' : '-100%',
         }),
         center: {
             zIndex: 1,
             x: 0,
-            opacity: 1,
         },
         exit: (direction) => ({
             zIndex: 0,
-            x: direction < 0 ? 300 : -300,
-            opacity: 0,
+            x: direction < 0 ? '100%' : '-100%',
         }),
     };
 
-    // Helper to get two testimonials starting from currentIndex
-    const getVisiblePair = () => {
+    // Helper to get three testimonials starting from currentIndex
+    const getVisibleTrio = () => {
         const first = testimonials[currentIndex];
         const nextIdx = (currentIndex + 1) % testimonials.length;
         const second = testimonials[nextIdx];
+        const thirdIdx = (currentIndex + 2) % testimonials.length;
+        const third = testimonials[thirdIdx];
 
-        // If there's only one testimonial, just return that
+        // Handle cases with fewer than 3 testimonials
         if (testimonials.length === 1) return [first];
-        return [first, second];
+        if (testimonials.length === 2) return [first, second];
+        return [first, second, third];
     };
 
-    const visibleTestimonials = getVisiblePair();
+    const visibleTestimonials = getVisibleTrio();
 
     return (
-        <section className="py-20 bg-gray-50 overflow-hidden min-h-[600px] flex flex-col justify-center">
-            <div className="max-w-7xl mx-auto px-6 w-full">
-                <div className="text-center mb-12">
+        <section className="py-10 md:py-20 bg-gray-50 overflow-hidden min-h-[600px] flex flex-col justify-center">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 w-full">
+                <div className="text-center mb-6 md:mb-12">
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -91,7 +91,7 @@ export default function HomeTestimonials({ homePageData }) {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-4xl md:text-5xl font-semibold text-black"
+                        className="text-2xl md:text-4xl font-semibold text-black"
                     >
                         {language === 'en'
                             ? (homePageData?.homeTestimonialTitle_en || 'What They Say About Us')
@@ -100,7 +100,7 @@ export default function HomeTestimonials({ homePageData }) {
                     </motion.h2>
                 </div>
 
-                <div className="relative w-full mt-10">
+                <div className="relative w-full mt-0 md:mt-10">
                     {/* Navigation Buttons */}
                     <div className="absolute top-1/2 -left-4 md:-left-12 -translate-y-1/2 z-20">
                         <button
@@ -120,8 +120,8 @@ export default function HomeTestimonials({ homePageData }) {
                     </div>
 
                     {/* Testimonial Card Slider */}
-                    <div className="relative h-[450px] md:h-[400px]">
-                        <AnimatePresence initial={false} custom={direction} mode="wait">
+                    <div className="relative h-[550px] md:h-[450px]">
+                        <AnimatePresence initial={false} custom={direction} mode="popLayout">
                             <motion.div
                                 key={currentIndex}
                                 custom={direction}
@@ -130,15 +130,15 @@ export default function HomeTestimonials({ homePageData }) {
                                 animate="center"
                                 exit="exit"
                                 transition={{
-                                    x: { type: "spring", stiffness: 300, damping: 30 },
-                                    opacity: { duration: 0.3 },
+                                    x: { type: "spring", stiffness: 150, damping: 25, mass: 0.8 },
                                 }}
-                                className="absolute inset-0 grid grid-cols-1 lg:grid-cols-2 gap-8"
+                                className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                             >
                                 {visibleTestimonials.map((item, idx) => (
                                     <div
                                         key={item._id}
-                                        className={`bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-gray-100 flex flex-col justify-between ${idx === 1 ? 'hidden lg:flex' : 'flex'}`}
+                                        className={`bg-white p-7 md:p-8 rounded-xl shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 opacity-100 translate-y-0 flex flex-col justify-between 
+                                            ${idx === 1 ? 'hidden md:flex' : idx === 2 ? 'hidden lg:flex' : 'flex'}`}
                                     >
                                         <div>
                                             <div className="flex items-center gap-1 mb-6">
@@ -153,7 +153,7 @@ export default function HomeTestimonials({ homePageData }) {
 
                                             <div className="relative">
                                                 <Quote className="absolute -top-6 -left-4 text-gray-100 w-14 h-14 -z-10" />
-                                                <p className="text-md md:text-lg text-gray-700 italic leading-relaxed relative z-10 line-clamp-4">
+                                                <p className="text-md md:text-[17px] text-gray-700 italic leading-relaxed relative z-10 line-clamp-5">
                                                     "{language === 'en' ? (item.text_en || item.text) : (item.text_vn || item.text)}"
                                                 </p>
                                             </div>
