@@ -5,11 +5,18 @@ import { SiMessenger, SiZalo } from "react-icons/si";
 import { getAgent } from "@/Api/action";
 import { useLanguage } from "@/Language/LanguageContext";
 
+import { useLocation } from "react-router-dom";
+
 const FloatingContactButtons = () => {
     const { language } = useLanguage();
+    const { pathname } = useLocation();
     const [agentData, setAgentData] = useState(null);
 
+    const hideOnPaths = ["/dashboard", "/user-dashboard", "/login", "/register", "/forgot-password", "/reset-password"];
+    const shouldHide = hideOnPaths.some(path => pathname.startsWith(path));
+
     useEffect(() => {
+        if (shouldHide) return;
         const fetchAgentData = async () => {
             try {
                 const response = await getAgent();
@@ -21,9 +28,9 @@ const FloatingContactButtons = () => {
             }
         };
         fetchAgentData();
-    }, []);
+    }, [shouldHide]);
 
-    if (!agentData) return null;
+    if (shouldHide || !agentData) return null;
 
     const {
         agentNumber,
