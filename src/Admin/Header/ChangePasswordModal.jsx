@@ -175,14 +175,14 @@ const ChangePasswordModal = ({ isOpen, onClose }) => {
                                     type="button"
                                     onClick={onClose}
                                     disabled={loading}
-                                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors disabled:opacity-50"
+                                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                                 >
                                     {labels.cancel[language]}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="px-6 py-2.5 text-sm font-bold text-white bg-[#41398B] hover:bg-[#352e7a] rounded-full shadow-lg shadow-[#41398B]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                                    className="px-6 py-2.5 text-sm font-bold text-white bg-[#41398B] hover:bg-[#352e7a] rounded-lg shadow-lg shadow-[#41398B]/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
                                 >
                                     {loading ? (
                                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

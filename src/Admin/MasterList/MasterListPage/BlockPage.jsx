@@ -269,7 +269,7 @@ export default function BlockPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-xl bg-[#41398B] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -709,7 +709,7 @@ export default function BlockPage() {
             <div className="flex justify-end gap-3 px-6 py-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-5 py-2 border rounded-full hover:bg-gray-100"
+                className="px-5 py-2 border rounded-lg hover:bg-gray-100"
               >
                 {isVI ? "Hủy" : "Cancel"}
               </button>

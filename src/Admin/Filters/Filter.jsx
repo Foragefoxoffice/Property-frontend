@@ -472,14 +472,14 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       <div className="flex justify-end gap-4 mt-10">
         <button
           onClick={handleClear}
-          className="px-6 py-2 rounded-full cursor-pointer border border-gray-400 text-gray-700"
+          className="px-6 py-2 rounded-lg cursor-pointer border border-gray-400 text-gray-700"
         >
           {t[lang].clear}
         </button>
 
         <button
           onClick={() => onApply && onApply(filters)}
-          className="px-6 py-2 bg-[#41398B] flex items-center gap-1 hover:bg-[#41398Be3] text-white rounded-full cursor-pointer"
+          className="px-6 py-2 bg-[#41398B] flex items-center gap-1 hover:bg-[#41398Be3] text-white rounded-lg cursor-pointer"
         >
           {t[lang].apply}
           <ArrowRight size={20} />

@@ -171,7 +171,7 @@ export default function ContactEnquiry() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={goBack}
-                        className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
+                        className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-xl bg-[#41398B] text-white"
                     >
                         <ArrowLeft className="w-4 h-4" />
                     </button>

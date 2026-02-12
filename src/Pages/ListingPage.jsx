@@ -437,7 +437,7 @@ export default function ListingPage() {
                             </div>
 
                             {/* Main Filter Card */}
-                            <div className="bg-white rounded-b-2xl shadow-sm md:p-8 p-4 border border-gray-100">
+                            <div className="bg-white rounded-2xl shadow-sm md:p-8 p-4 border border-gray-100">
                                 {/* Detailed Filters - Main Row */}
                                 <div className="flex justify-end">
                                     <Select

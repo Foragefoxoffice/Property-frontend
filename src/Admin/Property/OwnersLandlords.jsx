@@ -259,7 +259,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
         {can("landlords", "add") && (
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2 text-white bg-[#41398B] rounded-full shadow"
+            className="flex items-center gap-2 px-4 py-2 text-white bg-[#41398B] rounded-lg shadow"
           >
             <Plus size={18} />
             {language === "vi" ? "Chủ sở hữu mới" : "New Owner"}
@@ -269,7 +269,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
 
       {/* SEARCH & SORT */}
       <div className="flex flex-col md:flex-row items-start gap-4 mb-6">
-        <div className="flex items-center bg-white border rounded-full px-4 py-2.5 w-full md:max-w-md shadow-sm">
+        <div className="flex items-center bg-white border rounded-lg px-4 py-2.5 w-full md:max-w-md shadow-sm">
           <Search size={18} className="text-gray-400 mr-2" />
           <input
             type="text"
@@ -733,13 +733,13 @@ const AddEditOwnerModal = ({
             <button
               type="button"
               onClick={() => setShowModal(false)}
-              className="px-4 py-2 border rounded-full hover:bg-gray-100 cursor-pointer"
+              className="px-4 py-2 border rounded-lg hover:bg-gray-100 cursor-pointer"
             >
               {text.cancel}
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-[#41398B] text-white rounded-full cursor-pointer"
+              className="px-4 py-2 bg-[#41398B] text-white rounded-lg cursor-pointer"
             >
               {editMode ? text.submitEdit : text.submitAdd}
             </button>

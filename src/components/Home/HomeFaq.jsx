@@ -159,7 +159,7 @@ export default function HomeFaq({ homePageData }) {
                         {faqSectionSubtitle}
                     </span>
                     <h2
-                        className={`text-2xl md:text-4xl font-semibold text-[#1a1a1a] mb-3 md:mb-5 leading-tight transition-all duration-700 delay-500 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                        className={`text-2xl md:text-3xl font-semibold text-[#1a1a1a] mb-3 md:mb-5 leading-tight transition-all duration-700 delay-500 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                             }`}
                     >
                         {faqSectionTitle}

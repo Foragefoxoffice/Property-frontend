@@ -230,7 +230,7 @@ export default function ManageTrashProperty() {
 
           <button
             onClick={() => setShowFilterPopup(true)}
-            className="flex items-center gap-2 px-4 py-2 border rounded-full hover:bg-gray-100"
+            className="flex bg-white items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-100"
           >
             <SlidersHorizontal className="w-4 h-4" />
             {t.filter}
@@ -249,7 +249,7 @@ export default function ManageTrashProperty() {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-10 pr-4 py-3 rounded-full bg-white focus:ring-2 focus:ring-gray-300"
+          className="w-full pl-10 pr-4 py-3 rounded-lg bg-white focus:ring-2 focus:ring-gray-300"
         />
       </div>
 

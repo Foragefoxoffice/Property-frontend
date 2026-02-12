@@ -217,7 +217,7 @@ export default function DepositPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-xl bg-[#41398B] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -424,13 +424,13 @@ export default function DepositPage() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
-                className="px-5 py-2 border rounded-full hover:bg-gray-100"
+                className="px-5 py-2 border rounded-lg hover:bg-gray-100"
               >
                 {isVI ? "Hủy" : "Cancel"}
               </button>
               <button
                 onClick={handleDelete}
-                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
+                className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
                 {isVI ? "Xóa" : "Delete"}
               </button>
@@ -531,7 +531,7 @@ export default function DepositPage() {
                   setShowModal(false);
                   setEditingDeposit(null);
                 }}
-                className="px-5 py-2 cursor-pointer rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100"
+                className="px-5 py-2 cursor-pointer rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100"
               >
                 {activeLang === "EN" ? "Cancel" : "Hủy"}
               </button>

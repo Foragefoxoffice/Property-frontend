@@ -174,7 +174,7 @@ export default function Notification() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className={`flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e72] text-white rounded-xl font-medium transition shadow-md ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                className={`flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e72] text-white rounded-lg font-medium transition shadow-md ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
                                 {saving ? (
                                     <span className="flex items-center gap-2">

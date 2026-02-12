@@ -212,7 +212,7 @@ export default function HomeBanner({ homePageData }) {
                 <div className="relative z-10 max-w-7xl mx-auto px-6 py-0">
                     {/* Title & Description */}
                     <div className="text-center mb-12">
-                        <h1 className="text-3xl md:text-6xl font-medium text-white mb-4 animate-fadeInUp">
+                        <h1 className="text-3xl md:text-5xl font-medium text-white mb-4 animate-fadeInUp">
                             {language === 'en'
                                 ? (homePageData?.heroTitle_en || 'Find The Best Place')
                                 : (homePageData?.heroTitle_vn || 'Tìm Nơi Tốt Nhất')

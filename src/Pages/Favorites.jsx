@@ -111,16 +111,18 @@ export default function Favorites({ isDashboard = false }) {
     const content = (
         <div className={isDashboard ? "w-full" : "min-h-screen bg-gray-50 flex flex-col"}>
             <main className={isDashboard ? "w-full" : "flex-grow max-w-7xl mx-auto w-full px-6 py-10"}>
-                <div className="flex items-center gap-2 mb-8">
-                    <Heart className="text-[#eb4d4d] fill-[#eb4d4d]" size={32} />
-                    <h1 className="text-3xl font-bold text-gray-900">{t.pageTitle}</h1>
-                    <span className="ml-3 bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
-                        {favorites.length}
-                    </span>
+                <div className="flex flex-col md:flex-row md:items-center gap-4 mb-8">
+                    <div className="flex items-center gap-2">
+                        <Heart className="text-[#eb4d4d] fill-[#eb4d4d]" size={32} />
+                        <h1 className="text-2xl font-bold text-gray-900">{t.pageTitle}</h1>
+                        <span className="ml-3 bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
+                            {favorites.length}
+                        </span>
+                    </div>
                     {favorites.length > 0 && (
                         <button
                             onClick={() => setShowEnquiryModal(true)}
-                            className="ml-auto bg-[#41398B] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#352e7a] transition-colors shadow-lg hover:shadow-xl"
+                            className="md:ml-auto w-full md:w-auto bg-[#41398B] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#352e7a] transition-colors shadow-lg hover:shadow-xl"
                         >
                             {t.sendEnquiry}
                         </button>
@@ -149,11 +151,11 @@ export default function Favorites({ isDashboard = false }) {
                     </div>
                 ) : (
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        {/* Table Header */}
-                        <div className="grid grid-cols-12 gap-4 p-5 bg-gray-50 border-b border-gray-200 text-gray-500 font-semibold text-sm uppercase tracking-wider">
-                            <div className="col-span-12 md:col-span-6">{t.listing}</div>
-                            <div className="col-span-6 md:col-span-3">{t.datePublished}</div>
-                            <div className="col-span-6 md:col-span-3 text-center">{t.action}</div>
+                        {/* Table Header - Desktop Only */}
+                        <div className="hidden md:grid grid-cols-12 gap-4 p-5 bg-gray-50 border-b border-gray-200 text-gray-500 font-semibold text-sm uppercase tracking-wider">
+                            <div className="col-span-6">{t.listing}</div>
+                            <div className="col-span-3">{t.datePublished}</div>
+                            <div className="col-span-3 text-center">{t.action}</div>
                         </div>
 
                         {/* List Items */}
@@ -179,53 +181,59 @@ export default function Favorites({ isDashboard = false }) {
                                 else if (genericPrice) displayPrice = formatP(genericPrice);
 
                                 return (
-                                    <div key={fav._id} className="grid grid-cols-12 gap-4 p-5 items-center hover:bg-gray-50 transition-colors group">
-                                        {/* Property Details */}
-                                        <div className="col-span-12 md:col-span-6 flex gap-4 cursor-pointer" onClick={() => window.open(`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`, '_blank')}>
-                                            <div className="w-32 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 relative">
-                                                <img
-                                                    src={prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
-                                                    alt="Property"
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                                <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm">
-                                                    {getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || 'Property'}
+                                    <div key={fav._id} className="p-4 md:p-5 hover:bg-gray-50 transition-colors group border-b last:border-0 border-gray-100">
+                                        <div className="flex flex-col md:grid md:grid-cols-12 gap-4 md:items-center">
+                                            {/* Property Details */}
+                                            <div className="md:col-span-6 flex gap-4 cursor-pointer" onClick={() => window.open(`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`, '_blank')}>
+                                                <div className="w-24 h-24 sm:w-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 relative">
+                                                    <img
+                                                        src={prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
+                                                        alt="Property"
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                    />
+                                                    <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded backdrop-blur-sm">
+                                                        {getLocalizedValue(prop.listingInformation?.listingInformationTransactionType) || 'Property'}
+                                                    </div>
+                                                </div>
+                                                <div className="flex-grow min-w-0">
+                                                    <h3 className="font-bold text-gray-900 line-clamp-1 mb-1 group-hover:text-[#41398B] text-base sm:text-[20px] transition-colors">
+                                                        {normalizeFancyText(getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || t.untitledProperty)}
+                                                    </h3>
+                                                    <div
+                                                        className="text-xs sm:text-sm text-gray-500 mb-1 line-clamp-2 ql-editor-summary"
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
+                                                                getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                                                                t.locationNA
+                                                        }}
+                                                    />
+                                                    <p className="text-[#41398B] font-bold text-base sm:text-lg">{displayPrice}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex-grow">
-                                                <h3 className="font-bold text-gray-900 line-clamp-1 mb-1 group-hover:text-[#41398B] text-[20px] transition-colors">
-                                                    {normalizeFancyText(getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || t.untitledProperty)}
-                                                </h3>
-                                                <div
-                                                    className="text-sm text-gray-500 mb-1 line-clamp-2 ql-editor-summary"
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
-                                                            getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
-                                                            t.locationNA
-                                                    }}
-                                                />
-                                                <p className="text-[#41398B] font-bold text-lg">{displayPrice}</p>
+
+                                            {/* Date and Action container for mobile */}
+                                            <div className="md:col-span-6 grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
+                                                {/* Date */}
+                                                <div className="md:col-span-3 text-sm text-gray-600 flex items-center">
+                                                    <Calendar size={14} className="mr-2 text-gray-400" />
+                                                    <span className="md:hidden font-medium mr-1 text-gray-400">{t.datePublished}: </span>
+                                                    {formatDate(prop.listingInformation?.listingInformationDateListed || prop.createdAt || prop.updatedAt)}
+                                                </div>
+
+                                                {/* Action */}
+                                                <div className="md:col-span-3 text-right md:text-center">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            confirmDelete(prop._id);
+                                                        }}
+                                                        className="inline-flex items-center justify-center px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-300 transition-all text-sm font-medium w-full md:w-auto"
+                                                    >
+                                                        <Trash2 size={16} className="mr-2" />
+                                                        <span className="md:inline">{t.removeFromFavorites}</span>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        {/* Date */}
-                                        <div className="col-span-6 md:col-span-3 text-sm text-gray-600 flex items-center">
-                                            <Calendar size={14} className="mr-2 text-gray-400" />
-                                            {formatDate(prop.listingInformation?.listingInformationDateListed || prop.createdAt || prop.updatedAt)}
-                                        </div>
-
-                                        {/* Action */}
-                                        <div className="col-span-6 md:col-span-3 text-center">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    confirmDelete(prop._id);
-                                                }}
-                                                className="inline-flex items-center justify-center px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:border-red-300 transition-all text-sm font-medium"
-                                            >
-                                                <Trash2 size={16} className="mr-2" />
-                                                {t.removeFromFavorites}
-                                            </button>
                                         </div>
                                     </div>
                                 );

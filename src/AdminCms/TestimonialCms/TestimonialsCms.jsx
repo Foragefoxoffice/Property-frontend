@@ -204,7 +204,7 @@ export default function TestimonialsCms() {
                     <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
                         <button
                             onClick={() => setShowAddModal(true)}
-                            className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-[#1E293B] rounded-xl font-semibold transition-all shadow-sm"
+                            className="flex items-center justify-center gap-2 px-6 py-2 bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-[#1E293B] rounded-lg font-semibold transition-all shadow-sm"
                         >
                             <Plus className="w-5 h-5 text-[#41398B]" />
                             {t.addManual || "Add Manual"}
@@ -298,7 +298,7 @@ export default function TestimonialsCms() {
                             <button
                                 type="submit"
                                 disabled={updatingHeader}
-                                className="px-8 py-3 bg-[#41398B] text-white rounded-xl font-bold hover:bg-[#41398be3] transition-all disabled:opacity-50 flex items-center gap-2 text-sm shadow-lg shadow-[#41398B]/20"
+                                className="px-8 py-3 bg-[#41398B] text-white rounded-lg font-semibold hover:bg-[#41398be3] transition-all disabled:opacity-50 flex items-center gap-2 text-sm shadow-lg shadow-[#41398B]/20"
                             >
                                 {updatingHeader ? <RefreshCw className="w-5 h-5 animate-spin" /> : (t.saveChanges || "Save Changes")}
                             </button>

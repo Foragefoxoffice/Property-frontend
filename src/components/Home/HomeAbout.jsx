@@ -50,7 +50,7 @@ export default function HomeAbout({ homePageData }) {
                         </p>
 
                         <h2
-                            className={`text-2xl md:mb-2 mb-2 md:text-4xl font-semibold text-black leading-tight transition-all duration-1000 delay-100 ease-out ${isVisible
+                            className={`text-2xl md:mb-2 mb-2 md:text-3xl font-semibold text-black leading-tight transition-all duration-1000 delay-100 ease-out ${isVisible
                                 ? 'opacity-100 translate-y-0'
                                 : 'opacity-0 translate-y-12'
                                 }`}

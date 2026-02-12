@@ -302,11 +302,11 @@ export default function PropertyDetailsSection({ property }) {
   ];
 
   return (
-    <div className="bg-[#F8F7FC] pb-30 px-4">
+    <div className="bg-[#F8F7FC] pb-3 md:px-4 px-2">
       {/* -------------------------------------------------------
          Tabs (UI preserved exactly)
       ------------------------------------------------------- */}
-      <div className="sticky top-0 bg-[#F8F7FC] pt-4 z-10 flex md:justify-center border-b border-gray-200 mb-6 overflow-x-auto scrollbar-hide">
+      <div className="sticky top-0 bg-[#F8F7FC] pt-4 z-10 flex md:justify-center border-b border-gray-200 md:mb-6 mb-2 overflow-x-auto scrollbar-hide">
         {TABS.map((tab) => (
           <button
             key={tab.key}
@@ -330,7 +330,7 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              ECOPARK SECTION (UI preserved)
           ------------------------------------------------------- */}
-          <section ref={sectionRefs["Overview"]} className="bg-white p-6 mt-4 rounded-2xl mb-6 md:mb-10">
+          <section ref={sectionRefs["Overview"]} className="bg-white md:p-6 p-4 mt-4 rounded-2xl mb-6 md:mb-10">
             <h2 className="text-xl font-semibold mb-5">{t.overview}</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {show(visList.projectCommunity) && (
@@ -366,10 +366,10 @@ export default function PropertyDetailsSection({ property }) {
              OVERVIEW
           ------------------------------------------------------- */}
           <section
-            className="bg-white p-6 rounded-2xl mb-6 md:mb-12"
+            className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12"
           >
 
-            <div className="grid grid-cols-2 ml-3 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:ml-3 ml-0 md:grid-cols-4 md:gap-8 gap-4">
               {show(p.listingInformationVisibility?.propertyId) && (
                 <OverviewCard
                   icon={<House />}
@@ -431,7 +431,7 @@ export default function PropertyDetailsSection({ property }) {
 
           {/* Check in check out */}
           {type === "Home Stay" && (
-            <section className="bg-white p-6 rounded-2xl mb-6 md:mb-12">
+            <section className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {show(visFin.checkIn) && (
                   <InfoItem
@@ -456,7 +456,7 @@ export default function PropertyDetailsSection({ property }) {
              DESCRIPTION (UI preserved)
           ------------------------------------------------------- */}
           {show(visWhatNearby) && (
-            <section className="bg-white p-6 rounded-2xl mb-6 md:mb-12">
+            <section className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12">
               <h2 className="text-xl font-semibold mb-5">{t.description}</h2>
               <div
                 className="text-gray-700 leading-6 ql-editor-summary"
@@ -472,7 +472,7 @@ export default function PropertyDetailsSection({ property }) {
           ------------------------------------------------------- */}
           <section
             ref={sectionRefs["Property Utility"]}
-            className="bg-white p-6 rounded-2xl mb-6 md:mb-12"
+            className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12"
           >
             <h2 className="text-xl font-semibold mb-5">{t.propertyUtility}</h2>
 
@@ -499,7 +499,7 @@ export default function PropertyDetailsSection({ property }) {
           ------------------------------------------------------- */}
           <section
             ref={sectionRefs["Payment Overview"]}
-            className="bg-white p-6 rounded-2xl mb-6 md:mb-12"
+            className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12"
           >
             <h2 className="text-xl font-semibold mb-4">{t.paymentOverview}</h2>
 
@@ -525,7 +525,7 @@ export default function PropertyDetailsSection({ property }) {
           {show(visVideo.videoVisibility) && videos.length > 0 && (
             <section
               ref={sectionRefs["Video"]}
-              className="bg-white p-6 rounded-2xl mb-16"
+              className="bg-white md:p-6 p-3 rounded-2xl mb-16"
             >
               <h2 className="text-xl font-semibold mb-5">{t.video}</h2>
 
@@ -570,7 +570,7 @@ export default function PropertyDetailsSection({ property }) {
           {show(visList.googleMap) && (
             <section
               ref={sectionRefs["Map"]}
-              className="bg-white p-6 rounded-2xl"
+              className="bg-white md:p-6 p-3 rounded-2xl"
             >
               <h2 className="text-xl font-semibold mb-5">{t.map || "Map"}</h2>
 
@@ -600,7 +600,7 @@ export default function PropertyDetailsSection({ property }) {
            RIGHT CONTACT CARD (UI preserved)
         ------------------------------------------------------- */}
         <div className="lg:col-span-1 sticky top-26 h-fit">
-          <div className=" bg-white rounded-xl border p-6 shadow-md">
+          <div className=" bg-white rounded-xl border md:p-6 p-3 shadow-md">
             <h3 className="text-2xl text-[#41398B] font-semibold mb-4">{t.contact}</h3>
 
             {agentLoading ? (
@@ -703,7 +703,7 @@ export default function PropertyDetailsSection({ property }) {
           </div>
           <div>
             {/* Message Field */}
-            <div style={{ backgroundColor: "#e8e2ff73" }} className="mt-6 p-6 rounded-xl">
+            <div className="mt-6 md:p-6 p-3 rounded-xl">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t.message}
               </label>
@@ -742,13 +742,13 @@ export default function PropertyDetailsSection({ property }) {
       {/* -------------------------------------------------------
          RECENT PROPERTIES SECTION
       ------------------------------------------------------- */}
-      <section ref={recentSectionRef} className="py-16 md:py-24 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff] mt-20">
-        <div className="max-w-[1320px] mx-auto px-4 md:px-0">
-          <div className="text-center mb-12 md:mb-20">
+      <section ref={recentSectionRef} className="py-8 md:py-24 md:mt-10 mt-8">
+        <div className="max-w-[1320px] mx-auto px-2 md:px-0">
+          <div className="text-center mb-8 md:mb-10">
             <p className={`text-sm font-semibold text-[#a4aeb5] uppercase tracking-wider mb-3 transition-opacity duration-1000 ${isVisibleRecent ? 'opacity-100' : 'opacity-0'}`}>
               {t.recentProperties}
             </p>
-            <h2 className={`text-4xl md:text-5xl font-semibold text-black transition-all duration-1000 delay-100 ${isVisibleRecent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+            <h2 className={`text-2xl md:text-4xl font-semibold text-black transition-all duration-1000 delay-100 ${isVisibleRecent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
               {language === 'vi' ? 'Bất động sản mới được cập nhật' : 'Recently Updated Properties'}
             </h2>
           </div>
@@ -839,7 +839,7 @@ export default function PropertyDetailsSection({ property }) {
                   </div>
 
                   {/* Content */}
-                  <div className="pt-5 pb-5 px-4">
+                  <div className="pt-5 pb-5 px-2 md:px-4">
                     {/* Price */}
                     <div className="flex items-baseline gap-1 mb-2">
                       {(() => {
@@ -960,7 +960,7 @@ function InfoItem({ label, value }) {
 function OverviewCard({ icon, label, value }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-12 h-12 grid place-content-center border rounded-md hover:bg-black group">
+      <div className="md:w-12 md:h-12 w-10 h-10 grid place-content-center border rounded-md hover:bg-black group">
         <div className="group-hover:text-white">{icon}</div>
       </div>
       <div>

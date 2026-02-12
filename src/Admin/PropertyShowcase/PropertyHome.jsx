@@ -13,6 +13,7 @@ export default function PropertyHome({ property }) {
     const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [popupIndex, setPopupIndex] = useState(0);
+    const [popupDirection, setPopupDirection] = useState(0); // 1 for next, -1 for prev
     const { language } = useLanguage();
     const t = translations[language];
     const { isFavorite, addFavorite, removeFavorite } = useFavorites();
@@ -115,11 +116,22 @@ export default function PropertyHome({ property }) {
     };
 
     const handlePopupPrev = () => {
+        setPopupDirection(-1);
         setPopupIndex((p) => (p - 1 + images.length) % images.length);
     };
 
     const handlePopupNext = () => {
+        setPopupDirection(1);
         setPopupIndex((p) => (p + 1) % images.length);
+    };
+
+    const handlePopupDragEnd = (event, info) => {
+        const swipeThreshold = 50;
+        if (info.offset.x > swipeThreshold) {
+            handlePopupPrev();
+        } else if (info.offset.x < -swipeThreshold) {
+            handlePopupNext();
+        }
     };
 
     const openPopup = (index) => {
@@ -150,7 +162,7 @@ export default function PropertyHome({ property }) {
     };
 
     return (
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-8 bg-[#F8F7FC]">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 md:py-8 py-6 bg-[#F8F7FC]">
             {/* Breadcrumb Navigation */}
             <div className="flex items-center gap-2 text-sm mb-6 flex-wrap">
                 <button
@@ -162,7 +174,12 @@ export default function PropertyHome({ property }) {
                 <span className="text-gray-400">›</span>
                 {transactionType && (
                     <>
-                        <span className="text-gray-600 hover:text-[#41398B] transition-colors">{transactionType}</span>
+                        <button
+                            onClick={() => navigate(`/listing?type=${safeVal(property?.listingInformation?.listingInformationTransactionType)}`)}
+                            className="text-gray-600 hover:text-[#41398B] transition-colors cursor-pointer"
+                        >
+                            {transactionType}
+                        </button>
                         <span className="text-gray-400">›</span>
                     </>
                 )}
@@ -173,16 +190,22 @@ export default function PropertyHome({ property }) {
             <div className="flex items-center gap-2">
                 {transactionType && (
                     <div className="mb-4">
-                        <span className={`inline-block px-3 py-1.5 ${getBadgeColor()} text-white text-xs font-bold uppercase tracking-wide rounded`}>
+                        <button
+                            onClick={() => navigate(`/listing?type=${safeVal(property?.listingInformation?.listingInformationTransactionType)}`)}
+                            className={`inline-block px-3 py-1.5 ${getBadgeColor()} text-white text-xs font-bold uppercase tracking-wide rounded cursor-pointer hover:brightness-110 transition-all`}
+                        >
                             {transactionType}
-                        </span>
+                        </button>
                     </div>
                 )}
                 {propertyType && (
                     <div className="mb-4">
-                        <span className={`inline-block px-3 py-1.5 bg-[#6B46C1] text-white text-xs font-bold uppercase tracking-wide rounded`}>
+                        <button
+                            onClick={() => navigate(`/listing?propertyType=${safeVal(property?.listingInformation?.listingInformationPropertyType)}`)}
+                            className={`inline-block px-3 py-1.5 bg-[#6B46C1] text-white text-xs font-bold uppercase tracking-wide rounded cursor-pointer hover:brightness-110 transition-all`}
+                        >
                             {propertyType}
-                        </span>
+                        </button>
                     </div>
                 )}
             </div>
@@ -192,7 +215,7 @@ export default function PropertyHome({ property }) {
             <div className="flex flex-col lg:flex-row lg:items-start justify-between md:gap-6 gap-2 mb-6">
                 {/* Left: Title and Location */}
                 <div className="flex-1">
-                    <h1 className="text-2xl md:text-[32px] font-bold text-[#222222] md:mb-3 mb-0 leading-tight">
+                    <h1 className="text-2xl md:text-[32px] font-bold text-[#222222] md:mb-3 mb-0 leading-tight md:pr-20 pr-0">
                         {normalizeFancyText(title || t.untitledProperty)}
                     </h1>
                     {location && (
@@ -230,14 +253,6 @@ export default function PropertyHome({ property }) {
                         >
                             <Heart className={`w-5 h-5 ${favorite ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-[#41398B]'}`} />
                             <span className={`hidden md:inline text-sm font-medium underline ${favorite ? 'text-[#eb4d4d]' : 'text-[#41398B]'}`}>{t.favorite || t.save}</span>
-                        </button>
-                        <button
-                            onClick={handlePrint}
-                            className="flex items-center cursor-pointer gap-1 px-3 py-2 rounded-lg transition-all"
-                            title={t.print || 'Print'}
-                        >
-                            <Printer className="w-5 h-5 text-[#41398B]" />
-                            <span className="hidden md:inline text-sm font-medium text-[#41398B] underline">{t.print || 'Print'}</span>
                         </button>
                     </div>
                 </div>
@@ -340,9 +355,9 @@ export default function PropertyHome({ property }) {
                     <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-[110]">
                         <button
                             onClick={() => setIsPopupOpen(false)}
-                            className="hover:bg-white/10 text-white p-2 rounded-full transition-all cursor-pointer flex items-center gap-2"
+                            className="hover:bg-white/10 text-white p-2 rounded-full transition-all cursor-pointer flex items-center gap-1"
                         >
-                            <ChevronLeft className="w-6 h-6" />
+                            <X className="w-6 h-6" />
                             <span className="text-sm font-medium">Close</span>
                         </button>
                         <div className="text-white text-sm font-medium">
@@ -352,15 +367,46 @@ export default function PropertyHome({ property }) {
                     </div>
 
                     {/* Main Image Display */}
-                    <div className="flex-1 relative flex items-center justify-center p-4">
-                        <motion.img
-                            key={popupIndex}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            src={images[popupIndex]}
-                            alt={`Full view ${popupIndex + 1}`}
-                            className="max-w-full max-h-[85vh] object-contain shadow-2xl"
-                        />
+                    <div className="flex-1 relative flex items-center justify-center p-4 overflow-hidden">
+                        <AnimatePresence initial={false} custom={popupDirection}>
+                            <motion.img
+                                key={popupIndex}
+                                src={images[popupIndex]}
+                                alt={`Full view ${popupIndex + 1}`}
+                                className="max-w-full max-h-[85vh] object-contain shadow-2xl absolute cursor-grab active:cursor-grabbing"
+                                custom={popupDirection}
+                                drag="x"
+                                dragConstraints={{ left: 0, right: 0 }}
+                                dragElastic={0.2}
+                                onDragEnd={handlePopupDragEnd}
+                                variants={{
+                                    enter: (direction) => ({
+                                        x: direction > 0 ? '100%' : direction < 0 ? '-100%' : 0,
+                                        opacity: 0,
+                                        scale: 0.9
+                                    }),
+                                    center: {
+                                        x: 0,
+                                        opacity: 1,
+                                        scale: 1,
+                                        zIndex: 1
+                                    },
+                                    exit: (direction) => ({
+                                        x: direction > 0 ? '-100%' : direction < 0 ? '100%' : 0,
+                                        opacity: 0,
+                                        scale: 0.9,
+                                        zIndex: 0
+                                    }),
+                                }}
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                transition={{
+                                    x: { type: "spring", stiffness: 300, damping: 30 },
+                                    opacity: { duration: 0.2 }
+                                }}
+                            />
+                        </AnimatePresence>
 
                         {/* Navigation Arrows */}
                         {images.length > 1 && (
@@ -390,7 +436,10 @@ export default function PropertyHome({ property }) {
                             {images.map((img, i) => (
                                 <button
                                     key={i}
-                                    onClick={() => setPopupIndex(i)}
+                                    onClick={() => {
+                                        setPopupDirection(i > popupIndex ? 1 : -1);
+                                        setPopupIndex(i);
+                                    }}
                                     className={`w-16 h-12 rounded-lg overflow-hidden transition-all duration-300 flex-shrink-0 opacity-50 hover:opacity-100 ${popupIndex === i ? "opacity-100 scale-110 ring-2 ring-white" : ""}`}
                                 >
                                     <img src={img} alt={`thumb-${i}`} className="object-cover w-full h-full" />
