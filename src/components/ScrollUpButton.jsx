@@ -28,7 +28,7 @@ export default function ScrollUpButton() {
     };
 
     return (
-        <div className="fixed bottom-8 right-8 z-50">
+        <div className="fixed bottom-24 md:bottom-8 right-6 md:right-8 z-50">
             <button
                 type="button"
                 onClick={scrollToTop}

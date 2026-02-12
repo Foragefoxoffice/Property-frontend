@@ -388,9 +388,20 @@ button {
 }
 
 @keyframes pulse-red {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
 }
 
 .pulse {
@@ -510,11 +521,22 @@ button {
   /* Expand on hover for usability */
 }
 
+.floating-button svg {
+  width: 23px;
+  height: 23px;
+}
+
 @media (max-width:600px) {
   .hover-image .img-style img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover;
     transition: all 1s;
+  }
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 60px;
   }
 }

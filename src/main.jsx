@@ -26,6 +26,7 @@ import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage.
 import { ToastContainer } from "react-toastify";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import ScrollUpButton from "./components/ScrollUpButton.jsx";
+import FloatingContactButtons from "./components/FloatingContactButtons.jsx";
 
 // ADMIN PAGES
 import PropertyManager from "./Admin/Property/PropertyManager";
@@ -112,6 +113,7 @@ createRoot(document.getElementById("root")).render(
         <PermissionProvider>
           <FavoritesProvider>
             <SocketProvider>
+              <FloatingContactButtons />
               <Routes>
                 {/* ---------- PUBLIC ROUTES ---------- */}
                 <Route path="/login" element={<Login />} />
