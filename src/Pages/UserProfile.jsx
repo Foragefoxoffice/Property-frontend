@@ -98,7 +98,7 @@ export default function UserProfile() {
         status: "Active"
     });
 
-    const [activeTab, setActiveTab] = useState("vi"); // For Staff Multilingual
+
 
     // Password Form State
     const [passwordData, setPasswordData] = useState({
@@ -304,19 +304,19 @@ export default function UserProfile() {
     };
 
     const staffT = {
-        firstName: activeTab === "vi" ? "Tên" : "First Name",
-        middleName: activeTab === "vi" ? "Tên Đệm" : "Middle Name",
-        lastName: activeTab === "vi" ? "Họ" : "Last Name",
-        department: activeTab === "vi" ? "Phòng Ban" : "Department",
-        designation: activeTab === "vi" ? "Chức Vụ" : "Designation",
-        phone: activeTab === "vi" ? "Số Điện Thoại" : "Phone Number",
-        dob: activeTab === "vi" ? "Ngày Sinh" : "Date of Birth",
-        gender: activeTab === "vi" ? "Giới Tính" : "Gender",
-        male: activeTab === "vi" ? "Nam" : "Male",
-        female: activeTab === "vi" ? "Nữ" : "Female",
-        email: activeTab === "vi" ? "Email (Tên Đăng Nhập)" : "Email (Login ID)",
-        employeeId: activeTab === "vi" ? "Mã Nhân Viên" : "Employee ID",
-        other: activeTab === "vi" ? "Khác" : "Other",
+        firstName: language === "vi" ? "Tên" : "First Name",
+        middleName: language === "vi" ? "Tên Đệm" : "Middle Name",
+        lastName: language === "vi" ? "Họ" : "Last Name",
+        department: language === "vi" ? "Phòng Ban" : "Department",
+        designation: language === "vi" ? "Chức Vụ" : "Designation",
+        phone: language === "vi" ? "Số Điện Thoại" : "Phone Number",
+        dob: language === "vi" ? "Ngày Sinh" : "Date of Birth",
+        gender: language === "vi" ? "Giới Tính" : "Gender",
+        male: language === "vi" ? "Nam" : "Male",
+        female: language === "vi" ? "Nữ" : "Female",
+        email: language === "vi" ? "Email (Tên Đăng Nhập)" : "Email (Login ID)",
+        employeeId: language === "vi" ? "Mã Nhân Viên" : "Employee ID",
+        other: language === "vi" ? "Khác" : "Other",
     };
 
     if (loading) {
@@ -328,8 +328,8 @@ export default function UserProfile() {
 
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold text-gray-800">{isStaff ? (activeTab === "vi" ? "Hồ Sơ Nhân Viên" : "Staff Profile") : (t?.myProfile || "My Profile")}</h1>
-                <p className="text-gray-500">{isStaff ? (activeTab === "vi" ? "Quản lý thông tin và mật khẩu của bạn." : "Manage your account settings and password.") : (t?.manageAccount || "Manage your account settings and password.")}</p>
+                <h1 className="text-2xl font-bold text-gray-800">{isStaff ? (language === "vi" ? "Hồ Sơ Nhân Viên" : "Staff Profile") : (t?.myProfile || "My Profile")}</h1>
+                <p className="text-gray-500">{isStaff ? (language === "vi" ? "Quản lý thông tin và mật khẩu của bạn." : "Manage your account settings and password.") : (t?.manageAccount || "Manage your account settings and password.")}</p>
             </div>
 
 
@@ -441,7 +441,7 @@ export default function UserProfile() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-full font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
+                                className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-xl font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
                             >
                                 {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                                 {t?.saveChanges || "Save Changes"}
@@ -457,31 +457,8 @@ export default function UserProfile() {
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                             <User className="text-[#41398B]" size={20} />
-                            {activeTab === "vi" ? "Chi Tiết Nhân Viên" : "Staff Details"}
+                            {language === "vi" ? "Chi Tiết Nhân Viên" : "Staff Details"}
                         </h2>
-                        {/* Language Tabs */}
-                        <div className="flex gap-2">
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab("vi")}
-                                className={`flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-full transition-all ${activeTab === "vi"
-                                    ? "bg-[#41398B] text-white"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                    }`}
-                            >
-                                <Languages size={14} /> Tiếng Việt
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab("en")}
-                                className={`flex items-center gap-2 px-4 py-1.5 text-sm font-medium rounded-full transition-all ${activeTab === "en"
-                                    ? "bg-[#41398B] text-white"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                    }`}
-                            >
-                                <Languages size={14} /> English
-                            </button>
-                        </div>
                     </div>
 
                     <form onSubmit={handleStaffUpdate} className="space-y-6">
@@ -530,8 +507,8 @@ export default function UserProfile() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">{staffT.firstName}</label>
                                 <input
                                     type="text"
-                                    value={staffForm.firstName[activeTab]}
-                                    onChange={(e) => setStaffForm({ ...staffForm, firstName: { ...staffForm.firstName, [activeTab]: e.target.value } })}
+                                    value={staffForm.firstName[language]}
+                                    onChange={(e) => setStaffForm({ ...staffForm, firstName: { ...staffForm.firstName, [language]: e.target.value } })}
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#41398B] outline-none"
                                 />
                             </div>
@@ -539,8 +516,8 @@ export default function UserProfile() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">{staffT.middleName}</label>
                                 <input
                                     type="text"
-                                    value={staffForm.middleName[activeTab]}
-                                    onChange={(e) => setStaffForm({ ...staffForm, middleName: { ...staffForm.middleName, [activeTab]: e.target.value } })}
+                                    value={staffForm.middleName[language]}
+                                    onChange={(e) => setStaffForm({ ...staffForm, middleName: { ...staffForm.middleName, [language]: e.target.value } })}
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#41398B] outline-none"
                                 />
                             </div>
@@ -548,8 +525,8 @@ export default function UserProfile() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">{staffT.lastName}</label>
                                 <input
                                     type="text"
-                                    value={staffForm.lastName[activeTab]}
-                                    onChange={(e) => setStaffForm({ ...staffForm, lastName: { ...staffForm.lastName, [activeTab]: e.target.value } })}
+                                    value={staffForm.lastName[language]}
+                                    onChange={(e) => setStaffForm({ ...staffForm, lastName: { ...staffForm.lastName, [language]: e.target.value } })}
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#41398B] outline-none"
                                 />
                             </div>
@@ -560,8 +537,8 @@ export default function UserProfile() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">{staffT.department}</label>
                                 <input
                                     type="text"
-                                    value={staffForm.department[activeTab]}
-                                    onChange={(e) => setStaffForm({ ...staffForm, department: { ...staffForm.department, [activeTab]: e.target.value } })}
+                                    value={staffForm.department[language]}
+                                    onChange={(e) => setStaffForm({ ...staffForm, department: { ...staffForm.department, [language]: e.target.value } })}
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#41398B] outline-none"
                                 />
                             </div>
@@ -569,8 +546,8 @@ export default function UserProfile() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">{staffT.designation}</label>
                                 <input
                                     type="text"
-                                    value={staffForm.designation[activeTab]}
-                                    onChange={(e) => setStaffForm({ ...staffForm, designation: { ...staffForm.designation, [activeTab]: e.target.value } })}
+                                    value={staffForm.designation[language]}
+                                    onChange={(e) => setStaffForm({ ...staffForm, designation: { ...staffForm.designation, [language]: e.target.value } })}
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#41398B] outline-none"
                                 />
                             </div>
@@ -611,10 +588,10 @@ export default function UserProfile() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-full font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
+                                className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-xl font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
                             >
                                 {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-                                {activeTab === "vi" ? "Cập Nhật Hồ Sơ" : "Update Staff Profile"}
+                                {language === "vi" ? "Cập Nhật Hồ Sơ" : "Update Staff Profile"}
                             </button>
                         </div>
                     </form>
@@ -700,7 +677,7 @@ export default function UserProfile() {
                         <button
                             type="submit"
                             disabled={passwordSaving}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-full font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
+                            className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-xl font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
                         >
                             {passwordSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                             {t?.updatePassword || "Update Password"}

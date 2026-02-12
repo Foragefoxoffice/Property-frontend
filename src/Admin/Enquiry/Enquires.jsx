@@ -231,7 +231,7 @@ export default function Enquires() {
                         setSearchTerm(e.target.value);
                         setCurrentPage(1);
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-full focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white border border-gray-200"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white border border-gray-200"
                 />
             </div>
 

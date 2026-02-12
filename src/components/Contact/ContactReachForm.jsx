@@ -116,9 +116,9 @@ export default function ContactReachForm({ data }) {
     );
 
     return (
-        <section className="py-16 md:py-18 bg-white relative overflow-hidden">
+        <section className="py-8 md:py-18 bg-white relative overflow-hidden">
             <div className="container max-w-7xl mx-auto px-4">
-                <div className="flex items-start gap-12 justify-between">
+                <div className="flex items-start md:flex-row flex-col-reverse gap-12 justify-between">
 
                     {/* Left Column: Contact Info Card */}
                     <motion.div
@@ -128,31 +128,31 @@ export default function ContactReachForm({ data }) {
                         viewport={{ once: true }}
                         className="w-full"
                     >
-                        <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#e4e4e4] h-full">
-                            <h2 className="text-3xl font-semibold text-gray-900 mb-4">{reachOutTitle}</h2>
-                            <p className="text-gray-500 mb-10 leading-relaxed text-lg font-light">
+                        <div className="bg-white rounded-3xl p-4 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#e4e4e4] h-full">
+                            <h2 className="md:text-2xl text-xl font-semibold text-gray-900 md:mb-4 mb-2">{reachOutTitle}</h2>
+                            <p className="text-gray-500 md:mb-10 mb-3 leading-relaxed md:text-lg text-sm font-light">
                                 {reachOutDescription}
                             </p>
 
-                            <div className="space-y-8">
+                            <div className="md:space-y-8 space-y-6">
                                 {/* Address */}
                                 <div className="flex items-start gap-4">
-                                    <div className="flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300">
+                                    <div className="flex-shrink-0 md:w-12 md:h-12 w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300">
                                         <MapPin className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-xl text-gray-900 mb-1">{addressTitle}</h4>
+                                        <h4 className="font-semibold md:text-lg text-md text-gray-900 mb-1">{addressTitle}</h4>
                                         <p className="text-gray-500 font-light text-sm md:text-base">{address}</p>
                                     </div>
                                 </div>
 
                                 {/* Phone */}
                                 <div className="flex items-start gap-4">
-                                    <div className="flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300">
+                                    <div className="flex-shrink-0 md:w-12 md:h-12 w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300">
                                         <Phone className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-xl text-gray-900 mb-1">{phoneTitle}</h4>
+                                        <h4 className="font-semibold md:text-lg text-md text-gray-900 mb-1">{phoneTitle}</h4>
                                         <div className="flex flex-col gap-1">
                                             {phones.map((phone, index) => (
                                                 <p key={index} className="text-gray-500 font-light text-sm md:text-base">
@@ -165,11 +165,11 @@ export default function ContactReachForm({ data }) {
 
                                 {/* Email */}
                                 <div className="flex items-start gap-4">
-                                    <div className="flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300">
+                                    <div className="flex-shrink-0 md:w-12 md:h-12 w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#41398B] hover:text-white hover:border-[#41398B] transition-all duration-300">
                                         <Mail className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-xl text-gray-900 mb-1">{emailTitle}</h4>
+                                        <h4 className="font-semibold md:text-lg text-md text-gray-900 mb-1">{emailTitle}</h4>
                                         <div className="flex flex-col gap-1">
                                             {emails.map((email, index) => (
                                                 <p key={index} className="text-gray-500 font-light text-sm md:text-base break-all">
@@ -182,8 +182,8 @@ export default function ContactReachForm({ data }) {
                             </div>
 
                             {/* Follow Us */}
-                            <div className="mt-12">
-                                <h4 className="font-semibold text-gray-900 mb-6 text-xl">{followUsTitle}</h4>
+                            <div className="md:mt-8 mt-6">
+                                <h4 className="font-semibold text-gray-900 md:mb-4 mb-2 md:text-lg text-md">{followUsTitle}</h4>
                                 <div className="flex flex-wrap gap-3">
                                     {socialLinks.map((item, index) => (
                                         <a
@@ -213,18 +213,18 @@ export default function ContactReachForm({ data }) {
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
                         viewport={{ once: true }}
-                        className="lg:col-span-7 w-full lg:pl-8 pt-4"
+                        className="lg:col-span-7 w-full lg:pl-8 md:pt-4 pt-0"
                     >
-                        <div className="mb-8">
-                            <h2 className="text-3xl font-semibold text-gray-900 mb-3">{formTitle}</h2>
-                            <p className="text-gray-500 font-light text-lg">{formDescription}</p>
+                        <div className="md:mb-8 mb-4">
+                            <h2 className="text-2xl font-semibold text-gray-900 mb-3">{formTitle}</h2>
+                            <p className="text-gray-500 font-light text-md">{formDescription}</p>
                         </div>
 
                         <form className="space-y-6" onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-4">
                                 {/* First Name */}
                                 <div className="space-y-2">
-                                    <label className="text-lg font-semibold text-black" htmlFor="firstName">
+                                    <label className="text-md font-semibold text-black" htmlFor="firstName">
                                         {language === 'en' ? "First Name" : "Tên"}
                                     </label>
                                     <input
@@ -239,7 +239,7 @@ export default function ContactReachForm({ data }) {
                                 </div>
                                 {/* Last Name */}
                                 <div className="space-y-2">
-                                    <label className="text-lg font-semibold text-black" htmlFor="lastName">
+                                    <label className="text-md font-semibold text-black" htmlFor="lastName">
                                         {language === 'en' ? "Last Name" : "Họ"}
                                     </label>
                                     <input
@@ -254,10 +254,10 @@ export default function ContactReachForm({ data }) {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6 gap-4">
                                 {/* Email */}
                                 <div className="space-y-2">
-                                    <label className="text-lg font-semibold text-black" htmlFor="email">Email</label>
+                                    <label className="text-md font-semibold text-black" htmlFor="email">Email</label>
                                     <input
                                         type="email"
                                         id="email"
@@ -270,7 +270,7 @@ export default function ContactReachForm({ data }) {
                                 </div>
                                 {/* Phone Number */}
                                 <div className="space-y-2">
-                                    <label className="text-lg font-semibold text-black" htmlFor="phone">
+                                    <label className="text-md font-semibold text-black" htmlFor="phone">
                                         {language === 'en' ? "Phone Number" : "Số Điện Thoại"}
                                     </label>
                                     <input
@@ -287,10 +287,10 @@ export default function ContactReachForm({ data }) {
 
                             {/* Subject Select Field */}
                             <div className="space-y-2">
-                                <label className="text-lg font-semibold text-black" htmlFor="subject">
+                                <label className="text-md font-semibold text-black" htmlFor="subject">
                                     {language === 'en' ? "Subject" : "Chủ đề"}
                                 </label>
-                                <div className="relative">
+                                <div className="relative mt-2">
                                     <Select
                                         id="subject"
                                         placeholder={language === 'en' ? "Select a Subject" : "Chọn chủ đề"}
@@ -311,7 +311,7 @@ export default function ContactReachForm({ data }) {
 
                             {/* Message */}
                             <div className="space-y-2">
-                                <label className="text-lg font-semibold text-black" htmlFor="message">
+                                <label className="text-md font-semibold text-black" htmlFor="message">
                                     {language === 'en' ? "Message" : "Tin Nhắn"}
                                 </label>
                                 <textarea
@@ -330,7 +330,7 @@ export default function ContactReachForm({ data }) {
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
-                                className="w-full bg-black text-white cursor-pointer hover:bg-[#333] font-medium py-3 rounded-lg transition-colors duration-300 mt-4"
+                                className="w-full bg-black text-white cursor-pointer hover:bg-[#333] font-medium py-3 rounded-lg transition-colors duration-300 md:mt-4 mt-0"
                                 disabled={loading}
                             >
                                 {loading ? (language === 'en' ? "Sending..." : "Đang gửi...") : formButtonText}

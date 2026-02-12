@@ -260,7 +260,7 @@ function mapApiToForm(api) {
       ogTitle: safe(api.seoInformation?.ogTitle),
       ogDescription: safe(api.seoInformation?.ogDescription),
 
-      ogImages: api.seoInformation?.ogImages || [],
+      ogImage: api.seoInformation?.ogImages?.[0] || "",
     },
 
     status: api.status || "Draft",
@@ -629,7 +629,7 @@ export default function CreatePropertyPage({
 
         ogDescription: wrap(n.seoInformation?.ogDescription),
 
-        ogImages: arr(n.seoInformation?.ogImages),
+        ogImages: n.seoInformation?.ogImage ? [n.seoInformation.ogImage] : [],
       },
 
       /* ================================================

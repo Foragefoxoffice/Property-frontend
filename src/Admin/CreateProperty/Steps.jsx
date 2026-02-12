@@ -17,7 +17,7 @@ export default function Steps({
         <div className="flex items-center gap-3 mb-6">
           <button
             onClick={onCancel}
-            className="p-2 rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer transition"
+            className="p-2 rounded-lg bg-[#41398B] hover:bg-[#41398be3] cursor-pointer transition"
           >
             <ArrowLeft className="w-4 h-4 text-white" />
           </button>
@@ -39,24 +39,22 @@ export default function Steps({
                 className="flex items-center gap-2 w-1/4 justify-center"
               >
                 <div
-                  className={`w-10 h-10 flex items-center justify-center rounded-full text-md font-semibold ${
-                    isActive
-                      ? "bg-black text-white"
-                      : isCompleted
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold ${isActive
+                    ? "bg-black text-white"
+                    : isCompleted
                       ? "bg-[#009980] text-white"
                       : "bg-[#9994CE] text-[#fff]"
-                  }`}
+                    }`}
                 >
                   {stepNumber}
                 </div>
                 <span
-                  className={`text-md ${
-                    isActive
-                      ? "text-black font-medium"
-                      : isCompleted
+                  className={`text-sm ${isActive
+                    ? "text-black font-medium"
+                    : isCompleted
                       ? "text-[#009980] font-normal"
                       : "text-[#9994CE]"
-                  }`}
+                    }`}
                 >
                   {step.label}
                 </span>

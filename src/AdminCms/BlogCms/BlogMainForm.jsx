@@ -551,7 +551,7 @@ export default function BlogMainForm({
                                         size="large"
                                         icon={<SaveOutlined />}
                                         loading={loading}
-                                        className="!bg-[#41398B] !border-[#41398B] rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] shadow-sm hover:!bg-[#352e7a]"
+                                        className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
                                     >
                                         {activeTab === 'vn'
                                             ? (blogData ? 'Lưu Blog' : 'Tạo Blog')

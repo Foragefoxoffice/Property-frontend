@@ -1698,7 +1698,7 @@ export default function CreatePropertyListStep1({
                   updatedForm.propertyUtilityVisibility,
               });
             }}
-            className="mt-4 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full flex items-center cursor-pointer gap-1.5"
+            className="mt-4 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg flex items-center cursor-pointer gap-1.5"
           >
             {lang === "en" ? "Next" : "Tiếp theo"} <ArrowRight size={18} />
           </button>

@@ -88,13 +88,13 @@ export default function Subscription() {
                             placeholder={t.searchEmail}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
+                            className="pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
                         />
                     </div>
 
                     <button
                         onClick={exportToCSV}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#41398B] rounded-full font-medium transition shadow-sm text-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#41398B] rounded-lg font-medium transition shadow-sm text-sm"
                     >
                         <CloudDownload size={16} /> {t.exportCSV}
                     </button>

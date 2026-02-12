@@ -713,7 +713,7 @@ export default function HomepageForm() {
         <div className="">
             <h2 style={{
                 color: '#111827',
-                fontSize: '36px',
+                fontSize: '30px',
                 fontWeight: '700',
                 textAlign: 'center',
                 marginBottom: '18px',

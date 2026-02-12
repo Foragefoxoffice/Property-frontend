@@ -190,7 +190,7 @@ export default function Footer() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={st('emailPlaceholder')}
-                                className="w-full h-11 pl-5 pr-12 rounded-full bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-[15px]"
+                                className="w-full h-11 pl-5 pr-12 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-[15px]"
                             />
                             <button
                                 onClick={handleSubscribe}

@@ -317,7 +317,7 @@ export default function ManageProperty({
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowFilterPopup(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
+            className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 cursor-pointer"
           >
             <SlidersHorizontal className="w-4 h-4" />
             {t.filter}
@@ -328,7 +328,7 @@ export default function ManageProperty({
             can(permissionKey, 'bulkUpload') && (
               <button
                 onClick={() => navigate(`/dashboard/${transactionRoute}/bulk-upload`)}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
+                className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 cursor-pointer"
               >
                 <Upload className="w-4 h-4" />
                 {t.bulkUpload}
@@ -342,7 +342,7 @@ export default function ManageProperty({
             can(permissionKey, 'add') && (
               <button
                 onClick={() => navigate(`/dashboard/${transactionRoute}/create`)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
+                className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
               >
                 <Plus className="w-4 h-4" />
                 {t.addProperty}
@@ -363,7 +363,7 @@ export default function ManageProperty({
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-10 pr-4 py-3 rounded-full focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
+          className="w-full pl-10 pr-4 py-3 rounded-xl focus:ring-2 focus:ring-gray-300 focus:outline-none bg-white"
         />
       </div>
 
@@ -501,7 +501,7 @@ export default function ManageProperty({
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-full text-sm font-medium ${p.status === "Published"
+                          className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-lg text-sm font-medium ${p.status === "Published"
                             ? "bg-green-100 text-green-700"
                             : p.status === "Draft"
                               ? "bg-[#FFF3DE] text-[#FFA600]"

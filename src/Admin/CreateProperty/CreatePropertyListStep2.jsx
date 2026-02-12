@@ -1938,7 +1938,7 @@ export default function CreatePropertyListStep2({
           }}
 
 
-          className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full cursor-pointer flex gap-1.5 items-center"
+          className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg cursor-pointer flex gap-1.5 items-center"
         >
           {lang === "en" ? "Next" : "Tiếp theo"} <ArrowRight size={18} />
         </button>

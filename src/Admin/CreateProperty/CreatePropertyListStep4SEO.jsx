@@ -3,6 +3,7 @@ import { Eye, X, Plus, ArrowRight, ArrowLeft } from "lucide-react";
 import { Select as AntdSelect, Switch } from "antd";
 import { uploadPropertyMedia } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
+import { useLanguage } from "../../Language/LanguageContext";
 
 const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
   const [inputValue, setInputValue] = useState('');
@@ -62,6 +63,8 @@ export default function CreatePropertyListStep4SEO({
   onChange,
   initialData,
 }) {
+  const { language: globalLanguage } = useLanguage();
+
   const labels = {
     metaTitle: { en: "Meta Title", vi: "Tiêu đề Meta" },
     metaDescription: { en: "Meta Description", vi: "Mô tả Meta" },
@@ -79,7 +82,7 @@ export default function CreatePropertyListStep4SEO({
     },
     back: {
       en: "Back",
-      vi: "Mặt sau",
+      vi: "Trở lại",
     },
     upload: {
       en: "Click here to upload",
@@ -91,7 +94,19 @@ export default function CreatePropertyListStep4SEO({
     },
     ogTitle: { en: "OG Title", vi: "Tiêu đề OG" },
     ogDescription: { en: "OG Description", vi: "Mô tả OG" },
-    ogImages: { en: "OG Images", vi: "Hình ảnh OG" },
+    ogImage: { en: "OG Image", vi: "Hình ảnh OG" },
+    uploading: {
+      en: "Uploading OG image...",
+      vi: "Đang tải lên hình ảnh OG...",
+    },
+    uploadSuccess: {
+      en: "OG Image uploaded successfully!",
+      vi: "Hình ảnh OG đã được tải lên thành công!",
+    },
+    uploadError: {
+      en: "Failed to upload OG Image",
+      vi: "Không tải được hình ảnh OG",
+    }
   };
 
   /* ---------------------------------------------
@@ -107,16 +122,19 @@ export default function CreatePropertyListStep4SEO({
     ogTitle: { en: "", vi: "" },
     ogDescription: { en: "", vi: "" },
     allowIndexing: true,
-    ogImages: [],
+    ogImage: "", // Changed from ogImages: []
   };
 
   const [activeLang, setActiveLang] = useState("vi");
 
-  const [seo, setSeo] = useState(
-    initialData.seoInformation
-      ? { ...defaultSEO, ...initialData.seoInformation }
-      : defaultSEO
-  );
+  const [seo, setSeo] = useState(() => {
+    const data = initialData.seoInformation || defaultSEO;
+    return {
+      ...defaultSEO,
+      ...data,
+      ogImage: data.ogImage || (data.ogImages && data.ogImages[0]) || "",
+    };
+  });
 
   /* ✅ Sync with initialData when it changes (Edit Mode) */
   React.useEffect(() => {
@@ -124,6 +142,7 @@ export default function CreatePropertyListStep4SEO({
       setSeo((prev) => ({
         ...prev,
         ...initialData.seoInformation,
+        ogImage: initialData.seoInformation.ogImage || (initialData.seoInformation.ogImages && initialData.seoInformation.ogImages[0]) || "",
       }));
     }
   }, [initialData]);
@@ -184,30 +203,30 @@ export default function CreatePropertyListStep4SEO({
     if (!file) return;
 
     try {
-      CommonToaster("Uploading OG image...", "info");
+      CommonToaster(labels.uploading[globalLanguage], "info");
       const response = await uploadPropertyMedia(file, "image");
       const url = response.data.url;
 
       const updated = {
         ...seo,
-        ogImages: [...seo.ogImages, url],
+        ogImage: url,
       };
       setSeo(updated);
       onChange({ seoInformation: updated });
-      CommonToaster("OG Image uploaded successfully!", "success");
+      CommonToaster(labels.uploadSuccess[globalLanguage], "success");
     } catch (error) {
       console.error("OG Image upload error:", error);
-      CommonToaster("Failed to upload OG Image", "error");
+      CommonToaster(labels.uploadError[globalLanguage], "error");
     }
 
     // Reset input
     e.target.value = '';
   };
 
-  const removeOgImage = (index) => {
+  const removeOgImage = () => {
     const updated = {
       ...seo,
-      ogImages: seo.ogImages.filter((_, i) => i !== index),
+      ogImage: "",
     };
     setSeo(updated);
     onChange({ seoInformation: updated });
@@ -401,62 +420,61 @@ export default function CreatePropertyListStep4SEO({
         />
       </div>
 
-      {/* ✅ ✔ OG IMAGES — EXACT Step-2 Upload UI */}
+      {/* ✅ ✔ OG IMAGE — Single Slot UI */}
       <div>
         <label className="text-sm font-semibold mb-2 block">
-          {labels.ogImages[activeLang]}
+          {labels.ogImage[activeLang]}
         </label>
         <p className="text-xs text-gray-500 mb-3">
           (jpg, jpeg, png, webp, svg)
         </p>
 
         <div className="flex gap-4 flex-wrap">
-          {/* ✅ EXISTING IMAGES */}
-          {seo.ogImages.map((img, i) => (
+          {/* ✅ EXISTING IMAGE */}
+          {seo.ogImage ? (
             <div
-              key={i}
               className="relative w-70 h-60 rounded-xl overflow-hidden border bg-gray-50 group"
             >
-              <img src={img} className="w-full h-full object-cover" />
+              <img src={seo.ogImage} className="w-full h-full object-cover" />
 
               <div
                 className="absolute inset-0 bg-black/0 group-hover:bg-black/30 
               transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100"
               >
                 <button
-                  onClick={() => setPreview(img)}
+                  onClick={() => setPreview(seo.ogImage)}
                   className="bg-white cursor-pointer rounded-full p-2 shadow"
                 >
                   <Eye className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => removeOgImage(i)}
+                  onClick={removeOgImage}
                   className="bg-white cursor-pointer rounded-full p-2 shadow"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
-          ))}
-
-          {/* ✅ UPLOAD BOX */}
-          <label
-            className="w-70 h-60 border border-dashed border-[#646466] rounded-xl 
-            flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50"
-          >
-            <div className="w-18 h-18 border border-dashed border-[#646466] rounded-full flex items-center justify-center">
-              <Plus className="w-5 h-5 text-gray-500" />
-            </div>
-            <span className="text-xs mt-2 text-[#646466]">
-              {labels.upload[activeLang]}
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleOgUpload}
-              className="hidden"
-            />
-          </label>
+          ) : (
+            /* ✅ UPLOAD BOX (Only shown if NO image) */
+            <label
+              className="w-70 h-60 border border-dashed border-[#646466] rounded-xl 
+              flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50"
+            >
+              <div className="w-18 h-18 border border-dashed border-[#646466] rounded-full flex items-center justify-center">
+                <Plus className="w-5 h-5 text-gray-500" />
+              </div>
+              <span className="text-xs mt-2 text-[#646466]">
+                {labels.upload[activeLang]}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleOgUpload}
+                className="hidden"
+              />
+            </label>
+          )}
         </div>
       </div>
 
@@ -488,7 +506,7 @@ export default function CreatePropertyListStep4SEO({
       <div className="flex justify-between mt-10">
         <button
           onClick={onPrev}
-          className="px-6 py-2 bg-white cursor-pointer border border-gray-300 rounded-full hover:bg-gray-50 flex gap-2 items-center"
+          className="px-6 py-2 bg-white cursor-pointer border border-gray-300 rounded-lg hover:bg-gray-50 flex gap-2 items-center"
         >
           <ArrowLeft size={18} /> {labels.back[activeLang]}
         </button>
@@ -498,7 +516,7 @@ export default function CreatePropertyListStep4SEO({
             onChange({ seoInformation: seo });  // keep SEO data
             onNext();  // go to preview
           }}
-          className="px-6 py-2 bg-[#41398B] cursor-pointer hover:bg-[#322e7e] text-white rounded-full flex items-center gap-2"
+          className="px-6 py-2 bg-[#41398B] cursor-pointer hover:bg-[#322e7e] text-white rounded-lg flex items-center gap-2"
         >
           {labels.next[activeLang]} <ArrowRight size={18} />
         </button>
