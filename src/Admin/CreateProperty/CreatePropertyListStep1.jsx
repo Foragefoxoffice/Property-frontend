@@ -286,6 +286,7 @@ export default function CreatePropertyListStep1({
   initialData = {},
   onNext,
   onChange,
+  onComplete,
   defaultTransactionType,
   dropdowns, // ✅ Correct
   isEditMode, // ✅ Added
@@ -294,7 +295,13 @@ export default function CreatePropertyListStep1({
     console.log("initialData:", initialData);
   }, [initialData]);
 
-  const { can } = usePermissions();
+  const { can, isApprover } = usePermissions();
+
+  const handleComplete = async () => {
+    const finalStatus = isApprover ? "Published" : "Pending";
+    await onComplete(finalStatus);
+  };
+
   const [lang, setLang] = useState("vi");
   const getToday = () => new Date().toISOString().split("T")[0];
 
@@ -708,19 +715,29 @@ export default function CreatePropertyListStep1({
   return (
     <div className="min-h-screen bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
       {/* Language Toggle */}
-      <div className="flex mb-6 border-b border-gray-200">
-        {["vi", "en"].map((lng) => (
-          <button
-            key={lng}
-            className={`px-6 py-2 text-sm font-medium ${lang === lng
-              ? "border-b-2 border-[#41398B] text-black"
-              : "text-gray-500 hover:text-black"
-              }`}
-            onClick={() => setLang(lng)}
-          >
-            {lng === "vi" ? "Tiếng Việt (VI)" : "English (EN)"}
-          </button>
-        ))}
+      <div className="flex items-center justify-between mb-6 border-b border-gray-200">
+        <div className="flex">
+          {["vi", "en"].map((lng) => (
+            <button
+              key={lng}
+              className={`px-6 py-2 text-sm font-medium ${lang === lng
+                ? "border-b-2 border-[#41398B] text-black"
+                : "text-gray-500 hover:text-black"
+                }`}
+              onClick={() => setLang(lng)}
+            >
+              {lng === "vi" ? "Tiếng Việt (VI)" : "English (EN)"}
+            </button>
+          ))}
+        </div>
+
+        {/* Complete & Save Button */}
+        <button
+          onClick={handleComplete}
+          className="bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md cursor-pointer"
+        >
+          {lang === "en" ? "Complete & Save" : "Hoàn tất & Lưu"}
+        </button>
       </div>
 
       {/* Form Section */}

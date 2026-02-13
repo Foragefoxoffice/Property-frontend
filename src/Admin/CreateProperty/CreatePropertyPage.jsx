@@ -700,6 +700,7 @@ export default function CreatePropertyPage({
           <CreatePropertyListStep1
             onNext={() => setStep(2)}
             onChange={handleStepChange}
+            onComplete={handleSubmitFinal}
             initialData={propertyData}
             defaultTransactionType={defaultTransactionType}
             dropdowns={dropdowns}
@@ -713,6 +714,7 @@ export default function CreatePropertyPage({
             onNext={() => setStep(3)}
             onPrev={() => setStep(1)}
             onChange={handleStepChange}
+            onComplete={handleSubmitFinal}
             initialData={propertyData}
             dropdowns={dropdowns}
           />
@@ -724,6 +726,7 @@ export default function CreatePropertyPage({
             onPrev={() => setStep(2)}
             onNext={() => setStep(4)}
             onChange={handleStepChange}
+            onComplete={handleSubmitFinal}
             initialData={propertyData}
             owners={dropdowns.owners || []}
             staffs={dropdowns.staffs || []}
@@ -748,6 +751,7 @@ export default function CreatePropertyPage({
             onNext={() => setStep(5)}
             onPrev={() => setStep(3)}
             onChange={handleStepChange}
+            onComplete={handleSubmitFinal}
             initialData={propertyData}
           />
         );
