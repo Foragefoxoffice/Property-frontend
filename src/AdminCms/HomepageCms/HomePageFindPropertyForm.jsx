@@ -33,7 +33,7 @@ export default function HomePageFindPropertyForm({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     // Sync activeTab with headerLang whenever headerLang changes
     useEffect(() => {
@@ -134,57 +134,6 @@ export default function HomePageFindPropertyForm({
                                 className="mb-6"
                                 items={[
                                     {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Find Property Title
-                                                        </span>
-                                                    }
-                                                    name="homeFindTitle_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter find property title in English' },
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Find Your Dream Property"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.homePage', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Find Property Description
-                                                        </span>
-                                                    }
-                                                    name="homeFindDescription_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter find property description in English' },
-                                                        { max: 500, message: 'Maximum 500 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Search through our extensive collection of properties to find the perfect match for you"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.homePage', 'edit')}
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
-                                    {
                                         key: 'vn',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -229,6 +178,57 @@ export default function HomePageFindPropertyForm({
                                                         placeholder="Tìm kiếm trong bộ sưu tập bất động sản phong phú của chúng tôi để tìm sự lựa chọn hoàn hảo cho bạn"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.homePage', 'edit')}
+                                                    />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Find Property Title
+                                                        </span>
+                                                    }
+                                                    name="homeFindTitle_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter find property title in English' },
+                                                        { max: 200, message: 'Maximum 200 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Find Your Dream Property"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.homePage', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Find Property Description
+                                                        </span>
+                                                    }
+                                                    name="homeFindDescription_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter find property description in English' },
+                                                        { max: 500, message: 'Maximum 500 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="Search through our extensive collection of properties to find the perfect match for you"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
                                                         disabled={!can('cms.homePage', 'edit')}
                                                     />
                                                 </Form.Item>

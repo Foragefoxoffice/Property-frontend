@@ -44,6 +44,7 @@ export default function UsersDetails() {
     const [loading, setLoading] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+    const [deleteLoading, setDeleteLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("newest");
 
@@ -192,6 +193,7 @@ export default function UsersDetails() {
     const confirmDelete = (id) => setDeleteConfirm({ show: true, id });
     const handleDelete = async () => {
         try {
+            setDeleteLoading(true);
             await deleteUser(deleteConfirm.id);
             CommonToaster(
                 isVI ? "Xóa thành công!" : "Deleted successfully!",
@@ -204,6 +206,8 @@ export default function UsersDetails() {
                 isVI ? "Không thể xóa người dùng." : "Failed to delete user.",
                 "error"
             );
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -473,8 +477,12 @@ export default function UsersDetails() {
                             </button>
                             <button
                                 onClick={handleDelete}
-                                className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition"
+                                disabled={deleteLoading}
+                                className={`px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition flex items-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
+                                {deleteLoading && (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                )}
                                 {isVI ? "Xóa vĩnh viễn" : "Delete User"}
                             </button>
                         </div>

@@ -70,6 +70,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
 
   const [showModal, setShowModal] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
   const [editingOwner, setEditingOwner] = useState(null);
@@ -213,6 +214,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
   ========================================================== */
   const handleDelete = async () => {
     try {
+      setDeleteLoading(true);
       await deleteOwner(deleteConfirm.id);
       CommonToaster(t.ownerDeleted, "success");
       setDeleteConfirm({ show: false, id: null });
@@ -220,6 +222,8 @@ const OwnersLandlords = ({ openOwnerView }) => {
     } catch (error) {
       const msg = error?.response?.data?.error || error?.response?.data?.message || t.deleteFailed;
       CommonToaster(translateError(msg, t), "error");
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -366,6 +370,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
       {deleteConfirm.show && (
         <DeleteModal
           language={language}
+          deleteLoading={deleteLoading}
           onCancel={() => setDeleteConfirm({ show: false, id: null })}
           onDelete={handleDelete}
         />
@@ -438,7 +443,7 @@ const OwnersSkeleton = () => {
 /* ==========================================================
    ✅ DELETE MODAL
 ========================================================== */
-const DeleteModal = ({ language, onCancel, onDelete }) => (
+const DeleteModal = ({ language, onCancel, onDelete, deleteLoading }) => (
   <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
     <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
       <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -456,13 +461,18 @@ const DeleteModal = ({ language, onCancel, onDelete }) => (
         <button
           className="px-4 py-2 border rounded-full hover:bg-gray-100"
           onClick={onCancel}
+          disabled={deleteLoading}
         >
           {language === "vi" ? "Hủy" : "Cancel"}
         </button>
         <button
-          className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
+          className={`px-4 py-2 bg-red-600 text-white rounded-full flex items-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-red-700"}`}
           onClick={onDelete}
+          disabled={deleteLoading}
         >
+          {deleteLoading && (
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          )}
           {language === "vi" ? "Xóa" : "Delete"}
         </button>
       </div>

@@ -149,26 +149,33 @@ export default function CreatePropertyListStep4SEO({
 
   /* ✅ Sync Slug with Title (Auto-fill) */
   useEffect(() => {
-    // Check nested title from CreateProperty schema or fallback to 'name'
-    const listingInfo = initialData?.listingInformation;
-    const titleObj = listingInfo?.listingInformationPropertyTitle || initialData?.name;
-
+    // Check title from propertyData (passed as initialData)
+    const titleObj = initialData?.title;
     if (!titleObj) return;
 
     const titleToSlug = titleObj.en || titleObj.vi;
     if (!titleToSlug) return;
 
-    const currentSlugEn = seo.slugUrl.en;
-    const currentSlugVi = seo.slugUrl.vi;
-
-    // Only auto-fill if both slugs are empty to avoid overwriting user manual edits
-    if (!currentSlugEn && !currentSlugVi) {
-      const slug = titleToSlug
+    // Robust slug generator with Vietnamese support
+    const generateSlug = (text) => {
+      if (!text) return "";
+      return text
         .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-');
+        .normalize('NFD') // decompose combined characters (accents)
+        .replace(/[\u0300-\u036f]/g, '') // remove accent marks
+        .replace(/đ/g, 'd')
+        .replace(/ơ/g, 'o')
+        .replace(/ư/g, 'u')
+        .replace(/[^a-z0-9\s-]/g, '') // remove special chars
+        .trim()
+        .replace(/\s+/g, '-') // spaces to dashes
+        .replace(/-+/g, '-'); // collapse multiple dashes
+    };
 
+    const slug = generateSlug(titleToSlug);
+
+    // Always update if it differs, because it's not user-editable anymore
+    if (seo.slugUrl?.en !== slug) {
       const updated = {
         ...seo,
         slugUrl: { en: slug, vi: slug },
@@ -181,7 +188,7 @@ export default function CreatePropertyListStep4SEO({
       setSeo(updated);
       onChange({ seoInformation: updated });
     }
-  }, [initialData]); // Re-run when initialData (which contains title) changes
+  }, [initialData?.title]);
 
   /* ---------------------------------------------
        ✅ UPDATE HANDLER (multilingual)
@@ -237,7 +244,6 @@ export default function CreatePropertyListStep4SEO({
   /* ---------------------------------------------
        ✅ RENDER
     --------------------------------------------- */
-  // ✅ INPUT STYLE (Identical to Step-2)
   const inputClass =
     "border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none";
 
@@ -262,24 +268,16 @@ export default function CreatePropertyListStep4SEO({
         ))}
       </div>
 
-      {/* ✅ SHARED SLUG URL (Outside Tabs logic mostly, but we sync it) */}
+      {/* ✅ SHARED SLUG URL (Non-editable, auto-synced) */}
       <div>
         <label className="text-sm font-semibold mb-2 block">
-          Slug URL (Shared / Dùng chung) <span className="font-normal text-gray-500 text-xs ml-2">(Auto-synced for both languages)</span>
+          Slug URL (Shared / Dùng chung) <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated from Title - Non-editable)</span>
         </label>
         <input
           placeholder="my-property-slug"
-          className={inputClass}
-          value={seo.slugUrl.en} // Always show EN as the master value
-          onChange={(e) => {
-            const val = e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-            const updated = {
-              ...seo,
-              slugUrl: { en: val, vi: val } // Sync both
-            };
-            setSeo(updated);
-            onChange({ seoInformation: updated });
-          }}
+          className={`${inputClass} bg-gray-100 cursor-not-allowed`}
+          value={seo.slugUrl?.en || ""}
+          readOnly
         />
       </div>
 
@@ -385,6 +383,7 @@ export default function CreatePropertyListStep4SEO({
           }}
         />
       </div>
+
       <div>
         <h2 className="text-black text-lg font-semibold">
           {labels.social[activeLang]}
@@ -520,7 +519,6 @@ export default function CreatePropertyListStep4SEO({
         >
           {labels.next[activeLang]} <ArrowRight size={18} />
         </button>
-
       </div>
     </div>
   );

@@ -1006,7 +1006,7 @@ export default function Header({ showNavigation = true }) {
                   </Link>
                 </div>
 
-                <div onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100">
+                {/* <div onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100">
                   <Link to="/favorites" className="flex items-center justify-between py-4 text-gray-700 hover:text-[#41398B] font-medium text-[16px] transition-colors w-full">
                     <span className="flex items-center gap-2">
                       {labels.myFavorites[language]}
@@ -1017,7 +1017,7 @@ export default function Header({ showNavigation = true }) {
                       )}
                     </span>
                   </Link>
-                </div>
+                </div> */}
 
                 {localStorage.getItem("token") && (
                   <div onClick={() => setIsMobileMenuOpen(false)} className="border-b border-gray-100">

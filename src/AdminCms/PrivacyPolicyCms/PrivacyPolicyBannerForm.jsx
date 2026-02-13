@@ -32,7 +32,7 @@ export default function PrivacyPolicyBannerForm({
     const { can } = usePermissions();
     const canEdit = can('cms.privacyPolicy', 'edit') || can('cms.privacyPolicy', 'create');
 
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
         if (headerLang) {
@@ -140,6 +140,36 @@ export default function PrivacyPolicyBannerForm({
                                 className="mb-6"
                                 items={[
                                     {
+                                        key: 'vn',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                Tiếng Việt (VN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Tiêu Đề Banner
+                                                        </span>
+                                                    }
+                                                    name="privacyPolicyBannerTitle_vn"
+                                                    rules={[
+                                                        { required: true, message: 'Vui lòng nhập tiêu đề banner' },
+                                                        { max: 200, message: 'Tối đa 200 ký tự' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Chính Sách Bảo Mật"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
                                         key: 'en',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -169,36 +199,6 @@ export default function PrivacyPolicyBannerForm({
                                             </>
                                         )
                                     },
-                                    {
-                                        key: 'vn',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                Tiếng Việt (VN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Tiêu Đề Banner
-                                                        </span>
-                                                    }
-                                                    name="privacyPolicyBannerTitle_vn"
-                                                    rules={[
-                                                        { required: true, message: 'Vui lòng nhập tiêu đề banner' },
-                                                        { max: 200, message: 'Tối đa 200 ký tự' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Chính Sách Bảo Mật"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    }
                                 ]}
                             />
 

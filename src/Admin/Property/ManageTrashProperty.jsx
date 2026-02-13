@@ -30,6 +30,14 @@ export default function ManageTrashProperty() {
   const { language } = useLanguage();
   const t = translations[language];
 
+  const getLocalizedValue = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return language === "vi"
+      ? value.vi || value.en || ""
+      : value.en || value.vi || "";
+  };
+
   // Core state
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +55,7 @@ export default function ManageTrashProperty() {
 
   // Delete confirm
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -149,6 +158,7 @@ export default function ManageTrashProperty() {
   ====================================================== */
   const handleDelete = async () => {
     try {
+      setDeleteLoading(true);
       await permanentlyDeleteProperty(deleteConfirm.id);
 
       CommonToaster(t.deleteSuccess, "success");
@@ -158,6 +168,7 @@ export default function ManageTrashProperty() {
     } catch (err) {
       CommonToaster(t.deleteFailed, "error");
     } finally {
+      setDeleteLoading(false);
       setDeleteConfirm({ show: false, id: null });
     }
   };
@@ -167,7 +178,7 @@ export default function ManageTrashProperty() {
   ====================================================== */
   const handleBulkDelete = async () => {
     try {
-      setLoading(true);
+      setDeleteLoading(true);
       await Promise.all(selectedRowKeys.map(id => permanentlyDeleteProperty(id)));
       CommonToaster(t.bulkDeleteSuccess, "success");
       setSelectedRowKeys([]);
@@ -176,7 +187,7 @@ export default function ManageTrashProperty() {
       console.error(err);
       CommonToaster(t.bulkDeleteFailed, "error");
     } finally {
-      setLoading(false);
+      setDeleteLoading(false);
       setBulkDeleteConfirm(false);
     }
   };
@@ -369,7 +380,7 @@ export default function ManageTrashProperty() {
                     <td className="px-6 py-4 text-right flex gap-2 justify-end">
                       {/* VIEW */}
                       <a
-                        href={`/property-showcase/${info?.listingInformationPropertyId}`}
+                        href={`/property-showcase/${info?.listingInformationPropertyId}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 border rounded-full hover:bg-gray-100 flex items-center justify-center h-10 w-10"
@@ -478,8 +489,12 @@ export default function ManageTrashProperty() {
 
               <button
                 onClick={handleDelete}
-                className="px-6 py-2 bg-red-600 text-white rounded-full"
+                disabled={deleteLoading}
+                className={`px-6 py-2 bg-red-600 text-white rounded-full flex items-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-red-700"}`}
               >
+                {deleteLoading && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                )}
                 {t.deletePermanently}
               </button>
             </div>
@@ -528,8 +543,12 @@ export default function ManageTrashProperty() {
               </button>
               <button
                 onClick={handleBulkDelete}
-                className="px-6 py-2 bg-red-600 text-white rounded-full"
+                disabled={deleteLoading}
+                className={`px-6 py-2 bg-red-600 text-white rounded-full flex items-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-red-700"}`}
               >
+                {deleteLoading && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                )}
                 {t.deleteAll}
               </button>
             </div>

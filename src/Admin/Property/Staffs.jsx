@@ -137,6 +137,7 @@ export default function Staffs({ openStaffView }) {
   const [editingUser, setEditingUser] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("vi"); // Language tab state
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
@@ -346,6 +347,7 @@ export default function Staffs({ openStaffView }) {
 
   const handleDelete = async () => {
     try {
+      setDeleteLoading(true);
       await deleteStaff(deleteConfirm.id);
       CommonToaster(t.staffDeleted, "success");
       setDeleteConfirm({ show: false, id: null });
@@ -353,6 +355,8 @@ export default function Staffs({ openStaffView }) {
     } catch (err) {
       const msg = err.response?.data?.error || err.response?.data?.message || t.errorDeleting;
       CommonToaster(translateError(msg, t), "error");
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -635,14 +639,19 @@ export default function Staffs({ openStaffView }) {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeleteConfirm({ show: false, id: null })}
-                className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium"
+                disabled={deleteLoading}
+                className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium disabled:opacity-50"
               >
                 {t.cancel}
               </button>
               <button
                 onClick={handleDelete}
-                className="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm font-medium shadow-sm"
+                disabled={deleteLoading}
+                className={`px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm font-medium shadow-sm flex items-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
               >
+                {deleteLoading && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                )}
                 {t.delete}
               </button>
             </div>

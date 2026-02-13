@@ -26,7 +26,7 @@ export default function HomePageBlogForm({
 }) {
 
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     // Sync activeTab with headerLang whenever headerLang changes
     useEffect(() => {
@@ -81,55 +81,6 @@ export default function HomePageBlogForm({
                                 className="mb-6"
                                 items={[
                                     {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Blog Section Title
-                                                        </span>
-                                                    }
-                                                    name="homeBlogTitle_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter blog title in English' },
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Latest News & Insights"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Blog Section Description
-                                                        </span>
-                                                    }
-                                                    name="homeBlogDescription_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter blog description in English' },
-                                                        { max: 500, message: 'Maximum 500 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Stay updated with the latest property trends, market insights, and expert advice"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
-                                    {
                                         key: 'vn',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -173,6 +124,55 @@ export default function HomePageBlogForm({
                                                         placeholder="Cập nhật xu hướng bất động sản mới nhất, thông tin thị trường và lời khuyên từ chuyên gia"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                    />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Blog Section Title
+                                                        </span>
+                                                    }
+                                                    name="homeBlogTitle_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter blog title in English' },
+                                                        { max: 200, message: 'Maximum 200 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Latest News & Insights"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Blog Section Description
+                                                        </span>
+                                                    }
+                                                    name="homeBlogDescription_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter blog description in English' },
+                                                        { max: 500, message: 'Maximum 500 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="Stay updated with the latest property trends, market insights, and expert advice"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
                                                     />
                                                 </Form.Item>
                                             </>

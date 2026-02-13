@@ -33,7 +33,7 @@ export default function ContactPageReachOutForm({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
         if (headerLang) {
@@ -126,154 +126,6 @@ export default function ContactPageReachOutForm({
                                 onChange={setActiveTab}
                                 className="mb-6"
                                 items={[
-                                    {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <div className="space-y-4">
-                                                {/* Title */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Section Title
-                                                        </span>
-                                                    }
-                                                    name="contactReachOutTitle_en"
-                                                    rules={[{ max: 200, message: 'Maximum 200 characters allowed' }]}
-                                                >
-                                                    <Input
-                                                        placeholder="Reach Out to Us"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Description */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Section Description
-                                                        </span>
-                                                    }
-                                                    name="contactReachOutDescription_en"
-                                                    rules={[{ max: 1000, message: 'Maximum 1000 characters allowed' }]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="We'd love to hear from you..."
-                                                        rows={3}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope']"
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Address */}
-                                                <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope']">Address Information</h4>
-                                                    <Form.Item
-                                                        label={<span className="text-sm font-['Manrope']">Heading</span>}
-                                                        name="contactReachOutAddressHead_en"
-                                                        rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Our Address"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label={<span className="text-sm font-['Manrope']">Content</span>}
-                                                        name="contactReachOutAddressContent_en"
-                                                        rules={[{ max: 500, message: 'Maximum 500 characters allowed' }]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="123 Main Street, City, Country"
-                                                            rows={2}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope']"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* Phone Number */}
-                                                <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope']">Phone Number</h4>
-                                                    <Form.Item
-                                                        label={<span className="text-sm font-['Manrope']">Heading</span>}
-                                                        name="contactReachOutNumberHead_en"
-                                                        rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Call Us"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* Email */}
-                                                <div className="bg-gray-50 p-4 rounded-xl space-y-3">
-                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope']">Email</h4>
-                                                    <Form.Item
-                                                        label={<span className="text-sm font-['Manrope']">Heading</span>}
-                                                        name="contactReachOutEmailHead_en"
-                                                        rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Email Us"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* Follow Us Title */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Follow Us Title
-                                                        </span>
-                                                    }
-                                                    name="contactReachOutFollowTitle_en"
-                                                    rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
-                                                >
-                                                    <Input
-                                                        placeholder="Follow Us"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Get In Touch */}
-                                                <div className="bg-purple-50 p-4 rounded-xl space-y-3 mt-6">
-                                                    <h4 className="font-semibold text-[#41398B] text-sm font-['Manrope']">Get In Touch Section</h4>
-                                                    <Form.Item
-                                                        label={<span className="text-sm font-['Manrope']">Title</span>}
-                                                        name="contactReachOutGetinTitle_en"
-                                                        rules={[{ max: 200, message: 'Maximum 200 characters allowed' }]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Get In Touch"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label={<span className="text-sm font-['Manrope']">Description</span>}
-                                                        name="contactReachOutGetinDescription_en"
-                                                        rules={[{ max: 1000, message: 'Maximum 1000 characters allowed' }]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Send us a message..."
-                                                            rows={3}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope']"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-                                            </div>
-                                        )
-                                    },
                                     {
                                         key: 'vn',
                                         label: (
@@ -414,6 +266,154 @@ export default function ContactPageReachOutForm({
                                                     >
                                                         <TextArea
                                                             placeholder="Gửi tin nhắn cho chúng tôi..."
+                                                            rows={3}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope']"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <div className="space-y-4">
+                                                {/* Title */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Section Title
+                                                        </span>
+                                                    }
+                                                    name="contactReachOutTitle_en"
+                                                    rules={[{ max: 200, message: 'Maximum 200 characters allowed' }]}
+                                                >
+                                                    <Input
+                                                        placeholder="Reach Out to Us"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Description */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Section Description
+                                                        </span>
+                                                    }
+                                                    name="contactReachOutDescription_en"
+                                                    rules={[{ max: 1000, message: 'Maximum 1000 characters allowed' }]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="We'd love to hear from you..."
+                                                        rows={3}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope']"
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Address */}
+                                                <div className="bg-gray-50 p-4 rounded-xl space-y-3">
+                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope']">Address Information</h4>
+                                                    <Form.Item
+                                                        label={<span className="text-sm font-['Manrope']">Heading</span>}
+                                                        name="contactReachOutAddressHead_en"
+                                                        rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Our Address"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="text-sm font-['Manrope']">Content</span>}
+                                                        name="contactReachOutAddressContent_en"
+                                                        rules={[{ max: 500, message: 'Maximum 500 characters allowed' }]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="123 Main Street, City, Country"
+                                                            rows={2}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope']"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* Phone Number */}
+                                                <div className="bg-gray-50 p-4 rounded-xl space-y-3">
+                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope']">Phone Number</h4>
+                                                    <Form.Item
+                                                        label={<span className="text-sm font-['Manrope']">Heading</span>}
+                                                        name="contactReachOutNumberHead_en"
+                                                        rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Call Us"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* Email */}
+                                                <div className="bg-gray-50 p-4 rounded-xl space-y-3">
+                                                    <h4 className="font-semibold text-gray-700 text-sm font-['Manrope']">Email</h4>
+                                                    <Form.Item
+                                                        label={<span className="text-sm font-['Manrope']">Heading</span>}
+                                                        name="contactReachOutEmailHead_en"
+                                                        rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Email Us"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* Follow Us Title */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Follow Us Title
+                                                        </span>
+                                                    }
+                                                    name="contactReachOutFollowTitle_en"
+                                                    rules={[{ max: 100, message: 'Maximum 100 characters allowed' }]}
+                                                >
+                                                    <Input
+                                                        placeholder="Follow Us"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Get In Touch */}
+                                                <div className="bg-purple-50 p-4 rounded-xl space-y-3 mt-6">
+                                                    <h4 className="font-semibold text-[#41398B] text-sm font-['Manrope']">Get In Touch Section</h4>
+                                                    <Form.Item
+                                                        label={<span className="text-sm font-['Manrope']">Title</span>}
+                                                        name="contactReachOutGetinTitle_en"
+                                                        rules={[{ max: 200, message: 'Maximum 200 characters allowed' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Get In Touch"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="text-sm font-['Manrope']">Description</span>}
+                                                        name="contactReachOutGetinDescription_en"
+                                                        rules={[{ max: 1000, message: 'Maximum 1000 characters allowed' }]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Send us a message..."
                                                             rows={3}
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope']"
                                                         />

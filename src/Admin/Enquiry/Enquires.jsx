@@ -36,6 +36,7 @@ export default function Enquires() {
     const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState({ show: false, count: 0 });
     const [selectedIds, setSelectedIds] = useState([]);
     const [messageModal, setMessageModal] = useState({ show: false, message: "", userName: "" });
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     // Language
     const { language } = useLanguage();
@@ -108,6 +109,7 @@ export default function Enquires() {
 
     const handleDelete = async () => {
         try {
+            setDeleteLoading(true);
             await deleteEnquiry(deleteConfirm.id);
             setEnquiries(prev => prev.filter(item => item._id !== deleteConfirm.id));
             setDeleteConfirm({ show: false, id: null });
@@ -116,6 +118,8 @@ export default function Enquires() {
             console.error(error);
             const msg = error.response?.data?.error || error.response?.data?.message || t.failedToDeleteEnquiry;
             CommonToaster(translateError(msg, t), "error");
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -157,7 +161,7 @@ export default function Enquires() {
 
     const handleBulkDelete = async () => {
         try {
-            setLoading(true);
+            setDeleteLoading(true);
             await bulkDeleteEnquiries(selectedIds);
 
             setSelectedIds([]);
@@ -171,7 +175,7 @@ export default function Enquires() {
             const errorMsg = error.response?.data?.error || error.response?.data?.message || t.bulkDeleteError || "Failed to delete enquiries. Please try again.";
             CommonToaster(translateError(errorMsg, t), "error");
         } finally {
-            setLoading(false);
+            setDeleteLoading(false);
         }
     };
 
@@ -191,7 +195,7 @@ export default function Enquires() {
     const getLocalizedValue = (value) => {
         if (!value) return '';
         if (typeof value === 'string') return value;
-        return value.en || value.vi || '';
+        return language === 'vi' ? (value.vi || value.en || '') : (value.en || value.vi || '');
     };
 
     const formatDate = (dateString) => {
@@ -540,7 +544,7 @@ export default function Enquires() {
                                                     )}
 
                                                     <a
-                                                        href={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId}`}
+                                                        href={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId}${getLocalizedValue(prop.seoInformation?.slugUrl) ? `/${getLocalizedValue(prop.seoInformation?.slugUrl)}` : ''}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#41398B] text-white text-xs font-semibold rounded-lg hover:bg-[#352e7a] transition-all shadow-sm hover:shadow-md"
@@ -582,8 +586,12 @@ export default function Enquires() {
                             </button>
                             <button
                                 onClick={handleBulkDelete}
-                                className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition"
+                                disabled={deleteLoading}
+                                className={`px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition flex items-center justify-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
+                                {deleteLoading && (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                )}
                                 {t.delete}
                             </button>
                         </div>
@@ -615,8 +623,12 @@ export default function Enquires() {
                             </button>
                             <button
                                 onClick={handleDelete}
-                                className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition"
+                                disabled={deleteLoading}
+                                className={`px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition flex items-center justify-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
+                                {deleteLoading && (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                )}
                                 {t.delete}
                             </button>
                         </div>

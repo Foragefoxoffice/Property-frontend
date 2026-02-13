@@ -33,7 +33,7 @@ export default function HomePageBannerForm({
     headerLang // Receive the global language prop
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     // Sync activeTab with headerLang whenever headerLang changes
     useEffect(() => {
@@ -136,55 +136,6 @@ export default function HomePageBannerForm({
                                 className="mb-6"
                                 items={[
                                     {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Hero Title
-                                                        </span>
-                                                    }
-                                                    name="heroTitle_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter hero title in English' },
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Your Trusted Property Partner"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Hero Description
-                                                        </span>
-                                                    }
-                                                    name="heroDescription_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter hero description in English' },
-                                                        { max: 500, message: 'Maximum 500 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Find your dream property with us"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
-                                    {
                                         key: 'vn',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -228,6 +179,55 @@ export default function HomePageBannerForm({
                                                         placeholder="Tìm bất động sản mơ ước của bạn cùng chúng tôi"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                    />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Hero Title
+                                                        </span>
+                                                    }
+                                                    name="heroTitle_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter hero title in English' },
+                                                        { max: 200, message: 'Maximum 200 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Your Trusted Property Partner"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Hero Description
+                                                        </span>
+                                                    }
+                                                    name="heroDescription_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter hero description in English' },
+                                                        { max: 500, message: 'Maximum 500 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="Find your dream property with us"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
                                                     />
                                                 </Form.Item>
                                             </>

@@ -271,22 +271,16 @@ export default function BlogMainForm({
                                                     </Form.Item>
                                                 </div>
 
-                                                {/* METADATA SECTION */}
-                                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                                {/* TAGS SECTION */}
+                                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-6">
                                                     <h4 className="text-md font-bold text-gray-700 mb-4 font-['Manrope'] flex items-center gap-2">
                                                         <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                         </svg>
-                                                        Metadata & Cài Đặt
+                                                        Tags (VI)
                                                     </h4>
 
-                                                    {/* Tags VI */}
                                                     <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Tags (VI)
-                                                            </span>
-                                                        }
                                                         name={['tags', 'vi']}
                                                     >
                                                         <Select
@@ -296,10 +290,6 @@ export default function BlogMainForm({
                                                             className="rounded-[10px]"
                                                         />
                                                     </Form.Item>
-
-                                                    <p className="text-sm text-gray-500 font-['Manrope'] italic">
-                                                        * Các trường Author, Category, Published Status và Featured Image được chia sẻ giữa cả hai ngôn ngữ.
-                                                    </p>
                                                 </div>
                                             </>
                                         )
@@ -360,68 +350,16 @@ export default function BlogMainForm({
                                                     </Form.Item>
                                                 </div>
 
-                                                {/* METADATA SECTION */}
-                                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                                {/* TAGS SECTION */}
+                                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-6">
                                                     <h4 className="text-md font-bold text-gray-700 mb-4 font-['Manrope'] flex items-center gap-2">
                                                         <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                         </svg>
-                                                        Metadata & Settings
+                                                        Tags (EN)
                                                     </h4>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                        {/* Author */}
-                                                        <Form.Item
-                                                            label={
-                                                                <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                    Author
-                                                                </span>
-                                                            }
-                                                            name="author"
-                                                            rules={[{ required: true, message: 'Please enter author name' }]}
-                                                        >
-                                                            <Input
-                                                                placeholder="Author name"
-                                                                size="large"
-                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            />
-                                                        </Form.Item>
-
-                                                        {/* Category */}
-                                                        <Form.Item
-                                                            label={
-                                                                <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                    Category
-                                                                </span>
-                                                            }
-                                                            name="category"
-                                                            rules={[{ required: true, message: 'Please select a category' }]}
-                                                        >
-                                                            <Select
-                                                                placeholder="Select Category"
-                                                                size="large"
-                                                                className="rounded-[10px]"
-                                                                showSearch
-                                                                filterOption={(input, option) =>
-                                                                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
-                                                                }
-                                                            >
-                                                                {categories.map((cat) => (
-                                                                    <Select.Option key={cat._id} value={cat._id}>
-                                                                        {cat.name?.en || cat.name?.vi || 'Unnamed'}
-                                                                    </Select.Option>
-                                                                ))}
-                                                            </Select>
-                                                        </Form.Item>
-                                                    </div>
-
-                                                    {/* Tags */}
                                                     <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Tags (EN)
-                                                            </span>
-                                                        }
                                                         name={['tags', 'en']}
                                                     >
                                                         <Select
@@ -431,109 +369,166 @@ export default function BlogMainForm({
                                                             className="rounded-[10px]"
                                                         />
                                                     </Form.Item>
-
-                                                    {/* Published Status */}
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Publishing Status
-                                                            </span>
-                                                        }
-                                                    >
-                                                        <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200">
-                                                            <span className="font-semibold text-gray-700 font-['Manrope']">
-                                                                Visibility Status
-                                                            </span>
-                                                            <Form.Item
-                                                                name="published"
-                                                                valuePropName="checked"
-                                                                noStyle
-                                                            >
-                                                                <Switch
-                                                                    checkedChildren="Published"
-                                                                    unCheckedChildren="Draft"
-                                                                />
-                                                            </Form.Item>
-                                                        </div>
-                                                    </Form.Item>
-
-                                                    {/* Featured Image */}
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Featured Image
-                                                                <span className="text-xs text-gray-400 ml-2 font-normal">
-                                                                    (Recommended: 1200x630px, Max: 5MB)
-                                                                </span>
-                                                            </span>
-                                                        }
-                                                    >
-                                                        <div className="space-y-3">
-                                                            {mainImageUrl ? (
-                                                                <div className="relative w-48 h-36 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50 group">
-                                                                    <img
-                                                                        src={mainImageUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${mainImageUrl}` : mainImageUrl}
-                                                                        alt="Featured"
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                    <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => setPreviewImage(mainImageUrl)}
-                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                            title="Preview"
-                                                                        >
-                                                                            <EyeOutlined className="text-[#41398B] text-lg" />
-                                                                        </button>
-                                                                        <Upload
-                                                                            showUploadList={false}
-                                                                            beforeUpload={handleBeforeUpload}
-                                                                        >
-                                                                            <button
-                                                                                type="button"
-                                                                                className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                                title="Change Image"
-                                                                            >
-                                                                                <ReloadOutlined className="text-blue-600 text-lg" />
-                                                                            </button>
-                                                                        </Upload>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={removeMainImage}
-                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                            title="Delete"
-                                                                        >
-                                                                            <X className="text-red-500 w-5 h-5" />
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            ) : (
-                                                                <Upload
-                                                                    name="mainImage"
-                                                                    listType="picture-card"
-                                                                    className="featured-uploader"
-                                                                    showUploadList={false}
-                                                                    beforeUpload={handleBeforeUpload}
-                                                                >
-                                                                    <div className="flex flex-col items-center justify-center h-full">
-                                                                        <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-blue-600" />
-                                                                        <div className="text-sm text-gray-500 font-['Manrope']">
-                                                                            Upload Image
-                                                                        </div>
-                                                                    </div>
-                                                                </Upload>
-                                                            )}
-                                                            <Form.Item name="mainImage" noStyle>
-                                                                <Input type="hidden" />
-                                                            </Form.Item>
-                                                        </div>
-                                                    </Form.Item>
                                                 </div>
                                             </>
                                         )
                                     }
                                 ]}
                             />
+
+                            {/* COMMON METADATA SECTION */}
+                            <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 mb-6">
+                                <h4 className="text-md font-bold text-gray-700 mb-4 font-['Manrope'] flex items-center gap-2">
+                                    <svg className="w-5 h-5 text-[#41398B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    {activeTab === 'vn' ? 'Metadata & Cài Đặt Chung' : 'Metadata & Settings'}
+                                </h4>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Author */}
+                                    <Form.Item
+                                        label={
+                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                {activeTab === 'vn' ? 'Tác giả' : 'Author'}
+                                            </span>
+                                        }
+                                        name="author"
+                                        rules={[{ required: true, message: activeTab === 'vn' ? 'Vui lòng nhập tên tác giả' : 'Please enter author name' }]}
+                                    >
+                                        <Input
+                                            placeholder={activeTab === 'vn' ? 'Tên tác giả' : 'Author name'}
+                                            size="large"
+                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                        />
+                                    </Form.Item>
+
+                                    {/* Category */}
+                                    <Form.Item
+                                        label={
+                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                {activeTab === 'vn' ? 'Danh mục' : 'Category'}
+                                            </span>
+                                        }
+                                        name="category"
+                                        rules={[{ required: true, message: activeTab === 'vn' ? 'Vui lòng chọn danh mục' : 'Please select a category' }]}
+                                    >
+                                        <Select
+                                            placeholder={activeTab === 'vn' ? 'Chọn Danh Mục' : 'Select Category'}
+                                            size="large"
+                                            className="rounded-[10px]"
+                                            showSearch
+                                            filterOption={(input, option) =>
+                                                (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                                            }
+                                        >
+                                            {categories.map((cat) => (
+                                                <Select.Option key={cat._id} value={cat._id}>
+                                                    {cat.name?.en || cat.name?.vi || 'Unnamed'}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </div>
+
+                                {/* Published Status */}
+                                <Form.Item
+                                    label={
+                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                            {activeTab === 'vn' ? 'Trạng Thái Xuất Bản' : 'Publishing Status'}
+                                        </span>
+                                    }
+                                >
+                                    <div className="flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200">
+                                        <span className="font-semibold text-gray-700 font-['Manrope']">
+                                            {activeTab === 'vn' ? 'Trạng Thái Hiển Thị' : 'Visibility Status'}
+                                        </span>
+                                        <Form.Item
+                                            name="published"
+                                            valuePropName="checked"
+                                            noStyle
+                                        >
+                                            <Switch
+                                                checkedChildren={activeTab === 'vn' ? 'Đã đăng' : 'Published'}
+                                                unCheckedChildren={activeTab === 'vn' ? 'Bản nháp' : 'Draft'}
+                                            />
+                                        </Form.Item>
+                                    </div>
+                                </Form.Item>
+
+                                {/* Featured Image */}
+                                <Form.Item
+                                    label={
+                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                            {activeTab === 'vn' ? 'Ảnh Nổi Bật' : 'Featured Image'}
+                                            <span className="text-xs text-gray-400 ml-2 font-normal">
+                                                (Recommended: 1200x630px, Max: 5MB)
+                                            </span>
+                                        </span>
+                                    }
+                                >
+                                    <div className="space-y-3">
+                                        {mainImageUrl ? (
+                                            <div className="relative w-48 h-36 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50 group">
+                                                <img
+                                                    src={mainImageUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${mainImageUrl}` : mainImageUrl}
+                                                    alt="Featured"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setPreviewImage(mainImageUrl)}
+                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                        title="Preview"
+                                                    >
+                                                        <EyeOutlined className="text-[#41398B] text-lg" />
+                                                    </button>
+                                                    <Upload
+                                                        showUploadList={false}
+                                                        beforeUpload={handleBeforeUpload}
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                            title="Change Image"
+                                                        >
+                                                            <ReloadOutlined className="text-blue-600 text-lg" />
+                                                        </button>
+                                                    </Upload>
+                                                    <button
+                                                        type="button"
+                                                        onClick={removeMainImage}
+                                                        className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                        title="Delete"
+                                                    >
+                                                        <X className="text-red-500 w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <Upload
+                                                name="mainImage"
+                                                listType="picture-card"
+                                                className="featured-uploader"
+                                                showUploadList={false}
+                                                beforeUpload={handleBeforeUpload}
+                                            >
+                                                <div className="flex flex-col items-center justify-center h-full">
+                                                    <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-blue-600" />
+                                                    <div className="text-sm text-gray-500 font-['Manrope']">
+                                                        {activeTab === 'vn' ? 'Tải ảnh lên' : 'Upload Image'}
+                                                    </div>
+                                                </div>
+                                            </Upload>
+                                        )}
+                                        <Form.Item name="mainImage" noStyle>
+                                            <Input type="hidden" />
+                                        </Form.Item>
+                                    </div>
+                                </Form.Item>
+                            </div>
 
                             {/* Save Button */}
                             <div className="flex gap-3 justify-end mt-6 pt-4 border-t border-gray-200">

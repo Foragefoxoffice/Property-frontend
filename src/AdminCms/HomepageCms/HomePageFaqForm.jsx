@@ -37,7 +37,7 @@ export default function HomePageFaqForm({
 }) {
 
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     // Sync activeTab with headerLang whenever headerLang changes
     useEffect(() => {
@@ -141,6 +141,254 @@ export default function HomePageFaqForm({
                                 onChange={setActiveTab}
                                 className="mb-6"
                                 items={[
+                                    {
+                                        key: 'vn',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                Tiếng Việt (VN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                {/* FAQ Image Section - Vietnamese */}
+                                                <div className="rounded-xl mb-6">
+                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
+                                                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                        Phần Hình Ảnh FAQ
+                                                    </h4>
+
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Hình Ảnh FAQ</span>}
+                                                        name="homeFaqImageTitle_vn"
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập tiêu đề' },
+                                                            { max: 200, message: 'Tối đa 200 ký tự' }
+                                                        ]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Câu Hỏi Thường Gặp"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Hình Ảnh FAQ</span>}
+                                                        name="homeFaqImageDescription_vn"
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập mô tả' },
+                                                            { max: 500, message: 'Tối đa 500 ký tự' }
+                                                        ]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Tìm câu trả lời cho các câu hỏi thường gặp về dịch vụ của chúng tôi"
+                                                            rows={3}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Văn Bản Nút Hình Ảnh FAQ</span>}
+                                                        name="homeFaqImageButtonText_vn"
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập văn bản nút' },
+                                                            { max: 50, message: 'Tối đa 50 ký tự' }
+                                                        ]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Liên Hệ Chúng Tôi"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Đường Dẫn Nút</span>}
+                                                        name="homeFaqImageButtonLink"
+                                                        rules={[{ required: true, message: 'Vui lòng nhập đường dẫn nút' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="https://example.com/contact"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Ảnh Nền FAQ
+                                                                <span className="text-xs text-gray-400 ml-2 font-normal">
+                                                                    (Khuyên dùng: 1920x1080px, Tối đa: 5MB)
+                                                                </span>
+                                                            </span>
+                                                        }
+                                                    >
+                                                        <div className="space-y-3">
+                                                            {faqBgUrl ? (
+                                                                <div className="relative w-48 h-36 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50 group">
+                                                                    <img
+                                                                        src={faqBgUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${faqBgUrl}` : faqBgUrl}
+                                                                        alt="FAQ Background"
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                    <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setPreviewImage(faqBgUrl)}
+                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                            title="Xem trước"
+                                                                        >
+                                                                            <EyeOutlined className="text-[#41398B] text-lg" />
+                                                                        </button>
+                                                                        <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
+                                                                            <button
+                                                                                type="button"
+                                                                                className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                                title="Đổi Ảnh"
+                                                                            >
+                                                                                <ReloadOutlined className="text-blue-600 text-lg" />
+                                                                            </button>
+                                                                        </Upload>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={removeImage}
+                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
+                                                                            title="Xóa"
+                                                                        >
+                                                                            <X className="text-red-500 w-5 h-5" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <Upload
+                                                                    name="homeFaqBg"
+                                                                    listType="picture-card"
+                                                                    className="faq-uploader"
+                                                                    showUploadList={false}
+                                                                    beforeUpload={handleBeforeUpload}
+                                                                >
+                                                                    <div className="flex flex-col items-center justify-center h-full">
+                                                                        <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
+                                                                        <div className="text-sm text-gray-500 font-['Manrope']">Tải Ảnh Lên</div>
+                                                                    </div>
+                                                                </Upload>
+                                                            )}
+
+                                                            <Form.Item
+                                                                name="homeFaqBg"
+                                                                noStyle
+                                                            >
+                                                                <Input type="hidden" />
+                                                            </Form.Item>
+                                                        </div>
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* FAQ Content Section - Vietnamese */}
+                                                <div className="rounded-xl mb-6">
+                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
+                                                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                        </svg>
+                                                        Phần Nội Dung FAQ
+                                                    </h4>
+
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề FAQ</span>}
+                                                        name="homeFaqTitle_vn"
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập tiêu đề FAQ' },
+                                                            { max: 200, message: 'Tối đa 200 ký tự' }
+                                                        ]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Câu Hỏi Phổ Biến"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả FAQ</span>}
+                                                        name="homeFaqDescription_vn"
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập mô tả FAQ' },
+                                                            { max: 500, message: 'Tối đa 500 ký tự' }
+                                                        ]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Mọi thứ bạn cần biết về bất động sản và dịch vụ của chúng tôi"
+                                                            rows={3}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* FAQ Items (Dynamic) - Vietnamese */}
+                                                <div className="bg-gradient-to-r from-green-50 to-teal-50 p-5 rounded-xl border border-green-100">
+                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
+                                                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        Câu Hỏi & Trả Lời FAQ
+                                                    </h4>
+
+                                                    <Form.List name="faqs">
+                                                        {(fields) => (
+                                                            <>
+                                                                {fields.map(({ key, name, ...restField }, index) => (
+                                                                    <Card
+                                                                        key={key}
+                                                                        className="mb-4 shadow-sm border-2 border-gray-200"
+                                                                        title={
+                                                                            <span className="font-semibold text-gray-700 font-['Manrope']">
+                                                                                Câu Hỏi {index + 1}
+                                                                            </span>
+                                                                        }
+                                                                    >
+                                                                        <Form.Item
+                                                                            {...restField}
+                                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Câu Hỏi</span>}
+                                                                            name={[name, 'header_vn']}
+                                                                            rules={[
+                                                                                { required: true, message: 'Vui lòng nhập tiêu đề câu hỏi' },
+                                                                                { max: 200, message: 'Tối đa 200 ký tự' }
+                                                                            ]}
+                                                                        >
+                                                                            <Input
+                                                                                placeholder="Chi phí mua nhà bao gồm những gì?"
+                                                                                size="large"
+                                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                                            />
+                                                                        </Form.Item>
+
+                                                                        <Form.Item
+                                                                            {...restField}
+                                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Nội Dung Trả Lời</span>}
+                                                                            name={[name, 'content_vn']}
+                                                                            rules={[
+                                                                                { required: true, message: 'Vui lòng nhập nội dung trả lời' },
+                                                                                { max: 1000, message: 'Tối đa 1000 ký tự' }
+                                                                            ]}
+                                                                        >
+                                                                            <TextArea
+                                                                                placeholder="Phương pháp của chúng tôi kết hợp các chiến lược cá nhân hóa..."
+                                                                                rows={4}
+                                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                                            />
+                                                                        </Form.Item>
+                                                                    </Card>
+                                                                ))}
+                                                            </>
+                                                        )}
+                                                    </Form.List>
+                                                </div>
+                                            </>
+                                        )
+                                    },
                                     {
                                         key: 'en',
                                         label: (
@@ -407,254 +655,6 @@ export default function HomePageFaqForm({
                                                                         Add FAQ Question
                                                                     </Button>
                                                                 </Form.Item>
-                                                            </>
-                                                        )}
-                                                    </Form.List>
-                                                </div>
-                                            </>
-                                        )
-                                    },
-                                    {
-                                        key: 'vn',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                Tiếng Việt (VN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                {/* FAQ Image Section - Vietnamese */}
-                                                <div className="rounded-xl mb-6">
-                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
-                                                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                        Phần Hình Ảnh FAQ
-                                                    </h4>
-
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Hình Ảnh FAQ</span>}
-                                                        name="homeFaqImageTitle_vn"
-                                                        rules={[
-                                                            { required: true, message: 'Vui lòng nhập tiêu đề' },
-                                                            { max: 200, message: 'Tối đa 200 ký tự' }
-                                                        ]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Câu Hỏi Thường Gặp"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả Hình Ảnh FAQ</span>}
-                                                        name="homeFaqImageDescription_vn"
-                                                        rules={[
-                                                            { required: true, message: 'Vui lòng nhập mô tả' },
-                                                            { max: 500, message: 'Tối đa 500 ký tự' }
-                                                        ]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Tìm câu trả lời cho các câu hỏi thường gặp về dịch vụ của chúng tôi"
-                                                            rows={3}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Văn Bản Nút Hình Ảnh FAQ</span>}
-                                                        name="homeFaqImageButtonText_vn"
-                                                        rules={[
-                                                            { required: true, message: 'Vui lòng nhập văn bản nút' },
-                                                            { max: 50, message: 'Tối đa 50 ký tự' }
-                                                        ]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Liên Hệ Chúng Tôi"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Đường Dẫn Nút</span>}
-                                                        name="homeFaqImageButtonLink"
-                                                        rules={[{ required: true, message: 'Vui lòng nhập đường dẫn nút' }]}
-                                                    >
-                                                        <Input
-                                                            placeholder="https://example.com/contact"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Ảnh Nền FAQ
-                                                                <span className="text-xs text-gray-400 ml-2 font-normal">
-                                                                    (Khuyên dùng: 1920x1080px, Tối đa: 5MB)
-                                                                </span>
-                                                            </span>
-                                                        }
-                                                    >
-                                                        <div className="space-y-3">
-                                                            {faqBgUrl ? (
-                                                                <div className="relative w-48 h-36 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50 group">
-                                                                    <img
-                                                                        src={faqBgUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${faqBgUrl}` : faqBgUrl}
-                                                                        alt="FAQ Background"
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                    <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => setPreviewImage(faqBgUrl)}
-                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                            title="Xem trước"
-                                                                        >
-                                                                            <EyeOutlined className="text-[#41398B] text-lg" />
-                                                                        </button>
-                                                                        <Upload showUploadList={false} beforeUpload={handleBeforeUpload}>
-                                                                            <button
-                                                                                type="button"
-                                                                                className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                                title="Đổi Ảnh"
-                                                                            >
-                                                                                <ReloadOutlined className="text-blue-600 text-lg" />
-                                                                            </button>
-                                                                        </Upload>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={removeImage}
-                                                                            className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                            title="Xóa"
-                                                                        >
-                                                                            <X className="text-red-500 w-5 h-5" />
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            ) : (
-                                                                <Upload
-                                                                    name="homeFaqBg"
-                                                                    listType="picture-card"
-                                                                    className="faq-uploader"
-                                                                    showUploadList={false}
-                                                                    beforeUpload={handleBeforeUpload}
-                                                                >
-                                                                    <div className="flex flex-col items-center justify-center h-full">
-                                                                        <PlusOutlined className="text-3xl text-gray-400 mb-2 transition-all hover:text-purple-600" />
-                                                                        <div className="text-sm text-gray-500 font-['Manrope']">Tải Ảnh Lên</div>
-                                                                    </div>
-                                                                </Upload>
-                                                            )}
-
-                                                            <Form.Item
-                                                                name="homeFaqBg"
-                                                                noStyle
-                                                            >
-                                                                <Input type="hidden" />
-                                                            </Form.Item>
-                                                        </div>
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* FAQ Content Section - Vietnamese */}
-                                                <div className="rounded-xl mb-6">
-                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
-                                                        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                        </svg>
-                                                        Phần Nội Dung FAQ
-                                                    </h4>
-
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề FAQ</span>}
-                                                        name="homeFaqTitle_vn"
-                                                        rules={[
-                                                            { required: true, message: 'Vui lòng nhập tiêu đề FAQ' },
-                                                            { max: 200, message: 'Tối đa 200 ký tự' }
-                                                        ]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Câu Hỏi Phổ Biến"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Mô Tả FAQ</span>}
-                                                        name="homeFaqDescription_vn"
-                                                        rules={[
-                                                            { required: true, message: 'Vui lòng nhập mô tả FAQ' },
-                                                            { max: 500, message: 'Tối đa 500 ký tự' }
-                                                        ]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Mọi thứ bạn cần biết về bất động sản và dịch vụ của chúng tôi"
-                                                            rows={3}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* FAQ Items (Dynamic) - Vietnamese */}
-                                                <div className="bg-gradient-to-r from-green-50 to-teal-50 p-5 rounded-xl border border-green-100">
-                                                    <h4 className="font-bold text-[#374151] mb-4 text-base font-['Manrope'] flex items-center gap-2">
-                                                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        Câu Hỏi & Trả Lời FAQ
-                                                    </h4>
-
-                                                    <Form.List name="faqs">
-                                                        {(fields) => (
-                                                            <>
-                                                                {fields.map(({ key, name, ...restField }, index) => (
-                                                                    <Card
-                                                                        key={key}
-                                                                        className="mb-4 shadow-sm border-2 border-gray-200"
-                                                                        title={
-                                                                            <span className="font-semibold text-gray-700 font-['Manrope']">
-                                                                                Câu Hỏi {index + 1}
-                                                                            </span>
-                                                                        }
-                                                                    >
-                                                                        <Form.Item
-                                                                            {...restField}
-                                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Câu Hỏi</span>}
-                                                                            name={[name, 'header_vn']}
-                                                                            rules={[
-                                                                                { required: true, message: 'Vui lòng nhập tiêu đề câu hỏi' },
-                                                                                { max: 200, message: 'Tối đa 200 ký tự' }
-                                                                            ]}
-                                                                        >
-                                                                            <Input
-                                                                                placeholder="Chi phí mua nhà bao gồm những gì?"
-                                                                                size="large"
-                                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                                            />
-                                                                        </Form.Item>
-
-                                                                        <Form.Item
-                                                                            {...restField}
-                                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Nội Dung Trả Lời</span>}
-                                                                            name={[name, 'content_vn']}
-                                                                            rules={[
-                                                                                { required: true, message: 'Vui lòng nhập nội dung trả lời' },
-                                                                                { max: 1000, message: 'Tối đa 1000 ký tự' }
-                                                                            ]}
-                                                                        >
-                                                                            <TextArea
-                                                                                placeholder="Phương pháp của chúng tôi kết hợp các chiến lược cá nhân hóa..."
-                                                                                rows={4}
-                                                                                className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                                            />
-                                                                        </Form.Item>
-                                                                    </Card>
-                                                                ))}
                                                             </>
                                                         )}
                                                     </Form.List>

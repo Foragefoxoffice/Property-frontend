@@ -28,7 +28,7 @@ export default function ContactMapLink({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
         if (headerLang) {
@@ -96,6 +96,56 @@ export default function ContactMapLink({
                                 className="mb-6"
                                 items={[
                                     {
+                                        key: 'vn',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                Tiếng Việt (VN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                {/* Instructions VN */}
+                                                <Alert
+                                                    message="Cách lấy mã nhúng Google Maps"
+                                                    description={
+                                                        <ol className="list-decimal ml-4 mt-2 space-y-1 text-sm">
+                                                            <li>Truy cập <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Maps</a></li>
+                                                            <li>Tìm kiếm địa điểm của bạn</li>
+                                                            <li>Nhấn nút "Chia sẻ" (Share)</li>
+                                                            <li>Chọn tab "Nhúng bản đồ" (Embed a map)</li>
+                                                            <li>Sao chép toàn bộ mã iframe</li>
+                                                            <li>Dán mã vào ô bên dưới</li>
+                                                        </ol>
+                                                    }
+                                                    type="info"
+                                                    showIcon
+                                                    className="mb-6"
+                                                />
+                                                <div className='mt-4'>
+                                                    {/* Map Iframe Input VN */}
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Mã Iframe Google Maps
+                                                                <span className="text-xs text-gray-400 ml-2 font-normal">
+                                                                    (Dán mã iframe đầy đủ từ Google Maps)
+                                                                </span>
+                                                            </span>
+                                                        }
+                                                        name="contactMapIframe"
+                                                    >
+                                                        <TextArea
+                                                            placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>'
+                                                            rows={6}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[13px] font-mono"
+                                                            onChange={() => setPreviewMap(false)}
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+                                            </>
+                                        )
+                                    },
+                                    {
                                         key: 'en',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -145,56 +195,6 @@ export default function ContactMapLink({
                                             </>
                                         )
                                     },
-                                    {
-                                        key: 'vn',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                Tiếng Việt (VN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                {/* Instructions VN */}
-                                                <Alert
-                                                    message="Cách lấy mã nhúng Google Maps"
-                                                    description={
-                                                        <ol className="list-decimal ml-4 mt-2 space-y-1 text-sm">
-                                                            <li>Truy cập <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Maps</a></li>
-                                                            <li>Tìm kiếm địa điểm của bạn</li>
-                                                            <li>Nhấn nút "Chia sẻ" (Share)</li>
-                                                            <li>Chọn tab "Nhúng bản đồ" (Embed a map)</li>
-                                                            <li>Sao chép toàn bộ mã iframe</li>
-                                                            <li>Dán mã vào ô bên dưới</li>
-                                                        </ol>
-                                                    }
-                                                    type="info"
-                                                    showIcon
-                                                    className="mb-6"
-                                                />
-                                                <div className='mt-4'>
-                                                    {/* Map Iframe Input VN */}
-                                                    <Form.Item
-                                                        label={
-                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Mã Iframe Google Maps
-                                                                <span className="text-xs text-gray-400 ml-2 font-normal">
-                                                                    (Dán mã iframe đầy đủ từ Google Maps)
-                                                                </span>
-                                                            </span>
-                                                        }
-                                                        name="contactMapIframe"
-                                                    >
-                                                        <TextArea
-                                                            placeholder='<iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>'
-                                                            rows={6}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[13px] font-mono"
-                                                            onChange={() => setPreviewMap(false)}
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-                                            </>
-                                        )
-                                    }
                                 ]}
                             />
 

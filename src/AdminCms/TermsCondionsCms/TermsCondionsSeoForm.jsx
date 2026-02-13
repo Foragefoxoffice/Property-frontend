@@ -87,7 +87,7 @@ export default function TermsCondionsSeoForm({
     headerLang
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
         if (headerLang) {
@@ -196,6 +196,164 @@ export default function TermsCondionsSeoForm({
                                 onChange={setActiveTab}
                                 className="mb-6"
                                 items={[
+                                    {
+                                        key: 'vn',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                Tiếng Việt (VN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                {/* Meta Title */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Tiêu Đề Meta
+                                                        </span>
+                                                    }
+                                                    name="termsConditionSeoMetaTitle_vn"
+                                                    rules={[
+                                                        { max: 200, message: 'Tối đa 200 ký tự' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Nhập tiêu đề meta cho SEO"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={true}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Meta Description */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Mô Tả Meta
+                                                        </span>
+                                                    }
+                                                    name="termsConditionSeoMetaDescription_vn"
+                                                    rules={[
+                                                        { max: 500, message: 'Tối đa 500 ký tự' }
+                                                    ]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="Nhập mô tả meta cho SEO"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Meta Keywords */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Từ Khóa Meta
+                                                        </span>
+                                                    }
+                                                    name="termsConditionSeoMetaKeywords_vn"
+                                                    initialValue={[]}
+                                                >
+                                                    <KeywordTagsInput
+                                                        placeholder="Nhập từ khóa & nhấn Enter"
+                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Slug URL */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Đường Dẫn Slug
+                                                        </span>
+                                                    }
+                                                    name="termsConditionSeoSlugUrl_vn"
+                                                >
+                                                    <Input
+                                                        placeholder="dieu-khoan-dieu-kien"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={true}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Canonical URL */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Đường Dẫn Canonical
+                                                        </span>
+                                                    }
+                                                    name="termsConditionSeoCanonicalUrl_vn"
+                                                >
+                                                    <Input
+                                                        placeholder="https://example.com/vn/dieu-khoan-dieu-kien"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Schema Type */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Loại Schema
+                                                        </span>
+                                                    }
+                                                    name="termsConditionSeoSchemaType_vn"
+                                                >
+                                                    <Select
+                                                        placeholder="Chọn loại Schema"
+                                                        size="large"
+                                                        className="w-full"
+                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        options={[
+                                                            { label: 'WebPage', value: 'WebPage' },
+                                                            { label: 'AboutPage', value: 'AboutPage' },
+                                                            { label: 'ContactPage', value: 'ContactPage' },
+                                                            { label: 'Article', value: 'Article' },
+                                                        ]}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* OG Title */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Tiêu Đề OG (Chia Sẻ Xã Hội)
+                                                        </span>
+                                                    }
+                                                    name="termsConditionSeoOgTitle_vn"
+                                                >
+                                                    <Input
+                                                        placeholder="Nhập tiêu đề Open Graph"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                    />
+                                                </Form.Item>
+
+                                                {/* OG Description */}
+                                                <Form.Item
+                                                    label={
+                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                            Mô Tả OG
+                                                        </span>
+                                                    }
+                                                    name="termsConditionSeoOgDescription_vn"
+                                                >
+                                                    <TextArea
+                                                        placeholder="Nhập mô tả Open Graph"
+                                                        rows={3}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                    />
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    },
                                     {
                                         key: 'en',
                                         label: (
@@ -354,164 +512,6 @@ export default function TermsCondionsSeoForm({
                                             </>
                                         )
                                     },
-                                    {
-                                        key: 'vn',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                Tiếng Việt (VN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                {/* Meta Title */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Tiêu Đề Meta
-                                                        </span>
-                                                    }
-                                                    name="termsConditionSeoMetaTitle_vn"
-                                                    rules={[
-                                                        { max: 200, message: 'Tối đa 200 ký tự' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Nhập tiêu đề meta cho SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Meta Description */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Mô Tả Meta
-                                                        </span>
-                                                    }
-                                                    name="termsConditionSeoMetaDescription_vn"
-                                                    rules={[
-                                                        { max: 500, message: 'Tối đa 500 ký tự' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="Nhập mô tả meta cho SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Meta Keywords */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Từ Khóa Meta
-                                                        </span>
-                                                    }
-                                                    name="termsConditionSeoMetaKeywords_vn"
-                                                    initialValue={[]}
-                                                >
-                                                    <KeywordTagsInput
-                                                        placeholder="Nhập từ khóa & nhấn Enter"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Slug URL */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Đường Dẫn Slug
-                                                        </span>
-                                                    }
-                                                    name="termsConditionSeoSlugUrl_vn"
-                                                >
-                                                    <Input
-                                                        placeholder="dieu-khoan-dieu-kien"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Canonical URL */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Đường Dẫn Canonical
-                                                        </span>
-                                                    }
-                                                    name="termsConditionSeoCanonicalUrl_vn"
-                                                >
-                                                    <Input
-                                                        placeholder="https://example.com/vn/dieu-khoan-dieu-kien"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Schema Type */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Loại Schema
-                                                        </span>
-                                                    }
-                                                    name="termsConditionSeoSchemaType_vn"
-                                                >
-                                                    <Select
-                                                        placeholder="Chọn loại Schema"
-                                                        size="large"
-                                                        className="w-full"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                        options={[
-                                                            { label: 'WebPage', value: 'WebPage' },
-                                                            { label: 'AboutPage', value: 'AboutPage' },
-                                                            { label: 'ContactPage', value: 'ContactPage' },
-                                                            { label: 'Article', value: 'Article' },
-                                                        ]}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* OG Title */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Tiêu Đề OG (Chia Sẻ Xã Hội)
-                                                        </span>
-                                                    }
-                                                    name="termsConditionSeoOgTitle_vn"
-                                                >
-                                                    <Input
-                                                        placeholder="Nhập tiêu đề Open Graph"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
-                                                </Form.Item>
-
-                                                {/* OG Description */}
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Mô Tả OG
-                                                        </span>
-                                                    }
-                                                    name="termsConditionSeoOgDescription_vn"
-                                                >
-                                                    <TextArea
-                                                        placeholder="Nhập mô tả Open Graph"
-                                                        rows={3}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    }
                                 ]}
                             />
 

@@ -95,7 +95,7 @@ export default function Favorites({ isDashboard = false }) {
     const getLocalizedValue = (value) => {
         if (!value) return '';
         if (typeof value === 'string') return value;
-        return value.en || value.vi || '';
+        return language === 'vi' ? (value.vi || value.en || '') : (value.en || value.vi || '');
     };
 
     // Format date helper
@@ -184,7 +184,11 @@ export default function Favorites({ isDashboard = false }) {
                                     <div key={fav._id} className="p-4 md:p-5 hover:bg-gray-50 transition-colors group border-b last:border-0 border-gray-100">
                                         <div className="flex flex-col md:grid md:grid-cols-12 gap-4 md:items-center">
                                             {/* Property Details */}
-                                            <div className="md:col-span-6 flex gap-4 cursor-pointer" onClick={() => window.open(`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}`, '_blank')}>
+                                            <div className="md:col-span-6 flex gap-4 cursor-pointer" onClick={() => {
+                                                const id = prop.listingInformation?.listingInformationPropertyId || prop._id;
+                                                const slug = getLocalizedValue(prop.seoInformation?.slugUrl);
+                                                window.open(`/property-showcase/${id}${slug ? `/${slug}` : ''}`, '_blank');
+                                            }}>
                                                 <div className="w-24 h-24 sm:w-32 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 relative">
                                                     <img
                                                         src={prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}

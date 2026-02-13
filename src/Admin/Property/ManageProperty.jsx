@@ -50,12 +50,21 @@ export default function ManageProperty({
   const [showFilterPopup, setShowFilterPopup] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(null);
   const [copyFullLoading, setCopyFullLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
   const { can, isApprover } = usePermissions();
   const [activeTab, setActiveTab] = useState("all"); // all, pending
+
+  const getLocalizedValue = (value) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return language === "vi"
+      ? value.vi || value.en || ""
+      : value.en || value.vi || "";
+  };
 
   const getPermissionKey = () => {
     if (filterByTransactionType === "Lease") return "properties.lease";
@@ -202,6 +211,7 @@ export default function ManageProperty({
 
   const handleDelete = async () => {
     try {
+      setDeleteLoading(true);
       if (trashMode) {
         await permanentlyDeleteProperty(deleteConfirm.id);
         CommonToaster(t.propertyPermanentlyDeleted, "success");
@@ -217,6 +227,7 @@ export default function ManageProperty({
       const msg = err?.response?.data?.error || err?.response?.data?.message || t.failedToDeleteProperty;
       CommonToaster(translateError(msg, t), "error");
     } finally {
+      setDeleteLoading(false);
       setDeleteConfirm({ show: false, id: null });
     }
   };
@@ -535,7 +546,7 @@ export default function ManageProperty({
 
                       {can(permissionKey, 'view') && (
                         <Link
-                          to={`/property-showcase/${p?.listingInformation?.listingInformationPropertyId}`}
+                          to={`/property-showcase/${p?.listingInformation?.listingInformationPropertyId || p._id}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
@@ -650,7 +661,15 @@ export default function ManageProperty({
                 {t.cancel}
               </button>
 
-              <button onClick={handleDelete} className={`px-6 py-2 rounded-full text-white  cursor-pointer ${trashMode ? "bg-red-600 hover:bg-red-700" : "bg-red-600 hover:bg-red-700"}`}>
+              <button
+                onClick={handleDelete}
+                disabled={deleteLoading}
+                className={`px-6 py-2 rounded-full text-white cursor-pointer flex items-center gap-2 ${trashMode ? "bg-red-600 hover:bg-red-700" : "bg-red-600 hover:bg-red-700"
+                  } ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+              >
+                {deleteLoading && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                )}
                 {trashMode ? t.deletePermanently : t.moveToTrash}
               </button>
             </div>

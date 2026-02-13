@@ -26,7 +26,7 @@ export default function HomePageAboutForm({
 }) {
 
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('en');
+    const [activeTab, setActiveTab] = useState('vn');
 
     // Sync activeTab with headerLang whenever headerLang changes
     useEffect(() => {
@@ -79,158 +79,6 @@ export default function HomePageAboutForm({
                                 onChange={setActiveTab}
                                 className="mb-6"
                                 items={[
-                                    {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">About Sub Title</span>}
-                                                    name="homeAboutSubTitle_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter about sub title in English' },
-                                                        { max: 100, message: 'Maximum 100 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="ABOUT US"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">About Title</span>}
-                                                    name="homeAboutTitle_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter about title in English' },
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Who We Are"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">About Description</span>}
-                                                    name="homeAboutDescription_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter about description in English' },
-                                                        { max: 1000, message: 'Maximum 1000 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextArea
-                                                        placeholder="We are a leading property solutions provider..."
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Button Text</span>}
-                                                    name="homeAboutButtonText_en"
-                                                    rules={[
-                                                        { required: true, message: 'Please enter button text in English' },
-                                                        { max: 50, message: 'Maximum 50 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Learn More"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
-                                                </Form.Item>
-
-                                                {/* Step 1 */}
-                                                <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                                                    <h4 className="font-semibold text-[#374151] mb-3">Step 1</h4>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 1 Title</span>}
-                                                        name="homeAboutStep1Title_en"
-                                                        rules={[{ required: true, message: 'Required' }]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Search Properties"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 1 Description</span>}
-                                                        name="homeAboutStep1Des_en"
-                                                        rules={[{ required: true, message: 'Required' }]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Browse through our extensive property listings"
-                                                            rows={3}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* Step 2 */}
-                                                <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                                                    <h4 className="font-semibold text-[#374151] mb-3">Step 2</h4>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 2 Title</span>}
-                                                        name="homeAboutStep2Title_en"
-                                                        rules={[{ required: true, message: 'Required' }]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Schedule Visit"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 2 Description</span>}
-                                                        name="homeAboutStep2Des_en"
-                                                        rules={[{ required: true, message: 'Required' }]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Book a viewing at your convenience"
-                                                            rows={3}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-
-                                                {/* Step 3 */}
-                                                <div className="bg-gray-50 p-4 rounded-lg">
-                                                    <h4 className="font-semibold text-[#374151] mb-3">Step 3</h4>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 3 Title</span>}
-                                                        name="homeAboutStep3Title_en"
-                                                        rules={[{ required: true, message: 'Required' }]}
-                                                    >
-                                                        <Input
-                                                            placeholder="Get Your Keys"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                    </Form.Item>
-                                                    <Form.Item
-                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 3 Description</span>}
-                                                        name="homeAboutStep3Des_en"
-                                                        rules={[{ required: true, message: 'Required' }]}
-                                                    >
-                                                        <TextArea
-                                                            placeholder="Complete the process and move in"
-                                                            rows={3}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        />
-                                                    </Form.Item>
-                                                </div>
-                                            </>
-                                        )
-                                    },
                                     {
                                         key: 'vn',
                                         label: (
@@ -375,6 +223,158 @@ export default function HomePageAboutForm({
                                                     >
                                                         <TextArea
                                                             placeholder="Hoàn tất thủ tục và chuyển vào"
+                                                            rows={3}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        key: 'en',
+                                        label: (
+                                            <span className="text-sm font-semibold font-['Manrope']">
+                                                English (EN)
+                                            </span>
+                                        ),
+                                        children: (
+                                            <>
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">About Sub Title</span>}
+                                                    name="homeAboutSubTitle_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter about sub title in English' },
+                                                        { max: 100, message: 'Maximum 100 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="ABOUT US"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">About Title</span>}
+                                                    name="homeAboutTitle_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter about title in English' },
+                                                        { max: 200, message: 'Maximum 200 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Who We Are"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">About Description</span>}
+                                                    name="homeAboutDescription_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter about description in English' },
+                                                        { max: 1000, message: 'Maximum 1000 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <TextArea
+                                                        placeholder="We are a leading property solutions provider..."
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[16px] font-['Manrope'] resize-none"
+                                                    />
+                                                </Form.Item>
+
+                                                <Form.Item
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Button Text</span>}
+                                                    name="homeAboutButtonText_en"
+                                                    rules={[
+                                                        { required: true, message: 'Please enter button text in English' },
+                                                        { max: 50, message: 'Maximum 50 characters allowed' }
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Learn More"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                    />
+                                                </Form.Item>
+
+                                                {/* Step 1 */}
+                                                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                                                    <h4 className="font-semibold text-[#374151] mb-3">Step 1</h4>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 1 Title</span>}
+                                                        name="homeAboutStep1Title_en"
+                                                        rules={[{ required: true, message: 'Required' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Search Properties"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 1 Description</span>}
+                                                        name="homeAboutStep1Des_en"
+                                                        rules={[{ required: true, message: 'Required' }]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Browse through our extensive property listings"
+                                                            rows={3}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* Step 2 */}
+                                                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                                                    <h4 className="font-semibold text-[#374151] mb-3">Step 2</h4>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 2 Title</span>}
+                                                        name="homeAboutStep2Title_en"
+                                                        rules={[{ required: true, message: 'Required' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Schedule Visit"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 2 Description</span>}
+                                                        name="homeAboutStep2Des_en"
+                                                        rules={[{ required: true, message: 'Required' }]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Book a viewing at your convenience"
+                                                            rows={3}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+
+                                                {/* Step 3 */}
+                                                <div className="bg-gray-50 p-4 rounded-lg">
+                                                    <h4 className="font-semibold text-[#374151] mb-3">Step 3</h4>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 3 Title</span>}
+                                                        name="homeAboutStep3Title_en"
+                                                        rules={[{ required: true, message: 'Required' }]}
+                                                    >
+                                                        <Input
+                                                            placeholder="Get Your Keys"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Step 3 Description</span>}
+                                                        name="homeAboutStep3Des_en"
+                                                        rules={[{ required: true, message: 'Required' }]}
+                                                    >
+                                                        <TextArea
+                                                            placeholder="Complete the process and move in"
                                                             rows={3}
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
                                                         />
