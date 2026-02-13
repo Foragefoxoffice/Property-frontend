@@ -124,15 +124,17 @@ export default function UserProfile() {
                 const userData = res.data.data || res.data.user;
                 setUser(userData);
 
+                // Always populate basic userForm as a baseline/fallback
+                setUserForm({
+                    name: userData.name || "",
+                    mobile: userData.phone || userData.mobile || "",
+                    email: userData.email || "",
+                    employeeId: userData.employeeId || "",
+                    profileImage: userData.profileImage || "",
+                });
+
                 if (userData.role === "user") {
                     setIsStaff(false);
-                    setUserForm({
-                        name: userData.name || "",
-                        mobile: userData.phone || userData.mobile || "", // Handle both just in case
-                        email: userData.email || "",
-                        employeeId: userData.employeeId || "",
-                        profileImage: userData.profileImage || "",
-                    });
                     // Sync image to local storage for Header
                     localStorage.setItem("userImage", userData.profileImage || "");
                     window.dispatchEvent(new Event("userProfileUpdated"));
@@ -198,10 +200,10 @@ export default function UserProfile() {
             const res = await uploadGeneralImage(file);
             if (res.data.success) {
                 const imageUrl = res.data.url;
+                // Update both to keep in sync and handle fallbacks
+                setUserForm(prev => ({ ...prev, profileImage: imageUrl }));
                 if (isStaff) {
                     setStaffForm(prev => ({ ...prev, profileImage: imageUrl }));
-                } else {
-                    setUserForm(prev => ({ ...prev, profileImage: imageUrl }));
                 }
                 CommonToaster("Image uploaded successfully!", "success");
             }
@@ -228,6 +230,7 @@ export default function UserProfile() {
                 profileImage: userForm.profileImage
             };
 
+            console.log("📤 Updating User Profile. ID:", userId, "Payload:", payload);
             await updateUser(userId, payload);
             CommonToaster("Profile updated successfully!", "success");
             fetchUserData();
@@ -268,6 +271,13 @@ export default function UserProfile() {
             status: staffForm.status // Allow updating status or keep as is? Usually staff can't update own status.
         };
 
+        if (!staffData?._id) {
+            console.warn("⚠️ No staff record found. Falling back to User update for basic info.");
+            // Fallback: try updating the basic User record
+            return handleUserUpdate(e);
+        }
+
+        console.log("📤 Updating Staff Profile. ID:", staffData._id, "Payload:", payload);
         try {
             await updateStaff(staffData._id, payload);
             CommonToaster("Staff profile updated successfully!", "success");
