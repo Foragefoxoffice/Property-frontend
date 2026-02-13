@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { User, Phone, Mail, Lock, Eye, EyeOff, Save, Loader2, Calendar as CalendarIcon, Upload, Briefcase, Languages, AlertCircle, Camera } from "lucide-react";
-import { getMe, updateUser, updatePassword, getAllStaffs, updateStaff } from "../Api/action";
+import { getMe, updateUser, updatePassword, getAllStaffs, updateStaff, uploadGeneralImage } from "../Api/action";
 import { CommonToaster } from "../Common/CommonToaster";
 import { useLanguage } from "../Language/LanguageContext";
 import { translations } from "../Language/translations";
@@ -186,22 +186,29 @@ export default function UserProfile() {
 
     // --- HANDLERS ---
 
-    const handlePhotoUpload = (e) => {
+    const handlePhotoUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file.size > 2 * 1024 * 1024) {
-            CommonToaster("Max image size 2MB", "error");
+        if (file.size > 5 * 1024 * 1024) {
+            CommonToaster("Max image size 5MB", "error");
             return;
         }
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (isStaff) {
-                setStaffForm(prev => ({ ...prev, profileImage: reader.result }));
-            } else {
-                setUserForm(prev => ({ ...prev, profileImage: reader.result }));
+
+        try {
+            const res = await uploadGeneralImage(file);
+            if (res.data.success) {
+                const imageUrl = res.data.url;
+                if (isStaff) {
+                    setStaffForm(prev => ({ ...prev, profileImage: imageUrl }));
+                } else {
+                    setUserForm(prev => ({ ...prev, profileImage: imageUrl }));
+                }
+                CommonToaster("Image uploaded successfully!", "success");
             }
-        };
-        reader.readAsDataURL(file);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            CommonToaster("Failed to upload image", "error");
+        }
     };
 
     const handleUserUpdate = async (e) => {
@@ -357,17 +364,33 @@ export default function UserProfile() {
                     </h2>
                     <form onSubmit={handleUserUpdate} className="space-y-6">
 
-                        {/* Profile Image Display (Upload Removed) */}
+                        {/* Profile Image Display */}
                         <div className="flex flex-col items-center justify-center mb-6">
-                            <div className="relative group">
-                                <div className="w-28 h-28 rounded-full border-4 border-gray-50 shadow-sm overflow-hidden bg-gray-100 flex items-center justify-center">
+                            <div
+                                className="relative group cursor-pointer"
+                                onClick={() => document.getElementById('userPhoto').click()}
+                            >
+                                <div className="w-28 h-28 rounded-full border-4 border-gray-50 shadow-sm overflow-hidden bg-gray-100 flex items-center justify-center transition-all group-hover:ring-4 group-hover:ring-[#41398B]/20">
                                     {userForm.profileImage ? (
                                         <img src={userForm.profileImage} alt="Profile" className="w-full h-full object-cover" />
                                     ) : (
                                         <User className="w-12 h-12 text-gray-300" />
                                     )}
                                 </div>
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 rounded-full transition-opacity">
+                                    <Camera className="text-white w-8 h-8 drop-shadow-md" />
+                                </div>
+                                <input
+                                    id="userPhoto"
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handlePhotoUpload}
+                                />
                             </div>
+                            <p className="mt-2 text-xs text-gray-500">
+                                {language === "vi" ? "Nhấp để thay đổi ảnh" : "Click to change photo"}
+                            </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -463,10 +486,13 @@ export default function UserProfile() {
 
                     <form onSubmit={handleStaffUpdate} className="space-y-6">
 
-                        {/* Profile Image Display (Upload Removed) */}
+                        {/* Profile Image Display */}
                         <div className="flex flex-col items-center justify-center mb-8">
-                            <div className="relative group">
-                                <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                            <div
+                                className="relative group cursor-pointer"
+                                onClick={() => document.getElementById('staffPhoto').click()}
+                            >
+                                <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center transition-all group-hover:ring-4 group-hover:ring-[#41398B]/20">
                                     {staffForm.profileImage ? (
                                         <img src={staffForm.profileImage} alt="Profile" className="w-full h-full object-cover" />
                                     ) : (
@@ -476,7 +502,20 @@ export default function UserProfile() {
                                         </span>
                                     )}
                                 </div>
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 rounded-full transition-opacity">
+                                    <Camera className="text-white w-8 h-8 drop-shadow-md" />
+                                </div>
+                                <input
+                                    id="staffPhoto"
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handlePhotoUpload}
+                                />
                             </div>
+                            <p className="mt-2 text-xs text-gray-500">
+                                {language === "vi" ? "Nhấp để thay đổi ảnh" : "Click to change photo"}
+                            </p>
                         </div>
 
                         {/* Common Fields */}

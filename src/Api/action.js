@@ -445,6 +445,21 @@ export const uploadBlogImage = (file) => {
   });
 };
 
+export const uploadGeneralImage = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
 /* =========================================================
    🎯 HEADER CMS APIs
 ========================================================= */
