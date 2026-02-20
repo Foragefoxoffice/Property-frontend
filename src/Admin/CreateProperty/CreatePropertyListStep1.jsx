@@ -290,6 +290,7 @@ export default function CreatePropertyListStep1({
   defaultTransactionType,
   dropdowns, // ✅ Correct
   isEditMode, // ✅ Added
+  isSubmitting,
 }) {
   useEffect(() => {
     console.log("initialData:", initialData);
@@ -299,6 +300,19 @@ export default function CreatePropertyListStep1({
 
   const handleComplete = async () => {
     const finalStatus = isApprover ? "Published" : "Pending";
+
+    // ✅ SYNC LANGUAGES BEFORE SAVING (Handles both ENG & VI)
+    const syncLangFields = ["title", "address", "description", "view", "whatsNearby"];
+    const updatedForm = { ...form };
+    syncLangFields.forEach((field) => {
+      const val = updatedForm[field];
+      if (val && typeof val === "object") {
+        if (!val.vi || val.vi.trim() === "" || val.vi === "<p><br></p>") val.vi = val.en || "";
+        if (!val.en || val.en.trim() === "" || val.en === "<p><br></p>") val.en = val.vi || "";
+      }
+    });
+
+    onChange && onChange(updatedForm); // sync parent
     await onComplete(finalStatus);
   };
 
@@ -400,65 +414,79 @@ export default function CreatePropertyListStep1({
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0 && dropdowns?.properties && dropdowns?.zones && dropdowns?.blocks) {
 
-      let newFormUpdates = {
-        ...initialData,
-        blockName: initialData.blockName || form.blockName || { en: "", vi: "" },
-        title: initialData.title || form.title || { en: "", vi: "" },
-        address: initialData.address || form.address || { en: "", vi: "" },
-        description: initialData.description || form.description || { en: "", vi: "" },
-        view: initialData.view || form.view || { en: "", vi: "" },
-        whatsNearby: initialData.whatsNearby || form.whatsNearby || { en: "", vi: "" },
-        utilities: initialData.utilities && initialData.utilities.length ? initialData.utilities : form.utilities,
-      };
+      setForm((prev) => {
+        // Only update fields if they are actually different and initialData has a value
+        const newUpdates = {};
 
-      /* --------------------------------------------------------------------
-         ⭐⭐ RESTORE ZONE + BLOCK + PROJECT (FULL RESTORE SYSTEM)
-      -------------------------------------------------------------------- */
+        const localizedFields = ["blockName", "title", "address", "description", "view", "whatsNearby"];
+        localizedFields.forEach(field => {
+          if (initialData[field]) {
+            // If the prop has content that the local state doesn't have, OR we are in edit mode initialization
+            const propVal = initialData[field];
+            const localVal = prev[field];
 
-      // Helper to find item by ID or Name
-      const findItem = (list, id, nameObj) => {
-        if (id) {
-          const found = list.find(item => item._id === id);
-          if (found) return found;
-        }
-        if (nameObj?.en) {
-          return list.find(item => item.name?.en === nameObj.en);
-        }
-        return null;
-      };
+            // Check if we should update. Basically, if they are different and we aren't currently "ahead"
+            // Since we call onChange on every keystroke, parent should be equal to us soon.
+            // But if parent has data (from API) and we don't, we MUST take it.
+            if (JSON.stringify(propVal) !== JSON.stringify(localVal)) {
+              // Only take it if local is "more empty" than prop, or if it's a completely different object
+              newUpdates[field] = propVal;
+            }
+          }
+        });
 
-      // 1) Restore Project
-      const project = findItem(dropdowns.properties, initialData.projectId, initialData.projectName);
-      if (project) {
-        newFormUpdates.projectId = project._id;
-        newFormUpdates.projectName = project.name;
-      }
-
-      // 2) Restore Zone
-      const zone = findItem(dropdowns.zones, initialData.zoneId, initialData.zoneName);
-      if (zone) {
-        newFormUpdates.zoneId = zone._id;
-        newFormUpdates.zoneName = zone.name;
-        newFormUpdates.zone = {
-          en: zone.name?.en || "",
-          vi: zone.name?.vi || "",
+        // Handle Project/Zone/Block restore logic specifically
+        const findItem = (list, id, nameObj) => {
+          if (id) {
+            const found = list.find(item => item._id === id);
+            if (found) return found;
+          }
+          if (nameObj?.en) {
+            return list.find(item => item.name?.en === nameObj.en);
+          }
+          return null;
         };
-      }
 
-      // 3) Restore Block
-      const block = findItem(dropdowns.blocks, initialData.blockId, initialData.blockName);
-      if (block) {
-        newFormUpdates.blockId = block._id;
-        // Logic to determine display text based on available name
-        const displayName = lang === "vi" ? block.name?.vi : block.name?.en;
-        newFormUpdates.blockNameText = displayName;
-        newFormUpdates.blockName = block.name;
-      }
+        // 1) Restore Project
+        const project = findItem(dropdowns.properties, initialData.projectId, initialData.projectName);
+        if (project && project._id !== prev.projectId) {
+          newUpdates.projectId = project._id;
+          newUpdates.projectName = project.name;
+        }
 
-      setForm((prev) => ({
-        ...prev,
-        ...newFormUpdates
-      }));
+        // 2) Restore Zone
+        const zone = findItem(dropdowns.zones, initialData.zoneId, initialData.zoneName);
+        if (zone && zone._id !== prev.zoneId) {
+          newUpdates.zoneId = zone._id;
+          newUpdates.zoneName = zone.name;
+          newUpdates.zone = {
+            en: zone.name?.en || "",
+            vi: zone.name?.vi || "",
+          };
+        }
+
+        // 3) Restore Block
+        const block = findItem(dropdowns.blocks, initialData.blockId, initialData.blockName);
+        if (block && block._id !== prev.blockId) {
+          newUpdates.blockId = block._id;
+          const displayName = lang === "vi" ? block.name?.vi : block.name?.en;
+          newUpdates.blockNameText = displayName;
+          newUpdates.blockName = block.name;
+        }
+
+        // Other fields
+        const otherFields = ["unitSize", "bedrooms", "bathrooms", "transactionType", "propertyNo", "dateListed", "availableFrom", "availabilityStatus"];
+        otherFields.forEach(f => {
+          if (initialData[f] !== undefined && initialData[f] !== prev[f]) {
+            newUpdates[f] = initialData[f];
+          }
+        });
+
+        if (Object.keys(newUpdates).length > 0) {
+          return { ...prev, ...newUpdates };
+        }
+        return prev;
+      });
     }
   }, [initialData, dropdowns]); // eslint-disable-line
 
@@ -734,9 +762,21 @@ export default function CreatePropertyListStep1({
         {/* Complete & Save Button */}
         <button
           onClick={handleComplete}
-          className="bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md cursor-pointer"
+          disabled={isSubmitting}
+          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+            }`}
         >
-          {lang === "en" ? "Complete & Save" : "Hoàn tất & Lưu"}
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              {lang === "en" ? "Saving..." : "Đang lưu..."}
+            </span>
+          ) : (
+            lang === "en" ? "Complete & Save" : "Hoàn tất & Lưu"
+          )}
         </button>
       </div>
 
@@ -1474,6 +1514,7 @@ export default function CreatePropertyListStep1({
         </div>
         <div className="mt-8">
           <LocalizedTextarea
+            key={`${lang}-title`}
             label={lang === "en" ? "Property Title" : "Tiêu đề bất động sản"}
             name="title"
             lang={lang}
@@ -1509,6 +1550,7 @@ export default function CreatePropertyListStep1({
             </div>
           </div>
           <LocalizedRichText
+            key={`${lang}-description`}
             name="description"
             lang={lang}
             value={form.description?.[lang]}
@@ -1677,8 +1719,8 @@ export default function CreatePropertyListStep1({
               syncLangFields.forEach((field) => {
                 const val = updatedForm[field];
                 if (val && typeof val === "object") {
-                  if (!val.vi || val.vi.trim() === "") val.vi = val.en || "";
-                  if (!val.en || val.en.trim() === "") val.en = val.vi || "";
+                  if (!val.vi || val.vi.trim() === "" || val.vi === "<p><br></p>") val.vi = val.en || "";
+                  if (!val.en || val.en.trim() === "" || val.en === "<p><br></p>") val.en = val.vi || "";
                 }
               });
 

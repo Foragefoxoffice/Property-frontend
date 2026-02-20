@@ -64,12 +64,25 @@ export default function CreatePropertyListStep4SEO({
   onChange,
   onComplete,
   initialData,
+  isSubmitting,
 }) {
   const { language: globalLanguage } = useLanguage();
   const { isApprover } = usePermissions();
 
   const handleComplete = async () => {
     const finalStatus = isApprover ? "Published" : "Pending";
+
+    // ✅ SYNC LANGUAGES BEFORE SAVING
+    const syncFields = ["metaTitle", "metaDescription", "ogTitle", "ogDescription", "slugUrl", "canonicalUrl", "schemaType"];
+    const updatedSeo = { ...seo };
+    syncFields.forEach(f => {
+      if (updatedSeo[f] && typeof updatedSeo[f] === "object") {
+        if (!updatedSeo[f].vi || updatedSeo[f].vi.trim() === "") updatedSeo[f].vi = updatedSeo[f].en || "";
+        if (!updatedSeo[f].en || updatedSeo[f].en.trim() === "") updatedSeo[f].en = updatedSeo[f].vi || "";
+      }
+    });
+
+    onChange({ seoInformation: updatedSeo });
     await onComplete(finalStatus);
   };
 
@@ -147,11 +160,38 @@ export default function CreatePropertyListStep4SEO({
   /* ✅ Sync with initialData when it changes (Edit Mode) */
   React.useEffect(() => {
     if (initialData?.seoInformation) {
-      setSeo((prev) => ({
-        ...prev,
-        ...initialData.seoInformation,
-        ogImage: initialData.seoInformation.ogImage || (initialData.seoInformation.ogImages && initialData.seoInformation.ogImages[0]) || "",
-      }));
+      setSeo((prev) => {
+        const propVal = initialData.seoInformation;
+        const newUpdates = {};
+
+        const localized = ["metaTitle", "metaDescription", "slugUrl", "canonicalUrl", "schemaType", "ogTitle", "ogDescription"];
+        localized.forEach(f => {
+          if (propVal[f] && JSON.stringify(propVal[f]) !== JSON.stringify(prev[f])) {
+            newUpdates[f] = propVal[f];
+          }
+        });
+
+        // Keywords (arrays)
+        if (propVal.metaKeywords && JSON.stringify(propVal.metaKeywords) !== JSON.stringify(prev.metaKeywords)) {
+          newUpdates.metaKeywords = propVal.metaKeywords;
+        }
+
+        // Booleans
+        if (propVal.allowIndexing !== undefined && propVal.allowIndexing !== prev.allowIndexing) {
+          newUpdates.allowIndexing = propVal.allowIndexing;
+        }
+
+        // Image
+        const propOgImage = propVal.ogImage || (propVal.ogImages && propVal.ogImages[0]) || "";
+        if (propOgImage && propOgImage !== prev.ogImage) {
+          newUpdates.ogImage = propOgImage;
+        }
+
+        if (Object.keys(newUpdates).length > 0) {
+          return { ...prev, ...newUpdates };
+        }
+        return prev;
+      });
     }
   }, [initialData]);
 
@@ -280,9 +320,21 @@ export default function CreatePropertyListStep4SEO({
         {/* Complete & Save Button */}
         <button
           onClick={handleComplete}
-          className="bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md cursor-pointer"
+          disabled={isSubmitting}
+          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+            }`}
         >
-          {activeLang === "en" ? "Complete & Save" : "Hoàn tất & Lưu"}
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              {activeLang === "en" ? "Saving..." : "Đang lưu..."}
+            </span>
+          ) : (
+            activeLang === "en" ? "Complete & Save" : "Hoàn tất & Lưu"
+          )}
         </button>
       </div>
 
@@ -305,6 +357,7 @@ export default function CreatePropertyListStep4SEO({
           {labels.metaTitle[activeLang]}
         </label>
         <input
+          key={`${activeLang}-metaTitle`}
           placeholder="Type Here"
           className={inputClass}
           value={seo.metaTitle[activeLang]}
@@ -320,6 +373,7 @@ export default function CreatePropertyListStep4SEO({
           {labels.metaDescription[activeLang]}
         </label>
         <textarea
+          key={`${activeLang}-metaDescription`}
           placeholder="Type here"
           rows={4}
           className={textareaClass}
@@ -336,6 +390,7 @@ export default function CreatePropertyListStep4SEO({
           {labels.metaKeywords[activeLang]}
         </label>
         <KeywordTagsInput
+          key={`${activeLang}-keywords`}
           value={seo.metaKeywords[activeLang]}
           onChange={(newKeywords) => handleChange("metaKeywords", activeLang, newKeywords)}
           placeholder="Type keyword & press Enter"

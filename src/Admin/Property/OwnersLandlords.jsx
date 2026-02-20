@@ -8,6 +8,12 @@ import {
   X,
   CirclePlus,
   AlertTriangle,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Youtube,
+  Globe,
 } from "lucide-react";
 import {
   getAllOwners,
@@ -178,6 +184,8 @@ const OwnersLandlords = ({ openOwnerView }) => {
     setShowModal(true);
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   /* ==========================================================
      ✅ Submit Owner
   ========================================================== */
@@ -194,6 +202,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
     };
 
     try {
+      setIsSubmitting(true);
       if (editMode) {
         await updateOwner(editingOwner._id, payload);
         CommonToaster(t.ownerUpdated, "success");
@@ -206,6 +215,8 @@ const OwnersLandlords = ({ openOwnerView }) => {
     } catch (error) {
       const msg = error?.response?.data?.error || error?.response?.data?.message || t.errorSavingOwner;
       CommonToaster(translateError(msg, t), "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -396,6 +407,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
           setPhoneRows={setPhoneRows}
           emailRows={emailRows}
           setEmailRows={setEmailRows}
+          isSubmitting={isSubmitting}
         />
       )}
     </div>
@@ -499,6 +511,7 @@ const AddEditOwnerModal = ({
   setPhoneRows,
   emailRows,
   setEmailRows,
+  isSubmitting,
 }) => {
 
   /* ✅ UI LABELS + PLACEHOLDERS for EN/VI */
@@ -564,6 +577,15 @@ const AddEditOwnerModal = ({
         : socialMedia.filter((_, x) => x !== i)
     );
 
+  const availableSocialIcons = [
+    { name: "Facebook", Icon: Facebook },
+    { name: "Twitter", Icon: Twitter },
+    { name: "Instagram", Icon: Instagram },
+    { name: "Linkedin", Icon: Linkedin },
+    { name: "Youtube", Icon: Youtube },
+    { name: "Globe", Icon: Globe },
+  ];
+
   return (
     <div className="fixed inset-0 bg-black/40 flex py-12 items-start justify-center z-50 overflow-y-auto">
       <div className="bg-white rounded-xl w-full max-w-2xl shadow-xl">
@@ -597,12 +619,10 @@ const AddEditOwnerModal = ({
           ))}
         </div>
 
-        {/* FORM */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-
-          {/* NAME */}
-          <div className="mb-3">
-            <label className="font-medium text-sm">{text.name}</label>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* OWNER NAME */}
+          <div className="w-full">
+            <label className="text-sm font-semibold mb-2 block">{text.name}</label>
             <input
               type="text"
               placeholder={text.namePlaceholder}
@@ -610,35 +630,33 @@ const AddEditOwnerModal = ({
               onChange={(e) =>
                 handleChange(activeLang, "ownerName", e.target.value)
               }
-              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm mt-1"
+              className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full outline-none focus:border-[#41398B]"
+              required
             />
           </div>
 
           {/* GENDER */}
-          <div className="mb-3">
-            <label className="font-medium text-sm">{text.gender}</label>
+          <div className="w-full">
+            <label className="text-sm font-semibold mb-2 block">{text.gender}</label>
             <select
               value={formData.gender}
               onChange={(e) =>
-                setFormData({ ...formData, gender: e.target.value })
+                setFormData((p) => ({ ...p, gender: e.target.value }))
               }
-              className="w-full border border-gray-300 rounded-lg px-3 py-3 text-sm mt-1 bg-white"
+              className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full outline-none bg-white font-medium"
             >
-              <option value="" disabled>
-                {activeLang === "VI" ? "Chọn giới tính" : "Select Gender"}
+              <option value="">
+                {activeLang === "EN" ? "Select Gender" : "Chọn Giới Tính"}
               </option>
-              <option value="Male">{activeLang === "VI" ? "Nam" : "Male"}</option>
-              <option value="Female">{activeLang === "VI" ? "Nữ" : "Female"}</option>
-              <option value="Other">{activeLang === "VI" ? "Khác" : "Other"}</option>
+              <option value="Male">{activeLang === "EN" ? "Male" : "Nam"}</option>
+              <option value="Female">{activeLang === "EN" ? "Female" : "Nữ"}</option>
+              <option value="Other">{activeLang === "EN" ? "Other" : "Khác"}</option>
             </select>
           </div>
 
-
-
-          {/* PHONE */}
+          {/* PHONE NUMBERS */}
           <div className="mb-3">
             <label className="font-medium text-sm">{text.phone}</label>
-
             {phoneRows.map((row, idx) => (
               <div key={idx} className="flex items-center gap-3 mt-3">
                 <input
@@ -681,16 +699,25 @@ const AddEditOwnerModal = ({
             {socialMedia.map((row, idx) => (
               <div key={idx} className="flex items-center gap-3 mt-3">
 
-                {/* Icon Name */}
-                <input
-                  type="text"
-                  placeholder={text.socialIcon}
-                  value={row.iconName}
-                  onChange={(e) =>
-                    updateSocialRow(idx, "iconName", e.target.value)
-                  }
-                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-1/2"
-                />
+                {/* Icon selection with Select */}
+                <div className="w-1/2">
+                  <Select
+                    placeholder={text.socialIcon}
+                    value={row.iconName || undefined}
+                    onChange={(val) => updateSocialRow(idx, "iconName", val)}
+                    className="w-full h-11 custom-select"
+                    popupClassName="custom-dropdown"
+                  >
+                    {availableSocialIcons.map((item) => (
+                      <Select.Option key={item.name} value={item.name}>
+                        <div className="flex items-center gap-2">
+                          <item.Icon size={16} className="text-[#41398B]" />
+                          <span>{item.name}</span>
+                        </div>
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </div>
 
                 {/* Link */}
                 <input
@@ -704,7 +731,7 @@ const AddEditOwnerModal = ({
                       e.target.value
                     )
                   }
-                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-1/2"
+                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-1/2 outline-none"
                 />
 
                 {idx === socialMedia.length - 1 ? (
@@ -749,8 +776,12 @@ const AddEditOwnerModal = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-[#41398B] text-white rounded-lg cursor-pointer"
+              disabled={isSubmitting}
+              className={`px-4 py-2 bg-[#41398B] text-white rounded-lg cursor-pointer flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
             >
+              {isSubmitting && (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              )}
               {editMode ? text.submitEdit : text.submitAdd}
             </button>
           </div>

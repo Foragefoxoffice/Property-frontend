@@ -92,12 +92,14 @@ export default function BlogSeoForm({
     const t = translations[language];
     const [activeTab, setActiveTab] = useState('vi');
     const [previewImage, setPreviewImage] = useState(null);
-    const [ogImages, setOgImages] = useState([]);
+    const [ogImage, setOgImage] = useState('');
 
-    // Initialize OG images from blogData
+    // Initialize OG image from blogData
     useEffect(() => {
-        if (blogData?.seoInformation?.ogImages) {
-            setOgImages(blogData.seoInformation.ogImages);
+        if (blogData?.seoInformation?.ogImage) {
+            setOgImage(blogData.seoInformation.ogImage);
+        } else if (blogData?.seoInformation?.ogImages && blogData.seoInformation.ogImages.length > 0) {
+            setOgImage(blogData.seoInformation.ogImages[0]);
         }
     }, [blogData]);
 
@@ -138,12 +140,11 @@ export default function BlogSeoForm({
                 // Generic upload endpoint returns absolute URL directly in res.data.url
                 const absoluteUrl = res.data.url;
 
-                const newImages = [...ogImages, absoluteUrl];
-                setOgImages(newImages);
+                setOgImage(absoluteUrl);
                 form.setFieldsValue({
                     seoInformation: {
                         ...form.getFieldValue('seoInformation'),
-                        ogImages: newImages
+                        ogImage: absoluteUrl
                     }
                 });
                 message.success('Image uploaded successfully');
@@ -156,24 +157,23 @@ export default function BlogSeoForm({
     };
 
     // Remove OG Image
-    const removeOgImage = (index) => {
-        const newImages = ogImages.filter((_, i) => i !== index);
-        setOgImages(newImages);
+    const removeOgImage = () => {
+        setOgImage('');
         form.setFieldsValue({
             seoInformation: {
                 ...form.getFieldValue('seoInformation'),
-                ogImages: newImages
+                ogImage: ''
             }
         });
     };
 
-    // Handle form submission with OG images
+    // Handle form submission with OG image
     const handleFormSubmit = (values) => {
         const finalValues = {
             ...values,
             seoInformation: {
                 ...values.seoInformation,
-                ogImages: ogImages
+                ogImage: ogImage
             }
         };
         onSubmit(finalValues);
@@ -540,49 +540,48 @@ export default function BlogSeoForm({
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        {activeTab === 'en' ? 'OG Images (Social Sharing)' : 'Hình Ảnh OG (Chia Sẻ Xã Hội)'}
+                                        {activeTab === 'en' ? 'OG Image (Social Sharing)' : 'Hình Ảnh OG (Chia Sẻ Xã Hội)'}
                                     </span>
                                 }
                             >
                                 <div className="flex gap-4 flex-wrap">
-                                    {ogImages.map((img, i) => (
+                                    {ogImage ? (
                                         <div
-                                            key={i}
                                             className="relative w-40 h-40 rounded-xl overflow-hidden border bg-gray-50 group"
                                         >
-                                            <img src={img} className="w-full h-full object-cover" alt={`OG ${i + 1}`} />
+                                            <img src={ogImage} className="w-full h-full object-cover" alt="OG Image" />
                                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
                                                 <button
                                                     type="button"
-                                                    onClick={() => setPreviewImage(img)}
+                                                    onClick={() => setPreviewImage(ogImage)}
                                                     className="bg-white rounded-full p-2 shadow hover:bg-gray-100"
                                                 >
                                                     <EyeOutlined className="text-[#41398B]" />
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    onClick={() => removeOgImage(i)}
+                                                    onClick={removeOgImage}
                                                     className="bg-white rounded-full p-2 shadow hover:bg-red-50"
                                                 >
                                                     <DeleteOutlined className="text-red-500" />
                                                 </button>
                                             </div>
                                         </div>
-                                    ))}
-
-                                    {/* Upload Box */}
-                                    <Upload
-                                        accept="image/*"
-                                        showUploadList={false}
-                                        beforeUpload={handleOgImageUpload}
-                                    >
-                                        <div className="w-40 h-40 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
-                                            <PlusOutlined className="text-2xl text-gray-400 mb-2" />
-                                            <span className="text-xs text-gray-500 font-['Manrope']">
-                                                {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
-                                            </span>
-                                        </div>
-                                    </Upload>
+                                    ) : (
+                                        /* Upload Box */
+                                        <Upload
+                                            accept="image/*"
+                                            showUploadList={false}
+                                            beforeUpload={handleOgImageUpload}
+                                        >
+                                            <div className="w-40 h-40 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
+                                                <PlusOutlined className="text-2xl text-gray-400 mb-2" />
+                                                <span className="text-xs text-gray-500 font-['Manrope']">
+                                                    {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                </span>
+                                            </div>
+                                        </Upload>
+                                    )}
                                 </div>
                             </Form.Item>
 

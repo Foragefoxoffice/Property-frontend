@@ -117,6 +117,8 @@ export default function UsersDetails() {
     const handleChange = (e) =>
         setForm({ ...form, [e.target.name]: e.target.value });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     // ✅ Add/Edit - simplified for now
     const handleSubmit = async () => {
         const { name, email, employeeId, password, role } = form;
@@ -132,6 +134,7 @@ export default function UsersDetails() {
         }
 
         try {
+            setIsSubmitting(true);
             if (editingUser) {
                 // Exclude password if empty during edit
                 const updateData = { ...form };
@@ -171,6 +174,8 @@ export default function UsersDetails() {
                 error.response?.data?.error ||
                 (isVI ? "Không thể lưu dữ liệu." : "Failed to save data.");
             CommonToaster(msg, "error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -617,8 +622,12 @@ export default function UsersDetails() {
                             </button>
                             <button
                                 onClick={handleSubmit}
-                                className="px-6 py-2.5 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398b] text-white font-medium text-sm shadow-md transition transform active:scale-95"
+                                disabled={isSubmitting}
+                                className={`px-6 py-2.5 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398b] text-white font-medium text-sm shadow-md transition transform active:scale-95 flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
+                                {isSubmitting && (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                )}
                                 {editingUser
                                     ? (isVI ? "Cập nhật" : "Save Changes")
                                     : (isVI ? "Thêm" : "Create User")}

@@ -513,7 +513,13 @@ export default function PropertyDetailsSection({ property }) {
               {show(visFin.paymentTerm) && (
                 <InfoItem
                   label={`${t.paymentTerms}:`}
-                  value={safeVal(fin?.financialDetailsMainFee)}
+                  value={getLocalizedValue(fin?.financialDetailsMainFee)}
+                />
+              )}
+              {type === "Lease" && show(visFin.contractLength) && (
+                <InfoItem
+                  label={`${t.contractLength}:`}
+                  value={getLocalizedValue(fin?.financialDetailsContractLength)}
                 />
               )}
             </div>

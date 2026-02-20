@@ -121,6 +121,8 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   const [lang, setLang] = useState("vi");
   const { can } = usePermissions();
 
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // master lists (full objects)
   const [projectsAll, setProjectsAll] = useState([]);
   const [zonesAll, setZonesAll] = useState([]);
@@ -195,11 +197,11 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         );
 
         setProjects(filterActive(pList));
+        setIsLoaded(true);
       } catch (err) {
         console.error("Filter dropdown load error:", err);
       }
     };
-
 
     load();
   }, [can]);
@@ -251,82 +253,113 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   }, [defaultFilters]);
 
   /* ======================================================
-     Whenever project changes -> update visible zones (no auto-select)
+     Whenever project changes -> update visible zones
   ======================================================= */
   useEffect(() => {
+    // We only perform the validation/clearing logic if master data is loaded
+    if (!isLoaded) return;
+
     const projectId = filters.projectId?.id || null;
     if (!projectId) {
       setZones([]);
       setBlocks([]);
-      // clear dependent selects
-      setFilters((prev) => ({ ...prev, zoneId: null, blockId: null }));
+      // Use functional update to avoid unnecessary state triggers
+      setFilters((prev) => {
+        if (!prev.zoneId && !prev.blockId) return prev;
+        return { ...prev, zoneId: null, blockId: null };
+      });
       return;
     }
 
-    // zones filtered by property reference - note: some zone objects store property as id or object
+    // Filter zones for this project
     const filteredZones = zonesAll.filter((z) => {
-      // z.property might be id or object
       if (!z) return false;
-      if (typeof z.property === "string") return z.property === projectId;
-      if (z.property && z.property._id) return z.property._id === projectId;
-      return false;
+      const zProjId = typeof z.property === "string" ? z.property : z.property?._id;
+      return zProjId === projectId;
     });
 
     setZones(filteredZones);
 
-    // clear block list when project changes
-    setBlocks([]);
-    setFilters((prev) => ({ ...prev, zoneId: null, blockId: null }));
-  }, [filters.projectId, zonesAll]);
+    // IMPORTANT: Only clear selected zone/block if they are NOT in the new list.
+    // This allows reopening the filter and keeping the values.
+    setFilters((prev) => {
+      const currentZoneId = prev.zoneId?.id;
+      if (!currentZoneId) return prev;
+
+      const isStillValid = filteredZones.some(
+        (z) => (z._id || z.id) === currentZoneId
+      );
+
+      if (!isStillValid) {
+        return { ...prev, zoneId: null, blockId: null };
+      }
+      return prev;
+    });
+  }, [filters.projectId?.id, zonesAll, isLoaded]);
 
   /* ======================================================
-     Whenever zone changes -> update visible blocks (no auto-select)
+     Whenever zone changes -> update visible blocks
   ======================================================= */
   useEffect(() => {
+    if (!isLoaded) return;
+
     const zoneId = filters.zoneId?.id || null;
     if (!zoneId) {
       setBlocks([]);
-      setFilters((prev) => ({ ...prev, blockId: null }));
+      setFilters((prev) => {
+        if (!prev.blockId) return prev;
+        return { ...prev, blockId: null };
+      });
       return;
     }
 
-    // filter blocks by block.zone._id or block.zone (string)
     const filteredBlocks = blocksAll.filter((b) => {
-      if (!b) return false;
-      if (!b.zone) return false;
-      if (typeof b.zone === "string") return b.zone === zoneId;
-      if (b.zone && b.zone._id) return b.zone._id === zoneId;
-      return false;
+      if (!b || !b.zone) return false;
+      const bZoneId = typeof b.zone === "string" ? b.zone : b.zone?._id;
+      return bZoneId === zoneId;
     });
 
     setBlocks(filteredBlocks);
 
-    // clear selected block (no auto-selection)
-    setFilters((prev) => ({ ...prev, blockId: null }));
-  }, [filters.zoneId, blocksAll]);
+    // Only clear block if not valid for the new zone
+    setFilters((prev) => {
+      const currentBlockId = prev.blockId?.id;
+      if (!currentBlockId) return prev;
+
+      const isStillValid = filteredBlocks.some(
+        (b) => (b._id || b.id) === currentBlockId
+      );
+
+      if (!isStillValid) {
+        return { ...prev, blockId: null };
+      }
+      return prev;
+    });
+  }, [filters.zoneId?.id, blocksAll, isLoaded]);
 
   /* ======================================================
-     If masters load and defaultFilters were ids only,
-     try to resolve their display names (best-effort)
+     Helper: resolve display names for selects
   ======================================================= */
+  const resolveName = (selectValue, allList, getNameFn, extraField = null) => {
+    if (!selectValue || !selectValue.id) return selectValue;
+    const found = allList.find((x) => x._id === selectValue.id || x.id === selectValue.id);
+    if (!found) return selectValue;
+    const result = { id: selectValue.id, name: getNameFn(found) || selectValue.name || "" };
+    if (extraField && found[extraField]) {
+      result[extraField] = found[extraField];
+    }
+    return result;
+  };
+
   useEffect(() => {
-    // resolve names when we have masters
-    // resolve names when we have masters
-    const resolveName = (selectValue, allList, getNameFn, extraField = null) => {
-      if (!selectValue || !selectValue.id) return selectValue;
-      const found = allList.find((x) => x._id === selectValue.id || x.id === selectValue.id);
-      if (!found) return selectValue;
-      const result = { id: selectValue.id, name: getNameFn(found) || selectValue.name || "" };
-      if (extraField && found[extraField]) {
-        result[extraField] = found[extraField];
-      }
-      return result;
-    };
+    if (!isLoaded) return;
 
     setFilters((prev) => {
       const resolvedProject = resolveName(prev.projectId, projectsAll, (p) => p.name?.[lang] || "");
       const resolvedZone = resolveName(prev.zoneId, zonesAll, (z) => z.name?.[lang] || "");
       const resolvedBlock = resolveName(prev.blockId, blocksAll, (b) => b.name?.[lang] || "");
+      const resolvedPropertyType = resolveName(prev.propertyType, propertyTypes, (t) => t.name?.[lang] || "");
+      const resolvedFloorRange = resolveName(prev.floorRange, floorRanges, (f) => f.name?.[lang] || "");
       const resolvedCurrency = resolveName(prev.currency, currencies, (c) => c.name || "", "code");
 
       return {
@@ -334,11 +367,13 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         projectId: resolvedProject,
         zoneId: resolvedZone,
         blockId: resolvedBlock,
+        propertyType: resolvedPropertyType,
+        floorRange: resolvedFloorRange,
         currency: resolvedCurrency
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectsAll, zonesAll, blocksAll, lang]);
+  }, [isLoaded, lang]);
 
   /* ======================================================
      Clear button handler

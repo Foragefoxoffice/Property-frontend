@@ -57,6 +57,7 @@ export default function CreatePropertyListStep2({
   initialData = {},
   dropdownLoading,
   dropdowns = {},
+  isSubmitting,
 }) {
   const { isApprover } = usePermissions();
   const handleComplete = async () => {
@@ -149,7 +150,7 @@ export default function CreatePropertyListStep2({
     currency: initialData.currency || { symbol: "", code: "", name: "" },
     price: initialData.price || "",
     leasePrice: initialData.leasePrice || "",
-    contractLength: initialData.contractLength || "",
+    contractLength: initialData.contractLength || { en: "", vi: "" },
     pricePerNight: initialData.pricePerNight || "",
     checkIn: initialData.checkIn || "2:00 PM",
     checkOut: initialData.checkOut || "11:00 AM",
@@ -231,29 +232,44 @@ export default function CreatePropertyListStep2({
   /* ✅ Sync when editing an existing property */
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
-      setForm((prev) => ({
-        ...prev,
-        ...initialData,
-        currency: initialData.currency || prev.currency,
-        price: initialData.price || prev.price,
-        leasePrice: initialData.leasePrice || prev.leasePrice,
-        contractLength: initialData.contractLength || prev.contractLength,
-        pricePerNight: initialData.pricePerNight || prev.pricePerNight,
-        checkIn: initialData.checkIn || prev.checkIn,
-        checkOut: initialData.checkOut || prev.checkOut,
-        contractTerms: initialData.contractTerms || prev.contractTerms,
-        depositPaymentTerms:
-          initialData.depositPaymentTerms || prev.depositPaymentTerms,
-        maintenanceFeeMonthly:
-          initialData.maintenanceFeeMonthly || prev.maintenanceFeeMonthly,
-        googleMapsIframe: initialData.googleMapsIframe || prev.googleMapsIframe, // ✅ Added
-        googleMapVisibility: initialData.googleMapVisibility !== undefined ? initialData.googleMapVisibility : prev.googleMapVisibility, // ✅ Added
-      }));
+      setForm((prev) => {
+        const newUpdates = {};
 
-      // ✅ Also update media fields
-      setImages(initialData.propertyImages || []);
-      setVideos(initialData.propertyVideos || []);
-      setFloorPlans(initialData.floorPlans || []);
+        // Basic fields
+        const fields = ["price", "leasePrice", "pricePerNight", "checkIn", "checkOut", "videoVisibility", "googleMapVisibility"];
+        fields.forEach(f => {
+          if (initialData[f] !== undefined && initialData[f] !== prev[f]) {
+            newUpdates[f] = initialData[f];
+          }
+        });
+
+        // Localized fields
+        const localized = ["contractTerms", "depositPaymentTerms", "maintenanceFeeMonthly", "financialDetailsAgentPaymentAgenda", "financialDetailsFeeTax", "financialDetailsLegalDoc", "googleMapsIframe", "contractLength"];
+        localized.forEach(f => {
+          if (initialData[f]) {
+            const propVal = initialData[f];
+            const localVal = prev[f];
+            if (JSON.stringify(propVal) !== JSON.stringify(localVal)) {
+              newUpdates[f] = propVal;
+            }
+          }
+        });
+
+        // Currency
+        if (initialData.currency && JSON.stringify(initialData.currency) !== JSON.stringify(prev.currency)) {
+          newUpdates.currency = initialData.currency;
+        }
+
+        if (Object.keys(newUpdates).length > 0) {
+          return { ...prev, ...newUpdates };
+        }
+        return prev;
+      });
+
+      // ✅ Also update media fields (usually safe to overwrite as they are handled by uploads)
+      if (initialData.propertyImages) setImages(initialData.propertyImages || []);
+      if (initialData.propertyVideos) setVideos(initialData.propertyVideos || []);
+      if (initialData.floorPlans) setFloorPlans(initialData.floorPlans || []);
     }
   }, [initialData]);
 
@@ -639,8 +655,8 @@ export default function CreatePropertyListStep2({
   };
 
   /* =========================================================
-     🧱 RENDER
-  ========================================================== */
+ 🧱 RENDER
+========================================================== */
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
       {/* 🌐 Language Tabs */}
@@ -663,9 +679,21 @@ export default function CreatePropertyListStep2({
         {/* Complete & Save Button */}
         <button
           onClick={handleComplete}
-          className="bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md cursor-pointer"
+          disabled={isSubmitting}
+          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+            }`}
         >
-          {lang === "en" ? "Complete & Save" : "Hoàn tất & Lưu"}
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              {lang === "en" ? "Saving..." : "Đang lưu..."}
+            </span>
+          ) : (
+            lang === "en" ? "Complete & Save" : "Hoàn tất & Lưu"
+          )}
         </button>
       </div>
 
@@ -1370,9 +1398,9 @@ export default function CreatePropertyListStep2({
             {/* ✅ Input Below */}
             <input
               type="text"
-              value={form.contractLength}
+              value={form.contractLength?.[lang] || ""}
               placeholder={t.typehere}
-              onChange={(e) => handleChange("contractLength", e.target.value)}
+              onChange={(e) => handleLocalizedChange(lang, "contractLength", e.target.value)}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>

@@ -95,12 +95,14 @@ export default function TermsCondionsSeoForm({
         }
     }, [headerLang]);
     const [previewImage, setPreviewImage] = useState(null);
-    const [ogImages, setOgImages] = useState([]);
+    const [ogImage, setOgImage] = useState('');
 
-    // Initialize OG images from pageData
+    // Initialize OG image from pageData
     useEffect(() => {
-        if (pageData?.termsConditionSeoOgImages) {
-            setOgImages(pageData.termsConditionSeoOgImages);
+        if (pageData?.termsConditionSeoOgImage) {
+            setOgImage(pageData.termsConditionSeoOgImage);
+        } else if (pageData?.termsConditionSeoOgImages && pageData.termsConditionSeoOgImages.length > 0) {
+            setOgImage(pageData.termsConditionSeoOgImages[0]);
         }
     }, [pageData]);
 
@@ -127,9 +129,8 @@ export default function TermsCondionsSeoForm({
                     ? rawUrl
                     : `${apiBase}${rawUrl}`;
 
-                const newImages = [...ogImages, absoluteUrl];
-                setOgImages(newImages);
-                form.setFieldsValue({ termsConditionSeoOgImages: newImages });
+                setOgImage(absoluteUrl);
+                form.setFieldsValue({ termsConditionSeoOgImage: absoluteUrl });
                 message.success('Image uploaded successfully');
             }
         } catch (error) {
@@ -140,15 +141,14 @@ export default function TermsCondionsSeoForm({
     };
 
     // Remove OG Image
-    const removeOgImage = (index) => {
-        const newImages = ogImages.filter((_, i) => i !== index);
-        setOgImages(newImages);
-        form.setFieldsValue({ termsConditionSeoOgImages: newImages });
+    const removeOgImage = () => {
+        setOgImage('');
+        form.setFieldsValue({ termsConditionSeoOgImage: '' });
     };
 
-    // Handle form submission with OG images
+    // Handle form submission with OG image
     const handleFormSubmit = (values) => {
-        onSubmit({ ...values, termsConditionSeoOgImages: ogImages });
+        onSubmit({ ...values, termsConditionSeoOgImage: ogImage });
     };
 
     return (
@@ -533,29 +533,28 @@ export default function TermsCondionsSeoForm({
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        {activeTab === 'en' ? 'OG Images (Social Sharing)' : 'Hình Ảnh OG (Chia Sẻ Xã Hội)'}
+                                        {activeTab === 'en' ? 'OG Image (Social Sharing)' : 'Hình Ảnh OG (Chia Sẻ Xã Hội)'}
                                     </span>
                                 }
                             >
                                 <div className="flex gap-4 flex-wrap">
-                                    {ogImages.map((img, i) => (
+                                    {ogImage ? (
                                         <div
-                                            key={i}
                                             className="relative w-40 h-40 rounded-xl overflow-hidden border bg-gray-50 group"
                                         >
-                                            <img src={img} className="w-full h-full object-cover" alt={`OG ${i + 1}`} />
+                                            <img src={ogImage} className="w-full h-full object-cover" alt="OG Image" />
                                             {can('cms.termsConditions', 'edit') && (
                                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
                                                     <button
                                                         type="button"
-                                                        onClick={() => setPreviewImage(img)}
+                                                        onClick={() => setPreviewImage(ogImage)}
                                                         className="bg-white rounded-full p-2 shadow hover:bg-gray-100"
                                                     >
                                                         <EyeOutlined className="text-[#41398B]" />
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        onClick={() => removeOgImage(i)}
+                                                        onClick={removeOgImage}
                                                         className="bg-white rounded-full p-2 shadow hover:bg-red-50"
                                                     >
                                                         <DeleteOutlined className="text-red-500" />
@@ -563,22 +562,22 @@ export default function TermsCondionsSeoForm({
                                                 </div>
                                             )}
                                         </div>
-                                    ))}
-
-                                    {/* Upload Box */}
-                                    {can('cms.termsConditions', 'edit') && (
-                                        <Upload
-                                            accept="image/*"
-                                            showUploadList={false}
-                                            beforeUpload={handleOgImageUpload}
-                                        >
-                                            <div className="w-40 h-40 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
-                                                <PlusOutlined className="text-2xl text-gray-400 mb-2" />
-                                                <span className="text-xs text-gray-500 font-['Manrope']">
-                                                    {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
-                                                </span>
-                                            </div>
-                                        </Upload>
+                                    ) : (
+                                        /* Upload Box */
+                                        can('cms.termsConditions', 'edit') && (
+                                            <Upload
+                                                accept="image/*"
+                                                showUploadList={false}
+                                                beforeUpload={handleOgImageUpload}
+                                            >
+                                                <div className="w-40 h-40 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
+                                                    <PlusOutlined className="text-2xl text-gray-400 mb-2" />
+                                                    <span className="text-xs text-gray-500 font-['Manrope']">
+                                                        {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
+                                                    </span>
+                                                </div>
+                                            </Upload>
+                                        )
                                     )}
                                 </div>
                             </Form.Item>

@@ -222,9 +222,12 @@ export default function Roles() {
         });
     };
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            setIsSubmitting(true);
             if (editMode && editingRole?._id) {
                 await updateRole(editingRole._id, form);
                 CommonToaster(t.roleUpdated, "success");
@@ -238,6 +241,8 @@ export default function Roles() {
         } catch (err) {
             const msg = err.response?.data?.error || err.response?.data?.message || t.errorSavingRole;
             CommonToaster(translateError(msg, t), "error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -514,8 +519,12 @@ export default function Roles() {
                             <button
                                 type="submit"
                                 form="roleForm"
-                                className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium shadow-md"
+                                disabled={isSubmitting}
+                                className={`px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium shadow-md flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
+                                {isSubmitting && (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                )}
                                 {editMode ? t.updateRole : t.createRole}
                             </button>
                         </div>

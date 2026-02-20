@@ -124,6 +124,57 @@ const CustomDatePicker = ({ label, value, onChange }) => {
   );
 };
 
+const StaffSkeleton = ({ t }) => {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-pulse">
+      <table className="w-full text-sm border-collapse">
+        <thead className="bg-[#EAE9EE] h-18">
+          <tr>
+            <th className="px-6 py-4 text-left font-medium text-[#111111]">{t.staffInfo}</th>
+            <th className="px-6 py-4 text-left font-medium text-[#111111]">{t.contact}</th>
+            <th className="px-6 py-4 text-center font-medium text-[#111111]">{t.deptRole}</th>
+            <th className="px-6 py-4 text-center font-medium text-[#111111]">{t.status}</th>
+            <th className="px-6 py-4 text-right font-medium text-[#111111]">{t.action}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <tr key={i} className={`border-b last:border-0 border-gray-100 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-200 shrink-0"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    <div className="h-3 w-16 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-left">
+                <div className="space-y-2">
+                  <div className="h-3 w-32 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                </div>
+              </td>
+              <td className="px-6 py-4">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-16 bg-gray-200 rounded-full"></div>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-center">
+                <div className="inline-block h-6 w-20 bg-gray-200 rounded-full"></div>
+              </td>
+              <td className="px-6 py-4 text-right">
+                <div className="inline-block w-8 h-8 bg-gray-200 rounded-full"></div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 export default function Staffs({ openStaffView }) {
   const { language } = useLanguage();
   const t = translations[language]; // Use global translations
@@ -294,6 +345,8 @@ export default function Staffs({ openStaffView }) {
     setOpenMenuIndex(null);
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -330,6 +383,7 @@ export default function Staffs({ openStaffView }) {
     };
 
     try {
+      setIsSubmitting(true);
       if (editMode && editingUser?._id) {
         await updateStaff(editingUser._id, payload);
         CommonToaster(t.staffUpdated, "success");
@@ -342,6 +396,8 @@ export default function Staffs({ openStaffView }) {
     } catch (err) {
       const msg = err.response?.data?.error || err.response?.data?.message || t.errorSaving;
       CommonToaster(translateError(msg, t), "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -418,14 +474,9 @@ export default function Staffs({ openStaffView }) {
       </div>
 
       {/* Table */}
-      <div className={`transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
+      <div className={`transition-opacity ${loading ? "opacity-100" : "opacity-100"}`}>
         {loading ? (
-          // Simple Skeleton
-          <div className="space-y-4">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse"></div>
-            ))}
-          </div>
+          <StaffSkeleton t={t} />
         ) : (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
             <table className="w-full text-sm border-collapse">
@@ -1012,8 +1063,12 @@ export default function Staffs({ openStaffView }) {
               <button
                 type="submit"
                 form="staffForm"
-                className="px-6 py-2.5 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md"
+                disabled={isSubmitting}
+                className={`px-6 py-2.5 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
               >
+                {isSubmitting && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                )}
                 {editMode ? t.updateStaff : t.addStaff}
               </button>
             </div>

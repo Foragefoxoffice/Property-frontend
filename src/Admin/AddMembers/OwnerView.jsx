@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, PhoneCall, Facebook, MapPin, Calendar, ExternalLink, Bed, Bath, Ruler, Clover } from "lucide-react";
+import { ArrowLeft, PhoneCall, Facebook, Twitter, Instagram, Linkedin, Youtube, Globe, MapPin, Calendar, ExternalLink, Bed, Bath, Ruler, Clover } from "lucide-react";
 import { getAllOwners, getListingProperties } from "../../Api/action";
 import { Spin } from "antd";
 import { CommonToaster } from "../../Common/CommonToaster";
@@ -7,6 +7,15 @@ import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { useParams, useNavigate } from "react-router-dom";
 import { normalizeFancyText } from "../../utils/display";
+
+const socialIconMap = {
+  Facebook: Facebook,
+  Twitter: Twitter,
+  Instagram: Instagram,
+  Linkedin: Linkedin,
+  Youtube: Youtube,
+  Globe: Globe,
+};
 
 export default function OwnerView() {
   const { language } = useLanguage();
@@ -200,6 +209,7 @@ export default function OwnerView() {
                   "";
 
                 const finalLink = link.startsWith("http") ? link : `https://${link}`;
+                const SocialIcon = socialIconMap[icon] || Globe;
 
                 return (
                   <a
@@ -209,7 +219,7 @@ export default function OwnerView() {
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-100 transition"
                   >
-                    <Facebook size={20} className="text-gray-700" />
+                    <SocialIcon size={20} className="text-gray-700" />
                   </a>
                 );
               })}
@@ -283,9 +293,9 @@ export default function OwnerView() {
                           {language === 'vi' ? prop.listingInformation?.listingInformationTransactionType?.vi : prop.listingInformation?.listingInformationTransactionType?.en}
                         </span>
                         <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-white shadow-sm w-fit ${prop.status === 'Published' ? 'bg-green-500' :
-                            prop.status === 'Draft' ? 'bg-gray-500' :
-                              prop.status === 'Pending' ? 'bg-orange-500' :
-                                'bg-red-500'
+                          prop.status === 'Draft' ? 'bg-gray-500' :
+                            prop.status === 'Pending' ? 'bg-orange-500' :
+                              'bg-red-500'
                           }`}>
                           {prop.status}
                         </span>

@@ -136,7 +136,7 @@ function mapApiToForm(api) {
 
     leasePrice: api.financialDetails?.financialDetailsLeasePrice || "",
 
-    contractLength: api.financialDetails?.financialDetailsContractLength || "",
+    contractLength: safe(api.financialDetails?.financialDetailsContractLength),
 
     pricePerNight: api.financialDetails?.financialDetailsPricePerNight || "",
 
@@ -287,6 +287,7 @@ export default function CreatePropertyPage({
   const t = translations[language];
   const [loadingSingle, setLoadingSingle] = useState(true);
   const [loadingDropdowns, setLoadingDropdowns] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   console.log("propertyData", propertyData)
 
@@ -495,7 +496,7 @@ export default function CreatePropertyPage({
 
         financialDetailsLeasePrice: num(n.leasePrice),
 
-        financialDetailsContractLength: n.contractLength || "",
+        financialDetailsContractLength: wrap(n.contractLength),
 
         financialDetailsPricePerNight: num(n.pricePerNight),
 
@@ -646,6 +647,7 @@ export default function CreatePropertyPage({
   ===================================================================================== */
   const handleSubmitFinal = async (status) => {
     try {
+      setIsSubmitting(true);
       const payload = buildPayload(propertyData, dropdowns);
       console.log("🚀 FINAL PAYLOAD:", JSON.stringify(payload, null, 2));
 
@@ -670,6 +672,8 @@ export default function CreatePropertyPage({
       console.log(err);
       const errorMsg = err.response?.data?.message || "Property save failed";
       CommonToaster(errorMsg, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -705,6 +709,7 @@ export default function CreatePropertyPage({
             defaultTransactionType={defaultTransactionType}
             dropdowns={dropdowns}
             isEditMode={isEditMode}
+            isSubmitting={isSubmitting}
           />
         );
 
@@ -717,6 +722,7 @@ export default function CreatePropertyPage({
             onComplete={handleSubmitFinal}
             initialData={propertyData}
             dropdowns={dropdowns}
+            isSubmitting={isSubmitting}
           />
         );
 
@@ -731,6 +737,7 @@ export default function CreatePropertyPage({
             owners={dropdowns.owners || []}
             staffs={dropdowns.staffs || []}
             me={dropdowns.me || null}
+            isSubmitting={isSubmitting}
             refreshOwners={async () => {
               try {
                 const res = await getAllOwners();
@@ -753,6 +760,7 @@ export default function CreatePropertyPage({
             onChange={handleStepChange}
             onComplete={handleSubmitFinal}
             initialData={propertyData}
+            isSubmitting={isSubmitting}
           />
         );
 
@@ -763,6 +771,7 @@ export default function CreatePropertyPage({
             isEditMode={isEditMode}
             onPublish={handleSubmitFinal}
             onPrev={() => setStep(4)}
+            isSubmitting={isSubmitting}
           />
         );
 
