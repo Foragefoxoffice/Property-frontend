@@ -267,7 +267,7 @@ export default function UserProfile() {
 
             console.log("📤 Updating User Profile. ID:", userId, "Payload:", payload);
             await updateUser(userId, payload);
-            CommonToaster("Profile updated successfully!", "success");
+            CommonToaster(t?.profileUpdatedSuccess || "Profile updated successfully!", "success");
             fetchUserData();
         } catch (error) {
             console.error("Error updating profile:", error);
@@ -315,7 +315,7 @@ export default function UserProfile() {
         console.log("📤 Updating Staff Profile. ID:", staffData._id, "Payload:", payload);
         try {
             await updateStaff(staffData._id, payload);
-            CommonToaster("Staff profile updated successfully!", "success");
+            CommonToaster(t?.staffProfileUpdatedSuccess || "Staff profile updated successfully!", "success");
             fetchUserData();
         } catch (error) {
             console.error("Error updating staff profile:", error);
@@ -345,7 +345,7 @@ export default function UserProfile() {
         setPasswordSaving(true);
         try {
             await updatePassword({ currentPassword, newPassword });
-            CommonToaster("Password updated successfully!", "success");
+            CommonToaster(t?.passwordUpdatedSuccess || "Password updated successfully!", "success");
             setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
         } catch (error) {
             console.error("Change password error:", error);

@@ -478,6 +478,11 @@ export const translations = {
     requiredFieldsMissing: "Required fields missing",
     uploadPhoto: "Upload Photo",
     errorMasterDataUsed: "Cannot delete this master data because it is present in a created property. Delete the property first.",
+    propertySavedSuccess: "Property saved successfully!",
+    propertySaveFailed: "Property save failed",
+    profileUpdatedSuccess: "Profile updated successfully!",
+    staffProfileUpdatedSuccess: "Staff profile updated successfully!",
+    passwordUpdatedSuccess: "Password updated successfully!",
   },
 
   vi: {
@@ -960,5 +965,10 @@ export const translations = {
     requiredFieldsMissing: "Thiếu thông tin bắt buộc",
     uploadPhoto: "Tải ảnh lên",
     errorMasterDataUsed: "Không thể xóa dữ liệu này vì nó đang được sử dụng trong một bất động sản. Vui lòng xóa bất động sản trước.",
+    propertySavedSuccess: "Đã lưu bất động sản thành công!",
+    propertySaveFailed: "Lưu bất động sản thất bại",
+    profileUpdatedSuccess: "Cập nhật hồ sơ thành công!",
+    staffProfileUpdatedSuccess: "Cập nhật hồ sơ nhân viên thành công!",
+    passwordUpdatedSuccess: "Cập nhật mật khẩu thành công!",
   },
 };

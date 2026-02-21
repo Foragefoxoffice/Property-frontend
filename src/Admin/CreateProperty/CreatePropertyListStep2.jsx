@@ -312,12 +312,12 @@ export default function CreatePropertyListStep2({
     const videoLimit = 50 * 1024 * 1024; // 50MB
 
     if (type === "video" && file.size > videoLimit) {
-      CommonToaster("Video size must be under 50MB", "error");
+      CommonToaster(lang === "en" ? "Video size must be under 50MB" : "Dung lượng video phải dưới 50MB", "error");
       return false;
     }
 
     if ((type === "image" || type === "floor") && file.size > imageLimit) {
-      CommonToaster("Image must be under 5MB", "error");
+      CommonToaster(lang === "en" ? "Image must be under 5MB" : "Dung lượng ảnh phải dưới 5MB", "error");
       return false;
     }
 
@@ -352,16 +352,27 @@ export default function CreatePropertyListStep2({
 
       // ✅ ALL MEDIA TYPES: Always upload to server
       try {
-        CommonToaster(`Uploading ${type === "floor" ? "floor plan" : type}...`, "info");
+        const uploadingMsg = lang === "en"
+          ? `Uploading ${type === "floor" ? "floor plan" : type}...`
+          : `Đang tải lên ${type === "floor" ? "sơ đồ mặt bằng" : (type === "video" ? "video" : "ảnh")}...`;
+        CommonToaster(uploadingMsg, "info");
+
         const { uploadPropertyMedia } = await import("@/Api/action");
         const response = await uploadPropertyMedia(file, type);
         url = response.data.url;
         isServerFile = true;
-        CommonToaster(`${type === "floor" ? "Floor plan" : type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`, "success");
+
+        const successMsg = lang === "en"
+          ? `${type === "floor" ? "Floor plan" : type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`
+          : `${type === "floor" ? "Sơ đồ mặt bằng" : (type === "video" ? "Video" : "Ảnh")} đã được tải lên thành công!`;
+        CommonToaster(successMsg, "success");
         console.log(`✅ ${type} uploaded: ${response.data.fileName} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
       } catch (error) {
         console.error(`${type} upload error:`, error);
-        CommonToaster(`Failed to upload ${type}. Please try again.`, "error");
+        const failMsg = lang === "en"
+          ? `Failed to upload ${type}. Please try again.`
+          : `Tải lên ${type === "floor" ? "sơ đồ mặt bằng" : (type === "video" ? "video" : "ảnh")} thất bại. Vui lòng thử lại.`;
+        CommonToaster(failMsg, "error");
         continue;
       }
 

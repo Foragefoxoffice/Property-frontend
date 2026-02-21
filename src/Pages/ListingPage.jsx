@@ -414,7 +414,7 @@ export default function ListingPage() {
                 </div>
 
                 {/* Main Content */}
-                <div className="max-w-7xl mx-auto py-5 md:py-10">
+                <div className="max-w-7xl mx-auto py-5 md:py-10 px-2">
                     <div className="flex flex-col gap-10">
                         {/* Top Horizontal Filters */}
                         <aside className="w-full">
@@ -745,7 +745,7 @@ export default function ListingPage() {
                                                 <div
                                                     key={property._id}
                                                     ref={isLastProperty ? lastPropertyRef : null}
-                                                    className="card-house style-default hover-image group bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-500 cursor-pointer"
+                                                    className="card-house style-default hover-image group bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-500 cursor-pointer flex flex-col h-full"
                                                     onClick={() => {
                                                         const id = property.listingInformation?.listingInformationPropertyId || property._id;
                                                         const slug = getLocalizedValue(property.seoInformation?.slugUrl);
@@ -791,7 +791,7 @@ export default function ListingPage() {
                                                     </div>
 
                                                     {/* Content */}
-                                                    <div className="pt-2 pb-5 px-3">
+                                                    <div className="pt-2 pb-5 px-3 flex flex-col flex-1">
                                                         {/* Price */}
                                                         <div className="flex items-baseline gap-0 mb-0">
                                                             {(() => {
@@ -838,7 +838,7 @@ export default function ListingPage() {
                                                         </div>
 
                                                         {/* Title */}
-                                                        <h3 className="md:text-[17px] text-[15px] font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#41398B] transition-colors">
+                                                        <h3 className="md:text-[17px] text-[15px] font-semibold text-gray-900 mb-2 line-clamp-2 md:min-h-[2rem] min-h-[0rem] group-hover:text-[#41398B] transition-colors">
                                                             {normalizeFancyText(
                                                                 getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
                                                                 getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
@@ -849,7 +849,7 @@ export default function ListingPage() {
 
                                                         {/* Location / Nearby */}
                                                         <div
-                                                            className="md:text-[16px] text-[14px] text-gray-500 mb-4 line-clamp-2 ql-editor-summary"
+                                                            className="md:text-[16px] text-[14px] text-gray-500 mb-4 line-clamp-2 md:min-h-[2rem] min-h-[0rem] ql-editor-summary"
                                                             dangerouslySetInnerHTML={{
                                                                 __html: getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
                                                                     getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
@@ -858,7 +858,7 @@ export default function ListingPage() {
                                                         />
 
                                                         {/* Details */}
-                                                        <div className="flex  items-center pt-3 border-t border-gray-200 justify-between">
+                                                        <div className="flex items-center pt-3 border-t border-gray-200 justify-between mt-auto">
                                                             {property.propertyInformation?.informationBedrooms > 0 && (
                                                                 <div className="flex items-center gap-1 text-sm text-[#2a2a2a]">
                                                                     <svg

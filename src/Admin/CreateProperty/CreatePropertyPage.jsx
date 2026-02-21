@@ -664,13 +664,13 @@ export default function CreatePropertyPage({
         });
       }
 
-      CommonToaster("Property saved successfully!", "success");
+      CommonToaster(t.propertySavedSuccess || "Property saved successfully!", "success");
       const routePath = defaultTransactionType.toLowerCase().replace(/\s+/g, '');
       navigate(`/dashboard/${routePath}`);
 
     } catch (err) {
       console.log(err);
-      const errorMsg = err.response?.data?.message || "Property save failed";
+      const errorMsg = err.response?.data?.message || t.propertySaveFailed || "Property save failed";
       CommonToaster(errorMsg, "error");
     } finally {
       setIsSubmitting(false);

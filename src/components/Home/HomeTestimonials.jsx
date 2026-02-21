@@ -107,7 +107,7 @@ export default function HomeTestimonials({ homePageData }) {
                     onMouseLeave={() => setIsPaused(false)}
                 >
                     {/* Navigation Buttons */}
-                    <div className="absolute top-1/2 -left-4 md:-left-12 -translate-y-1/2 z-20">
+                    <div className="absolute top-1/2 -left-4 md:-left-4 -translate-y-1/2 z-20">
                         <button
                             onClick={prevSlide}
                             className="p-3 rounded-full bg-white shadow-lg text-gray-800 hover:bg-black hover:text-white transition-all duration-300 group cursor-pointer"
@@ -115,7 +115,7 @@ export default function HomeTestimonials({ homePageData }) {
                             <ChevronLeft size={24} />
                         </button>
                     </div>
-                    <div className="absolute top-1/2 -right-4 md:-right-12 -translate-y-1/2 z-20">
+                    <div className="absolute top-1/2 -right-4 md:-right-4 -translate-y-1/2 z-20">
                         <button
                             onClick={nextSlide}
                             className="p-3 rounded-full bg-white shadow-lg text-gray-800 hover:bg-black hover:text-white transition-all duration-300 group cursor-pointer"
@@ -143,7 +143,7 @@ export default function HomeTestimonials({ homePageData }) {
                                     key={item._id}
                                     className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-4"
                                 >
-                                    <div className="bg-white p-7 md:p-8 rounded-xl shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 flex flex-col justify-between h-[450px] md:h-[400px]">
+                                    <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 flex flex-col justify-between h-[450px] md:h-[400px]">
                                         <div>
                                             <div className="flex items-center gap-1 mb-6">
                                                 {[...Array(5)].map((_, i) => (
