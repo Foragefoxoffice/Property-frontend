@@ -219,6 +219,7 @@ export const translations = {
     size: "Size",
     floorRange: "Floor Range",
     view: "View",
+    viewDetails: "View Details",
     bedrooms: "Bedrooms",
     bathrooms: "Bathrooms",
     rooms: "Rooms",
@@ -593,6 +594,7 @@ export const translations = {
     // Permission Labels
     accessTab: "Quyền truy cập Tab",
     view: "Xem",
+    viewDetails: "Xem chi tiết",
     preview: "Xem trước",
     add: "Thêm",
     edit: "Chỉnh Sửa",

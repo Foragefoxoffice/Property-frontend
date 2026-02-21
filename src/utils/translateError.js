@@ -41,6 +41,23 @@ export const translateError = (errorMsg, t) => {
         return t.errorRoleAssigned;
     }
 
+    // NEW: Graceful fallback for technical system errors
+    const technicalKeywords = [
+        "Tried to set",
+        "nested object field",
+        "primitive value",
+        "Cast to object failed",
+        "undefined",
+        "null",
+        "Internal Server Error",
+        "BSON",
+        "document size"
+    ];
+
+    if (technicalKeywords.some(keyword => errorMsg.includes(keyword))) {
+        return t.unexpectedError || "An unexpected system error occurred. Please try again or contact support.";
+    }
+
     // Fallback to original message
     return errorMsg;
 };

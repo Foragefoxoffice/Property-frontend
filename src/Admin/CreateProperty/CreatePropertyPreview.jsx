@@ -676,7 +676,7 @@ export default function CreatePropertyPreview({
       }
 
       {
-        publishing && (
+        isSubmitting && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="flex flex-col items-center gap-4">
               <div className="w-14 h-14 border-4 border-white border-t-[#41398B] rounded-full animate-spin"></div>

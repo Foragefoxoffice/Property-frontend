@@ -273,7 +273,7 @@ export default function ContactEnquiry() {
                                         <td className="px-6 py-3">{row.phone}</td>
                                         <td className="px-6 py-3">{row.subject}</td>
                                         <td className="px-6 py-3">
-                                            {row.message && row.message.length > 50 ? (
+                                            {row.message && row.message.length > 30 ? (
                                                 <div className="flex items-center gap-2">
                                                     <span className="block max-w-[150px] truncate text-gray-500 text-xs" title={row.message}>
                                                         {row.message}
@@ -283,11 +283,11 @@ export default function ContactEnquiry() {
                                                         className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#41398B] bg-[#41398B]/5 hover:bg-[#41398B]/10 rounded-md transition-colors border border-[#41398B]/10 whitespace-nowrap cursor-pointer"
                                                     >
                                                         <Eye size={12} />
-                                                        {isVI ? 'Xem' : 'View'}
+                                                        {isVI ? 'Xem chi tiết' : 'View Details'}
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <span className="block text-gray-500 text-xs max-w-[150px] truncate">
+                                                <span className="block text-gray-500 text-xs">
                                                     {row.message || "-"}
                                                 </span>
                                             )}

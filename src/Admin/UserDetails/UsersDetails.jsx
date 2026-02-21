@@ -59,7 +59,8 @@ export default function UsersDetails() {
         employeeId: "",
         password: "",
         role: "user",
-        isVerified: false
+        isVerified: false,
+        status: "Active"
     });
 
     // ✅ Fetch all Users
@@ -164,7 +165,8 @@ export default function UsersDetails() {
                 employeeId: "",
                 password: "",
                 role: "user",
-                isVerified: false
+                isVerified: false,
+                status: "Active"
             });
 
             fetchUsers();
@@ -189,7 +191,8 @@ export default function UsersDetails() {
             employeeId: user.employeeId,
             password: "", // Keep password empty for security
             role: user.role,
-            isVerified: user.isVerified
+            isVerified: user.isVerified,
+            status: user.status || "Active"
         });
         setShowModal(true);
     };
@@ -348,9 +351,9 @@ export default function UsersDetails() {
                                                 </span>
                                             </td>
 
-                                            {/* Verified Status */}
+                                            {/* Status */}
                                             <td className="px-6 py-4 text-center">
-                                                {row.isVerified ? (
+                                                {row.status === "Active" ? (
                                                     <span className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-medium">
                                                         <ShieldCheck size={14} /> {isVI ? "Tích cực" : "Active"}
                                                     </span>
@@ -596,8 +599,12 @@ export default function UsersDetails() {
                                     {isVI ? "Trạng thái hoạt động" : "Active Status"}
                                 </label>
                                 <Select
-                                    value={form.isVerified ? "active" : "inactive"}
-                                    onChange={(value) => setForm({ ...form, isVerified: value === "active" })}
+                                    value={(form.isVerified && form.status !== "Inactive") ? "active" : "inactive"}
+                                    onChange={(value) => setForm({
+                                        ...form,
+                                        isVerified: value === "active",
+                                        status: value === "active" ? "Active" : "Inactive"
+                                    })}
                                     className="w-full h-11 custom-select"
                                     popupClassName="custom-dropdown"
                                 >

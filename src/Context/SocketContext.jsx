@@ -41,6 +41,25 @@ export const SocketProvider = ({ children }) => {
             console.error('Socket.IO connection error:', error);
         });
 
+        // 🚨 LISTEN FOR ACCOUNT DEACTIVATION
+        socketInstance.on('accountDeactivated', ({ userId }) => {
+            const currentUserId = localStorage.getItem('userId');
+            console.log(`🔌 Deactivation event received for: ${userId}. Current: ${currentUserId}`);
+
+            if (userId === currentUserId) {
+                console.error("⛔ Your account has been deactivated. Logging out...");
+
+                // Clear all auth data
+                localStorage.removeItem("token");
+                localStorage.removeItem("userId");
+                localStorage.removeItem("userName");
+                localStorage.removeItem("userRole");
+
+                // Redirect to login with a message
+                window.location.href = "/login?error=inactive";
+            }
+        });
+
         setSocket(socketInstance);
 
         // Cleanup on unmount

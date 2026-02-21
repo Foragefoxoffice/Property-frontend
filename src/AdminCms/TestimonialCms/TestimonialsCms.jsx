@@ -362,8 +362,8 @@ export default function TestimonialsCms() {
                                     </div>
 
                                     {/* Content */}
-                                    <div className="flex-grow">
-                                        <p className="text-[#475569] leading-relaxed italic">
+                                    <div className="flex-grow min-w-0">
+                                        <p className="text-[#475569] leading-relaxed italic break-words">
                                             "{language === 'en' ? (item.text_en || item.text) : (item.text_vn || item.text)}"
                                         </p>
                                     </div>
@@ -432,8 +432,8 @@ export default function TestimonialsCms() {
             {/* Add Manual Modal */}
             {showAddModal && (
                 <div className="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
-                        <div className="p-8">
+                    <div className="bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-200 thin-scrollbar">
+                        <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-2xl font-bold text-[#1E293B]">{t.addManualTestimonial || "Add Manual Testimonial"}</h2>
                                 <button

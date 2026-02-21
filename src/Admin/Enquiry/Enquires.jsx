@@ -328,7 +328,7 @@ export default function Enquires() {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                {item.message && item.message.length > 50 ? (
+                                                {item.message && item.message.length > 30 ? (
                                                     <div className="flex items-center gap-2">
                                                         <span className="block max-w-[120px] truncate text-gray-500 text-xs" title={item.message}>
                                                             {item.message}
@@ -338,7 +338,7 @@ export default function Enquires() {
                                                             className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#41398B] bg-[#41398B]/5 hover:bg-[#41398B]/10 rounded-md transition-colors border border-[#41398B]/10 whitespace-nowrap"
                                                         >
                                                             <Eye size={12} />
-                                                            {t.view}
+                                                            {t.viewDetails}
                                                         </button>
                                                     </div>
                                                 ) : (

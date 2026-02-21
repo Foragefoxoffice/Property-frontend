@@ -157,7 +157,7 @@ export default function HomeTestimonials({ homePageData }) {
 
                                             <div className="relative">
                                                 <Quote className="absolute -top-6 -left-4 text-gray-100 w-14 h-14 -z-10" />
-                                                <p className="text-md md:text-[17px] text-gray-700 italic leading-relaxed relative z-10 line-clamp-6">
+                                                <p className="text-md md:text-[17px] text-gray-700 italic leading-relaxed relative z-10 line-clamp-6 break-words">
                                                     "{language === 'en' ? (item.text_en || item.text) : (item.text_vn || item.text)}"
                                                 </p>
                                             </div>

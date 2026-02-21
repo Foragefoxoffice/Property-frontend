@@ -498,6 +498,11 @@ button {
 }
 
 /* --- Thin Scrollbar (2px) --- */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #41398B transparent;
+}
+
 .thin-scrollbar::-webkit-scrollbar {
   width: 2px;
   height: 4px;

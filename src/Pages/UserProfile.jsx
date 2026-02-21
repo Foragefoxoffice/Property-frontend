@@ -200,16 +200,51 @@ export default function UserProfile() {
             const res = await uploadGeneralImage(file);
             if (res.data.success) {
                 const imageUrl = res.data.url;
-                // Update both to keep in sync and handle fallbacks
+
+                // Update state immediately for UI feedback
                 setUserForm(prev => ({ ...prev, profileImage: imageUrl }));
                 if (isStaff) {
                     setStaffForm(prev => ({ ...prev, profileImage: imageUrl }));
                 }
-                CommonToaster("Image uploaded successfully!", "success");
+
+                // 🚀 AUTO-SAVE: Persist to DB immediately
+                const userId = user._id || user.id;
+                if (isStaff && staffData?._id) {
+                    const fullNameEn = [staffForm.firstName.en, staffForm.middleName.en, staffForm.lastName.en].filter(Boolean).join(" ");
+                    const fullNameVi = [staffForm.firstName.vi, staffForm.middleName.vi, staffForm.lastName.vi].filter(Boolean).join(" ");
+
+                    const payload = {
+                        staffsImage: imageUrl,
+                        staffsName_en: fullNameEn,
+                        staffsName_vi: fullNameVi,
+                        staffsId: staffForm.employeeId,
+                        staffsRole_en: staffForm.role,
+                        staffsRole_vi: staffForm.role,
+                        staffsEmail: staffForm.email,
+                        staffsNumbers: [staffForm.phone],
+                        staffsGender: staffForm.gender,
+                        staffsDob: staffForm.dob,
+                        staffsJoiningDate: staffForm.joiningDate,
+                        status: staffForm.status
+                    };
+                    await updateStaff(staffData._id, payload);
+                } else {
+                    const payload = {
+                        profileImage: imageUrl,
+                        name: userForm.name,
+                        email: userForm.email,
+                        phone: userForm.mobile,
+                        employeeId: userForm.employeeId
+                    };
+                    await updateUser(userId, payload);
+                }
+
+                CommonToaster("Profile picture updated and saved!", "success");
+                fetchUserData(); // Refresh to sync everything (Header, etc.)
             }
         } catch (error) {
-            console.error("Error uploading image:", error);
-            CommonToaster("Failed to upload image", "error");
+            console.error("Error uploading/saving image:", error);
+            CommonToaster("Failed to save image", "error");
         }
     };
 

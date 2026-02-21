@@ -44,6 +44,7 @@ API.interceptors.response.use(
     ) {
       console.warn("Session expired. Please log in again.");
       localStorage.removeItem("token");
+      localStorage.removeItem("userId");
       localStorage.removeItem("userName");
       localStorage.removeItem("userRole");
       window.location.href = "/login";

@@ -231,7 +231,7 @@ export default function BlogDetailPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                         {/* Main Content Column */}
                         <div className="lg:col-span-8">
-                            <div className="bg-white rounded-3xl shadow-xl p-4 md:p-8 border border-gray-100 ring-1 ring-black/5">
+                            <div className="bg-white rounded-3xl shadow-xl p-4 md:p-4 border border-gray-100 ring-1 ring-black/5">
                                 {/* Share Buttons (Mobile Top) */}
                                 <div className="flex lg:hidden hidden gap-4 mb-8 pb-8 border-b border-gray-100 justify-center">
                                     <button className="p-3 rounded-full bg-gray-50 hover:bg-[#1DA1F2] hover:text-white text-gray-500 transition-all duration-300"><Twitter size={20} /></button>
@@ -241,10 +241,10 @@ export default function BlogDetailPage() {
                                 </div>
 
                                 {/* Blog Content */}
-                                <article style={{ lineHeight: '2.1' }} className="prose prose-lg max-w-none w-full break-words
+                                <article style={{ lineHeight: '1.8' }} className="prose prose-lg max-w-none w-full break-words
                                 prose-headings:font-bold prose-headings:text-gray-900 
                                 prose-h1:text-4xl prose-h2:text-3xl prose-h2:text-[#41398B] prose-h3:text-2xl 
-                                prose-p:text-gray-600 prose-p:leading-relaxed 
+                                prose-p:text-gray-600 prose-p:leading-relaxed [&_p]:!text-left [&_p]:[hyphens:none]
                                 prose-a:text-[#41398B] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
                                 prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-8
                                 prose-blockquote:border-l-4 prose-blockquote:border-[#41398B] prose-blockquote:bg-purple-50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:italic prose-blockquote:text-gray-700

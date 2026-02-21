@@ -108,7 +108,7 @@ export default function BlogPage() {
                     backgroundImage={bannerBg}
                 />
 
-                <div className="container mx-auto py-12">
+                <div className="container mx-auto py-12 px-3 md:px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                         {/* Main Content */}
                         <div className="lg:col-span-8">

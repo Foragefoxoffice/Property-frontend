@@ -22,6 +22,14 @@ export default function Login() {
   const [error, setError] = useState("");
   const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
 
+  // Check for error in URL params
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("error") === "inactive") {
+      setError("Your account has been deactivated or deleted. Please contact admin.");
+    }
+  }, []);
+
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -36,6 +44,7 @@ export default function Login() {
       if (res.data.success) {
         const user = res.data.user;
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", user?._id || user?.id || "");
         localStorage.setItem("userName", user?.name || "");
         localStorage.setItem("userRole", user?.role || "user");
         await refreshPermissions();
@@ -152,7 +161,7 @@ export default function Login() {
 
           {/* Error */}
           {error && (
-            <p className="text-center text-red-500 text-sm bg-red-50 py-2 rounded-md border border-red-200">
+            <p className="text-center text-red-500 text-xs bg-red-50 py-2 rounded-md border border-red-200">
               {error}
             </p>
           )}
