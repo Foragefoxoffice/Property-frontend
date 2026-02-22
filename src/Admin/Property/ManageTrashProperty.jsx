@@ -18,6 +18,7 @@ import {
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
+import { formatNumber } from "../../utils/display";
 
 import { useNavigate } from "react-router-dom";
 import FiltersPage from "../Filters/Filter";
@@ -273,7 +274,9 @@ export default function ManageTrashProperty() {
                 key={key}
                 className="bg-[#41398B] text-white px-3 py-1 rounded-full text-sm flex items-center gap-2"
               >
-                {key}: {typeof val === "string" ? val : val?.name}
+                {key}: {typeof val === "string"
+                  ? (key.toLowerCase().includes('price') ? formatNumber(val) : val)
+                  : val?.name}
                 <button
                   onClick={() =>
                     setAppliedFilters((prev) => ({ ...prev, [key]: "" }))

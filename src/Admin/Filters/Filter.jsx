@@ -8,6 +8,7 @@ import {
   getAllFloorRanges,
   getAllCurrencies,
 } from "@/Api/action";
+import { formatNumber, parseNumber } from "@/utils/display";
 import { ArrowRight } from "lucide-react";
 import { usePermissions } from "@/Context/PermissionContext";
 
@@ -247,8 +248,8 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       floorRange: normalizeSelect("floorRange", defaultFilters.floorRange),
       currency: normalizeSelect("currency", defaultFilters.currency),
       propertyNumber: defaultFilters.propertyNumber || "",
-      priceFrom: defaultFilters.priceFrom || "",
-      priceTo: defaultFilters.priceTo || "",
+      priceFrom: formatNumber(defaultFilters.priceFrom || ""),
+      priceTo: formatNumber(defaultFilters.priceTo || ""),
     }));
   }, [defaultFilters]);
 
@@ -492,14 +493,14 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           label={t[lang].from}
           name="priceFrom"
           value={filters.priceFrom}
-          onChange={update}
+          onChange={(name, val) => update(name, formatNumber(val))}
           placeholder="Type here"
         />
         <Input
           label={t[lang].to}
           name="priceTo"
           value={filters.priceTo}
-          onChange={update}
+          onChange={(name, val) => update(name, formatNumber(val))}
           placeholder="Type here"
         />
       </div>
@@ -513,7 +514,16 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         </button>
 
         <button
-          onClick={() => onApply && onApply(filters)}
+          onClick={() => {
+            if (onApply) {
+              const cleanFilters = {
+                ...filters,
+                priceFrom: parseNumber(filters.priceFrom),
+                priceTo: parseNumber(filters.priceTo),
+              };
+              onApply(cleanFilters);
+            }
+          }}
           className="px-6 py-2 bg-[#41398B] flex items-center gap-1 hover:bg-[#41398Be3] text-white rounded-lg cursor-pointer"
         >
           {t[lang].apply}

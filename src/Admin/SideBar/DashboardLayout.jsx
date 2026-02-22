@@ -13,7 +13,7 @@ const DashboardLayout = () => {
     const location = useLocation();
     const { language } = useLanguage();
     const t = translations[language];
-    const { isHidden, loading } = usePermissions();
+    const { isHidden, loading, getFirstAccessiblePath } = usePermissions();
     const [openProperties, setOpenProperties] = useState(false);
     const [openCMS, setOpenCMS] = useState(false);
     const [openBlogs, setOpenBlogs] = useState(false);
@@ -22,9 +22,51 @@ const DashboardLayout = () => {
     const [openOtherEnquiry, setOpenOtherEnquiry] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
 
-    // Sync sidebar state with current URL
+    // Sync sidebar state with current URL and check permissions
     React.useEffect(() => {
         const path = location.pathname;
+
+        // Dynamic permission check for redirection
+        const routeToPermission = {
+            '/dashboard/lease': 'properties.lease',
+            '/dashboard/sale': 'properties.sale',
+            '/dashboard/homestay': 'properties.homestay',
+            '/dashboard/user-details': 'userManagement.userDetails',
+            '/dashboard/enquiry': 'userManagement.enquires',
+            '/dashboard/roles': 'menuStaffs.roles',
+            '/dashboard/staffs': 'menuStaffs.staffs',
+            '/dashboard/contact-enquiry': 'otherEnquiry.contactEnquiry',
+            '/dashboard/subscription': 'blogs.subscription',
+            '/dashboard/cms/home': 'cms.homePage',
+            '/dashboard/cms/about': 'cms.aboutUs',
+            '/dashboard/cms/contact': 'cms.contactUs',
+            '/dashboard/cms/header': 'cms.header',
+            '/dashboard/cms/footer': 'cms.footer',
+            '/dashboard/cms/agent': 'cms.agent',
+            '/dashboard/cms/terms-conditions': 'cms.termsConditions',
+            '/dashboard/cms/privacy-policy': 'cms.privacyPolicy',
+            '/dashboard/cms/blog-banner': 'cms.blogBanner',
+            '/dashboard/cms/categories': 'blogs.category',
+            '/dashboard/cms/blogs': 'blogs.blogCms',
+            '/dashboard/landlords': 'landlords',
+            '/dashboard/masters': 'masters',
+            '/dashboard/settings/notification': 'settings.notification',
+            '/dashboard/settings/testimonials': 'settings.testimonials',
+        };
+
+        // Check if the current route is hidden for this user
+        // We check exact match or if it's a sub-route (like /edit)
+        for (const [route, permKey] of Object.entries(routeToPermission)) {
+            if (path === route || path.startsWith(`${route}/`)) {
+                if (isHidden(permKey)) {
+                    const firstSafePath = getFirstAccessiblePath();
+                    if (firstSafePath !== path) {
+                        navigate(firstSafePath, { replace: true });
+                    }
+                }
+                break;
+            }
+        }
 
         if (path.includes('/dashboard/lease') || path.includes('/dashboard/sale') || path.includes('/dashboard/homestay')) {
             setOpenProperties(true);

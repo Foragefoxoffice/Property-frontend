@@ -10,7 +10,7 @@ import { translations } from "../Language/translations";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { refreshPermissions } = usePermissions();
+  const { refreshPermissions, getFirstAccessiblePath } = usePermissions();
   const { fetchFavorites } = useFavorites();
   const { language } = useLanguage();
   const t = translations[language];
@@ -47,7 +47,7 @@ export default function Login() {
         localStorage.setItem("userId", user?._id || user?.id || "");
         localStorage.setItem("userName", user?.name || "");
         localStorage.setItem("userRole", user?.role || "user");
-        await refreshPermissions();
+        const newPermissions = await refreshPermissions();
         await fetchFavorites();
         CommonToaster(t.loginSuccess, "success");
 
@@ -55,8 +55,9 @@ export default function Login() {
         if (user?.role === "user") {
           navigate("/");
         } else {
-          // Staff, Admin, or other roles go to dashboard
-          navigate("/dashboard/lease");
+          // Staff, Admin, or other roles go to first accessible dashboard page
+          const firstPath = getFirstAccessiblePath(newPermissions);
+          navigate(firstPath);
         }
       }
     } catch (err) {

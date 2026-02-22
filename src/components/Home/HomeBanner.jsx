@@ -12,6 +12,7 @@ import { SlidersHorizontal } from 'lucide-react';
 import { useLanguage } from '../../Language/LanguageContext';
 import { usePermissions } from '../../Context/PermissionContext';
 import { translations } from '../../Language/translations';
+import { formatNumber, parseNumber } from '../../utils/display';
 
 export default function HomeBanner({ homePageData }) {
     const navigate = useNavigate();
@@ -108,7 +109,12 @@ export default function HomeBanner({ homePageData }) {
 
     const handleFilterChange = (key, value) => {
         setFilters(prev => {
-            const newFilters = { ...prev, [key]: value };
+            let processedValue = value;
+            if (key === 'minPrice' || key === 'maxPrice') {
+                processedValue = formatNumber(value);
+            }
+
+            const newFilters = { ...prev, [key]: processedValue };
             // Hierarchical clearing logic
             if (key === 'projectId') {
                 newFilters.zoneId = '';
@@ -181,8 +187,8 @@ export default function HomeBanner({ homePageData }) {
             ...(filters.bedrooms && { bedrooms: filters.bedrooms }),
             ...(filters.bathrooms && { bathrooms: filters.bathrooms }),
             ...(filters.currency && { currency: filters.currency }),
-            ...(filters.minPrice && { minPrice: filters.minPrice }),
-            ...(filters.maxPrice && { maxPrice: filters.maxPrice })
+            ...(filters.minPrice && { minPrice: parseNumber(filters.minPrice) }),
+            ...(filters.maxPrice && { maxPrice: parseNumber(filters.maxPrice) })
         });
         navigate(`/listing?${params.toString()}`);
     };
@@ -483,11 +489,11 @@ export default function HomeBanner({ homePageData }) {
                                         {language === 'en' ? 'Min Price' : 'Giá Tối Thiểu'}
                                     </label>
                                     <input
-                                        type="number"
+                                        type="text"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
                                         placeholder={language === 'en' ? 'Min' : 'Tối Thiểu'}
                                         value={filters.minPrice}
-                                        onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                                        onChange={(e) => handleFilterChange('minPrice', e.target.value.replace(/,/g, ''))}
                                     />
                                 </div>
 
@@ -497,11 +503,11 @@ export default function HomeBanner({ homePageData }) {
                                         {language === 'en' ? 'Max Price' : 'Giá Tối Đa'}
                                     </label>
                                     <input
-                                        type="number"
+                                        type="text"
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all"
                                         placeholder={language === 'en' ? 'Max' : 'Tối Đa'}
                                         value={filters.maxPrice}
-                                        onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                                        onChange={(e) => handleFilterChange('maxPrice', e.target.value.replace(/,/g, ''))}
                                     />
                                 </div>
                             </div>

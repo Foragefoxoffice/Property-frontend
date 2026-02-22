@@ -27,6 +27,8 @@ export const PermissionProvider = ({ children }) => {
                     if (currentRole) {
                         setPermissions(currentRole.permissions);
                         setIsApprover(currentRole.isApprover || false);
+                        setLoading(false);
+                        return currentRole.permissions;
                     } else {
                         console.warn(`PermissionContext: Role '${role}' not found in DB. Available:`, rolesData.map(r => r.name));
                         setPermissions(null);
@@ -46,18 +48,20 @@ export const PermissionProvider = ({ children }) => {
         fetchPermissions();
     }, []);
 
-    const isHidden = (path) => {
-        if (!userRole) return true;
+    const isHidden = (path, customPermissions = null) => {
+        const role = userRole || localStorage.getItem("userRole");
+        if (!role) return true;
 
         // Super Admin has access to everything
-        if (userRole.toLowerCase() === 'super admin') return false;
+        if (role.toLowerCase() === 'super admin') return false;
 
-        if (userRole.toLowerCase() === 'admin' && !permissions) return false;
+        if (role.toLowerCase() === 'admin' && !permissions && !customPermissions) return false;
 
-        if (!permissions) return true;
+        const currentPermissions = customPermissions || permissions;
+        if (!currentPermissions) return true;
 
         const parts = path.split('.');
-        let current = permissions;
+        let current = currentPermissions;
         for (const part of parts) {
             if (current && current[part]) {
                 current = current[part];
@@ -69,12 +73,13 @@ export const PermissionProvider = ({ children }) => {
     };
 
     const can = (path, action) => {
-        if (!userRole) return false;
+        const role = userRole || localStorage.getItem("userRole");
+        if (!role) return false;
 
         // Super Admin has access to everything
-        if (userRole.toLowerCase() === 'super admin') return true;
+        if (role.toLowerCase() === 'super admin') return true;
 
-        if (userRole.toLowerCase() === 'admin' && !permissions) return true;
+        if (role.toLowerCase() === 'admin' && !permissions) return true;
 
         if (!permissions) return false;
 
@@ -92,8 +97,42 @@ export const PermissionProvider = ({ children }) => {
         return value === true || value === "true";
     };
 
+    const getFirstAccessiblePath = (customPermissions = null) => {
+        const role = userRole || localStorage.getItem("userRole");
+        if (!role) return "/login";
+
+        // Super Admin default
+        if (role.toLowerCase() === 'super admin') return "/dashboard/lease";
+
+        const priorityPaths = [
+            { path: "properties.lease", route: "/dashboard/lease" },
+            { path: "properties.sale", route: "/dashboard/sale" },
+            { path: "properties.homestay", route: "/dashboard/homestay" },
+            { path: "userManagement.userDetails", route: "/dashboard/user-details" },
+            { path: "userManagement.enquires", route: "/dashboard/enquiry" },
+            { path: "menuStaffs.roles", route: "/dashboard/roles" },
+            { path: "menuStaffs.staffs", route: "/dashboard/staffs" },
+            { path: "otherEnquiry.contactEnquiry", route: "/dashboard/contact-enquiry" },
+            { path: "blogs.subscription", route: "/dashboard/subscription" },
+            { path: "cms.homePage", route: "/dashboard/cms/home" },
+            { path: "blogs.blogCms", route: "/dashboard/cms/blogs" },
+            { path: "landlords", route: "/dashboard/landlords" },
+            { path: "masters", route: "/dashboard/masters" },
+            { path: "settings.notification", route: "/dashboard/settings/notification" },
+            { path: "settings.testimonials", route: "/dashboard/settings/testimonials" }
+        ];
+
+        for (const item of priorityPaths) {
+            if (!isHidden(item.path, customPermissions)) {
+                return item.route;
+            }
+        }
+
+        return "/dashboard/profile";
+    };
+
     return (
-        <PermissionContext.Provider value={{ isHidden, can, userRole, isApprover, loading, refreshPermissions: fetchPermissions }}>
+        <PermissionContext.Provider value={{ isHidden, can, getFirstAccessiblePath, userRole, isApprover, loading, refreshPermissions: fetchPermissions }}>
             {children}
         </PermissionContext.Provider>
     );

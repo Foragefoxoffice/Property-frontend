@@ -17,7 +17,7 @@ import { Heart, Filter, ChevronDown, ChevronUp, SlidersHorizontal } from 'lucide
 import { useLanguage } from '@/Language/LanguageContext';
 import { useFavorites } from '../Context/FavoritesContext';
 import { translations } from '@/Language/translations';
-import { normalizeFancyText } from '@/utils/display';
+import { normalizeFancyText, formatNumber, parseNumber } from '@/utils/display';
 
 export default function ListingPage() {
     const navigate = useNavigate();
@@ -61,7 +61,6 @@ export default function ListingPage() {
     const [propertyTypes, setPropertyTypes] = useState([]);
     const [currencies, setCurrencies] = useState([]);
 
-    // Comprehensive filters matching dashboard
     const [filters, setFilters] = useState({
         propertyId: searchParams.get('propertyId') || '',
         keyword: searchParams.get('keyword') || '',
@@ -72,8 +71,8 @@ export default function ListingPage() {
         bedrooms: searchParams.get('bedrooms') || '',
         bathrooms: searchParams.get('bathrooms') || '',
         currency: searchParams.get('currency') || '',
-        minPrice: searchParams.get('minPrice') || '',
-        maxPrice: searchParams.get('maxPrice') || ''
+        minPrice: formatNumber(searchParams.get('minPrice') || ''),
+        maxPrice: formatNumber(searchParams.get('maxPrice') || '')
     });
     const [sortBy, setSortBy] = useState('default');
     const observer = useRef();
@@ -94,8 +93,8 @@ export default function ListingPage() {
             bedrooms: searchParams.get('bedrooms') || '',
             bathrooms: searchParams.get('bathrooms') || '',
             currency: searchParams.get('currency') || '',
-            minPrice: searchParams.get('minPrice') || '',
-            maxPrice: searchParams.get('maxPrice') || ''
+            minPrice: formatNumber(searchParams.get('minPrice') || ''),
+            maxPrice: formatNumber(searchParams.get('maxPrice') || '')
         };
 
         const targetType = (type && ['Lease', 'Sale', 'Home Stay'].includes(type)) ? type : 'All';
@@ -280,8 +279,8 @@ export default function ListingPage() {
             if (activeFilters.bedrooms) params.bedrooms = activeFilters.bedrooms;
             if (activeFilters.bathrooms) params.bathrooms = activeFilters.bathrooms;
             if (activeFilters.currency) params.currency = activeFilters.currency;
-            if (activeFilters.minPrice) params.minPrice = activeFilters.minPrice;
-            if (activeFilters.maxPrice) params.maxPrice = activeFilters.maxPrice;
+            if (activeFilters.minPrice) params.minPrice = parseNumber(activeFilters.minPrice);
+            if (activeFilters.maxPrice) params.maxPrice = parseNumber(activeFilters.maxPrice);
 
             // Create cache key from params
             const cacheKey = JSON.stringify(params);
@@ -328,7 +327,12 @@ export default function ListingPage() {
 
     const handleFilterChange = (key, value) => {
         setFilters(prev => {
-            const newFilters = { ...prev, [key]: value };
+            let processedValue = value;
+            if (key === 'minPrice' || key === 'maxPrice') {
+                processedValue = formatNumber(value);
+            }
+
+            const newFilters = { ...prev, [key]: processedValue };
             // Hierarchical clearing logic
             if (key === 'projectId') {
                 newFilters.zoneId = '';
@@ -669,21 +673,21 @@ export default function ListingPage() {
                                                 <div>
                                                     <label className="block text-[15px] font-bold text-black mb-3">{t.minPrice}</label>
                                                     <input
-                                                        type="number"
+                                                        type="text"
                                                         className="w-full px-4 py-[11px] border border-[#d1d5dc] rounded-lg text-[15px] bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all font-medium"
                                                         placeholder="Min"
                                                         value={filters.minPrice}
-                                                        onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                                                        onChange={(e) => handleFilterChange('minPrice', e.target.value.replace(/,/g, ''))}
                                                     />
                                                 </div>
                                                 <div>
                                                     <label className="block text-[15px] font-bold text-black mb-3">{t.maxPrice}</label>
                                                     <input
-                                                        type="number"
+                                                        type="text"
                                                         className="w-full px-4 py-[11px] border border-[#d1d5dc] rounded-lg text-[15px] bg-white placeholder-gray-400 hover:border-[#41398B] focus:outline-none focus:border-[#41398B] focus:ring-2 focus:ring-[#41398B]/20 transition-all font-medium"
                                                         placeholder="Max"
                                                         value={filters.maxPrice}
-                                                        onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                                                        onChange={(e) => handleFilterChange('maxPrice', e.target.value.replace(/,/g, ''))}
                                                     />
                                                 </div>
                                             </div>

@@ -13,7 +13,7 @@ import ResetPassword from "./Login/ResetPassword.jsx";
 import DashboardLayout from "./Admin/SideBar/DashboardLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { LanguageProvider } from "./Language/LanguageContext.jsx";
-import { PermissionProvider } from "./Context/PermissionContext.jsx";
+import { PermissionProvider, usePermissions } from "./Context/PermissionContext.jsx";
 import { FavoritesProvider } from "./Context/FavoritesContext.jsx";
 import { SocketProvider } from "./Context/SocketContext.jsx";
 import PublicLayout from "./components/Layout/PublicLayout.jsx";
@@ -93,6 +93,12 @@ import Notification from "./Admin/Notification/Notification.jsx";
 import TestimonialsCms from "./AdminCms/TestimonialCms/TestimonialsCms.jsx";
 import GiveTestimonial from "./Pages/GiveTestimonial.jsx";
 
+const DashboardIndex = () => {
+  const { getFirstAccessiblePath, loading } = usePermissions();
+  if (loading) return null;
+  return <Navigate to={getFirstAccessiblePath()} replace />;
+};
+
 createRoot(document.getElementById("root")).render(
   <HelmetProvider>
     <BrowserRouter>
@@ -130,6 +136,7 @@ createRoot(document.getElementById("root")).render(
                     </ProtectedRoute>
                   }
                 >
+                  <Route index element={<DashboardIndex />} />
                   {/* ---------- PROPERTY LIST PAGES ---------- */}
                   <Route
                     path="lease"

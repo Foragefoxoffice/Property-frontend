@@ -27,11 +27,17 @@ export function safeArray(a) {
 }
 
 export function formatNumber(num) {
-    if (num === null || num === undefined || num === "") return "-";
-    const n = Number(num);
+    if (num === null || num === undefined || num === "") return "";
+    const n = Number(num.toString().replace(/,/g, ""));
     if (Number.isNaN(n)) return String(num);
     return n.toLocaleString();
 }
+
+export function parseNumber(str) {
+    if (!str) return "";
+    return str.toString().replace(/,/g, "");
+}
+
 
 /**
  * Normalizes "fancy fonts" (Unicode Mathematical Alphanumeric Symbols) 
