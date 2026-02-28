@@ -29,6 +29,15 @@ export default function Header({ showNavigation = true }) {
   const [activeProject, setActiveProject] = useState(null);
   const [userImage, setUserImage] = useState(localStorage.getItem("userImage") || "");
   const [footerData, setFooterData] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const handleProfileUpdate = () => {
@@ -306,8 +315,8 @@ export default function Header({ showNavigation = true }) {
 
   return (
     <header className="w-full sticky top-0 z-50 shadow-sm">
-      {/* Top Navigation Bar */}
-      <div className="bg-[#000] text-white py-2 hidden md:block">
+      {/* Top Navigation Bar - Hidden on scroll to save space */}
+      <div className={`bg-[#000] text-white overflow-hidden transition-all duration-300 hidden md:block ${isScrolled ? 'h-0 opacity-0' : 'h-10 opacity-100 py-2'}`}>
         <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center text-[13px] font-medium">
           <div className="flex items-center gap-6">
             {footerData?.footerNumber?.[0] && (
@@ -348,7 +357,7 @@ export default function Header({ showNavigation = true }) {
           isOpen={showChangePasswordModal}
           onClose={() => setShowChangePasswordModal(false)}
         />
-        <div className="max-w-[1400px] mx-auto px-2 md:px-6 md:py-4 py-2 flex items-center justify-between relative">
+        <div className={`max-w-[1400px] mx-auto px-2 md:px-6 transition-all duration-300 flex items-center justify-between relative ${isScrolled ? 'md:py-2 py-1' : 'md:py-4 py-2'}`}>
           {/* Mobile Menu Button */}
           <button
             className="lg:hidden p-2 text-gray-600 hover:text-[#41398B] transition-colors rounded-lg hover:bg-gray-50"
@@ -362,7 +371,7 @@ export default function Header({ showNavigation = true }) {
           <div className="flex items-center">
             {/* Desktop Logo */}
             <img
-              className="hidden lg:block h-8 md:h-10 object-contain cursor-pointer"
+              className={`hidden lg:block object-contain cursor-pointer transition-all duration-300 ${isScrolled ? 'h-7 md:h-8' : 'h-8 md:h-10'}`}
               src={getLogoUrl(headerLogo)}
               alt="Logo"
               onClick={() => navigate("/")}

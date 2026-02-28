@@ -126,7 +126,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
     };
 
     return (
-        <section ref={sectionRef} className="py-8 md:px-6 px-4 md:py-16 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff] mx-auto">
+        <section ref={sectionRef} className="py-6 md:px-6 px-4 md:py-10 bg-gradient-to-br from-[#f8f7ff] via-white to-[#f0eeff] mx-auto border-t border-gray-100">
             <div className="max-w-7xl mx-auto">
                 {/* Section Header */}
                 <div className="text-center mb-8 md:mb-16">

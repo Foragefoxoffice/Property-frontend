@@ -44,7 +44,7 @@ const FloatingContactButtons = () => {
     const buttons = [
         {
             id: 'call',
-            icon: <Phone className="w-6 h-6 md:w-7 md:h-7" fill="white" />,
+            icon: <Phone className="w-6 h-6 md:w-6 md:h-6" fill="white" />,
             link: primaryPhone ? `tel:${primaryPhone}` : null,
             color: 'bg-[#FF0000]',
             pingColor: '#FF0000',
@@ -90,28 +90,43 @@ const FloatingContactButtons = () => {
 
     return (
         <>
-            {/* Desktop Floating Buttons (Bottom Left as in Image 1) */}
-            <div className="fixed left-6 bottom-14 z-[9999] hidden md:flex flex-col gap-4">
-                {buttons.map((btn) => (
+            {/* Desktop Floating Buttons (Bottom Right) */}
+            <div className="fixed right-6 bottom-28 z-[9999] hidden md:flex flex-col items-end gap-3 group/floating">
+                {/* Individual Buttons (Shown on group hover) */}
+                <div className="flex flex-col gap-3 opacity-0 translate-y-4 pointer-events-none group-hover/floating:opacity-100 group-hover/floating:translate-y-0 group-hover/floating:pointer-events-auto transition-all duration-300 ease-in-out">
+                    {buttons.slice(1).map((btn) => (
+                        <a
+                            key={btn.id}
+                            href={btn.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`${btn.color} text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 group/btn relative`}
+                        >
+                            {btn.icon}
+                            <span className="absolute right-16 bg-[#2a2a2a] text-white px-3 py-1.5 rounded-lg shadow-xl text-sm font-semibold opacity-0 group-hover/btn:opacity-100 transition-all duration-200 whitespace-nowrap pointer-events-none transform -translate-x-2 group-hover/btn:translate-x-0">
+                                {btn.label}
+                                <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-2 h-2 bg-[#2a2a2a] rotate-45"></div>
+                            </span>
+                        </a>
+                    ))}
+                </div>
+
+                {/* Main Trigger Button (Primary Call Button) */}
+                <div className="relative">
                     <a
-                        key={btn.id}
-                        href={btn.link}
+                        href={buttons[0].link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`${btn.color} text-white floating-button w-11 h-11 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 group relative`}
+                        className={`${buttons[0].color} text-white w-11 h-11 rounded-full flex items-center justify-center shadow-[0_8px_25px_rgba(255,0,0,0.3)] hover:scale-110 transition-all duration-300 relative z-10`}
                     >
-                        {btn.icon}
-                        <span className="absolute left-16 bg-white text-black px-3 py-1 rounded shadow-md text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                            {btn.label}
-                        </span>
-
-                        {/* Pulse animation for all icons */}
+                        {buttons[0].icon}
+                        {/* Pulse animation */}
                         <span
-                            className="absolute inset-0 rounded-full animate-ping opacity-20 -z-10"
-                            style={{ backgroundColor: btn.pingColor }}
+                            className="absolute inset-0 rounded-full animate-ping opacity-25 -z-10"
+                            style={{ backgroundColor: buttons[0].pingColor }}
                         ></span>
                     </a>
-                ))}
+                </div>
             </div>
 
             {/* Mobile Sticky Bottom Bar (Bottom as in Image 2) */}

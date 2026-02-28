@@ -208,7 +208,7 @@ export default function HomeBanner({ homePageData }) {
 
     return (
         <>
-            <div className="relative min-h-[70vh] md:min-h-[100vh] bg-cover bg-center bg-no-repeat place-content-center"
+            <div className="relative min-h-[70vh] md:min-h-[85vh] bg-cover bg-center bg-no-repeat place-content-center"
                 style={{
                     backgroundImage: homePageData?.backgroundImage
                         ? `url(${getImageUrl(homePageData.backgroundImage)})`
@@ -217,7 +217,7 @@ export default function HomeBanner({ homePageData }) {
                 <div className="absolute inset-0 bg-black/50"></div>
                 <div className="relative z-10 max-w-7xl mx-auto px-6 py-0">
                     {/* Title & Description */}
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-6">
                         <h1 className="text-3xl md:text-5xl font-medium text-white mb-4 animate-fadeInUp">
                             {language === 'en'
                                 ? (homePageData?.heroTitle_en || 'Find The Best Place')
