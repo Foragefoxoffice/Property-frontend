@@ -47,7 +47,7 @@ export default function Header({ showNavigation = true }) {
     propertiesSale: { en: "Properties for Sale", vi: "Bất động sản bán" },
     propertiesHomestay: { en: "Properties for Homestay", vi: "Bất động sản Homestay" },
     aboutus: { en: "About Us", vi: "Về chúng tôi" },
-    blog: { en: "Blog", vi: "Blog" },
+    blog: { en: "News", vi: "Tin tức" },
     contacts: { en: "Contact Us", vi: "Liên hệ" },
     loginRegister: { en: "Login/Register", vi: "Đăng nhập/Đăng ký" },
     changePassword: { en: "Change Password", vi: "Đổi mật khẩu" },

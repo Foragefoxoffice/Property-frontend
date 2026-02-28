@@ -432,7 +432,7 @@ export default function HomeBanner({ homePageData }) {
                                 {/* Property Type */}
                                 <div className="order-7 lg:order-8">
                                     <label className="block text-md font-bold text-black mb-2">
-                                        {language === 'en' ? 'Property Type' : 'Loại Bất Động Sản'}
+                                        {language === 'en' ? 'Property Type' : 'Loại căn'}
                                     </label>
                                     <Select
                                         className="custom-selectss"

@@ -177,9 +177,9 @@ export default function CreatePropertyPreview({
     transactionType: { en: "Transaction Type", vi: "Loại giao dịch" },
     project: { en: "Project / Community", vi: "Dự án / Khu dân cư" },
     areaZone: { en: "Area / Zone", vi: "Khu vực / Vùng" },
-    block: { en: "Block Name", vi: "Tên khối" },
+    block: { en: "Block Name", vi: "Tên tòa" },
     propertyTitle: { en: "Property Title", vi: "Tiêu đề bất động sản" },
-    propertyType: { en: "Property Type", vi: "Loại bất động sản" },
+    propertyType: { en: "Property Type", vi: "Loại căn" },
     dateListed: { en: "Date Listed", vi: "Ngày niêm yết" },
     availableFrom: { en: "Available From", vi: "Có sẵn từ" },
     availabilityStatus: { en: "Availability Status", vi: "Trạng thái sẵn có" },
@@ -191,7 +191,7 @@ export default function CreatePropertyPreview({
     bathrooms: { en: "Bathrooms", vi: "Phòng tắm" },
     floors: { en: "Floors", vi: "Số tầng" },
     furnishing: { en: "Furnishing", vi: "Trang bị nội thất" },
-    view: { en: "View", vi: "Hướng nhìn" },
+    view: { en: "View", vi: "View" },
 
     // Financial
     currency: { en: "Currency", vi: "Tiền tệ" },
@@ -323,7 +323,7 @@ export default function CreatePropertyPreview({
               value={safe(li.listingInformationBlockName)}
             />
             <Field
-              label={lang === "en" ? "Property No" : "Số bất động sản"}
+              label={lang === "en" ? "Property No" : "Mã căn"}
               value={safe(li.listingInformationPropertyNo)}
             />
             <Field

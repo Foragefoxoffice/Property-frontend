@@ -1,0 +1,149 @@
+# Property Management System - Error Messages (English)
+
+This document contains all error, validation, and alert messages found in the application.
+
+
+## General Translations
+
+- Trash
+- Delete Role?
+- Are you sure you want to delete this role? This action cannot be undone.
+- Delete
+- Role deleted successfully
+- Error saving role
+- Error deleting role
+- Failed to fetch roles
+- Owner deleted successfully
+- Failed to load owners
+- Delete failed
+- Error saving owner
+- Please select a CSV file
+- Please select a file first
+- Failed to update
+- Failed to fetch data
+- Staff deleted successfully
+- Error deleting staff
+- Error saving staff
+- Are you sure you want to delete this staff member? This action cannot be undone.
+- Yes, Delete
+- Category deleted successfully
+- Failed to save category
+- Failed to delete category
+- Delete Category?
+- Are you sure you want to delete this category? This action cannot be undone.
+- Property not found
+- Failed to copy link
+- Delete Enquiry
+- Are you sure you want to delete this enquiry? This action cannot be undone.
+- Delete Selected
+- Permanently delete this property?
+- This cannot be undone. The property will be permanently removed.
+- Delete Permanently
+- Delete {count} properties?
+- Delete All
+- No trashed properties
+- Failed to restore
+- Property permanently deleted
+- Selected properties deleted permanently
+- Bulk delete failed
+- Login failed. Please check your credentials.
+- Registration successful! Please login.
+- Passwords do not match
+- Registration failed
+- This action cannot be undone. This testimonial will be permanently removed from your website.
+- Failed to add testimonial
+- Failed to update section headers
+- Failed to update visibility
+- Testimonial deleted successfully
+- Failed to delete testimonial
+- Failed to fetch testimonials
+- Failed to save
+- Deleted successfully
+- Failed to delete
+- Failed to upload image
+- Please fill in the About Us section first
+- Failed to save banner section
+- Please fill in the Banner section first
+- Failed to save about section
+- Please fill in the Banner and About sections first
+- Failed to save features section
+- Please fill all required fields in both languages
+- Failed to fetch categories
+- Please login to add to favorites
+- Error adding favorite
+- Please login to send enquiry
+- Invalid favorites data
+- Error sending enquiry
+- Failed to restore property
+- Failed to approve property
+- Move to Trash?
+- This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+- This property will be moved to trash and can be restored later.
+- Move to Trash
+- Copy failed
+- Failed to delete property
+- Moved to trash
+- Subscription deleted successfully
+- Failed to fetch subscriptions
+- Error deleting subscription
+- Enquiry deleted successfully
+- Failed to update status
+- Failed to delete enquiry
+- All fields are required
+- Delete Subscription?
+- Are you sure you want to delete this subscription? This action cannot be undone.
+- Failed to fetch settings
+- Cannot delete project. It is used in existing Property Listings.
+- Cannot delete project because Zone & Block exist.
+- A Project with this name already exists.
+- Cannot delete role: There are users assigned to this role. Please reassign the users before deleting.
+- A role with this name already exists.
+- A category with this name already exists.
+- Category is assigned to blogs. Cannot delete.
+- Email already exists.
+- Staff not found.
+- Cannot update Super Admin staff.
+- Cannot delete Super Admin staff.
+- Required fields missing
+- Cannot delete this master data because it is present in a created property. Delete the property first.
+- Property save failed
+
+## Backend Error Mappings
+
+- Role is assigned to users. Cannot delete.
+- Cannot delete category because it has posts assigned to it.
+- Email already exists
+- Staff not found
+- Cannot update Super Admin staff
+- Cannot delete Super Admin staff
+
+## Hardcoded Messages
+
+- Failed to update status.
+- Please fill all English and Vietnamese fields
+- Failed to delete Parking Availability
+- Failed to delete Pet Policy
+- Failed to save data.
+- All rows have errors. Please fix them and try again.
+- Please login to send request
+- Invalid property data
+- Failed to send request
+- Error sending request
+- You can only upload image files!
+- Image must be smaller than 5MB!
+- Failed to fetch page data
+- Failed to upload icon
+- Failed to fetch blog page data
+- Failed to fetch blog data
+- Please fill in the Blog Content and Metadata first
+- Image upload failed
+- Failed to fetch blogs
+- Failed to delete blog
+- Please fill in the required sections first
+- Please enter your testimonial
+- Failed to load user profile
+- Max image size 5MB
+- Failed to save image
+- New passwords do not match!
+- Access Denied: Admin privileges required
+- Please fill in all Vietnamese fields

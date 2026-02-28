@@ -727,7 +727,7 @@ export default function CreatePropertyListStep2({
           <label className="text-sm text-[#131517] font-semibold"></label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
-              {lang === "en" ? "Hide" : "Trốn"}
+              {lang === "en" ? "Hide" : "Ẩn"}
             </span>
             <Switch
               checked={form.videoVisibility}
@@ -777,7 +777,7 @@ export default function CreatePropertyListStep2({
           </label>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
-              {lang === "en" ? "Hide" : "Trốn"}
+              {lang === "en" ? "Hide" : "Ẩn"}
             </span>
             <Switch
               checked={form.googleMapVisibility}
@@ -931,7 +931,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
 
                 <Switch
@@ -1018,7 +1018,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}
@@ -1104,7 +1104,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.feeTaxes}
@@ -1191,7 +1191,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.legalDocs}
@@ -1382,7 +1382,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.contractLength}
@@ -1424,7 +1424,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.deposit}
@@ -1511,7 +1511,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}
@@ -1720,7 +1720,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.checkIn}
@@ -1760,7 +1760,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.checkOut}
@@ -1801,7 +1801,7 @@ export default function CreatePropertyListStep2({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
 
                 <Switch
@@ -1888,7 +1888,7 @@ export default function CreatePropertyListStep2({
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.financialVisibility?.paymentTerm}

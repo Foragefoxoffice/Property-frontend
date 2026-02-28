@@ -30,7 +30,7 @@ export default function PropertyMaster() {
       path: "/dashboard/masters/zone-sub-area",
     },
     {
-      name: language === "vi" ? "Tên khối" : "Block Name",
+      name: language === "vi" ? "Tên tòa" : "Block Name",
       description:
         language === "vi"
           ? "Tên block hoặc tòa nhà."
@@ -38,10 +38,10 @@ export default function PropertyMaster() {
       path: "/dashboard/masters/block",
     },
     {
-      name: language === "vi" ? "Loại bất động sản" : "Property Type",
+      name: language === "vi" ? "Loại căn" : "Property Type",
       description:
         language === "vi"
-          ? "Định nghĩa loại bất động sản."
+          ? "Định nghĩa Loại căn."
           : "Defines the category of property.",
       path: "/dashboard/masters/property-type",
     },
@@ -65,7 +65,7 @@ export default function PropertyMaster() {
       name: language === "vi" ? "Phạm vi sàn" : "Floor Range",
       description:
         language === "vi"
-          ? "Phạm vi tầng trong tòa nhà."
+          ? "Khoảng tầng trong tòa nhà."
           : "Floor range of the building.",
       path: "/dashboard/masters/floor-range",
     },
@@ -140,9 +140,8 @@ export default function PropertyMaster() {
           <div
             key={index}
             onClick={() => navigate(item.path)}
-            className={`grid grid-cols-[2fr_4fr_auto] items-center px-6 py-4 text-sm text-gray-700 cursor-pointer ${
-              index % 2 === 1 ? "bg-gray-50" : "bg-white"
-            } hover:bg-gray-100 transition-colors`}
+            className={`grid grid-cols-[2fr_4fr_auto] items-center px-6 py-4 text-sm text-gray-700 cursor-pointer ${index % 2 === 1 ? "bg-gray-50" : "bg-white"
+              } hover:bg-gray-100 transition-colors`}
           >
             <div className="font-medium">{item.name}</div>
             <div className="text-gray-600 leading-snug">{item.description}</div>

@@ -857,7 +857,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.projectCommunity}
@@ -944,7 +944,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.areaZone}
@@ -1017,12 +1017,12 @@ export default function CreatePropertyListStep1({
           <div className="flex flex-col w-full gap-1">
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm font-semibold">
-                {lang === "en" ? "Block Name" : "Tên khối"}
+                {lang === "en" ? "Block Name" : "Tên tòa"}
               </label>
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.blockName}
@@ -1091,12 +1091,12 @@ export default function CreatePropertyListStep1({
             {/* Top row: Label + Switch */}
             <div className="flex items-center justify-between w-full">
               <label className="text-sm font-medium">
-                {lang === "en" ? "Property No" : "Số bất động sản"}
+                {lang === "en" ? "Property No" : "Mã căn"}
               </label>
               {/* 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.listingInformationVisibility?.propertyNo}
@@ -1129,7 +1129,7 @@ export default function CreatePropertyListStep1({
           </div>
 
           <Select
-            label={lang === "en" ? "Property Type" : "Loại bất động sản"}
+            label={lang === "en" ? "Property Type" : "Loại căn"}
             name="propertyType"
             lang={lang}
             options={filteredPropertyTypes}
@@ -1156,7 +1156,7 @@ export default function CreatePropertyListStep1({
 
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">
-                      {lang === "en" ? "Hide" : "Trốn"}
+                      {lang === "en" ? "Hide" : "Ẩn"}
                     </span>
                     <Switch
                       checked={form.listingInformationVisibility?.availableFrom}
@@ -1212,7 +1212,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.unit}
@@ -1250,7 +1250,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.unitSize}
@@ -1287,7 +1287,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.bedrooms}
@@ -1324,7 +1324,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.bathrooms}
@@ -1357,12 +1357,12 @@ export default function CreatePropertyListStep1({
             {/* ✅ Top Row: Label + Switch */}
             <div className="flex items-center justify-between mb-1">
               <label className="text-sm text-[#131517] font-semibold">
-                {lang === "en" ? "Floor Range" : "Phạm vi tầng"}
+                {lang === "en" ? "Floor Range" : "Khoảng tầng"}
               </label>
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.floorRange}
@@ -1389,7 +1389,7 @@ export default function CreatePropertyListStep1({
               showSearch
               allowClear
               placeholder={
-                lang === "en" ? "Select Floor Range" : "Chọn phạm vi tầng"
+                lang === "en" ? "Select Floor Range" : "Chọn Khoảng tầng"
               }
 
               /* Selected value (must be string) */
@@ -1444,7 +1444,7 @@ export default function CreatePropertyListStep1({
 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.furnishing}
@@ -1478,11 +1478,11 @@ export default function CreatePropertyListStep1({
           <div className="flex flex-col w-full">
             <div className="flex items-center justify-between">
               <label className="text-sm text-[#131517] font-semibold">
-                {lang === "en" ? "View" : "Hướng nhìn"}
+                {lang === "en" ? "View" : "View"}
               </label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Trốn"}
+                  {lang === "en" ? "Hide" : "Ẩn"}
                 </span>
                 <Switch
                   checked={form.propertyInformationVisibility?.view}
@@ -1531,7 +1531,7 @@ export default function CreatePropertyListStep1({
             </label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">
-                {lang === "en" ? "Hide" : "Trốn"}
+                {lang === "en" ? "Hide" : "Ẩn"}
               </span>
               <Switch
                 checked={form.whatNearbyVisibility}
@@ -1560,7 +1560,7 @@ export default function CreatePropertyListStep1({
         </div>
 
         {/* === Property Utility === */}
-        {/* ✅ Header Row: Title + Add + {lang === "en" ? "Hide" : "Trốn"} Switch */}
+        {/* ✅ Header Row: Title + Add + {lang === "en" ? "Hide" : "Ẩn"} Switch */}
         <div className="flex items-center justify-between mt-8 mb-4">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">{t.propertyUtility}</h2>
@@ -1574,7 +1574,7 @@ export default function CreatePropertyListStep1({
 
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">
-              {lang === "en" ? "Hide" : "Trốn"}
+              {lang === "en" ? "Hide" : "Ẩn"}
             </span>
             <Switch
               checked={form.propertyUtilityVisibility}

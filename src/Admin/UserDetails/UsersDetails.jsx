@@ -279,7 +279,7 @@ export default function UsersDetails() {
                             <thead className="bg-gray-50 text-gray-700">
                                 <tr>
                                     <th className="px-6 py-4 text-left font-medium">
-                                        {isVI ? "Nhân viên" : "User Info"}
+                                        {isVI ? "Thông tin người dùng" : "User Info"}
                                     </th>
                                     <th className="px-6 py-4 text-left font-medium">
                                         {isVI ? "Liên hệ" : "Contact"}
@@ -288,7 +288,7 @@ export default function UsersDetails() {
                                         {isVI ? "Vai trò" : "Role"}
                                     </th>
                                     <th className="px-6 py-4 text-center font-medium">
-                                        {isVI ? "Tích cực" : "Active"}
+                                        {isVI ? "Hoạt động" : "Active"}
                                     </th>
                                     <th className="px-6 py-4 text-right font-medium">
                                         {isVI ? "Hành động" : "Actions"}
@@ -355,11 +355,11 @@ export default function UsersDetails() {
                                             <td className="px-6 py-4 text-center">
                                                 {row.status === "Active" ? (
                                                     <span className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <ShieldCheck size={14} /> {isVI ? "Tích cực" : "Active"}
+                                                        <ShieldCheck size={14} /> {isVI ? "Hoạt động" : "Active"}
                                                     </span>
                                                 ) : (
                                                     <span className="inline-flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <ShieldAlert size={14} /> {isVI ? "Không tích cực" : "Inactive"}
+                                                        <ShieldAlert size={14} /> {isVI ? "Không Hoạt động" : "Inactive"}
                                                     </span>
                                                 )}
                                             </td>
@@ -609,10 +609,10 @@ export default function UsersDetails() {
                                     popupClassName="custom-dropdown"
                                 >
                                     <Select.Option value="active">
-                                        {isVI ? "Tích cực" : "Active"}
+                                        {isVI ? "Hoạt động" : "Active"}
                                     </Select.Option>
                                     <Select.Option value="inactive">
-                                        {isVI ? "Không tích cực" : "Inactive"}
+                                        {isVI ? "Không Hoạt động" : "Inactive"}
                                     </Select.Option>
                                 </Select>
                             </div>

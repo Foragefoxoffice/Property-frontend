@@ -266,7 +266,7 @@ export default function Enquires() {
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.email}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.number}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.addedOn}</th>
-                                        <th className="px-6 py-3 font-medium text-[#111111]">{t.listing}</th>
+                                        <th className="px-6 py-3 font-medium text-[#111111]">{t.listingproperty}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111]">{t.message || "Message"}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111] text-center">{t.status}</th>
                                         <th className="px-6 py-3 font-medium text-[#111111] text-center">{t.actions || "Actions"}</th>

@@ -183,7 +183,7 @@ export default function BlockPage() {
       ) {
         CommonToaster(
           isVI
-            ? "Tên khối này đã tồn tại trong khu vực đã chọn."
+            ? "Tên tòa này đã tồn tại trong khu vực đã chọn."
             : "This block name already exists in the selected Zone.",
           "error"
         );
@@ -275,7 +275,7 @@ export default function BlockPage() {
           </button>
 
           <h2 className="text-2xl font-semibold text-gray-900">
-            {isVI ? "Tên Khối" : "Block Name"}
+            {isVI ? "Tên tòa" : "Block Name"}
           </h2>
         </div>
 
@@ -298,7 +298,7 @@ export default function BlockPage() {
           hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm"
         >
           <Plus size={18} />
-          {isVI ? "Thêm khối" : "Add Block"}
+          {isVI ? "Thêm tòa mới" : "Add Block"}
         </button>
       </div>
 
@@ -317,7 +317,7 @@ export default function BlockPage() {
                   {isVI ? "Khu vực/Khu vực" : " Area /Zone"}
                 </th>
                 <th className="px-6 py-3 text-left font-medium">
-                  {isVI ? "Tên khối" : "Block Name"}
+                  {isVI ? "Tên tòa" : "Block Name"}
                 </th>
                 <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Trạng thái" : "Status"}
@@ -691,7 +691,7 @@ export default function BlockPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">
-                      Tên khối <span className="text-red-500">*</span>
+                      Tên tòa <span className="text-red-500">*</span>
                     </label>
                     <input
                       name="name_vi"
