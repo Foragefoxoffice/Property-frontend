@@ -20,6 +20,7 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
+import SeoPanel from '../../components/Admin/SeoPanel';
 
 const { TextArea } = Input;
 
@@ -88,14 +89,30 @@ export default function TermsCondionsSeoForm({
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('vn');
+    const [previewImage, setPreviewImage] = useState(null);
+    const [ogImage, setOgImage] = useState('');
+    const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
 
     useEffect(() => {
         if (headerLang) {
             setActiveTab(headerLang);
         }
     }, [headerLang]);
-    const [previewImage, setPreviewImage] = useState(null);
-    const [ogImage, setOgImage] = useState('');
+    const activeTabTitle = Form.useWatch(`termsconditionsSeoMetaTitle_${activeTab}`, form);
+    const activeTabDesc = Form.useWatch(`termsconditionsSeoMetaDescription_${activeTab}`, form);
+    const activeTabKeywords = Form.useWatch(`termsconditionsSeoMetaKeywords_${activeTab}`, form);
+    const activeTabSlug = Form.useWatch(`termsconditionsSeoSlugUrl_${activeTab}`, form);
+    const activeTabCanonical = Form.useWatch(`termsConditionSeoCanonicalUrl_${activeTab}`, form);
+    const allowIndexing = Form.useWatch(`termsConditionSeoAllowIndexing`, form);
+
+    const seoData = {
+        focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
+        title: activeTabTitle || "",
+        description: activeTabDesc || "",
+        slug: activeTabSlug || "",
+        canonicalUrl: activeTabCanonical || "",
+        noIndex: allowIndexing === false,
+    };
 
     // Initialize OG image from pageData
     useEffect(() => {
@@ -109,12 +126,26 @@ export default function TermsCondionsSeoForm({
     // Force default values for Title and Slug
     useEffect(() => {
         form.setFieldsValue({
-            termsConditionSeoMetaTitle_en: 'Terms & Conditions',
-            termsConditionSeoSlugUrl_en: 'terms-conditions',
-            termsConditionSeoMetaTitle_vn: 'Điều Khoản & Điều Kiện',
-            termsConditionSeoSlugUrl_vn: 'dieu-khoan-dieu-kien'
+            termsconditionsSeoMetaTitle_en: 'Terms & Conditions',
+            termsconditionsSeoSlugUrl_en: 'terms-and-conditions',
+            termsconditionsSeoMetaTitle_vn: 'Điều Khoản Điều Kiện',
+            termsconditionsSeoSlugUrl_vn: 'dieu-khoan-dieu-kien'
         });
     }, [form, pageData]);
+
+    // Helper to render inline suggestion
+    const renderSuggestion = (checkKey) => {
+        const check = seoAnalysis?.checks?.[checkKey];
+        if (check && !check.passed && check.suggestion) {
+            return (
+                <div style={{ color: '#f97316', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                    <span>💡</span>
+                    <span>{check.suggestion}</span>
+                </div>
+            );
+        }
+        return null;
+    };
 
     // Handle OG Image upload
     const handleOgImageUpload = async (file) => {
@@ -191,6 +222,12 @@ export default function TermsCondionsSeoForm({
                             onFinishFailed={onFormFinishFailed}
                             disabled={!can('cms.termsConditions', 'edit')}
                         >
+                            <SeoPanel
+                                seoData={seoData}
+                                htmlContent={JSON.stringify(pageData) || ""}
+                                onAnalysisUpdate={setSeoAnalysis}
+                            />
+
                             <Tabs
                                 activeKey={activeTab}
                                 onChange={setActiveTab}
@@ -212,17 +249,21 @@ export default function TermsCondionsSeoForm({
                                                             Tiêu Đề Meta
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoMetaTitle_vn"
+                                                    name="termsconditionsSeoMetaTitle_vn"
                                                     rules={[
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Nhập tiêu đề meta cho SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Nhập tiêu đề meta cho SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Description */}
@@ -232,17 +273,21 @@ export default function TermsCondionsSeoForm({
                                                             Mô Tả Meta
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoMetaDescription_vn"
+                                                    name="termsconditionsSeoMetaDescription_vn"
                                                     rules={[
                                                         { max: 500, message: 'Tối đa 500 ký tự' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Nhập mô tả meta cho SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Nhập mô tả meta cho SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            disabled={!can('cms.termsConditions', 'edit')}
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Keywords */}
@@ -252,13 +297,16 @@ export default function TermsCondionsSeoForm({
                                                             Từ Khóa Meta
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoMetaKeywords_vn"
+                                                    name="termsconditionsSeoMetaKeywords_vn"
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Nhập từ khóa & nhấn Enter"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Nhập từ khóa & nhấn Enter"
+                                                            disabled={!can('cms.termsConditions', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInContent')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Slug URL */}
@@ -268,14 +316,17 @@ export default function TermsCondionsSeoForm({
                                                             Đường Dẫn Slug
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoSlugUrl_vn"
+                                                    name="termsconditionsSeoSlugUrl_vn"
                                                 >
-                                                    <Input
-                                                        placeholder="dieu-khoan-dieu-kien"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="dieu-khoan-dieu-kien"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('keywordInSlug')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
@@ -370,17 +421,21 @@ export default function TermsCondionsSeoForm({
                                                             Meta Title
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoMetaTitle_en"
+                                                    name="termsconditionsSeoMetaTitle_en"
                                                     rules={[
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Enter meta title for SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Enter meta title for SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Description */}
@@ -390,17 +445,21 @@ export default function TermsCondionsSeoForm({
                                                             Meta Description
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoMetaDescription_en"
+                                                    name="termsconditionsSeoMetaDescription_en"
                                                     rules={[
                                                         { max: 500, message: 'Maximum 500 characters allowed' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Enter meta description for SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Enter meta description for SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            disabled={!can('cms.termsConditions', 'edit')}
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Keywords */}
@@ -410,13 +469,16 @@ export default function TermsCondionsSeoForm({
                                                             Meta Keywords
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoMetaKeywords_en"
+                                                    name="termsconditionsSeoMetaKeywords_en"
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Type keyword & press Enter"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Type keyword & press Enter"
+                                                            disabled={!can('cms.termsConditions', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInContent')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Slug URL */}
@@ -426,14 +488,17 @@ export default function TermsCondionsSeoForm({
                                                             Slug URL
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoSlugUrl_en"
+                                                    name="termsconditionsSeoSlugUrl_en"
                                                 >
-                                                    <Input
-                                                        placeholder="terms-conditions"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="terms-and-conditions"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('keywordInSlug')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}

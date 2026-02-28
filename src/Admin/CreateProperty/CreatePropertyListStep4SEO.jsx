@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Eye, X, Plus, ArrowRight, ArrowLeft } from "lucide-react";
 import { Select as AntdSelect, Switch } from "antd";
+import SeoPanel from "../../components/Admin/SeoPanel";
 import { uploadPropertyMedia } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -147,6 +148,7 @@ export default function CreatePropertyListStep4SEO({
   };
 
   const [activeLang, setActiveLang] = useState("vi");
+  const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
 
   const [seo, setSeo] = useState(() => {
     const data = initialData.seoInformation || defaultSEO;
@@ -156,6 +158,15 @@ export default function CreatePropertyListStep4SEO({
       ogImage: data.ogImage || (data.ogImages && data.ogImages[0]) || "",
     };
   });
+
+  const seoData = {
+    focusKeyword: Array.isArray(seo.metaKeywords?.[activeLang]) && seo.metaKeywords[activeLang].length > 0 ? seo.metaKeywords[activeLang][0] : "",
+    title: seo.metaTitle?.[activeLang] || "",
+    description: seo.metaDescription?.[activeLang] || "",
+    slug: seo.slugUrl?.[activeLang] || "",
+    canonicalUrl: seo.canonicalUrl?.[activeLang] || "",
+    noIndex: seo.allowIndexing === false,
+  };
 
   /* ✅ Sync with initialData when it changes (Edit Mode) */
   React.useEffect(() => {
@@ -289,6 +300,20 @@ export default function CreatePropertyListStep4SEO({
 
   const [preview, setPreview] = useState(null);
 
+  // Helper to render inline suggestion
+  const renderSuggestion = (checkKey) => {
+    const check = seoAnalysis?.checks?.[checkKey];
+    if (check && !check.passed && check.suggestion) {
+      return (
+        <div style={{ color: '#f97316', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+          <span>💡</span>
+          <span>{check.suggestion}</span>
+        </div>
+      );
+    }
+    return null;
+  };
+
   /* ---------------------------------------------
        ✅ RENDER
     --------------------------------------------- */
@@ -338,17 +363,28 @@ export default function CreatePropertyListStep4SEO({
         </button>
       </div>
 
+      {/* ✅ NEW SEO TOOL PANEL */}
+      <SeoPanel
+        seoData={seoData}
+        htmlContent={initialData.description?.en || ""}
+        images={initialData.propertyImages || []}
+        onAnalysisUpdate={setSeoAnalysis}
+      />
+
       {/* ✅ SHARED SLUG URL (Non-editable, auto-synced) */}
       <div>
         <label className="text-sm font-semibold mb-2 block">
           Slug URL (Shared / Dùng chung) <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated from Title - Non-editable)</span>
         </label>
-        <input
-          placeholder="my-property-slug"
-          className={`${inputClass} bg-gray-100 cursor-not-allowed`}
-          value={seo.slugUrl?.en || ""}
-          readOnly
-        />
+        <div>
+          <input
+            placeholder="my-property-slug"
+            className={`${inputClass} bg-gray-100 cursor-not-allowed`}
+            value={seo.slugUrl?.en || ""}
+            readOnly
+          />
+          {renderSuggestion('keywordInSlug')}
+        </div>
       </div>
 
       {/* ✅ META TITLE */}
@@ -356,15 +392,19 @@ export default function CreatePropertyListStep4SEO({
         <label className="text-sm font-semibold mb-2 block">
           {labels.metaTitle[activeLang]}
         </label>
-        <input
-          key={`${activeLang}-metaTitle`}
-          placeholder="Type Here"
-          className={inputClass}
-          value={seo.metaTitle[activeLang]}
-          onChange={(e) =>
-            handleChange("metaTitle", activeLang, e.target.value)
-          }
-        />
+        <div>
+          <input
+            key={`${activeLang}-metaTitle`}
+            placeholder="Type Here"
+            className={inputClass}
+            value={seo.metaTitle[activeLang]}
+            onChange={(e) =>
+              handleChange("metaTitle", activeLang, e.target.value)
+            }
+          />
+          {renderSuggestion('titleLengthOK')}
+          {renderSuggestion('keywordInTitle')}
+        </div>
       </div>
 
       {/* ✅ META DESCRIPTION */}
@@ -372,16 +412,20 @@ export default function CreatePropertyListStep4SEO({
         <label className="text-sm font-semibold mb-2 block">
           {labels.metaDescription[activeLang]}
         </label>
-        <textarea
-          key={`${activeLang}-metaDescription`}
-          placeholder="Type here"
-          rows={4}
-          className={textareaClass}
-          value={seo.metaDescription[activeLang]}
-          onChange={(e) =>
-            handleChange("metaDescription", activeLang, e.target.value)
-          }
-        />
+        <div>
+          <textarea
+            key={`${activeLang}-metaDescription`}
+            placeholder="Type here"
+            rows={4}
+            className={textareaClass}
+            value={seo.metaDescription[activeLang]}
+            onChange={(e) =>
+              handleChange("metaDescription", activeLang, e.target.value)
+            }
+          />
+          {renderSuggestion('descriptionLengthOK')}
+          {renderSuggestion('keywordInDescription')}
+        </div>
       </div>
 
       {/* ✅ META KEYWORDS (Using New Component) */}
@@ -389,12 +433,15 @@ export default function CreatePropertyListStep4SEO({
         <label className="text-sm font-semibold mb-2 block">
           {labels.metaKeywords[activeLang]}
         </label>
-        <KeywordTagsInput
-          key={`${activeLang}-keywords`}
-          value={seo.metaKeywords[activeLang]}
-          onChange={(newKeywords) => handleChange("metaKeywords", activeLang, newKeywords)}
-          placeholder="Type keyword & press Enter"
-        />
+        <div>
+          <KeywordTagsInput
+            key={`${activeLang}-keywords`}
+            value={seo.metaKeywords[activeLang]}
+            onChange={(newKeywords) => handleChange("metaKeywords", activeLang, newKeywords)}
+            placeholder="Type keyword & press Enter"
+          />
+          {renderSuggestion('keywordInContent')}
+        </div>
       </div>
 
       {/* ✅ CANONICAL */}

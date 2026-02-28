@@ -22,6 +22,7 @@ import { usePermissions } from '../../Context/PermissionContext';
 import { useLanguage } from '../../Language/LanguageContext';
 import { translations } from '../../Language/translations';
 import { X } from 'lucide-react';
+import SeoPanel from '../../components/Admin/SeoPanel';
 
 const { TextArea } = Input;
 
@@ -93,6 +94,23 @@ export default function BlogSeoForm({
     const [activeTab, setActiveTab] = useState('vi');
     const [previewImage, setPreviewImage] = useState(null);
     const [ogImage, setOgImage] = useState('');
+    const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
+
+    const activeTabTitle = Form.useWatch(['seoInformation', 'metaTitle', activeTab], form);
+    const activeTabDesc = Form.useWatch(['seoInformation', 'metaDescription', activeTab], form);
+    const activeTabKeywords = Form.useWatch(['seoInformation', 'metaKeywords', activeTab], form);
+    const activeTabSlug = Form.useWatch(['seoInformation', 'slugUrl', activeTab], form);
+    const activeTabCanonical = Form.useWatch(['seoInformation', 'canonicalUrl', activeTab], form);
+    const allowIndexing = Form.useWatch(['seoInformation', 'allowIndexing'], form);
+
+    const seoData = {
+        focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
+        title: activeTabTitle || "",
+        description: activeTabDesc || "",
+        slug: activeTabSlug || "",
+        canonicalUrl: activeTabCanonical || "",
+        noIndex: allowIndexing === false,
+    };
 
     // Initialize OG image from blogData
     useEffect(() => {
@@ -167,6 +185,20 @@ export default function BlogSeoForm({
         });
     };
 
+    // Helper to render inline suggestion
+    const renderSuggestion = (checkKey) => {
+        const check = seoAnalysis?.checks?.[checkKey];
+        if (check && !check.passed && check.suggestion) {
+            return (
+                <div style={{ color: '#f97316', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                    <span>💡</span>
+                    <span>{check.suggestion}</span>
+                </div>
+            );
+        }
+        return null;
+    };
+
     // Handle form submission with OG image
     const handleFormSubmit = (values) => {
         const finalValues = {
@@ -219,6 +251,13 @@ export default function BlogSeoForm({
                             onFinishFailed={onFormFinishFailed}
                             disabled={!can('blogs.blogCms', 'edit')}
                         >
+                            {/* ✅ NEW SEO TOOL PANEL */}
+                            <SeoPanel
+                                seoData={seoData}
+                                htmlContent={blogData?.content?.en || blogData?.content?.vi || ""}
+                                onAnalysisUpdate={setSeoAnalysis}
+                            />
+
                             {/* Global Slug URL */}
                             <Form.Item
                                 label={
@@ -230,16 +269,19 @@ export default function BlogSeoForm({
                                 normalize={(value) => value?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || ''}
                                 help="The slug will be the same for both languages / Slash URL sẽ giống nhau cho cả hai ngôn ngữ"
                             >
-                                <Input
-                                    placeholder="my-blog-post"
-                                    size="large"
-                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                    onChange={(e) => {
-                                        // Sync to VI
-                                        const val = e.target.value?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || '';
-                                        form.setFieldValue(['seoInformation', 'slugUrl', 'vi'], val);
-                                    }}
-                                />
+                                <div>
+                                    <Input
+                                        placeholder="my-blog-post"
+                                        size="large"
+                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                        onChange={(e) => {
+                                            // Sync to VI
+                                            const val = e.target.value?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || '';
+                                            form.setFieldValue(['seoInformation', 'slugUrl', 'vi'], val);
+                                        }}
+                                    />
+                                    {renderSuggestion('keywordInSlug')}
+                                </div>
                             </Form.Item>
 
                             <Tabs
@@ -269,11 +311,15 @@ export default function BlogSeoForm({
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Nhập tiêu đề meta cho SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Nhập tiêu đề meta cho SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Description */}
@@ -288,13 +334,16 @@ export default function BlogSeoForm({
                                                         { max: 500, message: 'Tối đa 500 ký tự' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Nhập mô tả meta cho SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Nhập mô tả meta cho SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
-
                                                 {/* Meta Keywords */}
                                                 <Form.Item
                                                     label={
@@ -305,10 +354,13 @@ export default function BlogSeoForm({
                                                     name={['seoInformation', 'metaKeywords', 'vi']}
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Nhập từ khóa & nhấn Enter"
-                                                        disabled={!can('blogs.blogCms', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Nhập từ khóa & nhấn Enter"
+                                                            disabled={!can('blogs.blogCms', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInKeywords')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
@@ -405,11 +457,15 @@ export default function BlogSeoForm({
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Enter meta title for SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Enter meta title for SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Description */}
@@ -424,13 +480,16 @@ export default function BlogSeoForm({
                                                         { max: 500, message: 'Maximum 500 characters allowed' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Enter meta description for SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Enter meta description for SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
-
                                                 {/* Meta Keywords */}
                                                 <Form.Item
                                                     label={
@@ -441,10 +500,13 @@ export default function BlogSeoForm({
                                                     name={['seoInformation', 'metaKeywords', 'en']}
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Type keyword & press Enter"
-                                                        disabled={!can('blogs.blogCms', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Type keyword & press Enter"
+                                                            disabled={!can('blogs.blogCms', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInKeywords')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
