@@ -20,6 +20,7 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
+import SeoPanel from '../../components/Admin/SeoPanel';
 
 const { TextArea } = Input;
 
@@ -96,6 +97,23 @@ export default function ContactPageSeoForm({
     }, [headerLang]);
     const [previewImage, setPreviewImage] = useState(null);
     const [ogImage, setOgImage] = useState('');
+    const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
+
+    const activeTabTitle = Form.useWatch(`contactSeoMetaTitle_${activeTab}`, form);
+    const activeTabDesc = Form.useWatch(`contactSeoMetaDescription_${activeTab}`, form);
+    const activeTabKeywords = Form.useWatch(`contactSeoMetaKeywords_${activeTab}`, form);
+    const activeTabSlug = Form.useWatch(`contactSeoSlugUrl_${activeTab}`, form);
+    const activeTabCanonical = Form.useWatch(`contactSeoCanonicalUrl_${activeTab}`, form);
+    const allowIndexing = Form.useWatch(`contactSeoAllowIndexing`, form);
+
+    const seoData = {
+        focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
+        title: activeTabTitle || "",
+        description: activeTabDesc || "",
+        slug: activeTabSlug || "",
+        canonicalUrl: activeTabCanonical || "",
+        noIndex: allowIndexing === false,
+    };
 
     // Initialize OG image from pageData
     useEffect(() => {
@@ -151,6 +169,20 @@ export default function ContactPageSeoForm({
         onSubmit({ ...values, contactSeoOgImage: ogImage });
     };
 
+    // Helper to render inline suggestion
+    const renderSuggestion = (checkKey) => {
+        const check = seoAnalysis?.checks?.[checkKey];
+        if (check && !check.passed && check.suggestion) {
+            return (
+                <div style={{ color: '#f97316', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                    <span>💡</span>
+                    <span>{check.suggestion}</span>
+                </div>
+            );
+        }
+        return null;
+    };
+
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
             {/* Accordion Header */}
@@ -191,6 +223,12 @@ export default function ContactPageSeoForm({
                             onFinishFailed={onFormFinishFailed}
                             disabled={!can('cms.contactUs', 'edit')}
                         >
+                            <SeoPanel
+                                seoData={seoData}
+                                htmlContent={JSON.stringify(pageData) || ""}
+                                onAnalysisUpdate={setSeoAnalysis}
+                            />
+
                             <Tabs
                                 activeKey={activeTab}
                                 onChange={setActiveTab}
@@ -217,15 +255,18 @@ export default function ContactPageSeoForm({
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Nhập tiêu đề meta cho SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Nhập tiêu đề meta cho SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={!can('cms.contactUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Meta Description */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -237,15 +278,18 @@ export default function ContactPageSeoForm({
                                                         { max: 500, message: 'Tối đa 500 ký tự' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Nhập mô tả meta cho SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.contactUs', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Nhập mô tả meta cho SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            disabled={!can('cms.contactUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Meta Keywords */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -255,13 +299,15 @@ export default function ContactPageSeoForm({
                                                     name="contactSeoMetaKeywords_vn"
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Nhập từ khóa & nhấn Enter"
-                                                        disabled={!can('cms.contactUs', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Nhập từ khóa & nhấn Enter"
+                                                            disabled={!can('cms.contactUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInContent')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Slug URL */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -270,12 +316,15 @@ export default function ContactPageSeoForm({
                                                     }
                                                     name="contactSeoSlugUrl_vn"
                                                 >
-                                                    <Input
-                                                        placeholder="lien-he"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="lien-he"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={!can('cms.contactUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInSlug')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
@@ -376,15 +425,18 @@ export default function ContactPageSeoForm({
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Enter meta title for SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Enter meta title for SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={!can('cms.contactUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Meta Description */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -396,15 +448,18 @@ export default function ContactPageSeoForm({
                                                         { max: 500, message: 'Maximum 500 characters allowed' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Enter meta description for SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.contactUs', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Enter meta description for SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            disabled={!can('cms.contactUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Meta Keywords */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -414,13 +469,15 @@ export default function ContactPageSeoForm({
                                                     name="contactSeoMetaKeywords_en"
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Type keyword & press Enter"
-                                                        disabled={!can('cms.contactUs', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Type keyword & press Enter"
+                                                            disabled={!can('cms.contactUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInContent')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Slug URL */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -429,12 +486,15 @@ export default function ContactPageSeoForm({
                                                     }
                                                     name="contactSeoSlugUrl_en"
                                                 >
-                                                    <Input
-                                                        placeholder="contact"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="contact"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('keywordInSlug')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}

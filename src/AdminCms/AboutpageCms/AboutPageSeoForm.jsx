@@ -20,6 +20,7 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
+import SeoPanel from '../../components/Admin/SeoPanel';
 
 const { TextArea } = Input;
 
@@ -88,14 +89,31 @@ export default function AboutPageSeoForm({
 }) {
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('vn');
+    const [previewImage, setPreviewImage] = useState(null);
+    const [ogImage, setOgImage] = useState('');
+    const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
 
     useEffect(() => {
         if (headerLang) {
             setActiveTab(headerLang);
         }
     }, [headerLang]);
-    const [previewImage, setPreviewImage] = useState(null);
-    const [ogImage, setOgImage] = useState('');
+
+    const activeTabTitle = Form.useWatch(`aboutSeoMetaTitle_${activeTab}`, form);
+    const activeTabDesc = Form.useWatch(`aboutSeoMetaDescription_${activeTab}`, form);
+    const activeTabKeywords = Form.useWatch(`aboutSeoMetaKeywords_${activeTab}`, form);
+    const activeTabSlug = Form.useWatch(`aboutSeoSlugUrl_${activeTab}`, form);
+    const activeTabCanonical = Form.useWatch(`aboutSeoCanonicalUrl_${activeTab}`, form);
+    const allowIndexing = Form.useWatch(`aboutSeoAllowIndexing`, form);
+
+    const seoData = {
+        focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
+        title: activeTabTitle || "",
+        description: activeTabDesc || "",
+        slug: activeTabSlug || "",
+        canonicalUrl: activeTabCanonical || "",
+        noIndex: allowIndexing === false,
+    };
 
     // Initialize OG image from pageData
     useEffect(() => {
@@ -110,11 +128,25 @@ export default function AboutPageSeoForm({
     useEffect(() => {
         form.setFieldsValue({
             aboutSeoMetaTitle_en: 'About Us',
-            aboutSeoSlugUrl_en: 'about',
+            aboutSeoSlugUrl_en: 'about-us',
             aboutSeoMetaTitle_vn: 'Về Chúng Tôi',
             aboutSeoSlugUrl_vn: 've-chung-toi'
         });
     }, [form, pageData]);
+
+    // Helper to render inline suggestion
+    const renderSuggestion = (checkKey) => {
+        const check = seoAnalysis?.checks?.[checkKey];
+        if (check && !check.passed && check.suggestion) {
+            return (
+                <div style={{ color: '#f97316', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                    <span>💡</span>
+                    <span>{check.suggestion}</span>
+                </div>
+            );
+        }
+        return null;
+    };
 
     // Handle OG Image upload
     const handleOgImageUpload = async (file) => {
@@ -191,6 +223,12 @@ export default function AboutPageSeoForm({
                             onFinishFailed={onFormFinishFailed}
                             disabled={!can('cms.aboutUs', 'edit')}
                         >
+                            <SeoPanel
+                                seoData={seoData}
+                                htmlContent={JSON.stringify(pageData) || ""}
+                                onAnalysisUpdate={setSeoAnalysis}
+                            />
+
                             <Tabs
                                 activeKey={activeTab}
                                 onChange={setActiveTab}
@@ -217,12 +255,16 @@ export default function AboutPageSeoForm({
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Nhập tiêu đề meta cho SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Nhập tiêu đề meta cho SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Description */}
@@ -237,12 +279,16 @@ export default function AboutPageSeoForm({
                                                         { max: 500, message: 'Tối đa 500 ký tự' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Nhập mô tả meta cho SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Nhập mô tả meta cho SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            disabled={!can('cms.aboutUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Keywords */}
@@ -255,10 +301,13 @@ export default function AboutPageSeoForm({
                                                     name="aboutSeoMetaKeywords_vn"
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Nhập từ khóa & nhấn Enter"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Nhập từ khóa & nhấn Enter"
+                                                            disabled={!can('cms.aboutUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInContent')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Slug URL */}
@@ -270,12 +319,15 @@ export default function AboutPageSeoForm({
                                                     }
                                                     name="aboutSeoSlugUrl_vn"
                                                 >
-                                                    <Input
-                                                        placeholder="gioi-thieu"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="gioi-thieu"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('keywordInSlug')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
@@ -380,12 +432,16 @@ export default function AboutPageSeoForm({
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Enter meta title for SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Enter meta title for SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Description */}
@@ -400,12 +456,16 @@ export default function AboutPageSeoForm({
                                                         { max: 500, message: 'Maximum 500 characters allowed' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Enter meta description for SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Enter meta description for SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            disabled={!can('cms.aboutUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Meta Keywords */}
@@ -418,10 +478,13 @@ export default function AboutPageSeoForm({
                                                     name="aboutSeoMetaKeywords_en"
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Type keyword & press Enter"
-                                                        disabled={!can('cms.aboutUs', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Type keyword & press Enter"
+                                                            disabled={!can('cms.aboutUs', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInContent')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Slug URL */}
@@ -433,12 +496,15 @@ export default function AboutPageSeoForm({
                                                     }
                                                     name="aboutSeoSlugUrl_en"
                                                 >
-                                                    <Input
-                                                        placeholder="about"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="about"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('keywordInSlug')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}

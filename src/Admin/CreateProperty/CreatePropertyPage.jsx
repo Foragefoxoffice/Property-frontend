@@ -237,6 +237,18 @@ function mapApiToForm(api) {
     },
 
     /* -----------------------------------------
+       NEW FLAT SEO
+    ------------------------------------------ */
+    seo: {
+      focusKeyword: safeStr(api.seo?.focusKeyword),
+      title: safeStr(api.seo?.title),
+      description: safeStr(api.seo?.description),
+      slug: safeStr(api.seo?.slug),
+      canonicalUrl: safeStr(api.seo?.canonicalUrl),
+      noIndex: api.seo?.noIndex || false,
+    },
+
+    /* -----------------------------------------
        SEO
     ------------------------------------------ */
     seoInformation: {
@@ -601,6 +613,7 @@ export default function CreatePropertyPage({
         contactManagementAgentFee:
           n.contactManagement?.contactManagementAgentFee || 0,
       },
+
 
       /* ================================================
          SEO

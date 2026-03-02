@@ -20,6 +20,7 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { X } from 'lucide-react';
 import { usePermissions } from '../../Context/PermissionContext';
+import SeoPanel from '../../components/Admin/SeoPanel';
 
 const { TextArea } = Input;
 
@@ -90,6 +91,23 @@ export default function HomePageSeoForm({
     const [activeTab, setActiveTab] = useState('vn');
     const [previewImage, setPreviewImage] = useState(null);
     const [ogImage, setOgImage] = useState('');
+    const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
+
+    const activeTabTitle = Form.useWatch(`homeSeoMetaTitle_${activeTab}`, form);
+    const activeTabDesc = Form.useWatch(`homeSeoMetaDescription_${activeTab}`, form);
+    const activeTabKeywords = Form.useWatch(`homeSeoMetaKeywords_${activeTab}`, form);
+    const activeTabSlug = Form.useWatch(`homeSeoSlugUrl_${activeTab}`, form);
+    const activeTabCanonical = Form.useWatch(`homeSeoCanonicalUrl_${activeTab}`, form);
+    const allowIndexing = Form.useWatch(`homeSeoAllowIndexing`, form);
+
+    const seoData = {
+        focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
+        title: activeTabTitle || "",
+        description: activeTabDesc || "",
+        slug: activeTabSlug || "",
+        canonicalUrl: activeTabCanonical || "",
+        noIndex: allowIndexing === false,
+    };
 
     // Sync activeTab with headerLang whenever headerLang changes
     useEffect(() => {
@@ -153,6 +171,20 @@ export default function HomePageSeoForm({
         });
     }, [form, pageData]);
 
+    // Helper to render inline suggestion
+    const renderSuggestion = (checkKey) => {
+        const check = seoAnalysis?.checks?.[checkKey];
+        if (check && !check.passed && check.suggestion) {
+            return (
+                <div style={{ color: '#f97316', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                    <span>💡</span>
+                    <span>{check.suggestion}</span>
+                </div>
+            );
+        }
+        return null;
+    };
+
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
             {/* Accordion Header */}
@@ -192,6 +224,13 @@ export default function HomePageSeoForm({
                             onFinish={handleFormSubmit}
                             onFinishFailed={onFormFinishFailed}
                         >
+                            {/* ✅ NEW SEO TOOL PANEL */}
+                            <SeoPanel
+                                seoData={seoData}
+                                htmlContent={JSON.stringify(pageData) || ""}
+                                onAnalysisUpdate={setSeoAnalysis}
+                            />
+
                             <Tabs
                                 activeKey={activeTab}
                                 onChange={setActiveTab}
@@ -206,7 +245,6 @@ export default function HomePageSeoForm({
                                         ),
                                         children: (
                                             <>
-                                                {/* Meta Title */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -218,14 +256,17 @@ export default function HomePageSeoForm({
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Nhập tiêu đề meta cho SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Nhập tiêu đề meta cho SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Meta Description */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -237,15 +278,18 @@ export default function HomePageSeoForm({
                                                         { max: 500, message: 'Tối đa 500 ký tự' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Nhập mô tả meta cho SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.homePage', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Nhập mô tả meta cho SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            disabled={!can('cms.homePage', 'edit')}
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Meta Keywords */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -255,13 +299,15 @@ export default function HomePageSeoForm({
                                                     name="homeSeoMetaKeywords_vn"
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Nhập từ khóa & nhấn Enter"
-                                                        disabled={!can('cms.homePage', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Nhập từ khóa & nhấn Enter"
+                                                            disabled={!can('cms.homePage', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInContent')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Slug URL */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -270,12 +316,15 @@ export default function HomePageSeoForm({
                                                     }
                                                     name="homeSeoSlugUrl_vn"
                                                 >
-                                                    <Input
-                                                        placeholder="trang-chu"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="trang-chu"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('keywordInSlug')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
@@ -368,7 +417,6 @@ export default function HomePageSeoForm({
                                         ),
                                         children: (
                                             <>
-                                                {/* Meta Title */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -380,14 +428,17 @@ export default function HomePageSeoForm({
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
-                                                    <Input
-                                                        placeholder="Enter meta title for SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="Enter meta title for SEO"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                        {renderSuggestion('titleLengthOK')}
+                                                        {renderSuggestion('keywordInTitle')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Meta Description */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -399,15 +450,18 @@ export default function HomePageSeoForm({
                                                         { max: 500, message: 'Maximum 500 characters allowed' }
                                                     ]}
                                                 >
-                                                    <TextArea
-                                                        placeholder="Enter meta description for SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.homePage', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <TextArea
+                                                            placeholder="Enter meta description for SEO"
+                                                            rows={4}
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                            disabled={!can('cms.homePage', 'edit')}
+                                                        />
+                                                        {renderSuggestion('descriptionLengthOK')}
+                                                        {renderSuggestion('keywordInDescription')}
+                                                    </div>
                                                 </Form.Item>
 
-                                                {/* Meta Keywords */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -417,10 +471,13 @@ export default function HomePageSeoForm({
                                                     name="homeSeoMetaKeywords_en"
                                                     initialValue={[]}
                                                 >
-                                                    <KeywordTagsInput
-                                                        placeholder="Type keyword & press Enter"
-                                                        disabled={!can('cms.homePage', 'edit')}
-                                                    />
+                                                    <div>
+                                                        <KeywordTagsInput
+                                                            placeholder="Type keyword & press Enter"
+                                                            disabled={!can('cms.homePage', 'edit')}
+                                                        />
+                                                        {renderSuggestion('keywordInContent')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Slug URL */}
@@ -432,12 +489,15 @@ export default function HomePageSeoForm({
                                                     }
                                                     name="homeSeoSlugUrl_en"
                                                 >
-                                                    <Input
-                                                        placeholder="home"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
-                                                    />
+                                                    <div>
+                                                        <Input
+                                                            placeholder="/"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                            disabled={true}
+                                                        />
+                                                        {renderSuggestion('keywordInSlug')}
+                                                    </div>
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
