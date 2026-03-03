@@ -258,7 +258,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
                                     </div>
 
                                     {/* Title */}
-                                    <h3 className="text-[16px] font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem] group-hover:text-[#41398B] transition-colors">
+                                    <h3 className="text-[16px] font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-[#41398B] transition-colors">
                                         {normalizeFancyText(
                                             getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
                                             getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||

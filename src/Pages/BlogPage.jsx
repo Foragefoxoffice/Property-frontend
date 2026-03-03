@@ -104,7 +104,7 @@ export default function BlogPage() {
             <div className="font-['Manrope'] bg-gray-50 min-h-screen">
                 <BlogBanner
                     title={bannerTitle}
-                    breadcrumbs={[{ label: language === 'vi' ? 'Blog' : 'Blog' }]}
+                    breadcrumbs={[{ label: language === 'vi' ? 'Tin tức' : 'News' }]}
                     backgroundImage={bannerBg}
                 />
 

@@ -314,9 +314,9 @@ export default function Header({ showNavigation = true }) {
   const baseURL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api/v1', '') : '';
 
   return (
-    <header className="w-full sticky top-0 z-50 shadow-sm">
-      {/* Top Navigation Bar - Hidden on scroll to save space */}
-      <div className={`bg-[#000] text-white overflow-hidden transition-all duration-300 hidden md:block ${isScrolled ? 'h-0 opacity-0' : 'h-10 opacity-100 py-2'}`}>
+    <header className={`w-full sticky z-50 shadow-sm transition-[top] duration-300 ease-in-out ${isScrolled ? 'md:-top-10 top-0' : 'top-0'}`}>
+      {/* Top Navigation Bar - slides off-screen via sticky top offset */}
+      <div className="bg-[#000] text-white py-2 h-10 hidden md:block">
         <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center text-[13px] font-medium">
           <div className="flex items-center gap-6">
             {footerData?.footerNumber?.[0] && (
@@ -344,7 +344,7 @@ export default function Header({ showNavigation = true }) {
                 <img
                   src={item.icon.startsWith('/') ? `${baseURL}${item.icon}` : item.icon}
                   alt="social"
-                  className="w-full h-full object-contain brightness-0 invert"
+                  className="w-full h-full object-contain rounded-sm"
                 />
               </a>
             ))}
@@ -357,7 +357,7 @@ export default function Header({ showNavigation = true }) {
           isOpen={showChangePasswordModal}
           onClose={() => setShowChangePasswordModal(false)}
         />
-        <div className={`max-w-[1400px] mx-auto px-2 md:px-6 transition-all duration-300 flex items-center justify-between relative ${isScrolled ? 'md:py-2 py-1' : 'md:py-4 py-2'}`}>
+        <div className="max-w-[1400px] mx-auto px-2 md:px-6 md:py-3 py-2 flex items-center justify-between relative">
           {/* Mobile Menu Button */}
           <button
             className="lg:hidden p-2 text-gray-600 hover:text-[#41398B] transition-colors rounded-lg hover:bg-gray-50"
@@ -371,7 +371,7 @@ export default function Header({ showNavigation = true }) {
           <div className="flex items-center">
             {/* Desktop Logo */}
             <img
-              className={`hidden lg:block object-contain cursor-pointer transition-all duration-300 ${isScrolled ? 'h-7 md:h-8' : 'h-8 md:h-10'}`}
+              className="hidden lg:block object-contain cursor-pointer h-8 md:h-10"
               src={getLogoUrl(headerLogo)}
               alt="Logo"
               onClick={() => navigate("/")}

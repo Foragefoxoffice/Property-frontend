@@ -227,11 +227,11 @@ export default function BlogDetailPage() {
                     </div>
                 </div>
 
-                <div className="container mx-auto px-4 md:py-16 py-8 -mt-32 relative z-20">
+                <div className="container mx-auto md:px-7 px-2 md:py-16 py-8 -mt-32 relative z-20">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                         {/* Main Content Column */}
                         <div className="lg:col-span-8">
-                            <div className="bg-white rounded-3xl shadow-xl p-4 md:p-4 border border-gray-100 ring-1 ring-black/5">
+                            <div className="bg-white rounded-xl shadow-xl p-4 md:p-6 border border-gray-100 ring-1 ring-black/5">
                                 {/* Share Buttons (Mobile Top) */}
                                 <div className="flex lg:hidden hidden gap-4 mb-8 pb-8 border-b border-gray-100 justify-center">
                                     <button className="p-3 rounded-full bg-gray-50 hover:bg-[#1DA1F2] hover:text-white text-gray-500 transition-all duration-300"><Twitter size={20} /></button>
@@ -241,7 +241,7 @@ export default function BlogDetailPage() {
                                 </div>
 
                                 {/* Blog Content */}
-                                <article style={{ lineHeight: '1.8' }} className="prose prose-lg max-w-none w-full break-words
+                                <article style={{ lineHeight: '1.8' }} className="news-content prose prose-lg max-w-none w-full break-words
                                 prose-headings:font-bold prose-headings:text-gray-900 
                                 prose-h1:text-4xl prose-h2:text-3xl prose-h2:text-[#41398B] prose-h3:text-2xl 
                                 prose-p:text-gray-600 prose-p:leading-relaxed [&_p]:!text-left [&_p]:[hyphens:none]
@@ -256,7 +256,7 @@ export default function BlogDetailPage() {
                                     <div>
                                         {/* Tags */}
                                         {blog.tags?.[language]?.length > 0 && (
-                                            <div className="mt-12 pt-8 border-t border-gray-100">
+                                            <div className="mt-8 pt-8 border-t border-gray-100">
                                                 <div className="flex items-center gap-2 mb-4">
                                                     <span className="font-bold text-gray-800">Tags:</span>
                                                 </div>
@@ -271,7 +271,7 @@ export default function BlogDetailPage() {
                                         )}
                                     </div>
                                     <div>
-                                        <div className="mt-12 pt-8 border-t border-gray-100">
+                                        <div className="mt-8 pt-8 border-t border-gray-100">
                                             <div className="flex items-center gap-2 mb-4">
                                                 <span className="font-bold text-gray-800">Share This Blog:</span>
                                             </div>
