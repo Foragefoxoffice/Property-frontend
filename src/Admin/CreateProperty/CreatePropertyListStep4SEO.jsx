@@ -165,6 +165,8 @@ export default function CreatePropertyListStep4SEO({
     description: seo.metaDescription?.[activeLang] || "",
     slug: seo.slugUrl?.[activeLang] || "",
     canonicalUrl: seo.canonicalUrl?.[activeLang] || "",
+    schemaType: seo.schemaType?.[activeLang] || "",
+    ogImage: seo.ogImage || "",
     noIndex: seo.allowIndexing === false,
   };
 
@@ -262,6 +264,214 @@ export default function CreatePropertyListStep4SEO({
   };
 
   /* ---------------------------------------------
+       ✅ AUTO GENERATE SEO CONTENT
+    --------------------------------------------- */
+  const buildSeoContent = (lang) => {
+    // Get localized string value safely
+    const g = (obj) => (obj?.[lang] || obj?.en || obj?.vi || "").trim();
+
+    // Strip ALL HTML tags, entities (&nbsp; &amp; etc.), emojis, and collapse whitespace
+    const cleanText = (html = "") => {
+      if (!html) return "";
+      let t = html;
+      // Decode common HTML entities
+      t = t.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&")
+           .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
+           .replace(/&quot;/gi, '"').replace(/&#[0-9]+;/gi, " ")
+           .replace(/&[a-z]+;/gi, " ");
+      // Strip HTML tags
+      t = t.replace(/<[^>]*>/gm, " ");
+      // Strip emojis (Unicode emoji ranges)
+      t = t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "");
+      // Collapse whitespace
+      t = t.replace(/\s+/g, " ").trim();
+      return t;
+    };
+
+    // Clamp to max chars without cutting a word mid-way
+    const clamp = (str, max) =>
+      str.length <= max ? str : str.slice(0, max).replace(/\s\S*$/, "").trim();
+
+    const hasKw = (str, kw) =>
+      kw ? str.toLowerCase().includes(kw.toLowerCase()) : true;
+
+    // ── Pull structured property fields ──────────────────────
+    const propertyType = g(initialData?.propertyType);
+    const project      = g(initialData?.projectName);
+    const zone         = g(initialData?.zoneName);
+    const block        = g(initialData?.blockName);
+    const furnishing   = g(initialData?.furnishing);
+    const view         = g(initialData?.view);
+    const txType       = g(initialData?.transactionType);
+    const beds         = initialData?.bedrooms   ? Number(initialData.bedrooms)   : null;
+    const baths        = initialData?.bathrooms  ? Number(initialData.bathrooms)  : null;
+    const size         = initialData?.unitSize   ? Number(initialData.unitSize)   : null;
+    const currencyCode = initialData?.currency?.code   || "";
+    const currencySym  = initialData?.currency?.symbol || "";
+    const price        = initialData?.price      ? Number(initialData.price)      : null;
+
+    // ── KEYWORDS ─────────────────────────────────────────────
+    // Only use clean, predictable values — no raw description text
+    const keywords = [
+      propertyType,
+      project,
+      zone,
+      beds  ? (lang === "vi" ? `${beds} phòng ngủ`  : `${beds} bedroom`)  : "",
+      baths ? (lang === "vi" ? `${baths} phòng tắm` : `${baths} bathroom`) : "",
+      furnishing,
+      txType,
+      view,
+    ].filter(Boolean)
+     .map(k => cleanText(k))
+     .filter(Boolean)
+     .filter((v, i, a) => a.findIndex(x => x.toLowerCase() === v.toLowerCase()) === i)
+     .slice(0, 8);
+
+    // Focus keyword = first keyword in the list
+    const focusKw = keywords[0] || propertyType || "";
+
+    // ── META TITLE (30–60 chars) ──────────────────────────────
+    let metaTitle = "";
+    if (lang === "vi") {
+      // Pattern: "{X} phòng ngủ {propertyType} tại {project}, {zone}"
+      const parts = [
+        beds ? `${beds} phòng ngủ` : "",
+        propertyType,
+        project ? `tại ${project}` : zone ? `tại ${zone}` : "",
+        block   ? `toà ${block}`   : "",
+      ].filter(Boolean);
+      metaTitle = parts.join(" ");
+    } else {
+      // Pattern: "{beds}BR {baths}BA {propertyType} for {txType} in {project}"
+      const parts = [
+        beds  ? `${beds}BR`  : "",
+        baths ? `${baths}BA` : "",
+        propertyType || "Property",
+        txType ? `for ${txType}` : "",
+        project ? `in ${project}` : zone ? `in ${zone}` : "",
+      ].filter(Boolean);
+      metaTitle = parts.join(" ");
+    }
+
+    // Ensure focus keyword is embedded
+    if (focusKw && !hasKw(metaTitle, focusKw)) {
+      metaTitle = `${focusKw} ${metaTitle}`;
+    }
+
+    metaTitle = clamp(cleanText(metaTitle), 60);
+
+    // If still under 30, add zone/block for context
+    if (metaTitle.length < 30) {
+      const extra = lang === "vi"
+        ? (zone ? `, ${zone}` : block ? `, toà ${block}` : "")
+        : (zone ? `, ${zone}` : block ? `, Block ${block}` : "");
+      metaTitle = clamp(cleanText(`${metaTitle}${extra}`), 60);
+    }
+
+    // ── META DESCRIPTION (120–160 chars) ─────────────────────
+    // Build from structured fields only — never from raw description
+    let metaDesc = "";
+    if (lang === "vi") {
+      const parts = [
+        beds && baths
+          ? `Căn hộ ${beds} phòng ngủ, ${baths} phòng tắm`
+          : beds ? `Căn hộ ${beds} phòng ngủ` : "",
+        size         ? `diện tích ${size} m²`              : "",
+        furnishing   ? `nội thất ${furnishing}`             : "",
+        project      ? `tại ${project}`                     : zone ? `tại ${zone}` : "",
+        block        ? `toà ${block}`                       : "",
+        view         ? `view ${view}`                       : "",
+        txType       ? `hình thức ${txType}`                : "",
+        price && currencySym ? `giá ${currencySym}${price.toLocaleString()}` : "",
+      ].filter(Boolean);
+      metaDesc = parts.join(", ") + ". Liên hệ ngay để xem nhà và nhận tư vấn miễn phí.";
+    } else {
+      const parts = [
+        beds && baths
+          ? `${beds}-bedroom, ${baths}-bathroom ${propertyType || "property"}`
+          : beds ? `${beds}-bedroom ${propertyType || "property"}` : propertyType || "property",
+        furnishing   ? `(${furnishing})`                    : "",
+        size         ? `${size} sqm`                        : "",
+        project      ? `in ${project}`                      : zone ? `in ${zone}` : "",
+        block        ? `Block ${block}`                     : "",
+        view         ? `with ${view} view`                  : "",
+        txType       ? `available for ${txType}`            : "",
+        price && currencySym ? `priced at ${currencySym}${price.toLocaleString()} ${currencyCode}`.trim() : "",
+      ].filter(Boolean);
+      metaDesc = parts.join(", ") + ". Contact us today to schedule a viewing.";
+    }
+
+    // Ensure focus keyword is in description
+    if (focusKw && !hasKw(metaDesc, focusKw)) {
+      metaDesc = `${focusKw} — ${metaDesc}`;
+    }
+
+    metaDesc = cleanText(metaDesc);
+    metaDesc = clamp(metaDesc, 160);
+
+    // Pad to 120 if still short (add a safe filler sentence)
+    if (metaDesc.length < 120) {
+      const filler = lang === "vi"
+        ? " Không gian sống lý tưởng, tiện nghi đầy đủ, vị trí đắc địa."
+        : " Prime location with modern amenities and excellent connectivity.";
+      metaDesc = clamp(`${metaDesc}${filler}`, 160);
+    }
+
+    // ── OG TITLE (40–60 chars) ────────────────────────────────
+    let ogTitle = metaTitle;
+    if (ogTitle.length < 40) {
+      const suffix = lang === "vi"
+        ? (project ? ` – ${project}` : zone ? ` – ${zone}` : "")
+        : (project ? ` | ${project}` : zone ? ` | ${zone}` : "");
+      ogTitle = clamp(`${ogTitle}${suffix}`, 60);
+    }
+
+    // ── OG DESCRIPTION (130–200 chars) ───────────────────────
+    // Slightly longer than meta description, re-use same base
+    let ogDesc = metaDesc;
+    if (ogDesc.length < 130) {
+      const extra = lang === "vi"
+        ? " Đặt lịch tham quan ngay hôm nay!"
+        : " Schedule your viewing today and discover your perfect home!";
+      ogDesc = clamp(`${ogDesc}${extra}`, 200);
+    }
+
+    return { metaTitle, metaDesc, keywords, ogTitle, ogDesc };
+  };
+
+  const handleAutoGenerate = (field) => {
+    const content = buildSeoContent(activeLang);
+    const fieldMap = {
+      metaTitle:       { key: "metaTitle",       val: content.metaTitle  },
+      metaDescription: { key: "metaDescription", val: content.metaDesc   },
+      metaKeywords:    { key: "metaKeywords",     val: content.keywords   },
+      ogTitle:         { key: "ogTitle",          val: content.ogTitle    },
+      ogDescription:   { key: "ogDescription",    val: content.ogDesc     },
+    };
+    if (!fieldMap[field]) return;
+    const { key, val } = fieldMap[field];
+    const updated = { ...seo, [key]: { ...seo[key], [activeLang]: val } };
+    setSeo(updated);
+    onChange({ seoInformation: updated });
+    CommonToaster(activeLang === "vi" ? "Đã tạo tự động!" : "Auto-generated!", "success");
+  };
+
+  const handleAutoGenerateAll = () => {
+    const content = buildSeoContent(activeLang);
+    const updated = {
+      ...seo,
+      metaTitle:       { ...seo.metaTitle,       [activeLang]: content.metaTitle  },
+      metaDescription: { ...seo.metaDescription, [activeLang]: content.metaDesc   },
+      metaKeywords:    { ...seo.metaKeywords,     [activeLang]: content.keywords   },
+      ogTitle:         { ...seo.ogTitle,          [activeLang]: content.ogTitle    },
+      ogDescription:   { ...seo.ogDescription,    [activeLang]: content.ogDesc     },
+    };
+    setSeo(updated);
+    onChange({ seoInformation: updated });
+    CommonToaster(activeLang === "vi" ? "Đã tạo tất cả tự động!" : "All fields auto-generated!", "success");
+  };
+
+  /* ---------------------------------------------
        ✅ OG IMAGE UPLOAD + DELETE
     --------------------------------------------- */
   const handleOgUpload = async (e) => {
@@ -312,6 +522,62 @@ export default function CreatePropertyListStep4SEO({
       );
     }
     return null;
+  };
+
+  // Real-time character count indicator with progress bar
+  const CharCountIndicator = ({ value = "", min, max, label }) => {
+    const len = (value || "").trim().length;
+    const isBelow = len < min;
+    const isAbove = len > max;
+    const isOptimal = !isBelow && !isAbove;
+
+    const color = isOptimal ? "#22c55e" : isAbove ? "#ef4444" : len > 0 ? "#f97316" : "#9ca3af";
+    const pct = Math.min((len / max) * 100, 100);
+    const optimalStart = (min / max) * 100;
+
+    const statusText = isOptimal
+      ? `✓ Good length`
+      : isAbove
+      ? `Too long — shorten by ${len - max} chars`
+      : len > 0
+      ? `${min - len} more chars to reach minimum`
+      : `Add ${label}`;
+
+    return (
+      <div style={{ marginTop: "6px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+          <span style={{ fontSize: "12px", color }}>{statusText}</span>
+          <span style={{ fontSize: "12px", fontWeight: "600", color }}>
+            {len} / {max} <span style={{ color: "#9ca3af", fontWeight: "normal" }}>({min}–{max} recommended)</span>
+          </span>
+        </div>
+        <div style={{ height: "4px", borderRadius: "2px", background: "#e5e7eb", position: "relative", overflow: "hidden" }}>
+          {/* Optimal zone highlight */}
+          <div
+            style={{
+              position: "absolute",
+              left: `${optimalStart}%`,
+              width: `${100 - optimalStart}%`,
+              height: "100%",
+              background: "#d1fae5",
+              borderRadius: "2px",
+            }}
+          />
+          {/* Fill */}
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              width: `${pct}%`,
+              height: "100%",
+              background: color,
+              borderRadius: "2px",
+              transition: "width 0.15s ease, background 0.15s ease",
+            }}
+          />
+        </div>
+      </div>
+    );
   };
 
   /* ---------------------------------------------
@@ -371,6 +637,35 @@ export default function CreatePropertyListStep4SEO({
         onAnalysisUpdate={setSeoAnalysis}
       />
 
+      {/* ✨ AUTO GENERATE ALL BANNER */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        background: "linear-gradient(135deg, #f0effe 0%, #e8f5e9 100%)",
+        border: "1px solid #c4b5fd", borderRadius: "10px", padding: "12px 16px",
+      }}>
+        <div>
+          <p style={{ margin: 0, fontWeight: "600", fontSize: "14px", color: "#3730a3" }}>
+            ✨ {activeLang === "vi" ? "Tự động tạo nội dung SEO" : "Auto Generate SEO Content"}
+          </p>
+          <p style={{ margin: "2px 0 0 0", fontSize: "12px", color: "#6b7280" }}>
+            {activeLang === "vi"
+              ? "Tạo tiêu đề, mô tả, từ khóa từ dữ liệu bất động sản"
+              : "Generate title, description & keywords from property data"}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleAutoGenerateAll}
+          style={{
+            background: "#41398B", color: "#fff", border: "none", borderRadius: "8px",
+            padding: "8px 18px", fontSize: "13px", fontWeight: "600", cursor: "pointer",
+            whiteSpace: "nowrap", flexShrink: 0,
+          }}
+        >
+          {activeLang === "vi" ? "✨ Tạo tất cả" : "✨ Generate All"}
+        </button>
+      </div>
+
       {/* ✅ SHARED SLUG URL (Non-editable, auto-synced) */}
       <div>
         <label className="text-sm font-semibold mb-2 block">
@@ -389,9 +684,13 @@ export default function CreatePropertyListStep4SEO({
 
       {/* ✅ META TITLE */}
       <div>
-        <label className="text-sm font-semibold mb-2 block">
-          {labels.metaTitle[activeLang]}
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-semibold">{labels.metaTitle[activeLang]}</label>
+          <button type="button" onClick={() => handleAutoGenerate("metaTitle")}
+            style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+            ✨ {activeLang === "vi" ? "Tự động tạo" : "Generate"}
+          </button>
+        </div>
         <div>
           <input
             key={`${activeLang}-metaTitle`}
@@ -402,16 +701,20 @@ export default function CreatePropertyListStep4SEO({
               handleChange("metaTitle", activeLang, e.target.value)
             }
           />
-          {renderSuggestion('titleLengthOK')}
+          <CharCountIndicator value={seo.metaTitle[activeLang]} min={30} max={60} label="Meta Title" />
           {renderSuggestion('keywordInTitle')}
         </div>
       </div>
 
       {/* ✅ META DESCRIPTION */}
       <div>
-        <label className="text-sm font-semibold mb-2 block">
-          {labels.metaDescription[activeLang]}
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-semibold">{labels.metaDescription[activeLang]}</label>
+          <button type="button" onClick={() => handleAutoGenerate("metaDescription")}
+            style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+            ✨ {activeLang === "vi" ? "Tự động tạo" : "Generate"}
+          </button>
+        </div>
         <div>
           <textarea
             key={`${activeLang}-metaDescription`}
@@ -423,16 +726,20 @@ export default function CreatePropertyListStep4SEO({
               handleChange("metaDescription", activeLang, e.target.value)
             }
           />
-          {renderSuggestion('descriptionLengthOK')}
+          <CharCountIndicator value={seo.metaDescription[activeLang]} min={120} max={160} label="Meta Description" />
           {renderSuggestion('keywordInDescription')}
         </div>
       </div>
 
       {/* ✅ META KEYWORDS (Using New Component) */}
       <div>
-        <label className="text-sm font-semibold mb-2 block">
-          {labels.metaKeywords[activeLang]}
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-semibold">{labels.metaKeywords[activeLang]}</label>
+          <button type="button" onClick={() => handleAutoGenerate("metaKeywords")}
+            style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+            ✨ {activeLang === "vi" ? "Tự động tạo" : "Generate"}
+          </button>
+        </div>
         <div>
           <KeywordTagsInput
             key={`${activeLang}-keywords`}
@@ -512,22 +819,31 @@ export default function CreatePropertyListStep4SEO({
 
       {/* ✅ OG TITLE */}
       <div>
-        <label className="text-sm font-semibold mb-2 block">
-          {labels.ogTitle[activeLang]}
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-semibold">{labels.ogTitle[activeLang]}</label>
+          <button type="button" onClick={() => handleAutoGenerate("ogTitle")}
+            style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+            ✨ {activeLang === "vi" ? "Tự động tạo" : "Generate"}
+          </button>
+        </div>
         <input
           placeholder="Type Here"
           className={inputClass}
           value={seo.ogTitle[activeLang]}
           onChange={(e) => handleChange("ogTitle", activeLang, e.target.value)}
         />
+        <CharCountIndicator value={seo.ogTitle[activeLang]} min={40} max={60} label="OG Title" />
       </div>
 
       {/* ✅ OG DESCRIPTION */}
       <div>
-        <label className="text-sm font-semibold mb-2 block">
-          {labels.ogDescription[activeLang]}
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-semibold">{labels.ogDescription[activeLang]}</label>
+          <button type="button" onClick={() => handleAutoGenerate("ogDescription")}
+            style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+            ✨ {activeLang === "vi" ? "Tự động tạo" : "Generate"}
+          </button>
+        </div>
         <textarea
           placeholder="Type here"
           rows={4}
@@ -537,6 +853,7 @@ export default function CreatePropertyListStep4SEO({
             handleChange("ogDescription", activeLang, e.target.value)
           }
         />
+        <CharCountIndicator value={seo.ogDescription[activeLang]} min={130} max={200} label="OG Description" />
       </div>
 
       {/* ✅ ✔ OG IMAGE — Single Slot UI */}

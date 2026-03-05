@@ -4,7 +4,7 @@
  */
 
 export const analyzeSeo = ({ seoSettings, htmlContent, images = [] }) => {
-    const { focusKeyword = "", title = "", description = "", slug = "" } = seoSettings || {};
+    const { focusKeyword = "", title = "", description = "", slug = "", canonicalUrl = "", schemaType = "", ogImage = "" } = seoSettings || {};
 
     // Clean strings
     const keyword = focusKeyword.trim().toLowerCase();
@@ -32,8 +32,9 @@ export const analyzeSeo = ({ seoSettings, htmlContent, images = [] }) => {
         keywordInContent: { passed: false, suggestion: "Use your focus keyword at least once in the page content." },
         titleLengthOK: { passed: false, suggestion: "Make sure your SEO Title is between 30 and 60 characters long." },
         descriptionLengthOK: { passed: false, suggestion: "Make sure your Meta Description is between 120 and 160 characters long." },
-        h1Present: { passed: false, suggestion: "Add at least one H1 heading to your page content." },
-        imagesHaveAlt: { passed: false, suggestion: "Ensure all images in your content have alternative (alt) text." },
+        canonicalUrlSet: { passed: false, suggestion: "Set a Canonical URL to avoid duplicate content issues." },
+        schemaTypeSet: { passed: false, suggestion: "Select a Schema Type to help search engines understand your content." },
+        ogImageSet: { passed: false, suggestion: "Upload an OG Image for better social media sharing previews." },
     };
 
     if (keyword) {
@@ -72,19 +73,10 @@ export const analyzeSeo = ({ seoSettings, htmlContent, images = [] }) => {
         checks.descriptionLengthOK.suggestion = `Meta Description is too long (${descLen} chars). Recommended: 120-160.`;
     }
 
-    // H1 presence check
-    checks.h1Present.passed = /<h1[^>]*>.*?<\/h1>/i.test(htmlContent || "");
-
-    // All images have alt text
-    if (images && images.length > 0) {
-        // Ensure all images have an alt attribute that's not empty
-        checks.imagesHaveAlt.passed = images.every(
-            (img) => img && img.alt && img.alt.trim().length > 0
-        );
-    } else {
-        // If no images, it's not a failure
-        checks.imagesHaveAlt.passed = true;
-    }
+    // Canonical URL, Schema Type, OG Image
+    checks.canonicalUrlSet.passed = canonicalUrl.trim().length > 0;
+    checks.schemaTypeSet.passed = schemaType.trim().length > 0;
+    checks.ogImageSet.passed = ogImage.trim().length > 0;
 
     // Calculate score
     const totalChecks = Object.keys(checks).length;

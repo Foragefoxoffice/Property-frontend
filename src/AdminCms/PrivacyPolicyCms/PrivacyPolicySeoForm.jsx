@@ -21,6 +21,7 @@ import { onFormFinishFailed } from '@/utils/formValidation';
 import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
 import SeoPanel from '../../components/Admin/SeoPanel';
+import { LabelRow, GenerateAllBanner, buildCmsContent, InputWithCount, TextAreaWithCount } from '../../components/Admin/CmsSeoUtils';
 
 const { TextArea } = Input;
 
@@ -105,6 +106,9 @@ export default function PrivacyPolicySeoForm({
     const activeTabSlug = Form.useWatch(`privacyPolicySeoSlugUrl_${activeTab}`, form);
     const activeTabCanonical = Form.useWatch(`privacyPolicySeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`privacyPolicySeoAllowIndexing`, form);
+    const activeTabSchemaType = Form.useWatch(`privacyPolicySeoSchemaType_${activeTab}`, form);
+    const activeTabOgTitle = Form.useWatch(`privacyPolicySeoOgTitle_${activeTab}`, form);
+    const activeTabOgDesc = Form.useWatch(`privacyPolicySeoOgDescription_${activeTab}`, form);
 
     const seoData = {
         focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
@@ -113,6 +117,8 @@ export default function PrivacyPolicySeoForm({
         slug: activeTabSlug || "",
         canonicalUrl: activeTabCanonical || "",
         noIndex: allowIndexing === false,
+        schemaType: activeTabSchemaType || "",
+        ogImage: ogImage || "",
     };
 
     // Initialize OG image from pageData
@@ -146,6 +152,37 @@ export default function PrivacyPolicySeoForm({
             );
         }
         return null;
+    };
+
+    const handleGenerate = (field) => {
+        const content = buildCmsContent(activeTab, 'privacy');
+        const map = {
+            metaTitle:       `privacyPolicySeoMetaTitle_${activeTab}`,
+            metaDescription: `privacyPolicySeoMetaDescription_${activeTab}`,
+            metaKeywords:    `privacyPolicySeoMetaKeywords_${activeTab}`,
+            ogTitle:         `privacyPolicySeoOgTitle_${activeTab}`,
+            ogDescription:   `privacyPolicySeoOgDescription_${activeTab}`,
+        };
+        const valMap = {
+            metaTitle: content.metaTitle,
+            metaDescription: content.metaDesc,
+            metaKeywords: content.keywords,
+            ogTitle: content.ogTitle,
+            ogDescription: content.ogDesc,
+        };
+        if (map[field]) form.setFieldsValue({ [map[field]]: valMap[field] });
+    };
+
+    const handleGenerateAll = () => {
+        const content = buildCmsContent(activeTab, 'privacy');
+        form.setFieldsValue({
+            [`privacyPolicySeoMetaTitle_${activeTab}`]: content.metaTitle,
+            [`privacyPolicySeoMetaDescription_${activeTab}`]: content.metaDesc,
+            [`privacyPolicySeoMetaKeywords_${activeTab}`]: content.keywords,
+            [`privacyPolicySeoOgTitle_${activeTab}`]: content.ogTitle,
+            [`privacyPolicySeoOgDescription_${activeTab}`]: content.ogDesc,
+        });
+        message.success(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!');
     };
 
     // Handle OG Image upload
@@ -228,6 +265,7 @@ export default function PrivacyPolicySeoForm({
                                 htmlContent={JSON.stringify(pageData) || ""}
                                 onAnalysisUpdate={setSeoAnalysis}
                             />
+                            <GenerateAllBanner onGenerateAll={handleGenerateAll} lang={activeTab} />
 
                             <Tabs
                                 activeKey={activeTab}
@@ -254,17 +292,14 @@ export default function PrivacyPolicySeoForm({
                                                     rules={[
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
+                                                    extra={<>{renderSuggestion('titleLengthOK')}{renderSuggestion('keywordInTitle')}</>}
                                                 >
-                                                    <div>
-                                                        <Input
-                                                            placeholder="Nhập tiêu đề meta cho SEO"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                        {renderSuggestion('titleLengthOK')}
-                                                        {renderSuggestion('keywordInTitle')}
-                                                    </div>
+                                                    <Input
+                                                        placeholder="Nhập tiêu đề meta cho SEO"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
@@ -277,17 +312,14 @@ export default function PrivacyPolicySeoForm({
                                                     rules={[
                                                         { max: 500, message: 'Tối đa 500 ký tự' }
                                                     ]}
+                                                    extra={<>{renderSuggestion('descriptionLengthOK')}{renderSuggestion('keywordInDescription')}</>}
                                                 >
-                                                    <div>
-                                                        <TextArea
-                                                            placeholder="Nhập mô tả meta cho SEO"
-                                                            rows={4}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                        {renderSuggestion('descriptionLengthOK')}
-                                                        {renderSuggestion('keywordInDescription')}
-                                                    </div>
+                                                    <TextArea
+                                                        placeholder="Nhập mô tả meta cho SEO"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
@@ -298,14 +330,12 @@ export default function PrivacyPolicySeoForm({
                                                     }
                                                     name="privacyPolicySeoMetaKeywords_vn"
                                                     initialValue={[]}
+                                                    extra={renderSuggestion('keywordInContent')}
                                                 >
-                                                    <div>
-                                                        <KeywordTagsInput
-                                                            placeholder="Nhập từ khóa & nhấn Enter"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                        {renderSuggestion('keywordInContent')}
-                                                    </div>
+                                                    <KeywordTagsInput
+                                                        placeholder="Nhập từ khóa & nhấn Enter"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
@@ -315,16 +345,14 @@ export default function PrivacyPolicySeoForm({
                                                         </span>
                                                     }
                                                     name="privacyPolicySeoSlugUrl_vn"
+                                                    extra={renderSuggestion('keywordInSlug')}
                                                 >
-                                                    <div>
-                                                        <Input
-                                                            placeholder="chinh-sach-bao-mat"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                        {renderSuggestion('keywordInSlug')}
-                                                    </div>
+                                                    <Input
+                                                        placeholder="chinh-sach-bao-mat"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
@@ -423,17 +451,14 @@ export default function PrivacyPolicySeoForm({
                                                     rules={[
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
+                                                    extra={<>{renderSuggestion('titleLengthOK')}{renderSuggestion('keywordInTitle')}</>}
                                                 >
-                                                    <div>
-                                                        <Input
-                                                            placeholder="Enter meta title for SEO"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                        {renderSuggestion('titleLengthOK')}
-                                                        {renderSuggestion('keywordInTitle')}
-                                                    </div>
+                                                    <Input
+                                                        placeholder="Enter meta title for SEO"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
@@ -446,17 +471,14 @@ export default function PrivacyPolicySeoForm({
                                                     rules={[
                                                         { max: 500, message: 'Maximum 500 characters allowed' }
                                                     ]}
+                                                    extra={<>{renderSuggestion('descriptionLengthOK')}{renderSuggestion('keywordInDescription')}</>}
                                                 >
-                                                    <div>
-                                                        <TextArea
-                                                            placeholder="Enter meta description for SEO"
-                                                            rows={4}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                        {renderSuggestion('descriptionLengthOK')}
-                                                        {renderSuggestion('keywordInDescription')}
-                                                    </div>
+                                                    <TextArea
+                                                        placeholder="Enter meta description for SEO"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
@@ -467,14 +489,12 @@ export default function PrivacyPolicySeoForm({
                                                     }
                                                     name="privacyPolicySeoMetaKeywords_en"
                                                     initialValue={[]}
+                                                    extra={renderSuggestion('keywordInContent')}
                                                 >
-                                                    <div>
-                                                        <KeywordTagsInput
-                                                            placeholder="Type keyword & press Enter"
-                                                            disabled={!can('cms.privacyPolicy', 'edit')}
-                                                        />
-                                                        {renderSuggestion('keywordInContent')}
-                                                    </div>
+                                                    <KeywordTagsInput
+                                                        placeholder="Type keyword & press Enter"
+                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
@@ -484,16 +504,14 @@ export default function PrivacyPolicySeoForm({
                                                         </span>
                                                     }
                                                     name="privacyPolicySeoSlugUrl_en"
+                                                    extra={renderSuggestion('keywordInSlug')}
                                                 >
-                                                    <div>
-                                                        <Input
-                                                            placeholder="privacy-policy"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            disabled={true}
-                                                        />
-                                                        {renderSuggestion('keywordInSlug')}
-                                                    </div>
+                                                    <Input
+                                                        placeholder="privacy-policy"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={true}
+                                                    />
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}

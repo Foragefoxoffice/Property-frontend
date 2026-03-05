@@ -21,6 +21,7 @@ import { onFormFinishFailed } from '@/utils/formValidation';
 import { X } from 'lucide-react';
 import { usePermissions } from '../../Context/PermissionContext';
 import SeoPanel from '../../components/Admin/SeoPanel';
+import { LabelRow, GenerateAllBanner, buildCmsContent, InputWithCount, TextAreaWithCount } from '../../components/Admin/CmsSeoUtils';
 
 const { TextArea } = Input;
 
@@ -99,6 +100,9 @@ export default function HomePageSeoForm({
     const activeTabSlug = Form.useWatch(`homeSeoSlugUrl_${activeTab}`, form);
     const activeTabCanonical = Form.useWatch(`homeSeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`homeSeoAllowIndexing`, form);
+    const activeTabSchemaType = Form.useWatch(`homeSeoSchemaType_${activeTab}`, form);
+    const activeTabOgTitle = Form.useWatch(`homeSeoOgTitle_${activeTab}`, form);
+    const activeTabOgDesc = Form.useWatch(`homeSeoOgDescription_${activeTab}`, form);
 
     const seoData = {
         focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
@@ -107,6 +111,8 @@ export default function HomePageSeoForm({
         slug: activeTabSlug || "",
         canonicalUrl: activeTabCanonical || "",
         noIndex: allowIndexing === false,
+        schemaType: activeTabSchemaType || "",
+        ogImage: ogImage || "",
     };
 
     // Sync activeTab with headerLang whenever headerLang changes
@@ -126,6 +132,37 @@ export default function HomePageSeoForm({
     }, [pageData]);
 
     // Keyword handlers removed - moved to KeywordTagsInput component
+
+    const handleGenerate = (field) => {
+        const content = buildCmsContent(activeTab, 'home');
+        const map = {
+            metaTitle:       `homeSeoMetaTitle_${activeTab}`,
+            metaDescription: `homeSeoMetaDescription_${activeTab}`,
+            metaKeywords:    `homeSeoMetaKeywords_${activeTab}`,
+            ogTitle:         `homeSeoOgTitle_${activeTab}`,
+            ogDescription:   `homeSeoOgDescription_${activeTab}`,
+        };
+        const valMap = {
+            metaTitle: content.metaTitle,
+            metaDescription: content.metaDesc,
+            metaKeywords: content.keywords,
+            ogTitle: content.ogTitle,
+            ogDescription: content.ogDesc,
+        };
+        if (map[field]) form.setFieldsValue({ [map[field]]: valMap[field] });
+    };
+
+    const handleGenerateAll = () => {
+        const content = buildCmsContent(activeTab, 'home');
+        form.setFieldsValue({
+            [`homeSeoMetaTitle_${activeTab}`]: content.metaTitle,
+            [`homeSeoMetaDescription_${activeTab}`]: content.metaDesc,
+            [`homeSeoMetaKeywords_${activeTab}`]: content.keywords,
+            [`homeSeoOgTitle_${activeTab}`]: content.ogTitle,
+            [`homeSeoOgDescription_${activeTab}`]: content.ogDesc,
+        });
+        message.success(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!');
+    };
 
     // Handle OG Image upload
     const handleOgImageUpload = async (file) => {
@@ -230,6 +267,7 @@ export default function HomePageSeoForm({
                                 htmlContent={JSON.stringify(pageData) || ""}
                                 onAnalysisUpdate={setSeoAnalysis}
                             />
+                            <GenerateAllBanner onGenerateAll={handleGenerateAll} lang={activeTab} />
 
                             <Tabs
                                 activeKey={activeTab}
@@ -246,66 +284,52 @@ export default function HomePageSeoForm({
                                         children: (
                                             <>
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Tiêu Đề Meta
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="Tiêu Đề Meta" onGenerate={() => handleGenerate('metaTitle')} lang={activeTab} />}
                                                     name="homeSeoMetaTitle_vn"
                                                     rules={[
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
-                                                    <div>
-                                                        <Input
-                                                            placeholder="Nhập tiêu đề meta cho SEO"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                        {renderSuggestion('titleLengthOK')}
-                                                        {renderSuggestion('keywordInTitle')}
-                                                    </div>
+                                                    <InputWithCount
+                                                        placeholder="Nhập tiêu đề meta cho SEO"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        min={30}
+                                                        max={60}
+                                                        countLabel="Meta Title"
+                                                        suggestions={<>{renderSuggestion('titleLengthOK')}{renderSuggestion('keywordInTitle')}</>}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Mô Tả Meta
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="Mô Tả Meta" onGenerate={() => handleGenerate('metaDescription')} lang={activeTab} />}
                                                     name="homeSeoMetaDescription_vn"
                                                     rules={[
                                                         { max: 500, message: 'Tối đa 500 ký tự' }
                                                     ]}
                                                 >
-                                                    <div>
-                                                        <TextArea
-                                                            placeholder="Nhập mô tả meta cho SEO"
-                                                            rows={4}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                            disabled={!can('cms.homePage', 'edit')}
-                                                        />
-                                                        {renderSuggestion('descriptionLengthOK')}
-                                                        {renderSuggestion('keywordInDescription')}
-                                                    </div>
+                                                    <TextAreaWithCount
+                                                        placeholder="Nhập mô tả meta cho SEO"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.homePage', 'edit')}
+                                                        min={120}
+                                                        max={160}
+                                                        countLabel="Meta Description"
+                                                        suggestions={<>{renderSuggestion('descriptionLengthOK')}{renderSuggestion('keywordInDescription')}</>}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Từ Khóa Meta
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="Từ Khóa Meta" onGenerate={() => handleGenerate('metaKeywords')} lang={activeTab} />}
                                                     name="homeSeoMetaKeywords_vn"
                                                     initialValue={[]}
+                                                    extra={renderSuggestion('keywordInContent')}
                                                 >
-                                                    <div>
-                                                        <KeywordTagsInput
-                                                            placeholder="Nhập từ khóa & nhấn Enter"
-                                                            disabled={!can('cms.homePage', 'edit')}
-                                                        />
-                                                        {renderSuggestion('keywordInContent')}
-                                                    </div>
+                                                    <KeywordTagsInput
+                                                        placeholder="Nhập từ khóa & nhấn Enter"
+                                                        disabled={!can('cms.homePage', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
@@ -315,16 +339,14 @@ export default function HomePageSeoForm({
                                                         </span>
                                                     }
                                                     name="homeSeoSlugUrl_vn"
+                                                    extra={renderSuggestion('keywordInSlug')}
                                                 >
-                                                    <div>
-                                                        <Input
-                                                            placeholder="trang-chu"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            disabled={true}
-                                                        />
-                                                        {renderSuggestion('keywordInSlug')}
-                                                    </div>
+                                                    <Input
+                                                        placeholder="trang-chu"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={true}
+                                                    />
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
@@ -374,35 +396,33 @@ export default function HomePageSeoForm({
 
                                                 {/* OG Title */}
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Tiêu Đề OG (Chia Sẻ Xã Hội)
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="Tiêu Đề OG (Chia Sẻ Xã Hội)" onGenerate={() => handleGenerate('ogTitle')} lang={activeTab} />}
                                                     name="homeSeoOgTitle_vn"
                                                 >
-                                                    <Input
+                                                    <InputWithCount
                                                         placeholder="Nhập tiêu đề Open Graph"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                         disabled={!can('cms.homePage', 'edit')}
+                                                        min={40}
+                                                        max={60}
+                                                        countLabel="OG Title"
                                                     />
                                                 </Form.Item>
 
                                                 {/* OG Description */}
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Mô Tả OG
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="Mô Tả OG" onGenerate={() => handleGenerate('ogDescription')} lang={activeTab} />}
                                                     name="homeSeoOgDescription_vn"
                                                 >
-                                                    <TextArea
+                                                    <TextAreaWithCount
                                                         placeholder="Nhập mô tả Open Graph"
                                                         rows={3}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
                                                         disabled={!can('cms.homePage', 'edit')}
+                                                        min={130}
+                                                        max={200}
+                                                        countLabel="OG Description"
                                                     />
                                                 </Form.Item>
                                             </>
@@ -418,66 +438,52 @@ export default function HomePageSeoForm({
                                         children: (
                                             <>
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Title
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="Meta Title" onGenerate={() => handleGenerate('metaTitle')} lang={activeTab} />}
                                                     name="homeSeoMetaTitle_en"
                                                     rules={[
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
-                                                    <div>
-                                                        <Input
-                                                            placeholder="Enter meta title for SEO"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        />
-                                                        {renderSuggestion('titleLengthOK')}
-                                                        {renderSuggestion('keywordInTitle')}
-                                                    </div>
+                                                    <InputWithCount
+                                                        placeholder="Enter meta title for SEO"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        min={30}
+                                                        max={60}
+                                                        countLabel="Meta Title"
+                                                        suggestions={<>{renderSuggestion('titleLengthOK')}{renderSuggestion('keywordInTitle')}</>}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Description
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="Meta Description" onGenerate={() => handleGenerate('metaDescription')} lang={activeTab} />}
                                                     name="homeSeoMetaDescription_en"
                                                     rules={[
                                                         { max: 500, message: 'Maximum 500 characters allowed' }
                                                     ]}
                                                 >
-                                                    <div>
-                                                        <TextArea
-                                                            placeholder="Enter meta description for SEO"
-                                                            rows={4}
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                            disabled={!can('cms.homePage', 'edit')}
-                                                        />
-                                                        {renderSuggestion('descriptionLengthOK')}
-                                                        {renderSuggestion('keywordInDescription')}
-                                                    </div>
+                                                    <TextAreaWithCount
+                                                        placeholder="Enter meta description for SEO"
+                                                        rows={4}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
+                                                        disabled={!can('cms.homePage', 'edit')}
+                                                        min={120}
+                                                        max={160}
+                                                        countLabel="Meta Description"
+                                                        suggestions={<>{renderSuggestion('descriptionLengthOK')}{renderSuggestion('keywordInDescription')}</>}
+                                                    />
                                                 </Form.Item>
 
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Meta Keywords
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="Meta Keywords" onGenerate={() => handleGenerate('metaKeywords')} lang={activeTab} />}
                                                     name="homeSeoMetaKeywords_en"
                                                     initialValue={[]}
+                                                    extra={renderSuggestion('keywordInContent')}
                                                 >
-                                                    <div>
-                                                        <KeywordTagsInput
-                                                            placeholder="Type keyword & press Enter"
-                                                            disabled={!can('cms.homePage', 'edit')}
-                                                        />
-                                                        {renderSuggestion('keywordInContent')}
-                                                    </div>
+                                                    <KeywordTagsInput
+                                                        placeholder="Type keyword & press Enter"
+                                                        disabled={!can('cms.homePage', 'edit')}
+                                                    />
                                                 </Form.Item>
 
                                                 {/* Slug URL */}
@@ -488,16 +494,14 @@ export default function HomePageSeoForm({
                                                         </span>
                                                     }
                                                     name="homeSeoSlugUrl_en"
+                                                    extra={renderSuggestion('keywordInSlug')}
                                                 >
-                                                    <div>
-                                                        <Input
-                                                            placeholder="/"
-                                                            size="large"
-                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                            disabled={true}
-                                                        />
-                                                        {renderSuggestion('keywordInSlug')}
-                                                    </div>
+                                                    <Input
+                                                        placeholder="/"
+                                                        size="large"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        disabled={true}
+                                                    />
                                                 </Form.Item>
 
                                                 {/* Canonical URL */}
@@ -547,35 +551,33 @@ export default function HomePageSeoForm({
 
                                                 {/* OG Title */}
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            OG Title (Social Sharing)
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="OG Title (Social Sharing)" onGenerate={() => handleGenerate('ogTitle')} lang={activeTab} />}
                                                     name="homeSeoOgTitle_en"
                                                 >
-                                                    <Input
+                                                    <InputWithCount
                                                         placeholder="Enter Open Graph title"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                         disabled={!can('cms.homePage', 'edit')}
+                                                        min={40}
+                                                        max={60}
+                                                        countLabel="OG Title"
                                                     />
                                                 </Form.Item>
 
                                                 {/* OG Description */}
                                                 <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            OG Description
-                                                        </span>
-                                                    }
+                                                    label={<LabelRow label="OG Description" onGenerate={() => handleGenerate('ogDescription')} lang={activeTab} />}
                                                     name="homeSeoOgDescription_en"
                                                 >
-                                                    <TextArea
+                                                    <TextAreaWithCount
                                                         placeholder="Enter Open Graph description"
                                                         rows={3}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
                                                         disabled={!can('cms.homePage', 'edit')}
+                                                        min={130}
+                                                        max={200}
+                                                        countLabel="OG Description"
                                                     />
                                                 </Form.Item>
                                             </>

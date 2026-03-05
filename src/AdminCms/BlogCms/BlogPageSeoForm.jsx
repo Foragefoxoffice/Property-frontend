@@ -10,7 +10,7 @@ import {
     Upload,
     message
 } from 'antd';
-import { uploadTermsConditionsPageImage } from '../../Api/action';
+import { uploadBlogImage } from '../../Api/action';
 import {
     SaveOutlined,
     PlusOutlined,
@@ -32,7 +32,6 @@ const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
         if (e.key === 'Enter' && e.target.value.trim()) {
             e.preventDefault();
             const newKeyword = e.target.value.trim();
-            // Ensure value is an array before spreading
             const currentKeywords = Array.isArray(value) ? value : [];
             onChange([...currentKeywords, newKeyword]);
             setInputValue('');
@@ -78,7 +77,7 @@ const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
     );
 };
 
-export default function TermsCondionsSeoForm({
+export default function BlogPageSeoForm({
     form,
     onSubmit,
     loading,
@@ -95,19 +94,18 @@ export default function TermsCondionsSeoForm({
     const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
 
     useEffect(() => {
-        if (headerLang) {
-            setActiveTab(headerLang);
-        }
+        if (headerLang) setActiveTab(headerLang);
     }, [headerLang]);
-    const activeTabTitle = Form.useWatch(`termsconditionsSeoMetaTitle_${activeTab}`, form);
-    const activeTabDesc = Form.useWatch(`termsconditionsSeoMetaDescription_${activeTab}`, form);
-    const activeTabKeywords = Form.useWatch(`termsconditionsSeoMetaKeywords_${activeTab}`, form);
-    const activeTabSlug = Form.useWatch(`termsconditionsSeoSlugUrl_${activeTab}`, form);
-    const activeTabCanonical = Form.useWatch(`termsConditionSeoCanonicalUrl_${activeTab}`, form);
-    const allowIndexing = Form.useWatch(`termsConditionSeoAllowIndexing`, form);
-    const activeTabSchemaType = Form.useWatch(`termsConditionSeoSchemaType_${activeTab}`, form);
-    const activeTabOgTitle = Form.useWatch(`termsConditionSeoOgTitle_${activeTab}`, form);
-    const activeTabOgDesc = Form.useWatch(`termsConditionSeoOgDescription_${activeTab}`, form);
+
+    const activeTabTitle = Form.useWatch(`blogSeoMetaTitle_${activeTab}`, form);
+    const activeTabDesc = Form.useWatch(`blogSeoMetaDescription_${activeTab}`, form);
+    const activeTabKeywords = Form.useWatch(`blogSeoMetaKeywords_${activeTab}`, form);
+    const activeTabSlug = Form.useWatch(`blogSeoSlugUrl_${activeTab}`, form);
+    const activeTabCanonical = Form.useWatch(`blogSeoCanonicalUrl_${activeTab}`, form);
+    const allowIndexing = Form.useWatch(`blogSeoAllowIndexing`, form);
+    const activeTabSchemaType = Form.useWatch(`blogSeoSchemaType_${activeTab}`, form);
+    const activeTabOgTitle = Form.useWatch(`blogSeoOgTitle_${activeTab}`, form);
+    const activeTabOgDesc = Form.useWatch(`blogSeoOgDescription_${activeTab}`, form);
 
     const seoData = {
         focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
@@ -122,24 +120,23 @@ export default function TermsCondionsSeoForm({
 
     // Initialize OG image from pageData
     useEffect(() => {
-        if (pageData?.termsConditionSeoOgImage) {
-            setOgImage(pageData.termsConditionSeoOgImage);
-        } else if (pageData?.termsConditionSeoOgImages && pageData.termsConditionSeoOgImages.length > 0) {
-            setOgImage(pageData.termsConditionSeoOgImages[0]);
+        if (pageData?.blogSeoOgImage) {
+            setOgImage(pageData.blogSeoOgImage);
+        } else if (pageData?.blogSeoOgImages && pageData.blogSeoOgImages.length > 0) {
+            setOgImage(pageData.blogSeoOgImages[0]);
         }
     }, [pageData]);
 
-    // Force default values for Title and Slug
+    // Set default slug values
     useEffect(() => {
         form.setFieldsValue({
-            termsconditionsSeoMetaTitle_en: 'Terms & Conditions',
-            termsconditionsSeoSlugUrl_en: 'terms-and-conditions',
-            termsconditionsSeoMetaTitle_vn: 'Điều Khoản Điều Kiện',
-            termsconditionsSeoSlugUrl_vn: 'dieu-khoan-dieu-kien'
+            blogSeoMetaTitle_en: form.getFieldValue('blogSeoMetaTitle_en') || '',
+            blogSeoSlugUrl_en: 'blog',
+            blogSeoMetaTitle_vn: form.getFieldValue('blogSeoMetaTitle_vn') || '',
+            blogSeoSlugUrl_vn: 'tin-tuc'
         });
     }, [form, pageData]);
 
-    // Helper to render inline suggestion
     const renderSuggestion = (checkKey) => {
         const check = seoAnalysis?.checks?.[checkKey];
         if (check && !check.passed && check.suggestion) {
@@ -154,13 +151,13 @@ export default function TermsCondionsSeoForm({
     };
 
     const handleGenerate = (field) => {
-        const content = buildCmsContent(activeTab, 'terms');
+        const content = buildCmsContent(activeTab, 'blog');
         const map = {
-            metaTitle:       `termsconditionsSeoMetaTitle_${activeTab}`,
-            metaDescription: `termsconditionsSeoMetaDescription_${activeTab}`,
-            metaKeywords:    `termsconditionsSeoMetaKeywords_${activeTab}`,
-            ogTitle:         `termsConditionSeoOgTitle_${activeTab}`,
-            ogDescription:   `termsConditionSeoOgDescription_${activeTab}`,
+            metaTitle:       `blogSeoMetaTitle_${activeTab}`,
+            metaDescription: `blogSeoMetaDescription_${activeTab}`,
+            metaKeywords:    `blogSeoMetaKeywords_${activeTab}`,
+            ogTitle:         `blogSeoOgTitle_${activeTab}`,
+            ogDescription:   `blogSeoOgDescription_${activeTab}`,
         };
         const valMap = {
             metaTitle: content.metaTitle,
@@ -173,50 +170,40 @@ export default function TermsCondionsSeoForm({
     };
 
     const handleGenerateAll = () => {
-        const content = buildCmsContent(activeTab, 'terms');
+        const content = buildCmsContent(activeTab, 'blog');
         form.setFieldsValue({
-            [`termsconditionsSeoMetaTitle_${activeTab}`]: content.metaTitle,
-            [`termsconditionsSeoMetaDescription_${activeTab}`]: content.metaDesc,
-            [`termsconditionsSeoMetaKeywords_${activeTab}`]: content.keywords,
-            [`termsConditionSeoOgTitle_${activeTab}`]: content.ogTitle,
-            [`termsConditionSeoOgDescription_${activeTab}`]: content.ogDesc,
+            [`blogSeoMetaTitle_${activeTab}`]: content.metaTitle,
+            [`blogSeoMetaDescription_${activeTab}`]: content.metaDesc,
+            [`blogSeoMetaKeywords_${activeTab}`]: content.keywords,
+            [`blogSeoOgTitle_${activeTab}`]: content.ogTitle,
+            [`blogSeoOgDescription_${activeTab}`]: content.ogDesc,
         });
         message.success(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!');
     };
 
-    // Handle OG Image upload
     const handleOgImageUpload = async (file) => {
         try {
-            const res = await uploadTermsConditionsPageImage(file);
+            const res = await uploadBlogImage(file);
             if (res.data.success) {
-                // Construct absolute URL for display/SEO
-                const rawUrl = res.data.data.url;
-                const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
-
-                const absoluteUrl = rawUrl.startsWith('http')
-                    ? rawUrl
-                    : `${apiBase}${rawUrl}`;
-
+                const absoluteUrl = res.data.url || res.data.data?.url;
                 setOgImage(absoluteUrl);
-                form.setFieldsValue({ termsConditionSeoOgImage: absoluteUrl });
+                form.setFieldsValue({ blogSeoOgImage: absoluteUrl });
                 message.success('Image uploaded successfully');
             }
         } catch (error) {
             console.error('Upload failed:', error);
             message.error('Failed to upload image');
         }
-        return false; // Prevent auto upload
+        return false;
     };
 
-    // Remove OG Image
     const removeOgImage = () => {
         setOgImage('');
-        form.setFieldsValue({ termsConditionSeoOgImage: '' });
+        form.setFieldsValue({ blogSeoOgImage: '' });
     };
 
-    // Handle form submission with OG image
     const handleFormSubmit = (values) => {
-        onSubmit({ ...values, termsConditionSeoOgImage: ogImage });
+        onSubmit({ ...values, blogSeoOgImage: ogImage });
     };
 
     return (
@@ -237,7 +224,7 @@ export default function TermsCondionsSeoForm({
                             {headerLang === 'en' ? 'SEO Settings' : 'Cài Đặt SEO'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {headerLang === 'en' ? 'Manage Terms & Conditions page SEO and meta information' : 'Quản lý SEO và thông tin meta trang Điều Khoản & Điều Kiện'}
+                            {headerLang === 'en' ? 'Manage blog listing page SEO and meta information' : 'Quản lý SEO trang danh sách blog và thông tin meta'}
                         </p>
                     </div>
                 </div>
@@ -257,7 +244,7 @@ export default function TermsCondionsSeoForm({
                             layout="vertical"
                             onFinish={handleFormSubmit}
                             onFinishFailed={onFormFinishFailed}
-                            disabled={!can('cms.termsConditions', 'edit')}
+                            disabled={!can('cms.blogBanner', 'edit')}
                         >
                             <SeoPanel
                                 seoData={seoData}
@@ -280,19 +267,16 @@ export default function TermsCondionsSeoForm({
                                         ),
                                         children: (
                                             <>
-                                                {/* Meta Title */}
                                                 <Form.Item
                                                     label={<LabelRow label="Tiêu Đề Meta" onGenerate={() => handleGenerate('metaTitle')} lang={activeTab} />}
-                                                    name="termsconditionsSeoMetaTitle_vn"
-                                                    rules={[
-                                                        { max: 200, message: 'Tối đa 200 ký tự' }
-                                                    ]}
+                                                    name="blogSeoMetaTitle_vn"
+                                                    rules={[{ max: 200, message: 'Tối đa 200 ký tự' }]}
                                                 >
                                                     <InputWithCount
                                                         placeholder="Nhập tiêu đề meta cho SEO"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         min={30}
                                                         max={60}
                                                         countLabel="Meta Title"
@@ -300,19 +284,16 @@ export default function TermsCondionsSeoForm({
                                                     />
                                                 </Form.Item>
 
-                                                {/* Meta Description */}
                                                 <Form.Item
                                                     label={<LabelRow label="Mô Tả Meta" onGenerate={() => handleGenerate('metaDescription')} lang={activeTab} />}
-                                                    name="termsconditionsSeoMetaDescription_vn"
-                                                    rules={[
-                                                        { max: 500, message: 'Tối đa 500 ký tự' }
-                                                    ]}
+                                                    name="blogSeoMetaDescription_vn"
+                                                    rules={[{ max: 500, message: 'Tối đa 500 ký tự' }]}
                                                 >
                                                     <TextAreaWithCount
                                                         placeholder="Nhập mô tả meta cho SEO"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         min={120}
                                                         max={160}
                                                         countLabel="Meta Description"
@@ -320,103 +301,98 @@ export default function TermsCondionsSeoForm({
                                                     />
                                                 </Form.Item>
 
-                                                {/* Meta Keywords */}
                                                 <Form.Item
                                                     label={<LabelRow label="Từ Khóa Meta" onGenerate={() => handleGenerate('metaKeywords')} lang={activeTab} />}
-                                                    name="termsconditionsSeoMetaKeywords_vn"
+                                                    name="blogSeoMetaKeywords_vn"
                                                     initialValue={[]}
                                                     extra={renderSuggestion('keywordInContent')}
                                                 >
                                                     <KeywordTagsInput
                                                         placeholder="Nhập từ khóa & nhấn Enter"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                     />
                                                 </Form.Item>
 
-                                                {/* Slug URL */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                                             Đường Dẫn Slug
                                                         </span>
                                                     }
-                                                    name="termsconditionsSeoSlugUrl_vn"
+                                                    name="blogSeoSlugUrl_vn"
                                                     extra={renderSuggestion('keywordInSlug')}
                                                 >
                                                     <Input
-                                                        placeholder="dieu-khoan-dieu-kien"
+                                                        placeholder="tin-tuc"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                         disabled={true}
                                                     />
                                                 </Form.Item>
 
-                                                {/* Canonical URL */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                                             Đường Dẫn Canonical
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoCanonicalUrl_vn"
+                                                    name="blogSeoCanonicalUrl_vn"
                                                 >
                                                     <Input
-                                                        placeholder="https://example.com/vn/dieu-khoan-dieu-kien"
+                                                        placeholder="https://example.com/vn/tin-tuc"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                     />
                                                 </Form.Item>
 
-                                                {/* Schema Type */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                                             Loại Schema
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoSchemaType_vn"
+                                                    name="blogSeoSchemaType_vn"
                                                 >
                                                     <Select
                                                         placeholder="Chọn loại Schema"
                                                         size="large"
                                                         className="w-full"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         options={[
+                                                            { label: 'Blog', value: 'Blog' },
                                                             { label: 'WebPage', value: 'WebPage' },
-                                                            { label: 'AboutPage', value: 'AboutPage' },
-                                                            { label: 'ContactPage', value: 'ContactPage' },
-                                                            { label: 'Article', value: 'Article' },
+                                                            { label: 'CollectionPage', value: 'CollectionPage' },
+                                                            { label: 'WebSite', value: 'WebSite' },
+                                                            { label: 'NewsMediaOrganization', value: 'NewsMediaOrganization' },
                                                         ]}
                                                     />
                                                 </Form.Item>
 
-                                                {/* OG Title */}
                                                 <Form.Item
                                                     label={<LabelRow label="Tiêu Đề OG (Chia Sẻ Xã Hội)" onGenerate={() => handleGenerate('ogTitle')} lang={activeTab} />}
-                                                    name="termsConditionSeoOgTitle_vn"
+                                                    name="blogSeoOgTitle_vn"
                                                 >
                                                     <InputWithCount
                                                         placeholder="Nhập tiêu đề Open Graph"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         min={40}
                                                         max={60}
                                                         countLabel="OG Title"
                                                     />
                                                 </Form.Item>
 
-                                                {/* OG Description */}
                                                 <Form.Item
                                                     label={<LabelRow label="Mô Tả OG" onGenerate={() => handleGenerate('ogDescription')} lang={activeTab} />}
-                                                    name="termsConditionSeoOgDescription_vn"
+                                                    name="blogSeoOgDescription_vn"
                                                 >
                                                     <TextAreaWithCount
                                                         placeholder="Nhập mô tả Open Graph"
                                                         rows={3}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         min={130}
                                                         max={200}
                                                         countLabel="OG Description"
@@ -434,19 +410,16 @@ export default function TermsCondionsSeoForm({
                                         ),
                                         children: (
                                             <>
-                                                {/* Meta Title */}
                                                 <Form.Item
                                                     label={<LabelRow label="Meta Title" onGenerate={() => handleGenerate('metaTitle')} lang={activeTab} />}
-                                                    name="termsconditionsSeoMetaTitle_en"
-                                                    rules={[
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
+                                                    name="blogSeoMetaTitle_en"
+                                                    rules={[{ max: 200, message: 'Maximum 200 characters allowed' }]}
                                                 >
                                                     <InputWithCount
                                                         placeholder="Enter meta title for SEO"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={true}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         min={30}
                                                         max={60}
                                                         countLabel="Meta Title"
@@ -454,19 +427,16 @@ export default function TermsCondionsSeoForm({
                                                     />
                                                 </Form.Item>
 
-                                                {/* Meta Description */}
                                                 <Form.Item
                                                     label={<LabelRow label="Meta Description" onGenerate={() => handleGenerate('metaDescription')} lang={activeTab} />}
-                                                    name="termsconditionsSeoMetaDescription_en"
-                                                    rules={[
-                                                        { max: 500, message: 'Maximum 500 characters allowed' }
-                                                    ]}
+                                                    name="blogSeoMetaDescription_en"
+                                                    rules={[{ max: 500, message: 'Maximum 500 characters allowed' }]}
                                                 >
                                                     <TextAreaWithCount
                                                         placeholder="Enter meta description for SEO"
                                                         rows={4}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         min={120}
                                                         max={160}
                                                         countLabel="Meta Description"
@@ -474,103 +444,98 @@ export default function TermsCondionsSeoForm({
                                                     />
                                                 </Form.Item>
 
-                                                {/* Meta Keywords */}
                                                 <Form.Item
                                                     label={<LabelRow label="Meta Keywords" onGenerate={() => handleGenerate('metaKeywords')} lang={activeTab} />}
-                                                    name="termsconditionsSeoMetaKeywords_en"
+                                                    name="blogSeoMetaKeywords_en"
                                                     initialValue={[]}
                                                     extra={renderSuggestion('keywordInContent')}
                                                 >
                                                     <KeywordTagsInput
                                                         placeholder="Type keyword & press Enter"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                     />
                                                 </Form.Item>
 
-                                                {/* Slug URL */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                                             Slug URL
                                                         </span>
                                                     }
-                                                    name="termsconditionsSeoSlugUrl_en"
+                                                    name="blogSeoSlugUrl_en"
                                                     extra={renderSuggestion('keywordInSlug')}
                                                 >
                                                     <Input
-                                                        placeholder="terms-and-conditions"
+                                                        placeholder="blog"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                         disabled={true}
                                                     />
                                                 </Form.Item>
 
-                                                {/* Canonical URL */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                                             Canonical URL
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoCanonicalUrl_en"
+                                                    name="blogSeoCanonicalUrl_en"
                                                 >
                                                     <Input
-                                                        placeholder="https://example.com/terms-conditions"
+                                                        placeholder="https://example.com/blog"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                     />
                                                 </Form.Item>
 
-                                                {/* Schema Type */}
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                                             Schema Type
                                                         </span>
                                                     }
-                                                    name="termsConditionSeoSchemaType_en"
+                                                    name="blogSeoSchemaType_en"
                                                 >
                                                     <Select
                                                         placeholder="Select Schema Type"
                                                         size="large"
                                                         className="w-full"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         options={[
+                                                            { label: 'Blog', value: 'Blog' },
                                                             { label: 'WebPage', value: 'WebPage' },
-                                                            { label: 'AboutPage', value: 'AboutPage' },
-                                                            { label: 'ContactPage', value: 'ContactPage' },
-                                                            { label: 'Article', value: 'Article' },
+                                                            { label: 'CollectionPage', value: 'CollectionPage' },
+                                                            { label: 'WebSite', value: 'WebSite' },
+                                                            { label: 'NewsMediaOrganization', value: 'NewsMediaOrganization' },
                                                         ]}
                                                     />
                                                 </Form.Item>
 
-                                                {/* OG Title */}
                                                 <Form.Item
                                                     label={<LabelRow label="OG Title (Social Sharing)" onGenerate={() => handleGenerate('ogTitle')} lang={activeTab} />}
-                                                    name="termsConditionSeoOgTitle_en"
+                                                    name="blogSeoOgTitle_en"
                                                 >
                                                     <InputWithCount
                                                         placeholder="Enter Open Graph title"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         min={40}
                                                         max={60}
                                                         countLabel="OG Title"
                                                     />
                                                 </Form.Item>
 
-                                                {/* OG Description */}
                                                 <Form.Item
                                                     label={<LabelRow label="OG Description" onGenerate={() => handleGenerate('ogDescription')} lang={activeTab} />}
-                                                    name="termsConditionSeoOgDescription_en"
+                                                    name="blogSeoOgDescription_en"
                                                 >
                                                     <TextAreaWithCount
                                                         placeholder="Enter Open Graph description"
                                                         rows={3}
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        disabled={!can('cms.termsConditions', 'edit')}
+                                                        disabled={!can('cms.blogBanner', 'edit')}
                                                         min={130}
                                                         max={200}
                                                         countLabel="OG Description"
@@ -578,25 +543,25 @@ export default function TermsCondionsSeoForm({
                                                 </Form.Item>
                                             </>
                                         )
-                                    },
+                                    }
                                 ]}
                             />
 
-                            {/* Allow Indexing - Common for both languages */}
+                            {/* Allow Indexing */}
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                         {activeTab === 'en' ? 'Allow Search Engine Indexing' : 'Cho Phép Lập Chỉ Mục'}
                                     </span>
                                 }
-                                name="termsConditionSeoAllowIndexing"
+                                name="blogSeoAllowIndexing"
                                 valuePropName="checked"
                                 initialValue={true}
                             >
-                                <Switch disabled={!can('cms.termsConditions', 'edit')} />
+                                <Switch disabled={!can('cms.blogBanner', 'edit')} />
                             </Form.Item>
 
-                            {/* OG Images - Common for both languages */}
+                            {/* OG Image */}
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
@@ -606,11 +571,9 @@ export default function TermsCondionsSeoForm({
                             >
                                 <div className="flex gap-4 flex-wrap">
                                     {ogImage ? (
-                                        <div
-                                            className="relative w-40 h-40 rounded-xl overflow-hidden border bg-gray-50 group"
-                                        >
+                                        <div className="relative w-40 h-40 rounded-xl overflow-hidden border bg-gray-50 group">
                                             <img src={ogImage} className="w-full h-full object-cover" alt="OG Image" />
-                                            {can('cms.termsConditions', 'edit') && (
+                                            {can('cms.blogBanner', 'edit') && (
                                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
                                                     <button
                                                         type="button"
@@ -630,8 +593,7 @@ export default function TermsCondionsSeoForm({
                                             )}
                                         </div>
                                     ) : (
-                                        /* Upload Box */
-                                        can('cms.termsConditions', 'edit') && (
+                                        can('cms.blogBanner', 'edit') && (
                                             <Upload
                                                 accept="image/*"
                                                 showUploadList={false}
@@ -660,7 +622,7 @@ export default function TermsCondionsSeoForm({
                                         {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
-                                {can('cms.termsConditions', 'edit') && (
+                                {can('cms.blogBanner', 'edit') && (
                                     <Button
                                         type="primary"
                                         htmlType="submit"
