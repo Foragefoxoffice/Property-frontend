@@ -361,7 +361,7 @@ export default function OwnerView() {
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className="bg-[#41398B] hover:bg-[#352e7a] text-white p-2 rounded-lg transition-all shadow-sm"
-                            title={language === 'vi' ? "Xem chi tiết" : "View Full Details"}
+                            title={language === 'vi' ? "View chi tiết" : "View Full Details"}
                           >
                             <ExternalLink size={14} />
                           </a>

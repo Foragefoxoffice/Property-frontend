@@ -51,7 +51,7 @@ export default function BlogBanner({ title, breadcrumbs = [], backgroundImage })
             <div className="absolute inset-0">
                 <img
                     src={displayBgImage}
-                    alt="Blog Banner"
+                    alt="News Banner"
                     className="w-full h-full object-cover"
                 />
                 {/* Dark Overlay */}

@@ -100,7 +100,7 @@ export default function BlogMetadataForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Blog Metadata' : 'Metadata Blog'}
+                            {activeTab === 'en' ? 'News Metadata' : 'Metadata News'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
                             {activeTab === 'en' ? 'Manage category, tags, author, and featured image' : 'Quản lý danh mục, thẻ, tác giả và hình đại diện'}
@@ -327,8 +327,8 @@ export default function BlogMetadataForm({
                                     className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
                                 >
                                     {activeTab === 'vn'
-                                        ? (blogData ? 'Lưu Metadata' : 'Tạo Blog')
-                                        : (blogData ? 'Save Metadata' : 'Create Blog')
+                                        ? (blogData ? 'Lưu Metadata' : 'Tạo News')
+                                        : (blogData ? 'Save Metadata' : 'Create News')
                                     }
                                 </Button>
                             </div>

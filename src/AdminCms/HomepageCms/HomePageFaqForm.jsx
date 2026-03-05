@@ -239,7 +239,7 @@ export default function HomePageFaqForm({
                                                                             type="button"
                                                                             onClick={() => setPreviewImage(faqBgUrl)}
                                                                             className="bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                                                                            title="Xem trước"
+                                                                            title="View trước"
                                                                         >
                                                                             <EyeOutlined className="text-[#41398B] text-lg" />
                                                                         </button>

@@ -54,7 +54,7 @@ export default function Favorites({ isDashboard = false }) {
         action: "Hành Động",
         noFavorites: "Chưa có mục yêu thích",
         noFavoritesDesc: "Bắt đầu khám phá và lưu các bất động sản bạn yêu thích vào danh sách.",
-        browseProperties: "Xem Bất Động Sản",
+        browseProperties: "View Bất Động Sản",
         postingDate: "Ngày đăng:",
         contactForPrice: "Liên hệ giá",
         delete: "Xóa",

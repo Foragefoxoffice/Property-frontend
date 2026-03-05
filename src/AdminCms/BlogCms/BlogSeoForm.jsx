@@ -682,8 +682,8 @@ export default function BlogSeoForm({
                                         className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
                                     >
                                         {activeTab === 'vi'
-                                            ? (blogData ? 'Lưu Cài Đặt SEO' : 'Tạo Blog')
-                                            : (blogData ? 'Save SEO Settings' : 'Create Blog')
+                                            ? (blogData ? 'Lưu Cài Đặt SEO' : 'Tạo News')
+                                            : (blogData ? 'Save SEO Settings' : 'Create News')
                                         }
                                     </Button>
                                 )}

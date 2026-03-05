@@ -617,7 +617,7 @@ export default function HomePageForm() {
                                                 children: (
                                                     <>
                                                         <Form.Item
-                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Về Chúng Tôi</span>}
+                                                            label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Về chúng tôi</span>}
                                                             name="homeAboutTitle_vn"
                                                             rules={[
                                                                 { required: true, message: 'Vui lòng nhập tiêu đề' },

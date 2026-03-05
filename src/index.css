@@ -540,6 +540,10 @@ button {
   margin-bottom: 10px;
 }
 
+.news-content p {
+  padding-bottom: 10px;
+}
+
 .property-description-summary li {
   margin-bottom: 14px;
 }

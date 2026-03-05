@@ -134,7 +134,7 @@ export default function BlogDetailPage() {
     // Share functionality
     const handleShare = async () => {
         const shareData = {
-            title: blog?.title?.[language] || blog?.title?.en || 'Blog Post',
+            title: blog?.title?.[language] || blog?.title?.en || 'News Post',
             text: `Check out this blog: ${blog?.title?.[language] || blog?.title?.en}`,
             url: window.location.href
         };
@@ -168,7 +168,7 @@ export default function BlogDetailPage() {
     if (!blog) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-gray-500">
-                <h2 className="text-2xl font-bold mb-2">Blog Post Not Found</h2>
+                <h2 className="text-2xl font-bold mb-2">News Post Not Found</h2>
                 <p>The article you are looking for does not exist or has been moved.</p>
             </div>
         );
@@ -227,11 +227,11 @@ export default function BlogDetailPage() {
                     </div>
                 </div>
 
-                <div className="container mx-auto md:px-7 px-2 md:py-16 py-8 -mt-32 relative z-20">
+                <div className="container mx-auto md:px-11 px-2 md:py-16 py-8 -mt-32 relative z-20">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                         {/* Main Content Column */}
                         <div className="lg:col-span-8">
-                            <div className="bg-white rounded-xl shadow-xl p-4 md:p-6 border border-gray-100 ring-1 ring-black/5">
+                            <div className="bg-white rounded-xl shadow-xl p-4 md:p-10 border border-gray-100 ring-1 ring-black/5">
                                 {/* Share Buttons (Mobile Top) */}
                                 <div className="flex lg:hidden hidden gap-4 mb-8 pb-8 border-b border-gray-100 justify-center">
                                     <button className="p-3 rounded-full bg-gray-50 hover:bg-[#1DA1F2] hover:text-white text-gray-500 transition-all duration-300"><Twitter size={20} /></button>
@@ -273,7 +273,7 @@ export default function BlogDetailPage() {
                                     <div>
                                         <div className="mt-8 pt-8 border-t border-gray-100">
                                             <div className="flex items-center gap-2 mb-4">
-                                                <span className="font-bold text-gray-800">Share This Blog:</span>
+                                                <span className="font-bold text-gray-800">Share This News:</span>
                                             </div>
                                             <div className="flex flex-wrap gap-2">
                                                 <button

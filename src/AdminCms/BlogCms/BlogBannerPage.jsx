@@ -26,7 +26,7 @@ export default function BlogBannerPage() {
     const { language } = useLanguage();
     const t = translations[language];
 
-    // Fetch Blog Page Data
+    // Fetch News Page Data
     const fetchBlogPageData = async () => {
         try {
             setLoading(true);
@@ -80,10 +80,10 @@ export default function BlogBannerPage() {
             setSeoLoading(true);
             if (pageId) {
                 await updateBlogPage(pageId, values);
-                CommonToaster('Blog Page SEO updated successfully!', 'success');
+                CommonToaster('News Page SEO updated successfully!', 'success');
             } else {
                 await createBlogPage(values);
-                CommonToaster('Blog Page SEO created successfully!', 'success');
+                CommonToaster('News Page SEO created successfully!', 'success');
             }
             fetchBlogPageData();
         } catch (error) {
@@ -102,10 +102,10 @@ export default function BlogBannerPage() {
 
             if (pageId) {
                 await updateBlogPage(pageId, values);
-                CommonToaster('Blog Page Banner updated successfully!', 'success');
+                CommonToaster('News Page Banner updated successfully!', 'success');
             } else {
                 await createBlogPage(values);
-                CommonToaster('Blog Page Banner created successfully!', 'success');
+                CommonToaster('News Page Banner created successfully!', 'success');
             }
 
             fetchBlogPageData();

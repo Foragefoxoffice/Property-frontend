@@ -108,7 +108,7 @@ export default function AboutPageBannerForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {headerLang === 'en' ? 'About Us Banner' : 'Banner Về Chúng Tôi'}
+                            {headerLang === 'en' ? 'About Us Banner' : 'Banner Về chúng tôi'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
                             {headerLang === 'en' ? 'Manage your about page banner section' : 'Quản lý phần banner trang giới thiệu'}
@@ -160,7 +160,7 @@ export default function AboutPageBannerForm({
                                                     ]}
                                                 >
                                                     <Input
-                                                        placeholder="Về Chúng Tôi"
+                                                        placeholder="Về chúng tôi"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                     />

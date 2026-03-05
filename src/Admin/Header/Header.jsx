@@ -64,8 +64,8 @@ export default function Header({ showNavigation = true }) {
     myFavorites: { en: "My Favorites", vi: "Yêu thích của tôi" },
     visitSite: { en: "Visit Site", vi: "Truy cập trang web" },
     project: { en: "Project", vi: "Dự án" },
-    viewAllIn: { en: "View All in", vi: "Xem tất cả trong" },
-    viewAllProperty: { en: "View All Properties", vi: "Xem tất cả bất động sản" },
+    viewAllIn: { en: "View All in", vi: "View tất cả trong" },
+    viewAllProperty: { en: "View All Properties", vi: "View tất cả bất động sản" },
     myProfile: { en: "My Profile", vi: "Hồ sơ của tôi" },
   };
 
@@ -571,7 +571,7 @@ export default function Header({ showNavigation = true }) {
                 />
               </div>
 
-              {/* Blog Link */}
+              {/* News Link */}
               <div className="font-semibold text-[16px]">
                 <AnimatedNavLink
                   text={labels.blog[language]}

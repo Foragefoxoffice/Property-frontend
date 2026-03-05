@@ -283,7 +283,7 @@ export default function ContactEnquiry() {
                                                         className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#41398B] bg-[#41398B]/5 hover:bg-[#41398B]/10 rounded-md transition-colors border border-[#41398B]/10 whitespace-nowrap cursor-pointer"
                                                     >
                                                         <Eye size={12} />
-                                                        {isVI ? 'Xem chi tiết' : 'View Details'}
+                                                        {isVI ? 'View chi tiết' : 'View Details'}
                                                     </button>
                                                 </div>
                                             ) : (

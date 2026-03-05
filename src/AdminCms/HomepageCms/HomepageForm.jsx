@@ -141,7 +141,7 @@ export default function HomepageForm() {
                     homeFindBg: page.homeFindBg,
                 });
 
-                // Set Blog Form
+                // Set News Form
                 blogForm.setFieldsValue({
                     homeBlogTitle_en: page.homeBlogTitle_en,
                     homeBlogTitle_vn: page.homeBlogTitle_vn,
@@ -523,7 +523,7 @@ export default function HomepageForm() {
         }
     };
 
-    // Handle Blog form submission
+    // Handle News form submission
     const handleBlogSubmit = async (values) => {
         if (!validateVietnameseFields(values)) return;
         try {
@@ -586,7 +586,7 @@ export default function HomepageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('Blog section updated successfully!', 'success');
+                CommonToaster('News section updated successfully!', 'success');
             } else {
                 // For first time creation, need all other sections too
                 const bannerValues = await bannerForm.validateFields();
@@ -600,7 +600,7 @@ export default function HomepageForm() {
             if (error.errorFields) {
                 CommonToaster('Please fill in the required sections first', 'error');
             } else {
-                CommonToaster(error.response?.data?.message || 'Failed to save Blog section', 'error');
+                CommonToaster(error.response?.data?.message || 'Failed to save News section', 'error');
                 console.error(error);
             }
         } finally {
@@ -783,7 +783,7 @@ export default function HomepageForm() {
                     headerLang={headerLang}
                 />
 
-                {/* Blog Section */}
+                {/* News Section */}
                 <HomePageBlogForm
                     form={blogForm}
                     onSubmit={handleBlogSubmit}

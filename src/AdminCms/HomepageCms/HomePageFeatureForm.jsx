@@ -125,7 +125,7 @@ export default function HomePageFeatureForm({
                                                     ]}
                                                 >
                                                     <Input
-                                                        placeholder="ví dụ: Xem Tất Cả Tài Sản"
+                                                        placeholder="ví dụ: View Tất Cả Tài Sản"
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                     />

@@ -103,7 +103,7 @@ export default function HomeFeaturedProperties({ homePageData }) {
         : (homePageData?.homeFeatureDescription_vn || '');
     const buttonText = language === 'en'
         ? (homePageData?.homeFeatureButtonText_en || 'View Properties')
-        : (homePageData?.homeFeatureButtonText_vn || 'Xem Bất Động Sản');
+        : (homePageData?.homeFeatureButtonText_vn || 'View Bất Động Sản');
     const buttonLink = homePageData?.homeFeatureButtonLink || '/listing';
 
     const handleButtonClick = () => {

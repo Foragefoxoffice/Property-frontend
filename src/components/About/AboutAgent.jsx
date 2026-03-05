@@ -23,7 +23,7 @@ export default function AboutAgent({ data }) {
         : (data?.aboutAgentContent_vn || "Với hơn một thập kỷ kinh nghiệm bất động sản trong bất động sản ven biển cao cấp, Jessica được biết đến với sự chính trực, kiến thức thị trường sâu sắc và cam kết với khách hàng của cô ấy.");
     const buttonText = language === 'en'
         ? (data?.aboutAgentButtonText_en || "View Agent")
-        : (data?.aboutAgentButtonText_vn || "Xem Đại Lý");
+        : (data?.aboutAgentButtonText_vn || "View Đại Lý");
     const buttonLink = data?.aboutAgentButtonLink || "#";
 
     // Image Handling

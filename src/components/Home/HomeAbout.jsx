@@ -82,7 +82,7 @@ export default function HomeAbout({ homePageData }) {
                         >
                             {language === 'en'
                                 ? (homePageData?.homeAboutButtonText_en || 'View Properties')
-                                : (homePageData?.homeAboutButtonText_vn || 'Xem Bất Động Sản')
+                                : (homePageData?.homeAboutButtonText_vn || 'View Bất Động Sản')
                             }
                         </button>
                     </div>

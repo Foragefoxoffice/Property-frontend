@@ -422,7 +422,7 @@ export default function PropertyDetailsSection({ property }) {
               {show(visProp.view) && (
                 <OverviewCard
                   icon={<Eye />}
-                  label={`${t.view}:`}
+                  label={`View:`}
                   value={getLocalizedValue(info?.informationView)}
                 />
               )}

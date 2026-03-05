@@ -50,10 +50,10 @@ export default function HomePageBlogForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {headerLang === 'en' ? 'Blog Section' : 'Phần Blog'}
+                            {headerLang === 'en' ? 'News Section' : 'Phần Tin tức'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {headerLang === 'en' ? 'Manage your blog section content' : 'Quản lý nội dung phần blog'}
+                            {headerLang === 'en' ? 'Manage your news section content' : 'Quản lý nội dung phần tin tức'}
                         </p>
                     </div>
                 </div>
@@ -92,12 +92,12 @@ export default function HomePageBlogForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Tiêu Đề Phần Blog
+                                                            Tiêu Đề Phần Tin tức
                                                         </span>
                                                     }
                                                     name="homeBlogTitle_vn"
                                                     rules={[
-                                                        { required: true, message: 'Vui lòng nhập tiêu đề blog' },
+                                                        { required: true, message: 'Vui lòng nhập tiêu đề tin tức' },
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
@@ -111,12 +111,12 @@ export default function HomePageBlogForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Mô Tả Phần Blog
+                                                            Mô Tả Phần Tin tức
                                                         </span>
                                                     }
                                                     name="homeBlogDescription_vn"
                                                     rules={[
-                                                        { required: true, message: 'Vui lòng nhập mô tả blog' },
+                                                        { required: true, message: 'Vui lòng nhập mô tả tin tức' },
                                                         { max: 500, message: 'Tối đa 500 ký tự' }
                                                     ]}
                                                 >
@@ -141,12 +141,12 @@ export default function HomePageBlogForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Blog Section Title
+                                                            News Section Title
                                                         </span>
                                                     }
                                                     name="homeBlogTitle_en"
                                                     rules={[
-                                                        { required: true, message: 'Please enter blog title in English' },
+                                                        { required: true, message: 'Please enter news title in English' },
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
@@ -160,12 +160,12 @@ export default function HomePageBlogForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Blog Section Description
+                                                            News Section Description
                                                         </span>
                                                     }
                                                     name="homeBlogDescription_en"
                                                     rules={[
-                                                        { required: true, message: 'Please enter blog description in English' },
+                                                        { required: true, message: 'Please enter news description in English' },
                                                         { max: 500, message: 'Maximum 500 characters allowed' }
                                                     ]}
                                                 >
@@ -202,8 +202,8 @@ export default function HomePageBlogForm({
                                         className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
                                     >
                                         {activeTab === 'vn'
-                                            ? (pageData ? 'Lưu Phần Blog' : 'Tạo Trang')
-                                            : (pageData ? 'Save Blog Section' : 'Create Page')
+                                            ? (pageData ? 'Lưu Phần Tin tức' : 'Tạo Trang')
+                                            : (pageData ? 'Save News Section' : 'Create Page')
                                         }
                                     </Button>
                                 )}

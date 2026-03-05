@@ -167,17 +167,17 @@ export default function BlogCmsForm() {
 
             if (blogData) {
                 await updateBlog(blogData._id, finalPayload);
-                CommonToaster('Blog updated successfully!', 'success');
+                CommonToaster('News updated successfully!', 'success');
             } else {
                 await createBlog(finalPayload);
-                CommonToaster('Blog created successfully!', 'success');
+                CommonToaster('News created successfully!', 'success');
                 navigate('/dashboard/cms/blogs');
                 return;
             }
 
             fetchBlogData();
         } catch (error) {
-            CommonToaster(error.response?.data?.message || 'Failed to save blog', 'error');
+            CommonToaster(error.response?.data?.message || 'Failed to save news', 'error');
             console.error(error);
         } finally {
             setMainLoading(false);
@@ -234,7 +234,7 @@ export default function BlogCmsForm() {
             } else {
                 const mainValues = await mainForm.validateFields();
                 await createBlog({ ...finalPayload, ...mainValues });
-                CommonToaster('Blog created successfully!', 'success');
+                CommonToaster('News created successfully!', 'success');
                 navigate('/dashboard/cms/blogs');
                 return;
             }
@@ -242,7 +242,7 @@ export default function BlogCmsForm() {
             fetchBlogData();
         } catch (error) {
             if (error.errorFields) {
-                CommonToaster('Please fill in the Blog Content and Metadata first', 'error');
+                CommonToaster('Please fill in the News Content and Metadata first', 'error');
             } else {
                 CommonToaster(error.response?.data?.message || 'Failed to save SEO section', 'error');
                 console.error(error);

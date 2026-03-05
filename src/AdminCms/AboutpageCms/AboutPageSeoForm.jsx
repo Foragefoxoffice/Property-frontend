@@ -135,7 +135,7 @@ export default function AboutPageSeoForm({
         form.setFieldsValue({
             aboutSeoMetaTitle_en: 'About Us',
             aboutSeoSlugUrl_en: 'about-us',
-            aboutSeoMetaTitle_vn: 'Về Chúng Tôi',
+            aboutSeoMetaTitle_vn: 'Về chúng tôi',
             aboutSeoSlugUrl_vn: 've-chung-toi'
         });
     }, [form, pageData]);
@@ -157,11 +157,11 @@ export default function AboutPageSeoForm({
     const handleGenerate = (field) => {
         const content = buildCmsContent(activeTab, 'about');
         const map = {
-            metaTitle:       `aboutSeoMetaTitle_${activeTab}`,
+            metaTitle: `aboutSeoMetaTitle_${activeTab}`,
             metaDescription: `aboutSeoMetaDescription_${activeTab}`,
-            metaKeywords:    `aboutSeoMetaKeywords_${activeTab}`,
-            ogTitle:         `aboutSeoOgTitle_${activeTab}`,
-            ogDescription:   `aboutSeoOgDescription_${activeTab}`,
+            metaKeywords: `aboutSeoMetaKeywords_${activeTab}`,
+            ogTitle: `aboutSeoOgTitle_${activeTab}`,
+            ogDescription: `aboutSeoOgDescription_${activeTab}`,
         };
         const valMap = {
             metaTitle: content.metaTitle,

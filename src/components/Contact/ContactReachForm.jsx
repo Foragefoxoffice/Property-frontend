@@ -301,7 +301,7 @@ export default function ContactReachForm({ data }) {
                                         size="large"
                                     >
                                         <Select.Option value="General Inquiry">{language === 'en' ? "General Inquiry" : "Yêu cầu chung"}</Select.Option>
-                                        <Select.Option value="Property Viewing">{language === 'en' ? "Property Viewing" : "Xem bất động sản"}</Select.Option>
+                                        <Select.Option value="Property Viewing">{language === 'en' ? "Property Viewing" : "View bất động sản"}</Select.Option>
                                         <Select.Option value="Partnership">{language === 'en' ? "Partnership" : "Hợp tác"}</Select.Option>
                                         <Select.Option value="Support">{language === 'en' ? "Support" : "Hỗ trợ"}</Select.Option>
                                         <Select.Option value="Other">{language === 'en' ? "Other" : "Khác"}</Select.Option>

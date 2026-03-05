@@ -722,7 +722,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
 
           <div className="border-t pt-4">
             <h4 className="text-md font-semibold text-gray-700 mb-3">
-              {lang === "vi" ? "Danh sách bất động sản" : "Properties List"}
+              {lang === "vi" ? "Các bất động sản đang sở hữu" : "Properties List"}
             </h4>
             {loadingProps ? (
               <div className="flex justify-center py-4">

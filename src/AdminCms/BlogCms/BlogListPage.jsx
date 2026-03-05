@@ -23,9 +23,9 @@ export default function BlogListPage() {
     // Translation object
     const translations = {
         en: {
-            pageTitle: "Blog Management",
-            pageDescription: "Manage your blog posts here",
-            createBlog: "Create New Blog",
+            pageTitle: "News Management",
+            pageDescription: "Manage your news posts here",
+            createBlog: "Create New News",
             title: "Title",
             slug: "Slug",
             author: "Author",
@@ -33,9 +33,9 @@ export default function BlogListPage() {
             draft: "Draft",
             actions: "Actions",
             viewDetails: "View Details",
-            editBlog: "Edit Blog",
-            deleteBlog: "Delete Blog?",
-            deleteConfirmation: "Are you sure you want to delete this blog? This action cannot be undone.",
+            editBlog: "Edit News",
+            deleteBlog: "Delete News?",
+            deleteConfirmation: "Are you sure you want to delete this news? This action cannot be undone.",
             yesDelete: "Yes, Delete",
             cancel: "Cancel",
             untitled: "Untitled",
@@ -43,19 +43,19 @@ export default function BlogListPage() {
             sno: "S.No",
         },
         vi: {
-            pageTitle: "Quản lý Blog",
-            pageDescription: "Quản lý các bài viết blog của bạn",
-            createBlog: "Tạo Blog mới",
+            pageTitle: "Quản lý Tin tức",
+            pageDescription: "Quản lý các bài viết tin tức của bạn",
+            createBlog: "Tạo Tin tức mới",
             title: "Tiêu đề",
             slug: "Đường dẫn",
             author: "Tác giả",
             published: "Đã xuất bản",
             draft: "Bản nháp",
             actions: "Hành động",
-            viewDetails: "Xem chi tiết",
-            editBlog: "Chỉnh sửa Blog",
-            deleteBlog: "Xóa Blog?",
-            deleteConfirmation: "Bạn có chắc chắn muốn xóa blog này? Hành động này không thể hoàn tác.",
+            viewDetails: "View chi tiết",
+            editBlog: "Chỉnh sửa Tin tức",
+            deleteBlog: "Xóa Tin tức?",
+            deleteConfirmation: "Bạn có chắc chắn muốn xóa tin tức này? Hành động này không thể hoàn tác.",
             yesDelete: "Có, Xóa",
             cancel: "Hủy",
             untitled: "Chưa có tiêu đề",
@@ -76,7 +76,7 @@ export default function BlogListPage() {
             setBlogs(res.data.data);
         } catch (error) {
             console.error(error);
-            CommonToaster("Failed to fetch blogs", "error");
+            CommonToaster("Failed to fetch news", "error");
         } finally {
             setLoading(false);
         }
@@ -91,13 +91,13 @@ export default function BlogListPage() {
         setSubmitLoading(true);
         try {
             await deleteBlog(deletingBlogId);
-            CommonToaster("Blog deleted successfully", "success");
+            CommonToaster("News deleted successfully", "success");
             setDeleteModalVisible(false);
             setDeletingBlogId(null);
             fetchBlogs();
         } catch (error) {
             console.error(error);
-            CommonToaster("Failed to delete blog", "error");
+            CommonToaster("Failed to delete news", "error");
         } finally {
             setSubmitLoading(false);
         }
@@ -193,7 +193,7 @@ export default function BlogListPage() {
                             ) : visibleData.length === 0 ? (
                                 <tr>
                                     <td colSpan="5" className="text-center py-12 text-gray-500">
-                                        No blogs found.
+                                        No news found.
                                     </td>
                                 </tr>
                             ) : (

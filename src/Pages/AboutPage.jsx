@@ -43,7 +43,7 @@ export default function AboutPage() {
         // 1. Update Title
         const metaTitle = pageData[`aboutSeoMetaTitle_${langKey}`] ||
             pageData[`aboutBannerTitle_${langKey}`] ||
-            (langKey === 'en' ? 'About Us' : 'Về Chúng Tôi');
+            (langKey === 'en' ? 'About Us' : 'Về chúng tôi');
 
         if (metaTitle) {
             document.title = metaTitle;

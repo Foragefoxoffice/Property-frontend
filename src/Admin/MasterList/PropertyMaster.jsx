@@ -62,7 +62,7 @@ export default function PropertyMaster() {
       path: "/dashboard/masters/unit",
     },
     {
-      name: language === "vi" ? "Phạm vi sàn" : "Floor Range",
+      name: language === "vi" ? "Khoảng tầng" : "Floor Range",
       description:
         language === "vi"
           ? "Khoảng tầng trong tòa nhà."

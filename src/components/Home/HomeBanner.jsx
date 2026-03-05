@@ -19,7 +19,7 @@ export default function HomeBanner({ homePageData }) {
     const { language } = useLanguage();
     const t = translations[language]; // Initialize translations
     const { can } = usePermissions();
-    const [selectedTab, setSelectedTab] = useState('For Lease');
+    const [selectedTab, setSelectedTab] = useState('View All');
     const [showMoreFilters, setShowMoreFilters] = useState(false);
 
     // Dropdown data
@@ -172,7 +172,8 @@ export default function HomeBanner({ homePageData }) {
 
     const handleSearch = () => {
         // Navigate to listing page with filters
-        let category = 'Lease';
+        let category = 'All';
+        if (selectedTab === 'For Lease') category = 'Lease';
         if (selectedTab === 'For Sale') category = 'Sale';
         if (selectedTab === 'Home Stay') category = 'Home Stay';
 
@@ -237,7 +238,16 @@ export default function HomeBanner({ homePageData }) {
             {/* Filter Card */}
             <div className='mt-[-80px] mx-4 md:mx-0 relative z-20 animate-slideUpFade animation-delay-400'>
                 {/* Tabs */}
-                <div className="flex gap-3 justify-center">
+                <div className="flex gap-2 md:gap-3 justify-center">
+                    <button
+                        className={`px-2 py-2 md:py-3 md:px-8 rounded-t-md font-medium text-base cursor-pointer transition-all ${selectedTab === 'View All'
+                            ? 'bg-[#fff] text-[#41398B]'
+                            : 'bg-[#00000066] text-[#fff] hover:bg-gray-200 hover:text-[#41398B]'
+                            }`}
+                        onClick={() => setSelectedTab('View All')}
+                    >
+                        {t.viewAll}
+                    </button>
                     <button
                         className={`px-2 py-2 md:py-3 md:px-8 rounded-t-md font-medium text-base cursor-pointer transition-all ${selectedTab === 'For Lease'
                             ? 'bg-[#fff] text-[#41398B]'
@@ -263,7 +273,7 @@ export default function HomeBanner({ homePageData }) {
                             }`}
                         onClick={() => setSelectedTab('Home Stay')}
                     >
-                        {t.homeStay}
+                        {t.homestay}
                     </button>
                 </div>
 

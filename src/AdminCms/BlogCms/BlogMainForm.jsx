@@ -236,17 +236,17 @@ export default function BlogMainForm({
                                                     <Form.Item
                                                         label={
                                                             <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Tiêu Đề Blog
+                                                                Tiêu Đề Tin tức
                                                             </span>
                                                         }
                                                         name={['title', 'vi']}
                                                         rules={[
-                                                            { required: true, message: 'Vui lòng nhập tiêu đề blog' },
+                                                            { required: true, message: 'Vui lòng nhập tiêu đề tin tức' },
                                                             { max: 200, message: 'Tối đa 200 ký tự' }
                                                         ]}
                                                     >
                                                         <Input
-                                                            placeholder="Nhập tiêu đề blog..."
+                                                            placeholder="Nhập tiêu đề Tin tức..."
                                                             size="large"
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                         />
@@ -255,7 +255,7 @@ export default function BlogMainForm({
                                                     <Form.Item
                                                         label={
                                                             <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Nội Dung Blog
+                                                                Nội Dung Tin tức
                                                             </span>
                                                         }
                                                         name={['content', 'vi']}
@@ -315,17 +315,17 @@ export default function BlogMainForm({
                                                     <Form.Item
                                                         label={
                                                             <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Blog Title
+                                                                News Title
                                                             </span>
                                                         }
                                                         name={['title', 'en']}
                                                         rules={[
-                                                            { required: true, message: 'Please enter blog title in English' },
+                                                            { required: true, message: 'Please enter news title in English' },
                                                             { max: 200, message: 'Maximum 200 characters allowed' }
                                                         ]}
                                                     >
                                                         <Input
-                                                            placeholder="Enter blog title in English..."
+                                                            placeholder="Enter news title in English..."
                                                             size="large"
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                         />
@@ -334,11 +334,11 @@ export default function BlogMainForm({
                                                     <Form.Item
                                                         label={
                                                             <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Blog Content
+                                                                News Content
                                                             </span>
                                                         }
                                                         name={['content', 'en']}
-                                                        rules={[{ required: true, message: 'Please enter content in English' }]}
+                                                        rules={[{ required: true, message: 'Please enter news content in English' }]}
                                                     >
                                                         <ReactQuill
                                                             ref={quillRefEn}
@@ -383,7 +383,7 @@ export default function BlogMainForm({
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    {activeTab === 'vn' ? 'Metadata & Cài Đặt Chung' : 'Metadata & Settings'}
+                                    {activeTab === 'vn' ? 'Metadata & Cài đặt' : 'Metadata & Settings'}
                                 </h4>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -549,8 +549,8 @@ export default function BlogMainForm({
                                         className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
                                     >
                                         {activeTab === 'vn'
-                                            ? (blogData ? 'Lưu Blog' : 'Tạo Blog')
-                                            : (blogData ? 'Save Blog' : 'Create Blog')
+                                            ? (blogData ? 'Lưu Tin tức' : 'Tạo Tin tức')
+                                            : (blogData ? 'Save News' : 'Create News')
                                         }
                                     </Button>
                                 )}

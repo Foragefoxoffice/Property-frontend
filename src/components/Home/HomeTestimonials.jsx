@@ -96,7 +96,7 @@ export default function HomeTestimonials({ homePageData }) {
                     >
                         {language === 'en'
                             ? (homePageData?.homeTestimonialTitle_en || 'What They Say About Us')
-                            : (homePageData?.homeTestimonialTitle_vn || 'Họ Nói Gì Về Chúng Tôi')
+                            : (homePageData?.homeTestimonialTitle_vn || 'Họ Nói Gì Về chúng tôi')
                         }
                     </motion.h2>
                 </div>

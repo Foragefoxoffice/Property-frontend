@@ -18,7 +18,7 @@ export default function AboutBanner({ data }) {
 
     const title = language === 'en'
         ? (data?.aboutBannerTitle_en || 'About Us')
-        : (data?.aboutBannerTitle_vn || 'Về Chúng Tôi');
+        : (data?.aboutBannerTitle_vn || 'Về chúng tôi');
     const bgImage = data?.aboutBannerBg ? getImageUrl(data.aboutBannerBg) : null;
     // Fallback image usage if needed, but styling handles null gracefully or use a placeholder
     const backgroundStyle = bgImage ? { backgroundImage: `url(${bgImage})` } : { backgroundColor: '#1a1a1a' };

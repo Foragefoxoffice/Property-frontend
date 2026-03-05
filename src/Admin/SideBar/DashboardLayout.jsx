@@ -225,7 +225,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home className="w-4 h-4" /> </span>
-                                                <span>{t.home || "Home Page"}</span>
+                                                <span>{"Home Page"}</span>
                                             </button>
                                         )}
 
@@ -238,7 +238,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Users className="w-4 h-4" /> </span>
-                                                <span>{t.aboutUs}</span>
+                                                <span>{"About Us"}</span>
                                             </button>
                                         )}
 
@@ -251,7 +251,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserCog className="w-4 h-4" /> </span>
-                                                <span>{t.contact}</span>
+                                                <span>{"Contact"}</span>
                                             </button>
                                         )}
 
@@ -264,7 +264,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
-                                                <span>{t.header}</span>
+                                                <span>{"Header"}</span>
                                             </button>
                                         )}
 
@@ -277,7 +277,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
-                                                <span>{t.footer}</span>
+                                                <span>{"Footer"}</span>
                                             </button>
                                         )}
 
@@ -290,7 +290,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <User className="w-4 h-4" /> </span>
-                                                <span className="text-sm">{t.agent}</span>
+                                                <span className="text-sm">{"Property Consultant"}</span>
                                             </button>
                                         )}
                                         {/* TERMS & CONDITIONS */}
@@ -302,7 +302,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
-                                                <span className="text-sm">{t.termsConditions || "Terms & Conditions"}</span>
+                                                <span className="text-sm">{"Terms & Conditions"}</span>
                                             </button>
                                         )}
                                         {/* PRIVACY POLICY */}
@@ -314,7 +314,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
-                                                <span className="text-sm">{t.privacyPolicy || "Privacy Policy"}</span>
+                                                <span className="text-sm">{"Privacy Policy"}</span>
                                             </button>
                                         )}
 
@@ -327,7 +327,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
-                                                <span className="text-sm">{t.blogBanner}</span>
+                                                <span className="text-sm">{"News Banner"}</span>
                                             </button>
                                         )}
                                     </div>
@@ -376,7 +376,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder className="w-4 h-4" /> </span>
-                                                <span>{t.addBlog || "Blog Cms"}</span>
+                                                <span>{t.addBlog || "News Cms"}</span>
                                             </button>
                                         )}
 

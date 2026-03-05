@@ -116,10 +116,10 @@ export default function BlogContentForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {activeTab === 'en' ? 'Blog Content' : 'Nội Dung Blog'}
+                            {activeTab === 'en' ? 'News Content' : 'Tin tức Tin tức '}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {activeTab === 'en' ? 'Write your blog post title and content' : 'Viết tiêu đề và nội dung bài viết'}
+                            {activeTab === 'en' ? 'Write your news post title and content' : 'Viết tiêu đề và nội dung bài viết'}
                         </p>
                     </div>
                 </div>
@@ -157,17 +157,17 @@ export default function BlogContentForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Blog Title
+                                                            News Title
                                                         </span>
                                                     }
                                                     name={['title', 'en']}
                                                     rules={[
-                                                        { required: true, message: 'Please enter blog title in English' },
+                                                        { required: true, message: 'Please enter news title in English' },
                                                         { max: 200, message: 'Maximum 200 characters allowed' }
                                                     ]}
                                                 >
                                                     <Input
-                                                        placeholder="Enter blog title in English..."
+                                                        placeholder="Enter news title in English..."
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                     />
@@ -176,7 +176,7 @@ export default function BlogContentForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Blog Content
+                                                            News Content
                                                         </span>
                                                     }
                                                     name={['content', 'en']}
@@ -205,17 +205,17 @@ export default function BlogContentForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Tiêu Đề Blog
+                                                            Tiêu Đề Tin tức
                                                         </span>
                                                     }
                                                     name={['title', 'vi']}
                                                     rules={[
-                                                        { required: true, message: 'Vui lòng nhập tiêu đề blog' },
+                                                        { required: true, message: 'Vui lòng nhập tiêu đề tin tức' },
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
                                                     ]}
                                                 >
                                                     <Input
-                                                        placeholder="Nhập tiêu đề blog..."
+                                                        placeholder="Nhập tiêu đề news..."
                                                         size="large"
                                                         className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                     />
@@ -224,7 +224,7 @@ export default function BlogContentForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Nội Dung Blog
+                                                            Nội Dung Tin tức
                                                         </span>
                                                     }
                                                     name={['content', 'vi']}
@@ -262,8 +262,8 @@ export default function BlogContentForm({
                                     className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
                                 >
                                     {activeTab === 'vn'
-                                        ? (blogData ? 'Lưu Nội Dung' : 'Tạo Blog')
-                                        : (blogData ? 'Save Content' : 'Create Blog')
+                                        ? (blogData ? 'Lưu Nội Dung' : 'Tạo Tin tức')
+                                        : (blogData ? 'Save Content' : 'Create Tin tức')
                                     }
                                 </Button>
                             </div>

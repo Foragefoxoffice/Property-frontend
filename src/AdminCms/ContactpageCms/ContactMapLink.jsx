@@ -206,8 +206,8 @@ export default function ContactMapLink({
                                     className="border-purple-300 text-purple-600 hover:!border-purple-500 hover:!text-purple-700 rounded-[10px] font-['Manrope']"
                                 >
                                     {previewMap
-                                        ? (activeTab === 'vn' ? 'Ẩn Xem Thử' : 'Hide Preview')
-                                        : (activeTab === 'vn' ? 'Xem Thử' : 'Show Preview')
+                                        ? (activeTab === 'vn' ? 'Ẩn View Thử' : 'Hide Preview')
+                                        : (activeTab === 'vn' ? 'View Thử' : 'Show Preview')
                                     }
                                 </Button>
                             </div>
@@ -217,7 +217,7 @@ export default function ContactMapLink({
                                 <div className="mb-6">
                                     <div className="bg-gray-50 p-4 rounded-xl border-2 border-purple-100">
                                         <h4 className="font-semibold text-gray-700 text-sm font-['Manrope'] mb-3">
-                                            {activeTab === 'vn' ? 'Xem Trước Bản Đồ' : 'Map Preview'}
+                                            {activeTab === 'vn' ? 'View Trước Bản Đồ' : 'Map Preview'}
                                         </h4>
                                         <Form.Item noStyle shouldUpdate>
                                             {() => {

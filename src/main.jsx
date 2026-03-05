@@ -2,8 +2,6 @@ import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-
-
 import App from "./App.jsx";
 import "./index.css";
 import Login from "./Login/Login.jsx";
@@ -255,9 +253,9 @@ createRoot(document.getElementById("root")).render(
                   <Route path="cms/footer" element={<FooterCmsForm />} />
                   <Route path="cms/agent" element={<AgentFormCms />} />
                   <Route path="cms/blog-banner" element={<BlogBannerPage />} />
-                  <Route path="cms/:section" element={<CMSPlaceholder />} />
                   <Route path="cms/terms-conditions" element={<TermsCondionsForm />} />
                   <Route path="cms/privacy-policy" element={<PrivacyPolicyForm />} />
+                  <Route path="cms/:section" element={<CMSPlaceholder />} />
                   <Route path="settings/notification" element={<Notification />} />
                   <Route path="settings/testimonials" element={<TestimonialsCms />} />
                   <Route path="profile" element={<UserProfile />} />

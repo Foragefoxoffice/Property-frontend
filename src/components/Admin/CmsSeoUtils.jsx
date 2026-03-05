@@ -17,10 +17,10 @@ export const CharCountIndicator = ({ value = "", min, max, label }) => {
     const statusText = isOptimal
         ? "✓ Good length"
         : isAbove
-        ? `Too long — shorten by ${len - max} chars`
-        : len > 0
-        ? `${min - len} more chars to reach minimum`
-        : `Add ${label}`;
+            ? `Too long — shorten by ${len - max} chars`
+            : len > 0
+                ? `${min - len} more chars to reach minimum`
+                : `Add ${label}`;
 
     return (
         <div style={{ marginTop: "6px" }}>
@@ -122,7 +122,7 @@ const CMS_CONTENT = {
             ogDesc: "Discover who we are at 183 Housing Solutions. Trusted real estate experts in Vietnam offering rentals, sales, and property consulting tailored to your needs.",
         },
         vn: {
-            metaTitle: "Về Chúng Tôi | 183 Housing Solutions",
+            metaTitle: "Về chúng tôi | 183 Housing Solutions",
             metaDesc: "Tìm hiểu về 183 Housing Solutions, đối tác bất động sản đáng tin cậy tại Việt Nam. Chuyên tư vấn cho thuê, mua bán và đầu tư bất động sản chuyên nghiệp.",
             keywords: ["về chúng tôi", "công ty bất động sản", "tư vấn bất động sản", "183 Housing Solutions", "bất động sản Việt Nam"],
             ogTitle: "Về 183 Housing Solutions | Chuyên Gia Bất Động Sản",
@@ -158,7 +158,7 @@ const CMS_CONTENT = {
             metaDesc: "Đọc các điều khoản và điều kiện sử dụng dịch vụ của 183 Housing Solutions. Tìm hiểu quyền lợi, trách nhiệm và chính sách dịch vụ áp dụng cho người dùng.",
             keywords: ["điều khoản sử dụng", "chính sách dịch vụ", "điều kiện", "183 Housing Solutions", "thỏa thuận người dùng"],
             ogTitle: "Điều Khoản & Điều Kiện | 183 Housing Solutions",
-            ogDesc: "Xem xét các điều khoản và điều kiện điều chỉnh việc sử dụng dịch vụ của 183 Housing Solutions. Nắm rõ quyền và trách nhiệm của bạn khi sử dụng nền tảng.",
+            ogDesc: "View xét các điều khoản và điều kiện điều chỉnh việc sử dụng dịch vụ của 183 Housing Solutions. Nắm rõ quyền và trách nhiệm của bạn khi sử dụng nền tảng.",
         },
     },
     privacy: {
@@ -179,17 +179,17 @@ const CMS_CONTENT = {
     },
     blog: {
         en: {
-            metaTitle: "Real Estate Insights | 183 Housing Solutions Blog",
+            metaTitle: "Real Estate Insights | 183 Housing Solutions News",
             metaDesc: "Stay updated with the latest real estate news, property tips, and market insights from 183 Housing Solutions. Expert advice for buyers, renters, and investors.",
             keywords: ["real estate blog", "property tips", "market insights", "183 Housing Solutions", "real estate news"],
-            ogTitle: "183 Housing Solutions Blog | Real Estate Insights",
+            ogTitle: "183 Housing Solutions News | Real Estate Insights",
             ogDesc: "Read expert real estate articles, property guides, and market analysis from 183 Housing Solutions. Your go-to source for Vietnam property insights.",
         },
         vi: {
-            metaTitle: "Tin Tức Bất Động Sản | Blog 183 Housing Solutions",
+            metaTitle: "Tin Tức Bất Động Sản | News 183 Housing Solutions",
             metaDesc: "Cập nhật tin tức bất động sản, mẹo mua nhà và thông tin thị trường từ 183 Housing Solutions. Tư vấn chuyên sâu cho người mua, thuê và đầu tư bất động sản.",
             keywords: ["blog bất động sản", "mẹo mua nhà", "thị trường bất động sản", "183 Housing Solutions", "tin tức nhà đất"],
-            ogTitle: "Blog 183 Housing Solutions | Tin Tức Bất Động Sản",
+            ogTitle: "News 183 Housing Solutions | Tin Tức Bất Động Sản",
             ogDesc: "Đọc các bài viết, hướng dẫn và phân tích thị trường bất động sản từ chuyên gia 183 Housing Solutions. Nguồn thông tin tin cậy về bất động sản Việt Nam.",
         },
     },

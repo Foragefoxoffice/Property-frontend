@@ -284,7 +284,7 @@ export default function TestimonialsCms() {
                                         <input
                                             name="title_vn"
                                             defaultValue={homeData?.homeTestimonialTitle_vn || ""}
-                                            placeholder="e.g. Họ Nói Gì Về Chúng Tôi"
+                                            placeholder="e.g. Họ Nói Gì Về chúng tôi"
                                             className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:ring-2 focus:ring-[#41398B]/20 outline-none transition-all text-sm font-semibold"
                                         />
                                     </div>

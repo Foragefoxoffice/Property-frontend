@@ -141,7 +141,7 @@ export default function CreatePropertyPreview({
   const labels = {
     reviewTitle: {
       en: "Review & Publish Property",
-      vi: "Xem lại & Đăng bất động sản",
+      vi: "View lại & Đăng bất động sản",
     },
     noProperty: {
       en: "No property found.",
@@ -898,7 +898,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
 
           <div className="border-t pt-4">
             <h4 className="text-md font-semibold text-gray-700 mb-3 text-center">
-              {lang === "vi" ? "Danh sách bất động sản" : "Properties List"}
+              {lang === "vi" ? "Các bất động sản đang sở hữu" : "Properties List"}
             </h4>
             {loadingProps ? (
               <div className="flex justify-center py-4">

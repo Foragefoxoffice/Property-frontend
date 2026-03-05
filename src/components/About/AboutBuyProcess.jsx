@@ -39,7 +39,7 @@ export default function AboutBuyProcess({ data }) {
         },
         {
             title: "Step 2: Schedule A Viewing",
-            title_vn: "Bước 2: Đặt Lịch Xem Nhà",
+            title_vn: "Bước 2: Đặt Lịch View Nhà",
             description: "Book a tour at your convenience and explore the space in person or virtually.",
             description_vn: "Đặt lịch tham quan theo sự thuận tiện của bạn và khám phá không gian trực tiếp hoặc trực tuyến.",
             image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2053&auto=format&fit=crop"

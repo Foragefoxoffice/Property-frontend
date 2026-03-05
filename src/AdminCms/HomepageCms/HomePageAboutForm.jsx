@@ -50,7 +50,7 @@ export default function HomePageAboutForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {headerLang === 'en' ? 'Who We Are Section' : 'Phần Về Chúng Tôi'}
+                            {headerLang === 'en' ? 'Who We Are Section' : 'Phần Về chúng tôi'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">{headerLang === 'en' ? 'Manage your about us content' : 'Quản lý nội dung về chúng tôi'}</p>
                     </div>
@@ -89,7 +89,7 @@ export default function HomePageAboutForm({
                                         children: (
                                             <>
                                                 <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Phụ Về Chúng Tôi</span>}
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Phụ Về chúng tôi</span>}
                                                     name="homeAboutSubTitle_vn"
                                                     rules={[
                                                         { required: true, message: 'Vui lòng nhập tiêu đề phụ' },
@@ -104,7 +104,7 @@ export default function HomePageAboutForm({
                                                 </Form.Item>
 
                                                 <Form.Item
-                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Về Chúng Tôi</span>}
+                                                    label={<span className="font-semibold text-[#374151] text-sm font-['Manrope']">Tiêu Đề Về chúng tôi</span>}
                                                     name="homeAboutTitle_vn"
                                                     rules={[
                                                         { required: true, message: 'Vui lòng nhập tiêu đề' },
@@ -184,7 +184,7 @@ export default function HomePageAboutForm({
                                                         rules={[{ required: true, message: 'Bắt buộc' }]}
                                                     >
                                                         <Input
-                                                            placeholder="Lên Lịch Xem Nhà"
+                                                            placeholder="Lên Lịch View Nhà"
                                                             size="large"
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
                                                         />
@@ -421,7 +421,7 @@ export default function HomePageAboutForm({
                                         className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
                                     >
                                         {activeTab === 'vn'
-                                            ? (pageData ? 'Lưu Phần Về Chúng Tôi' : 'Tạo Trang')
+                                            ? (pageData ? 'Lưu Phần Về chúng tôi' : 'Tạo Trang')
                                             : (pageData ? 'Save About Section' : 'Create Page')
                                         }
                                     </Button>

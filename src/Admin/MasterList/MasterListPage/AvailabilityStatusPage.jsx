@@ -284,7 +284,7 @@ export default function AvailabilityStatusPage() {
                       >
                         {isVI
                           ? row.status === "Active"
-                            ? "Đang hoạt động"
+                            ? "Hoạt động"
                             : "Không hoạt động"
                           : row.status}
                       </span>

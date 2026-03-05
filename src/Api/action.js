@@ -419,7 +419,7 @@ export const createBlog = (data) => API.post("/blogs", data);
 export const updateBlog = (id, data) => API.put(`/blogs/${id}`, data);
 export const deleteBlog = (id) => API.delete(`/blogs/${id}`);
 
-// Blog Page CMS APIs
+// News Page CMS APIs
 export const getBlogPage = () => API.get("/blog-page");
 export const createBlogPage = (data) => API.post("/blog-page", data);
 export const updateBlogPage = (id, data) => API.put(`/blog-page/${id}`, data);

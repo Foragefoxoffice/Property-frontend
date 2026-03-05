@@ -153,11 +153,11 @@ export default function BlogPageSeoForm({
     const handleGenerate = (field) => {
         const content = buildCmsContent(activeTab, 'blog');
         const map = {
-            metaTitle:       `blogSeoMetaTitle_${activeTab}`,
+            metaTitle: `blogSeoMetaTitle_${activeTab}`,
             metaDescription: `blogSeoMetaDescription_${activeTab}`,
-            metaKeywords:    `blogSeoMetaKeywords_${activeTab}`,
-            ogTitle:         `blogSeoOgTitle_${activeTab}`,
-            ogDescription:   `blogSeoOgDescription_${activeTab}`,
+            metaKeywords: `blogSeoMetaKeywords_${activeTab}`,
+            ogTitle: `blogSeoOgTitle_${activeTab}`,
+            ogDescription: `blogSeoOgDescription_${activeTab}`,
         };
         const valMap = {
             metaTitle: content.metaTitle,
@@ -360,7 +360,7 @@ export default function BlogPageSeoForm({
                                                         className="w-full"
                                                         disabled={!can('cms.blogBanner', 'edit')}
                                                         options={[
-                                                            { label: 'Blog', value: 'Blog' },
+                                                            { label: 'News', value: 'News' },
                                                             { label: 'WebPage', value: 'WebPage' },
                                                             { label: 'CollectionPage', value: 'CollectionPage' },
                                                             { label: 'WebSite', value: 'WebSite' },
@@ -503,7 +503,7 @@ export default function BlogPageSeoForm({
                                                         className="w-full"
                                                         disabled={!can('cms.blogBanner', 'edit')}
                                                         options={[
-                                                            { label: 'Blog', value: 'Blog' },
+                                                            { label: 'News', value: 'News' },
                                                             { label: 'WebPage', value: 'WebPage' },
                                                             { label: 'CollectionPage', value: 'CollectionPage' },
                                                             { label: 'WebSite', value: 'WebSite' },
