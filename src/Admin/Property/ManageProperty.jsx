@@ -247,7 +247,7 @@ export default function ManageProperty({
         },
         {
           key: "copy_home",
-          label: "Copy to Home Stay",
+          label: "Copy to Homestay",
           onClick: () => handleCopy(p._id, "Home Stay"),
         },
       ];
@@ -262,7 +262,7 @@ export default function ManageProperty({
         },
         {
           key: "copy_home",
-          label: "Copy to Home Stay",
+          label: "Copy to Homestay",
           onClick: () => handleCopy(p._id, "Home Stay"),
         },
       ];

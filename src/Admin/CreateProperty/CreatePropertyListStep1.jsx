@@ -795,7 +795,7 @@ export default function CreatePropertyListStep1({
                   const map = {
                     "Sale": { en: "Sale", vi: "Bán" },
                     "Lease": { en: "Lease", vi: "Cho thuê" },
-                    "Home Stay": { en: "Home Stay", vi: "Homestay" }
+                    "Home Stay": { en: "Homestay", vi: "Homestay" }
                   };
 
                   if (typeof type === 'object') {
