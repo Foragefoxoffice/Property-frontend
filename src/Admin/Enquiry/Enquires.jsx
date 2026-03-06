@@ -32,6 +32,8 @@ export default function Enquires() {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [selectedProperty, setSelectedProperty] = useState(null);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [viewingEnquiry, setViewingEnquiry] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
     const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState({ show: false, count: 0 });
     const [selectedIds, setSelectedIds] = useState([]);
@@ -367,15 +369,27 @@ export default function Enquires() {
                                                 </button>
                                             </td>
                                             <td className="px-6 py-4 text-center whitespace-nowrap">
-                                                {can("userManagement.enquires", "delete") && (
+                                                <div className="flex items-center justify-center gap-2">
                                                     <button
-                                                        onClick={() => confirmDelete(item._id)}
-                                                        className="p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                                                        title="Delete Enquiry"
+                                                        onClick={() => {
+                                                            setViewingEnquiry(item);
+                                                            setShowViewModal(true);
+                                                        }}
+                                                        className="p-1.5 rounded-full text-gray-400 hover:text-[#41398B] hover:bg-blue-50 transition-colors"
+                                                        title={language === "vi" ? "Xem chi tiết" : "View Details"}
                                                     >
-                                                        <Trash2 size={18} />
+                                                        <Search size={18} />
                                                     </button>
-                                                )}
+                                                    {can("userManagement.enquires", "delete") && (
+                                                        <button
+                                                            onClick={() => confirmDelete(item._id)}
+                                                            className="p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                                            title="Delete Enquiry"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -594,6 +608,121 @@ export default function Enquires() {
                                 )}
                                 {t.delete}
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ View Details Modal */}
+            {showViewModal && viewingEnquiry && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[11000] p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+                        {/* Header */}
+                        <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <Search className="text-[#41398B]" size={24} />
+                                {language === "vi" ? "Chi tiết Yêu cầu" : "Enquiry Details"}
+                            </h2>
+                            <button
+                                type="button"
+                                onClick={() => setShowViewModal(false)}
+                                className="bg-gray-100 p-1.5 rounded-full text-gray-500 hover:bg-gray-200 transition cursor-pointer"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-8 overflow-y-auto flex-1 custom-scrollbar bg-white">
+                            <div className="flex flex-col md:flex-row gap-8 items-start mb-8">
+                                {/* Profile Icon */}
+                                <div className="w-24 h-24 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 shadow-inner text-[#41398B]">
+                                    {viewingEnquiry.userName ? (
+                                        <span className="text-4xl font-bold uppercase">{viewingEnquiry.userName.charAt(0)}</span>
+                                    ) : (
+                                        <User size={40} className="text-gray-300" />
+                                    )}
+                                </div>
+
+                                {/* Main Info */}
+                                <div className="flex-1">
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                                        {viewingEnquiry.userName || "Unknown"}
+                                    </h3>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-1 gap-y-3 gap-x-6 mt-4">
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                                                <Mail size={14} className="text-gray-400" />
+                                            </div>
+                                            <span className="text-sm font-medium">{viewingEnquiry.userEmail || "N/A"}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                                                <Phone size={14} className="text-gray-400" />
+                                            </div>
+                                            <span className="text-sm font-medium">{viewingEnquiry.userPhone || (language === "vi" ? "Không có số điện thoại" : "No number")}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Details Sections */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                {/* Details */}
+                                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#41398B]"></div>
+                                        {language === "vi" ? "Thông tin" : "Information"}
+                                    </h4>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{language === "vi" ? "Ngày tạo" : "Added On"}</p>
+                                            <p className="text-sm font-medium text-gray-700">{formatDate(viewingEnquiry.createdAt)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{t.status}</p>
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${viewingEnquiry.isRead
+                                                ? "bg-gray-100 text-gray-600 border-gray-200"
+                                                : "bg-green-50 text-green-700 border-green-100"
+                                                }`}>
+                                                <div className={`w-1.5 h-1.5 rounded-full ${viewingEnquiry.isRead ? "bg-gray-400" : "bg-green-500"}`}></div>
+                                                {viewingEnquiry.isRead ? (language === "vi" ? "Đã đọc" : "Read") : (language === "vi" ? "Chưa đọc" : "Unread")}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Property overview */}
+                                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100 flex flex-col justify-center items-center text-center">
+                                    <div className="w-12 h-12 rounded-full bg-[#41398B]/10 flex items-center justify-center mb-3">
+                                        <MapPin className="text-[#41398B]" size={20} />
+                                    </div>
+                                    <p className="text-sm font-medium text-gray-800 mb-1">
+                                        {viewingEnquiry.properties?.length || 0} {t.properties || (language === "vi" ? "Bất động sản" : "Properties")}
+                                    </p>
+                                    <button
+                                        onClick={() => {
+                                            setShowViewModal(false);
+                                            setSelectedProperty(viewingEnquiry);
+                                        }}
+                                        className="text-xs font-semibold text-[#41398B] hover:underline cursor-pointer"
+                                    >
+                                        {t.viewProperty}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Message */}
+                            <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#41398B]"></div>
+                                    {t.message || (language === "vi" ? "Lời nhắn" : "Message")}
+                                </h4>
+                                <div className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+                                    {viewingEnquiry.message || "-"}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

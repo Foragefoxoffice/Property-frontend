@@ -16,6 +16,7 @@ import {
     ShieldAlert,
     UserCheck,
     UserX,
+    User,
     Mail,
     Phone
 } from "lucide-react";
@@ -39,6 +40,8 @@ export default function UsersDetails() {
     const isVI = language === "vi";
 
     const [showModal, setShowModal] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [viewingUser, setViewingUser] = useState(null);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -195,6 +198,12 @@ export default function UsersDetails() {
             status: user.status || "Active"
         });
         setShowModal(true);
+    };
+
+    const openViewModal = (user) => {
+        setViewingUser(user);
+        setShowViewModal(true);
+        setOpenMenuIndex(null);
     };
 
     // ✅ Delete
@@ -377,6 +386,14 @@ export default function UsersDetails() {
 
                                                 {openMenuIndex === i && (
                                                     <div className="absolute right-8 top-12 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-48 py-2">
+                                                        <button
+                                                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+                                                            onClick={() => openViewModal(row)}
+                                                        >
+                                                            <Search size={15} className="mr-3 text-[#41398B]" />
+                                                            {isVI ? "Xem chi tiết" : "View Details"}
+                                                        </button>
+
                                                         {can("userManagement.userDetails", "edit") && (
                                                             <button
                                                                 className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -639,6 +656,124 @@ export default function UsersDetails() {
                                     ? (isVI ? "Cập nhật" : "Save Changes")
                                     : (isVI ? "Thêm" : "Create User")}
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ View Details Modal */}
+            {showViewModal && viewingUser && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+                        {/* Header */}
+                        <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <User className="text-[#41398B]" size={24} />
+                                {isVI ? "Chi tiết người dùng" : "User Details"}
+                            </h2>
+                            <button
+                                type="button"
+                                onClick={() => setShowViewModal(false)}
+                                className="bg-gray-100 p-1.5 rounded-full text-gray-500 hover:bg-gray-200 transition cursor-pointer"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-8 overflow-y-auto flex-1 custom-scrollbar bg-white">
+                            <div className="flex flex-col md:flex-row gap-8 items-start mb-8">
+                                {/* Profile Image */}
+                                <div className="w-32 h-32 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                                    {viewingUser.profileImage ? (
+                                        <img
+                                            src={viewingUser.profileImage}
+                                            alt="profile"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <span className="text-4xl font-bold text-gray-300">
+                                            {viewingUser.name ? viewingUser.name.charAt(0).toUpperCase() : "U"}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Main Info */}
+                                <div className="flex-1">
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                                        {viewingUser.name}
+                                    </h3>
+                                    <p className="text-[#41398B] font-medium mb-2 flex items-center gap-2">
+                                        {isVI ? "Vai trò:" : "Role:"} <span className="capitalize">{viewingUser.role}</span>
+                                    </p>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-1 gap-y-3 gap-x-6">
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                                                <Mail size={14} className="text-gray-400" />
+                                            </div>
+                                            <span className="text-sm">{viewingUser.email}</span>
+                                        </div>
+                                        {viewingUser.phone && (
+                                            <div className="flex items-center gap-2 text-gray-600">
+                                                <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                                                    <Phone size={14} className="text-gray-400" />
+                                                </div>
+                                                <span className="text-sm">{viewingUser.phone}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Details Sections */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Account Information */}
+                                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#41398B]"></div>
+                                        {isVI ? "Thông tin tài khoản" : "Account Information"}
+                                    </h4>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">ID</p>
+                                            <p className="text-sm font-medium text-gray-700">{viewingUser.employeeId}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{isVI ? "Trạng thái" : "Status"}</p>
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${viewingUser.status === "Active"
+                                                ? "bg-green-50 text-green-700 border-green-100"
+                                                : "bg-red-50 text-red-700 border-red-100"
+                                                }`}>
+                                                <div className={`w-1.5 h-1.5 rounded-full ${viewingUser.status === "Active" ? "bg-green-500" : "bg-red-500"}`}></div>
+                                                {isVI ? (viewingUser.status === "Active" ? "Hoạt động" : "Không Hoạt động") : viewingUser.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* System Information */}
+                                <div className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100">
+                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#41398B]"></div>
+                                        {isVI ? "Hệ thống" : "System Information"}
+                                    </h4>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{isVI ? "Đã xác minh" : "Verified"}</p>
+                                            <p className="text-sm font-medium text-gray-700">
+                                                {viewingUser.isVerified ? (isVI ? "Có" : "Yes") : (isVI ? "Không" : "No")}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] text-gray-400 uppercase font-semibold mb-1">{isVI ? "Ngày tham gia" : "Joined Date"}</p>
+                                            <p className="text-sm font-medium text-gray-700">
+                                                {viewingUser.createdAt ? new Date(viewingUser.createdAt).toLocaleDateString() : "N/A"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

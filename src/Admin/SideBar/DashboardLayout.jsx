@@ -175,7 +175,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home className="w-4 h-4" /> </span>
-                                                <span>{t.sale}</span>
+                                                <span>{t.saleTab}</span>
                                             </button>
                                         )}
 
@@ -188,7 +188,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <BedDouble className="w-4 h-4" /> </span>
-                                                <span>{t.homeStay}</span>
+                                                <span>{"Home Stay"}</span>
                                             </button>
                                         )}
                                     </div>
