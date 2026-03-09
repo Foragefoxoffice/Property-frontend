@@ -9,6 +9,8 @@ import {
     Spin,
     Radio
 } from 'antd';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 import {
     SaveOutlined,
     PlusOutlined,
@@ -16,11 +18,11 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { uploadProjectOverviewImage } from '../../Api/action';
+import { uploadProjectIntroImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { usePermissions } from '../../Context/PermissionContext';
 
-export default function ProjectOverviewForm({
+export default function ProjectIntroForm({
     form,
     onSubmit,
     loading,
@@ -64,14 +66,14 @@ export default function ProjectOverviewForm({
             const file = input.files[0];
             if (file) {
                 try {
-                    const res = await uploadProjectOverviewImage(file);
+                    const res = await uploadProjectIntroImage(file);
                     const url = getImageUrl(res.data.url);
 
                     const quill = quillRef.current.getEditor();
                     const range = quill.getSelection();
                     quill.insertEmbed(range.index, 'image', url);
                 } catch (error) {
-                    CommonToaster('Image upload failed', 'error');
+                    CommonToaster(t.toastImageUploadError, 'error');
                     console.error(error);
                 }
             }
@@ -126,21 +128,23 @@ export default function ProjectOverviewForm({
     ];
 
     // Single media upload handler (for the main specific media type: image)
-    const handleMediaUpload = async (file) => {
+    const handleUpload = async (file) => {
         try {
             setUploading(true);
-            const response = await uploadProjectOverviewImage(file);
-            const uploadedUrl = response.data.url;
+            const response = await uploadProjectIntroImage(file);
 
-            form.setFieldsValue({
-                projectOverviewVideo: uploadedUrl
-            });
-            CommonToaster('Image uploaded successfully!', 'success');
-            return false;
+            if (response.data.success) {
+                const uploadedUrl = response.data.url;
+                form.setFieldsValue({
+                    projectIntroVideo: uploadedUrl
+                });
+                CommonToaster(t.toastImageUploaded, 'success');
+            } else {
+                CommonToaster(t.toastImageUploadError, 'error');
+            }
         } catch (error) {
-            CommonToaster('Failed to upload image', 'error');
-            console.error(error);
-            return false;
+            console.error('Upload error:', error);
+            CommonToaster(t.toastImageUploadError, 'error');
         } finally {
             setUploading(false);
         }
@@ -149,15 +153,15 @@ export default function ProjectOverviewForm({
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            CommonToaster('You can only upload image files!', 'error');
+            CommonToaster(t.toastImageTypeError, 'error');
             return Upload.LIST_IGNORE;
         }
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            CommonToaster('Image must be smaller than 5MB!', 'error');
+            CommonToaster(t.toastImageSizeError, 'error');
             return Upload.LIST_IGNORE;
         }
-        handleMediaUpload(file);
+        handleUpload(file);
         return false;
     };
 
@@ -189,7 +193,7 @@ export default function ProjectOverviewForm({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-800 font-['Manrope']">
-                            {headerLang === 'vn' ? 'Nội Dung Tổng Quan' : 'Overview Content'}
+                            {headerLang === 'vn' ? 'Nội Dung Giới Thiệu' : 'Introduction Content'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
                             {headerLang === 'vn' ? 'Quản lý thông tin và đa phương tiện' : 'Manage information and media'}
@@ -240,7 +244,7 @@ export default function ProjectOverviewForm({
                                                                 Nội Dung Tổng Quan
                                                             </span>
                                                         }
-                                                        name={['projectOverviewContent', 'vi']}
+                                                        name={['projectIntroContent', 'vi']}
                                                         rules={[{ required: true, message: 'Vui lòng nhập nội dung' }]}
                                                     >
                                                         <ReactQuill
@@ -266,10 +270,10 @@ export default function ProjectOverviewForm({
                                                     <Form.Item
                                                         label={
                                                             <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                                Overview Content
+                                                                Introduction Content
                                                             </span>
                                                         }
-                                                        name={['projectOverviewContent', 'en']}
+                                                        name={['projectIntroContent', 'en']}
                                                         rules={[{ required: true, message: 'Please enter content' }]}
                                                     >
                                                         <ReactQuill
@@ -303,20 +307,20 @@ export default function ProjectOverviewForm({
 
                                     {mediaType === 'image' ? (
                                         <Form.Item
-                                            name="projectOverviewVideo"
+                                            name="projectIntroVideo"
                                             className="mb-0"
                                         >
                                             <div className="flex flex-col gap-4">
                                                 <Upload
-                                                    name="projectOverviewMediaUpload"
+                                                    name="projectIntroMediaUpload"
                                                     listType="picture-card"
                                                     className="project-banner-uploader"
                                                     showUploadList={false}
                                                     beforeUpload={handleBeforeUpload}
                                                 >
-                                                    {form.getFieldValue('projectOverviewVideo') && !form.getFieldValue('projectOverviewVideo').includes('youtube') ? (
+                                                    {form.getFieldValue('projectIntroVideo') && !form.getFieldValue('projectIntroVideo').includes('youtube') ? (
                                                         <img
-                                                            src={getImageUrl(form.getFieldValue('projectOverviewVideo'))}
+                                                            src={getImageUrl(form.getFieldValue('projectIntroVideo'))}
                                                             alt="Media"
                                                             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
                                                         />
@@ -335,12 +339,16 @@ export default function ProjectOverviewForm({
                                                         </div>
                                                     )}
                                                 </Upload>
-                                                <span className="text-xs text-gray-400">Tối đa 5MB. Hình ảnh sẽ được hiển thị trên trang chủ.</span>
+                                                <span className="text-xs text-gray-400">
+                                                    {activeTab === 'vi'
+                                                        ? 'Tối đa 5MB. Hình ảnh sẽ được hiển thị trên trang chủ.'
+                                                        : 'Max 5MB. Image will be displayed on the page.'}
+                                                </span>
                                             </div>
                                         </Form.Item>
                                     ) : (
                                         <Form.Item
-                                            name="projectOverviewVideo"
+                                            name="projectIntroVideo"
                                             rules={[{ required: true, message: 'Please enter a valid URL' }]}
                                         >
                                             <Input
@@ -393,6 +401,40 @@ export default function ProjectOverviewForm({
                                 }
                                 .project-banner-uploader .ant-upload-list {
                                     display: none !important;
+                                }
+
+                                /* Quill Border Fixes */
+                                .quill {
+                                    border-radius: 12px;
+                                    overflow: hidden;
+                                    display: flex;
+                                    flex-direction: column;
+                                    border: 1px solid #d1d5db;
+                                    transition: all 0.3s ease;
+                                }
+                                .quill:focus-within {
+                                    border-color: #41398B;
+                                    box-shadow: 0 0 0 2px rgba(65, 57, 139, 0.1);
+                                }
+                                .ql-toolbar.ql-snow {
+                                    border: none !important;
+                                    border-bottom: 1px solid #f3f4f6 !important;
+                                    background: #f9fafb;
+                                    padding: 12px !important;
+                                }
+                                .ql-container.ql-snow {
+                                    border: none !important;
+                                    font-family: 'Manrope', sans-serif !important;
+                                    font-size: 14px !important;
+                                }
+                                .ql-editor {
+                                    min-height: 250px;
+                                    padding: 16px !important;
+                                }
+                                .ql-editor.ql-blank::before {
+                                    color: #9ca3af !important;
+                                    font-style: normal !important;
+                                    left: 16px !important;
                                 }
                             `}</style>
                     </Spin>

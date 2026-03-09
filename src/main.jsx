@@ -91,6 +91,9 @@ import Notification from "./Admin/Notification/Notification.jsx";
 import TestimonialsCms from "./AdminCms/TestimonialCms/TestimonialsCms.jsx";
 import ProjectBannerForm from "./AdminCms/ProjectCms/ProjectBannerForm.jsx";
 import ProjectPageForm from "./AdminCms/ProjectCms/ProjectPageForm.jsx";
+import ProjectListPage from "./AdminCms/ProjectCms/ProjectListPage.jsx";
+import ProjectMainForm from "./AdminCms/ProjectCms/ProjectMainForm.jsx";
+import ProjectCategoryListPage from "./AdminCms/ProjectCms/ProjectCategoryListPage.jsx";
 import GiveTestimonial from "./Pages/GiveTestimonial.jsx";
 
 const DashboardIndex = () => {
@@ -261,7 +264,13 @@ createRoot(document.getElementById("root")).render(
                   <Route path="cms/terms-conditions" element={<TermsCondionsForm />} />
                   <Route path="cms/privacy-policy" element={<PrivacyPolicyForm />} />
                   <Route path="cms/project-banner" element={<ProjectBannerForm />} />
-                  <Route path="cms/projects" element={<ProjectPageForm />} />
+
+                  {/* New Project CMS Routes */}
+                  <Route path="cms/projects" element={<ProjectListPage />} />
+                  <Route path="cms/projects/create" element={<ProjectMainForm />} />
+                  <Route path="cms/projects/edit/:id" element={<ProjectMainForm />} />
+                  <Route path="cms/project-categories" element={<ProjectCategoryListPage />} />
+
                   <Route path="cms/:section" element={<CMSPlaceholder />} />
                   <Route path="settings/notification" element={<Notification />} />
                   <Route path="settings/testimonials" element={<TestimonialsCms />} />

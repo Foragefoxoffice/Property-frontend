@@ -648,12 +648,12 @@ export const uploadProjectBannerImage = (file) => {
 };
 
 /* =========================================================
-   🏗️ PROJECT OVERVIEW CMS APIs
+   🏗️ PROJECT INTRO CMS APIs
 ========================================================= */
-export const getProjectOverview = () => API.get("/project-overview");
-export const createProjectOverview = (data) => API.post("/project-overview", data);
-export const updateProjectOverview = (id, data) => API.put(`/project-overview/${id}`, data);
-export const uploadProjectOverviewImage = (file) => {
+export const getProjectIntro = () => API.get("/project-intro");
+export const createProjectIntro = (data) => API.post("/project-intro", data);
+export const updateProjectIntro = (id, data) => API.put(`/project-intro/${id}`, data);
+export const uploadProjectIntroImage = (file) => {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -674,5 +674,20 @@ export const uploadProjectOverviewImage = (file) => {
 export const getProjectPage = () => API.get("/project-page");
 export const createProjectPage = (data) => API.post("/project-page", data);
 export const updateProjectPage = (id, data) => API.put(`/project-page/${id}`, data);
+
+/* =========================================================
+   🏗️ PROJECT MANAGEMENT APIs
+   ========================================================= */
+export const getAllProjectsAdmin = () => API.get("/projects/admin/all");
+export const getProjectById = (id) => API.get(`/projects/${id}`);
+export const createProject = (data) => API.post("/projects", data);
+export const updateProject = (id, data) => API.put(`/projects/${id}`, data);
+export const deleteProject = (id) => API.delete(`/projects/${id}`);
+
+export const getProjectCategories = () => API.get("/project-categories");
+export const getProjectCategory = (id) => API.get(`/project-categories/${id}`);
+export const createProjectCategory = (data) => API.post("/project-categories", data);
+export const updateProjectCategory = (id, data) => API.put(`/project-categories/${id}`, data);
+export const deleteProjectCategory = (id) => API.delete(`/project-categories/${id}`);
 
 export default API;

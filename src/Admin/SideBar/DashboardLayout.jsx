@@ -21,6 +21,7 @@ const DashboardLayout = () => {
     const [openManageStaffs, setOpenManageStaffs] = useState(false);
     const [openOtherEnquiry, setOpenOtherEnquiry] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
+    const [openProjects, setOpenProjects] = useState(false);
 
     // Sync sidebar state with current URL and check permissions
     React.useEffect(() => {
@@ -109,6 +110,10 @@ const DashboardLayout = () => {
 
         if (path.includes('/dashboard/settings/notification') || path.includes('/dashboard/settings/testimonials')) {
             setOpenSettings(true);
+        }
+
+        if (path.includes('/dashboard/cms/projects') || path.includes('/dashboard/cms/project-categories')) {
+            setOpenProjects(true);
         }
     }, [location.pathname]);
 
@@ -199,17 +204,47 @@ const DashboardLayout = () => {
                             </div>
                         )}
 
-                        {/* PROJECTS */}
+                        {/* PROJECTS DROPDOWN */}
                         {!isHidden("masters") && (
-                            <button
-                                onClick={() => navigate("/dashboard/cms/projects")}
-                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
-                ${isActive("/dashboard/cms/projects") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-              `}
-                            >
-                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white"><LayoutGrid className="w-4 h-4" /></span>
-                                <span className="text-sm font-medium">{t.projects}</span>
-                            </button>
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenProjects(!openProjects)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-xl
+                hover:bg-[#41398B] hover:text-white transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white text-left">
+                                            <LayoutGrid className="w-4 h-4" />
+                                        </span>
+                                        <span className="text-sm font-medium">{t.projects}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openProjects ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {openProjects && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        <button
+                                            onClick={() => navigate("/dashboard/cms/project-categories")}
+                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                      ${isActive("/dashboard/cms/project-categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                        >
+                                            <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags className="w-4 h-4" /> </span>
+                                            <span className="text-sm">{t.projectCategories}</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => navigate("/dashboard/cms/projects")}
+                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                      ${isActive("/dashboard/cms/projects") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                        >
+                                            <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
+                                            <span className="text-sm">{t.projectCms}</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         )}
 
                         {/* CMS SETTINGS DROPDOWN */}

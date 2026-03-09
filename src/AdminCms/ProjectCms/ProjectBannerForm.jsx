@@ -8,6 +8,8 @@ import {
     Upload,
     Spin
 } from 'antd';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 import {
     SaveOutlined,
     PlusOutlined,
@@ -40,7 +42,8 @@ export default function ProjectBannerForm({
             setActiveTab(headerLang === 'vn' ? 'vi' : 'en');
         }
     }, [headerLang]);
-
+    const { language } = useLanguage();
+    const t = translations[language];
     const [bannerImages, setBannerImages] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
@@ -64,10 +67,10 @@ export default function ProjectBannerForm({
                 const updated = [...prev, uploadedUrl];
                 return updated;
             });
-            CommonToaster('Image uploaded successfully!', 'success');
+            CommonToaster(t.toastImageUploaded, 'success');
             return false;
         } catch (error) {
-            CommonToaster('Failed to upload image', 'error');
+            CommonToaster(t.toastImageUploadError, 'error');
             console.error(error);
             return false;
         } finally {
@@ -78,12 +81,12 @@ export default function ProjectBannerForm({
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            CommonToaster('You can only upload image files!', 'error');
+            CommonToaster(t.toastImageTypeError, 'error');
             return Upload.LIST_IGNORE;
         }
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            CommonToaster('Image must be smaller than 5MB!', 'error');
+            CommonToaster(t.toastImageSizeError, 'error');
             return Upload.LIST_IGNORE;
         }
         handleImageUpload(file);
@@ -96,7 +99,7 @@ export default function ProjectBannerForm({
             const updated = prev.filter((_, i) => i !== index);
             return updated;
         });
-        CommonToaster('Image removed', 'info');
+        CommonToaster(t.toastImageRemoved, 'info');
     };
 
     // Get full image URL
