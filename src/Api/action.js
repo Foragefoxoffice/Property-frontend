@@ -626,5 +626,26 @@ export const uploadTestimonialImage = (file) => {
 };
 
 
+/* =========================================================
+   🏗️ PROJECT BANNER CMS APIs
+========================================================= */
+export const getProjectBanner = () => API.get("/project-banner");
+export const createProjectBanner = (data) => API.post("/project-banner", data);
+export const updateProjectBanner = (id, data) => API.put(`/project-banner/${id}`, data);
+export const uploadProjectBannerImage = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
 export default API;
 

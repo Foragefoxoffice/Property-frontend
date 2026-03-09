@@ -46,9 +46,11 @@ const DashboardLayout = () => {
             '/dashboard/cms/terms-conditions': 'cms.termsConditions',
             '/dashboard/cms/privacy-policy': 'cms.privacyPolicy',
             '/dashboard/cms/blog-banner': 'cms.blogBanner',
+            '/dashboard/cms/project-banner': 'cms.projectBanner',
             '/dashboard/cms/categories': 'blogs.category',
             '/dashboard/cms/blogs': 'blogs.blogCms',
             '/dashboard/landlords': 'landlords',
+            '/dashboard/projects': 'masters',
             '/dashboard/masters': 'masters',
             '/dashboard/settings/notification': 'settings.notification',
             '/dashboard/settings/testimonials': 'settings.testimonials',
@@ -80,7 +82,8 @@ const DashboardLayout = () => {
             path.includes('/dashboard/cms/agent') ||
             path.includes('/dashboard/cms/terms-conditions') ||
             path.includes('/dashboard/cms/privacy-policy') ||
-            path.includes('/dashboard/cms/blog-banner')) {
+            path.includes('/dashboard/cms/blog-banner') ||
+            path.includes('/dashboard/cms/project-banner')) {
 
             setOpenCMS(true);
         }
@@ -196,8 +199,21 @@ const DashboardLayout = () => {
                             </div>
                         )}
 
+                        {/* PROJECTS */}
+                        {!isHidden("masters") && (
+                            <button
+                                onClick={() => navigate("/dashboard/cms/projects")}
+                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                ${isActive("/dashboard/cms/projects") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+              `}
+                            >
+                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white"><LayoutGrid className="w-4 h-4" /></span>
+                                <span className="text-sm font-medium">{t.projects}</span>
+                            </button>
+                        )}
+
                         {/* CMS SETTINGS DROPDOWN */}
-                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.termsConditions") || !isHidden("cms.privacyPolicy") || !isHidden("cms.blogBanner")) && (
+                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.termsConditions") || !isHidden("cms.privacyPolicy") || !isHidden("cms.blogBanner") || !isHidden("cms.projectBanner")) && (
 
                             <div className="w-full">
                                 <button
@@ -328,6 +344,19 @@ const DashboardLayout = () => {
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                                 <span className="text-sm">{"News Banner"}</span>
+                                            </button>
+                                        )}
+
+                                        {/* PROJECT BANNER */}
+                                        {!isHidden("cms.projectBanner") && (
+                                            <button
+                                                onClick={() => navigate("/dashboard/cms/project-banner")}
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition 
+                      ${isActive("/dashboard/cms/project-banner") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                    `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
+                                                <span className="text-sm">{"Project Banner"}</span>
                                             </button>
                                         )}
                                     </div>

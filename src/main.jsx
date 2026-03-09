@@ -89,6 +89,8 @@ import PrivacyPolicyForm from "./AdminCms/PrivacyPolicyCms/PrivacyPolicyForm.jsx
 import PrivacyPolicyPage from "./Pages/PrivacyPolicyPage.jsx";
 import Notification from "./Admin/Notification/Notification.jsx";
 import TestimonialsCms from "./AdminCms/TestimonialCms/TestimonialsCms.jsx";
+import ProjectBannerForm from "./AdminCms/ProjectCms/ProjectBannerForm.jsx";
+import ProjectPageForm from "./AdminCms/ProjectCms/ProjectPageForm.jsx";
 import GiveTestimonial from "./Pages/GiveTestimonial.jsx";
 
 const DashboardIndex = () => {
@@ -230,6 +232,9 @@ createRoot(document.getElementById("root")).render(
                   <Route path="landlords" element={<OwnersLandlords />} />
                   <Route path="landlords/:id" element={<OwnerView />} />
 
+                  {/* ---------- PROJECTS ---------- */}
+                  <Route path="projects" element={<PropertyPage />} />
+
                   {/* ROLES */}
                   <Route path="roles" element={<Roles />} />
 
@@ -255,6 +260,8 @@ createRoot(document.getElementById("root")).render(
                   <Route path="cms/blog-banner" element={<BlogBannerPage />} />
                   <Route path="cms/terms-conditions" element={<TermsCondionsForm />} />
                   <Route path="cms/privacy-policy" element={<PrivacyPolicyForm />} />
+                  <Route path="cms/project-banner" element={<ProjectBannerForm />} />
+                  <Route path="cms/projects" element={<ProjectPageForm />} />
                   <Route path="cms/:section" element={<CMSPlaceholder />} />
                   <Route path="settings/notification" element={<Notification />} />
                   <Route path="settings/testimonials" element={<TestimonialsCms />} />
