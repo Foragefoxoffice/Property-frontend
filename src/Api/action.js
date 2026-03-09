@@ -647,5 +647,32 @@ export const uploadProjectBannerImage = (file) => {
   });
 };
 
-export default API;
+/* =========================================================
+   🏗️ PROJECT OVERVIEW CMS APIs
+========================================================= */
+export const getProjectOverview = () => API.get("/project-overview");
+export const createProjectOverview = (data) => API.post("/project-overview", data);
+export const updateProjectOverview = (id, data) => API.put(`/project-overview/${id}`, data);
+export const uploadProjectOverviewImage = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
 
+  const token = localStorage.getItem("token");
+  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+
+  return axios.post(`${baseURL}/upload`, formData, {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : undefined,
+    },
+    withCredentials: true,
+  });
+};
+
+/* =========================================================
+   🏗️ PROJECT PAGE CMS APIs
+========================================================= */
+export const getProjectPage = () => API.get("/project-page");
+export const createProjectPage = (data) => API.post("/project-page", data);
+export const updateProjectPage = (id, data) => API.put(`/project-page/${id}`, data);
+
+export default API;
