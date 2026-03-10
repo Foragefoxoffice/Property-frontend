@@ -80,6 +80,7 @@ export default function ProjectPageForm() {
 
                 // Set Intro Form
                 introForm.setFieldsValue({
+                    projectIntroTitle: page.projectIntroTitle,
                     projectIntroContent: page.projectIntroContent,
                     mediaType: page.mediaType || 'image',
                     projectIntroVideo: page.projectIntroVideo,
@@ -157,6 +158,7 @@ export default function ProjectPageForm() {
                 projectBannerTitle: pageData.projectBannerTitle,
                 projectBannerDesc: pageData.projectBannerDesc,
                 projectBannerImages: pageData.projectBannerImages,
+                projectIntroTitle: pageData.projectIntroTitle,
                 projectIntroContent: pageData.projectIntroContent,
                 mediaType: pageData.mediaType,
                 projectIntroVideo: pageData.projectIntroVideo,

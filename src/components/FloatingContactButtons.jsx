@@ -12,6 +12,8 @@ const FloatingContactButtons = () => {
     const { pathname } = useLocation();
     const [agentData, setAgentData] = useState(null);
 
+    const [isHovered, setIsHovered] = useState(false);
+
     const hideOnPaths = ["/dashboard", "/user-dashboard", "/login", "/register", "/forgot-password", "/reset-password"];
     const shouldHide = hideOnPaths.some(path => pathname.startsWith(path));
 
@@ -86,14 +88,19 @@ const FloatingContactButtons = () => {
         }
     ].filter(btn => btn.link);
 
+
     if (buttons.length === 0) return null;
 
     return (
         <>
             {/* Desktop Floating Buttons (Bottom Right) */}
-            <div className="fixed right-6 bottom-28 z-[9999] hidden md:flex flex-col items-end gap-3 group/floating">
-                {/* Individual Buttons (Shown on group hover) */}
-                <div className="flex flex-col gap-3 opacity-0 translate-y-4 pointer-events-none group-hover/floating:opacity-100 group-hover/floating:translate-y-0 group-hover/floating:pointer-events-auto transition-all duration-300 ease-in-out">
+            <div
+                className="fixed right-6 bottom-28 z-[9999] hidden md:flex flex-col items-end gap-3"
+                onMouseLeave={() => setIsHovered(false)}
+            >
+                {/* Individual Buttons (Shown on hover) */}
+                <div className={`flex flex-col gap-3 transition-all duration-300 ease-in-out ${isHovered ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
+                    }`}>
                     {buttons.slice(1).map((btn) => (
                         <a
                             key={btn.id}
@@ -112,12 +119,15 @@ const FloatingContactButtons = () => {
                 </div>
 
                 {/* Main Trigger Button (Primary Call Button) */}
-                <div className="relative">
+                <div
+                    className="relative cursor-pointer rounded-full"
+                    onMouseEnter={() => setIsHovered(true)}
+                >
                     <a
                         href={buttons[0].link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`${buttons[0].color} text-white w-11 h-11 rounded-full flex items-center justify-center shadow-[0_8px_25px_rgba(255,0,0,0.3)] hover:scale-110 transition-all duration-300 relative z-10`}
+                        className={`${buttons[0].color} text-white w-12 h-12 rounded-full flex items-center justify-center shadow-[0_8px_25px_rgba(255,0,0,0.3)] hover:scale-110 transition-all duration-300 relative z-10`}
                     >
                         {buttons[0].icon}
                         {/* Pulse animation */}

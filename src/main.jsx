@@ -90,11 +90,14 @@ import PrivacyPolicyPage from "./Pages/PrivacyPolicyPage.jsx";
 import Notification from "./Admin/Notification/Notification.jsx";
 import TestimonialsCms from "./AdminCms/TestimonialCms/TestimonialsCms.jsx";
 import ProjectBannerForm from "./AdminCms/ProjectCms/ProjectBannerForm.jsx";
-import ProjectPageForm from "./AdminCms/ProjectCms/ProjectPageForm.jsx";
 import ProjectListPage from "./AdminCms/ProjectCms/ProjectListPage.jsx";
 import ProjectMainForm from "./AdminCms/ProjectCms/ProjectMainForm.jsx";
 import ProjectCategoryListPage from "./AdminCms/ProjectCms/ProjectCategoryListPage.jsx";
 import GiveTestimonial from "./Pages/GiveTestimonial.jsx";
+import ProjectPage from "./Pages/ProjectPage.jsx";
+import ProjectDetailsPage from "./Pages/ProjectDetailsPage.jsx";
+import ProjectIntroductionPage from "./Pages/ProjectIntroductionPage.jsx";
+
 
 const DashboardIndex = () => {
   const { getFirstAccessiblePath, loading } = usePermissions();
@@ -312,6 +315,10 @@ createRoot(document.getElementById("root")).render(
 
                   <Route path="/property-showcase/:id/:slug?" element={<PropertyShowcasePage />} />
                   <Route path="/favorites" element={<Favorites />} />
+                  <Route path="/projects" element={<ProjectPage />} />
+                  <Route path="/projects/:id" element={<ProjectDetailsPage />} />
+                  <Route path="/project-introduction" element={<ProjectIntroductionPage />} />
+
 
                 </Route>
 

@@ -104,6 +104,7 @@ export default function ProjectMainForm() {
                     title: project.title,
                     category: project.category?._id || project.category,
                     published: project.published,
+                    projectMainDescription: project.projectMainDescription || { vi: '', en: '' }
                 });
 
                 bannerForm.setFieldsValue({
@@ -112,6 +113,7 @@ export default function ProjectMainForm() {
                 });
 
                 introForm.setFieldsValue({
+                    projectIntroTitle: project.projectIntroTitle,
                     projectIntroContent: project.projectIntroContent,
                     mediaType: project.mediaType || 'image',
                     projectIntroVideo: project.projectIntroVideo,

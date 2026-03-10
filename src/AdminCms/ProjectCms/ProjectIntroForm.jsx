@@ -241,6 +241,20 @@ export default function ProjectIntroForm({
                                                     <Form.Item
                                                         label={
                                                             <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Tiêu Đề Giới Thiệu
+                                                            </span>
+                                                        }
+                                                        name={['projectIntroTitle', 'vi']}
+                                                    >
+                                                        <Input
+                                                            placeholder="VD: GIỚI THIỆU DỰ ÁN"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                                                 Nội Dung Tổng Quan
                                                             </span>
                                                         }
@@ -270,6 +284,20 @@ export default function ProjectIntroForm({
                                                     <Form.Item
                                                         label={
                                                             <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
+                                                                Introduction Title
+                                                            </span>
+                                                        }
+                                                        name={['projectIntroTitle', 'en']}
+                                                    >
+                                                        <Input
+                                                            placeholder="e.g. PROJECT INTRODUCTION"
+                                                            size="large"
+                                                            className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+                                                    <Form.Item
+                                                        label={
+                                                            <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
                                                                 Introduction Content
                                                             </span>
                                                         }
@@ -291,7 +319,7 @@ export default function ProjectIntroForm({
                                 />
 
                                 {/* Media Section */}
-                                <div className="mt-8 pt-6 border-t border-gray-200">
+                                <div className="pt-6 border-t border-gray-200">
                                     <h4 className="text-md font-bold text-gray-800 font-['Manrope'] mb-4">
                                         {activeTab === 'vi' ? 'Đa Phương Tiện (Hình/Video)' : 'Media (Image/Video)'}
                                     </h4>
