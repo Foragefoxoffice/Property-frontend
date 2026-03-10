@@ -19,6 +19,8 @@ import ProjectPhotosForm from './ProjectPhotosForm';
 import ProjectProduct from './ProjectProduct';
 import ProjectVideoForm from './ProjectVideoForm';
 import ProjectGeneralForm from './ProjectGeneralForm';
+import ProjectSeoForm from './ProjectSeoForm';
+import ProjectRelatedForm from './ProjectRelatedForm';
 
 export default function ProjectMainForm() {
     const { id } = useParams();
@@ -31,6 +33,8 @@ export default function ProjectMainForm() {
     const [photosForm] = Form.useForm();
     const [productForm] = Form.useForm();
     const [videoForm] = Form.useForm();
+    const [relatedForm] = Form.useForm();
+    const [seoForm] = Form.useForm();
 
     const [projectData, setProjectData] = useState(null);
     const [categories, setCategories] = useState([]);
@@ -46,6 +50,8 @@ export default function ProjectMainForm() {
         photos: false,
         product: false,
         video: false,
+        related: false,
+        seo: false,
     });
 
     const toggleAccordion = (key) => {
@@ -58,6 +64,8 @@ export default function ProjectMainForm() {
             photos: key === 'photos' ? !prev.photos : false,
             product: key === 'product' ? !prev.product : false,
             video: key === 'video' ? !prev.video : false,
+            related: key === 'related' ? !prev.related : false,
+            seo: key === 'seo' ? !prev.seo : false,
         }));
     };
 
@@ -69,6 +77,8 @@ export default function ProjectMainForm() {
     const [photosLoading, setPhotosLoading] = useState(false);
     const [productLoading, setProductLoading] = useState(false);
     const [videoLoading, setVideoLoading] = useState(false);
+    const [relatedLoading, setRelatedLoading] = useState(false);
+    const [seoLoading, setSeoLoading] = useState(false);
 
     const { language } = useLanguage();
     const t = translations[language];
@@ -143,6 +153,31 @@ export default function ProjectMainForm() {
                 videoForm.setFieldsValue({
                     projectVideoTitle: project.projectVideoTitle,
                     projectVideoTabs: project.projectVideoTabs || [],
+                });
+
+                relatedForm.setFieldsValue({
+                    relatedProjectTitle: project.relatedProjectTitle || { vi: '', en: '' }
+                });
+
+                seoForm.setFieldsValue({
+                    projectSeoMetaTitle_en: project.projectSeoMetaTitle_en,
+                    projectSeoMetaTitle_vn: project.projectSeoMetaTitle_vn,
+                    projectSeoMetaDescription_en: project.projectSeoMetaDescription_en,
+                    projectSeoMetaDescription_vn: project.projectSeoMetaDescription_vn,
+                    projectSeoMetaKeywords_en: project.projectSeoMetaKeywords_en || [],
+                    projectSeoMetaKeywords_vn: project.projectSeoMetaKeywords_vn || [],
+                    projectSeoSlugUrl_en: project.projectSeoSlugUrl_en,
+                    projectSeoSlugUrl_vn: project.projectSeoSlugUrl_vn,
+                    projectSeoCanonicalUrl_en: project.projectSeoCanonicalUrl_en,
+                    projectSeoCanonicalUrl_vn: project.projectSeoCanonicalUrl_vn,
+                    projectSeoSchemaType_en: project.projectSeoSchemaType_en,
+                    projectSeoSchemaType_vn: project.projectSeoSchemaType_vn,
+                    projectSeoOgTitle_en: project.projectSeoOgTitle_en,
+                    projectSeoOgTitle_vn: project.projectSeoOgTitle_vn,
+                    projectSeoOgDescription_en: project.projectSeoOgDescription_en,
+                    projectSeoOgDescription_vn: project.projectSeoOgDescription_vn,
+                    projectSeoAllowIndexing: project.projectSeoAllowIndexing ?? true,
+                    projectSeoOgImage: project.projectSeoOgImage,
                 });
             }
         } catch (error) {
@@ -310,6 +345,24 @@ export default function ProjectMainForm() {
                     pageData={projectData}
                     isOpen={openAccordions.video}
                     onToggle={() => toggleAccordion('video')}
+                    headerLang={headerLang}
+                />
+                <ProjectRelatedForm
+                    form={relatedForm}
+                    onSubmit={(values) => handleSectionSubmit(values, 'Related projects title updated successfully!', setRelatedLoading)}
+                    loading={relatedLoading}
+                    pageData={projectData}
+                    isOpen={openAccordions.related}
+                    onToggle={() => toggleAccordion('related')}
+                    headerLang={headerLang}
+                />
+                <ProjectSeoForm
+                    form={seoForm}
+                    onSubmit={(values) => handleSectionSubmit(values, 'SEO settings updated successfully!', setSeoLoading)}
+                    loading={seoLoading}
+                    pageData={projectData}
+                    isOpen={openAccordions.seo}
+                    onToggle={() => toggleAccordion('seo')}
                     headerLang={headerLang}
                 />
             </div>

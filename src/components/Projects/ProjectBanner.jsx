@@ -1,107 +1,151 @@
-import { useState, useEffect } from 'react';
-import { getProjectBanner } from '../../Api/action';
+import React, { useState, useEffect } from 'react';
+import { Carousel, ConfigProvider } from 'antd';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getProjectPage } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
+import { getImageUrl } from '../../utils/imageHelper';
 
-export default function ProjectBanner() {
+export default function ProjectBanner({ projectData = null }) {
     const { language } = useLanguage();
-    const [bannerData, setBannerData] = useState(null);
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [pageData, setPageData] = useState(null);
+    const [loading, setLoading] = useState(!projectData);
+
+    const CustomArrow = ({ direction, onClick }) => (
+        <button
+            onClick={onClick}
+            className={`absolute z-9999 top-1/2 -translate-y-1/2 flex items-center justify-center w-12 h-12 rounded-full border border-white/50 text-white hover:bg-white hover:text-black transition-all duration-300 ${direction === 'left' ? 'left-8' : 'right-8'}`}
+            style={{ pointerEvents: 'auto' }}
+        >
+            {direction === 'left' ? <ChevronLeft size={24} strokeWidth={1.5} /> : <ChevronRight size={24} strokeWidth={1.5} />}
+        </button>
+    );
 
     useEffect(() => {
-        const fetchBanner = async () => {
+        const fetchPageData = async () => {
             try {
-                const res = await getProjectBanner();
-                setBannerData(res.data?.data || res.data || null);
+                const res = await getProjectPage();
+                setPageData(res.data?.data || null);
             } catch (error) {
-                console.error("Error fetching project banner:", error);
+                console.error("Error fetching project page data:", error);
+            } finally {
+                if (!projectData) setLoading(false);
             }
         };
-        fetchBanner();
-    }, []);
+        fetchPageData();
+    }, [projectData]);
 
-    const images = bannerData?.projectBannerImages || [];
+    // Determine data source: Prefer projectData if it has banner images
+    const hasProjectBanner = projectData && projectData.projectBannerImages && projectData.projectBannerImages.length > 0;
+    const activeData = hasProjectBanner ? projectData : pageData;
 
-    const nextSlide = () => {
-        if (images.length === 0) return;
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    };
+    if (loading || !activeData) {
+        return (
+            <div className="w-full h-[80vh] bg-gray-100 animate-pulse flex items-center justify-center">
+                <div className="text-gray-400 font-medium uppercase tracking-widest">Loading Banner...</div>
+            </div>
+        );
+    }
 
-    const prevSlide = () => {
-        if (images.length === 0) return;
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-    };
+    const bannerImages = (activeData.projectBannerImages && activeData.projectBannerImages.length > 0)
+        ? activeData.projectBannerImages
+        : [projectData?.mainImage].filter(Boolean); // Fallback to mainImage if no banner images
 
-    // Helper to get full image URL
-    const getImageUrl = (url) => {
-        if (!url) return '';
-        if (url.startsWith('http://') || url.startsWith('https://')) return url;
-        const baseURL = import.meta.env.VITE_API_URL || 'https://dev.placetest.in/api/v1';
-        const serverURL = baseURL.replace('/api/v1', '');
-        return `${serverURL}${url}`;
-    };
+    // If still no images, use a placeholder
+    const finalImages = bannerImages.length > 0 ? bannerImages : ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop"];
 
     const title = language === 'vi'
-        ? (bannerData?.projectBannerTitle?.vi || bannerData?.projectBannerTitle?.en)
-        : (bannerData?.projectBannerTitle?.en || bannerData?.projectBannerTitle?.vi);
+        ? (activeData.projectBannerTitle?.vi || activeData.projectBannerTitle?.en || projectData?.title?.vi || projectData?.title?.en || "")
+        : (activeData.projectBannerTitle?.en || activeData.projectBannerTitle?.vi || projectData?.title?.en || projectData?.title?.vi || "");
 
     const description = language === 'vi'
-        ? (bannerData?.projectBannerDesc?.vi || bannerData?.projectBannerDesc?.en)
-        : (bannerData?.projectBannerDesc?.en || bannerData?.projectBannerDesc?.vi);
+        ? (activeData.projectBannerDesc?.vi || activeData.projectBannerDesc?.en || "")
+        : (activeData.projectBannerDesc?.en || activeData.projectBannerDesc?.vi || "");
 
     return (
-        <div className="relative w-full h-[400px] md:h-[650px] overflow-hidden group bg-gray-100">
-            {/* Slides */}
-            <div
-                className="w-full h-full bg-cover bg-center transition-all duration-700 ease-in-out"
-                style={{
-                    backgroundImage: `url(${getImageUrl(images[currentIndex])})`,
-                    backgroundPosition: 'center',
-                    backgroundSize: 'cover'
+        <section className="relative w-full h-[60vh] md:h-[85vh] overflow-hidden group">
+            <ConfigProvider
+                theme={{
+                    token: {
+                        colorPrimary: '#FFFFFF',
+                    },
+                    components: {
+                        Carousel: {
+                            dotActiveWidth: 10,
+                            dotHeight: 10,
+                            dotWidth: 10,
+                        }
+                    }
                 }}
             >
-                <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-end pb-16 md:pb-24 text-white px-6">
-                    <h1 className="text-3xl md:text-5xl font-semibold uppercase mb-3 text-center animate-fadeInUp drop-shadow-lg">
-                        {title}
-                    </h1>
-                    <p className="text-base md:text-xl font-medium text-center animate-fadeInUp animation-delay-200 opacity-90 max-w-4xl drop-shadow-md">
+                <Carousel
+                    autoplay
+                    autoplaySpeed={6000}
+                    effect="fade"
+                    arrows
+                    prevArrow={<CustomArrow direction="left" />}
+                    nextArrow={<CustomArrow direction="right" />}
+                    className="h-full w-full custom-project-banner-carousel"
+                >
+                    {finalImages.map((img, index) => (
+                        <div key={index} className="relative h-[60vh] md:h-[85vh] w-full">
+                            <img
+                                src={getImageUrl(img)}
+                                alt={`${title} Banner ${index + 1}`}
+                                className="w-full h-full object-cover"
+                            />
+                            {/* Overlay Gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                        </div>
+                    ))}
+                </Carousel>
+            </ConfigProvider>
+
+            {/* Content Overlay */}
+            <div className="absolute bottom-16 md:bottom-24 left-1/2 -translate-x-1/2 w-full max-w-5xl px-6 text-center z-10 pointer-events-none">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white uppercase tracking-[0.05em] mb-4 drop-shadow-lg leading-tight animate-fade-in-up">
+                    {title}
+                </h1>
+                {description && (
+                    <p className="text-sm md:text-lg text-white/90 font-medium tracking-wide drop-shadow-md animate-fade-in-up-delay">
                         {description}
                     </p>
-                </div>
+                )}
             </div>
 
-            {/* Navigation Arrows */}
-            {images.length > 1 && (
-                <>
-                    <button
-                        onClick={(e) => { e.stopPropagation(); prevSlide(); }}
-                        className="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 border-2 border-white/50 rounded-full flex items-center justify-center text-white hover:bg-white/20 hover:border-white transition-all cursor-pointer z-99 group/btn"
-                    >
-                        <ChevronLeft size={30} className="group-hover/btn:-translate-x-0.5 transition-transform" />
-                    </button>
-                    <button
-                        onClick={(e) => { e.stopPropagation(); nextSlide(); }}
-                        className="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 border-2 border-white/50 rounded-full flex items-center justify-center text-white hover:bg-white/20 hover:border-white transition-all cursor-pointer z-99 group/btn"
-                    >
-                        <ChevronRight size={30} className="group-hover/btn:translate-x-0.5 transition-transform" />
-                    </button>
-                </>
-            )}
-
-            {/* Pagination Dots */}
-            {images.length > 1 && (
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
-                    {images.map((_, index) => (
-                        <button
-                            key={index}
-                            onClick={() => setCurrentIndex(index)}
-                            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-white w-8' : 'bg-white/40 hover:bg-white/60'
-                                }`}
-                            aria-label={`Go to slide ${index + 1}`}
-                        />
-                    ))}
-                </div>
-            )}
-        </div>
+            <style>{`
+                .custom-project-banner-carousel .slick-dots {
+                    bottom: 40px !important;
+                }
+                .custom-project-banner-carousel .slick-dots li button {
+                    background: transparent !important;
+                    border: 1.5px solid white !important;
+                    border-radius: 50% !important;
+                    opacity: 0.7 !important;
+                }
+                .custom-project-banner-carousel .slick-dots li.slick-active button {
+                    background: white !important;
+                    opacity: 1 !important;
+                    transform: scale(1.2) !important;
+                }
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                .animate-fade-in-up {
+                    animation: fadeInUp 0.8s ease-out forwards;
+                }
+                .animate-fade-in-up-delay {
+                    animation: fadeInUp 0.8s ease-out 0.3s forwards;
+                    opacity: 0;
+                }
+            `}</style>
+        </section>
     );
 }
+

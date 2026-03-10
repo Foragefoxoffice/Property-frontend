@@ -57,24 +57,24 @@ export default function ProjectIntroduction({ projectData = null }) {
     const youtubeId = getYoutubeId(videoUrl);
 
     return (
-        <section className="py-18 bg-white font-['Manrope'] overflow-hidden">
-            <div className="max-w-9xl mx-auto px-6">
-                <div className="flex flex-col lg:flex-col gap-12 lg:gap-12 items-center">
-                    {/* Left: Content Area */}
-                    <div className="lg:w-1/2 flex flex-col">
-                        <h2 className="text-2xl md:text-3xl font-extrabold text-[#111827] mb-4 uppercase tracking-tight text-center">
+        <section className="py-16 md:py-18 bg-white font-['Manrope'] overflow-hidden">
+            <div className="max-w-[1400px] mx-auto px-6">
+                <div className="flex flex-col gap-10 md:gap-14 items-center">
+                    {/* Content Area */}
+                    <div className="w-full max-w-4xl px-4 flex flex-col items-center mx-auto">
+                        <h2 className="text-2xl md:text-3xl font-bold text-[#111827] mb-6 uppercase tracking-tight text-center">
                             {title}
                         </h2>
                         <div
-                            className="prose prose-slate max-w-none text-[15px] leading-relaxed text-gray-600 project-intro-rich-text text-center"
+                            className="text-[15px] md:text-[16px] leading-[1.8] text-gray-600 project-intro-rich-text text-center w-full break-words whitespace-normal"
                             dangerouslySetInnerHTML={{ __html: content }}
                         />
                     </div>
 
-                    {/* Right: Media Area */}
-                    <div className="lg:w-1/2 flex flex-col mt-4 lg:mt-0">
+                    {/* Media Area */}
+                    <div className="w-full max-w-6xl flex flex-col mt-4 lg:mt-0">
                         {mediaType === 'youtube' && youtubeId ? (
-                            <div className="w-full h-full min-h-[300px] md:min-h-[400px] rounded-2xl overflow-hidden shadow-2xl relative">
+                            <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl relative bg-black">
                                 <iframe
                                     className="absolute inset-0 w-full h-full"
                                     src={`https://www.youtube.com/embed/${youtubeId}`}
@@ -85,27 +85,14 @@ export default function ProjectIntroduction({ projectData = null }) {
                                 />
                             </div>
                         ) : mediaType === 'image' && videoUrl ? (
-                            <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
+                            <div className="w-full rounded-2xl overflow-hidden shadow-2xl bg-gray-50">
                                 <img
                                     src={videoUrl}
                                     alt="Project Overview"
-                                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                                    className="w-full h-auto object-cover transition-transform duration-700 hover:scale-105"
                                 />
                             </div>
                         ) : null}
-
-                        {/* Optional Video Title / Caption */}
-                        <div className="mt-6 text-center">
-                            <h3 className="text-base md:text-[15px] font-bold text-[#111827] uppercase tracking-wide opacity-80 decoration-[#41398B] decoration-2 underline-offset-8">
-                                {projectData ? (
-                                    language === 'vi'
-                                        ? `TỔNG QUAN DỰ ÁN ${projectData.title?.vi || projectData.title?.en}`
-                                        : `OVERVIEW OF THE ${projectData.title?.en || projectData.title?.vi} PROJECT`
-                                ) : (
-                                    language === 'vi' ? 'TỔNG QUAN DỰ ÁN' : 'OVERVIEW OF THE PROJECT'
-                                )}
-                            </h3>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -114,6 +101,9 @@ export default function ProjectIntroduction({ projectData = null }) {
                 .project-intro-rich-text p {
                     margin-bottom: 1.5rem;
                     line-height: 1.8;
+                    word-break: break-word;
+                    white-space: normal;
+                    text-align: center;
                 }
                 .project-intro-rich-text strong {
                     color: #111827;

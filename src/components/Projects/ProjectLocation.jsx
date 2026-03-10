@@ -35,16 +35,17 @@ export default function ProjectLocation({ projectData = null }) {
 
     return (
         <section className="py-20 bg-[#F5F5F5] font-['Manrope']">
-            <div className="max-w-[1550px] mx-auto px-6 lg:px-16">
+            <div className="max-w-[1550px] mx-auto px-6 lg:px-24">
                 {/* Section Title */}
                 <h2 className="text-xl md:text-2xl font-bold text-[#111827] mb-16 text-center uppercase tracking-[0.05em]">
                     {sectionTitle}
                 </h2>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-20 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-12 items-center">
                     {/* Left Column: Description Content */}
-                    <div className="text-[#374151] text-[15px] md:text-[16px] leading-[1.8] project-location-rich-text pr-0 lg:pr-10">
+                    <div className="text-[#374151] text-[15px] md:text-[16px] leading-[1.8] project-location-rich-text pr-0 lg:pr-10 min-w-0 break-words">
                         <div
+                            className="w-full max-w-full overflow-hidden"
                             dangerouslySetInnerHTML={{ __html: locationDes }}
                         />
                     </div>
@@ -74,7 +75,7 @@ export default function ProjectLocation({ projectData = null }) {
                                         <img
                                             src={getImageUrl(img)}
                                             alt={`${projectTitle} - Location Detail ${idx + 2}`}
-                                            className="w-full h-auto object-cover aspect-[4/3] w-full"
+                                            className="w-full h-auto object-cover aspect-[4/3]"
                                         />
                                     </div>
                                 ))}

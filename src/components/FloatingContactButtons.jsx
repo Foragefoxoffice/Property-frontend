@@ -95,7 +95,7 @@ const FloatingContactButtons = () => {
         <>
             {/* Desktop Floating Buttons (Bottom Right) */}
             <div
-                className="fixed right-6 bottom-28 z-[9999] hidden md:flex flex-col items-end gap-3"
+                className="fixed right-6 bottom-28 z-[999] hidden md:flex flex-col items-end gap-3"
                 onMouseLeave={() => setIsHovered(false)}
             >
                 {/* Individual Buttons (Shown on hover) */}

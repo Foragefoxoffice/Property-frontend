@@ -5,7 +5,7 @@ import { LogOut, ChevronDown, Heart, Lock, Menu, X, Phone, Mail } from "lucide-r
 import ChangePasswordModal from "./ChangePasswordModal";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
-import { getHeader, getAllProperties, getAllZoneSubAreas, getFooter } from "../../Api/action";
+import { getHeader, getAllProjects, getProjectCategories, getFooter } from "../../Api/action";
 import AnimatedNavLink from "../../components/AnimatedNavLink";
 import { useFavorites } from "../../Context/FavoritesContext";
 import { Tooltip } from "antd";
@@ -23,8 +23,8 @@ export default function Header({ showNavigation = true }) {
   const { language, toggleLanguage } = useLanguage();
   const { favorites, clearFavorites } = useFavorites();
 
-  const [projects, setProjects] = useState([]);
-  const [zones, setZones] = useState([]);
+  const [projectCategories, setProjectCategories] = useState([]);
+  const [allProjects, setAllProjects] = useState([]);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const [activeProject, setActiveProject] = useState(null);
   const [userImage, setUserImage] = useState(localStorage.getItem("userImage") || "");
@@ -67,6 +67,8 @@ export default function Header({ showNavigation = true }) {
     viewAllIn: { en: "View All in", vi: "View tất cả trong" },
     viewAllProperty: { en: "View All Properties", vi: "View tất cả bất động sản" },
     myProfile: { en: "My Profile", vi: "Hồ sơ của tôi" },
+    category: { en: "Category", vi: "Danh mục" },
+    generalInformation: { en: "General Information", vi: "Thông tin chung" },
   };
 
   // Fetch header logo from CMS
@@ -87,23 +89,23 @@ export default function Header({ showNavigation = true }) {
     fetchHeaderData();
   }, []);
 
-  // Fetch Projects and Zones for the "Project" menu
+  // Fetch Project Categories and Projects for the "Project" menu
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
-        const [projectsRes, zonesRes] = await Promise.all([
-          getAllProperties({ status: "Active" }),
-          getAllZoneSubAreas({ status: "Active" })
+        const [categoriesRes, projectsRes] = await Promise.all([
+          getProjectCategories(),
+          getAllProjects()
         ]);
 
-        if (projectsRes.data?.success) {
-          setProjects(projectsRes.data.data.filter(p => p.status === "Active"));
+        if (categoriesRes.data?.success) {
+          setProjectCategories(categoriesRes.data.data.filter(c => c.status === "Active"));
         }
-        if (zonesRes.data?.success) {
-          setZones(zonesRes.data.data.filter(z => z.status === "Active"));
+        if (projectsRes.data?.success) {
+          setAllProjects(projectsRes.data.data.filter(p => p.published));
         }
       } catch (error) {
-        console.error("Error fetching dropdown data for Header:", error);
+        console.error("Error fetching project dropdown data for Header:", error);
       }
     };
 
@@ -494,61 +496,67 @@ export default function Header({ showNavigation = true }) {
                       className="absolute left-0 top-full mt-0 w-[250px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-50  border border-gray-100"
                     >
                       <div className="py-0">
-                        {projects.map((project, index) => {
-                          const projectZones = zones.filter(z => {
-                            const pId = typeof z.property === 'string' ? z.property : z.property?._id;
-                            return pId === project._id;
+                        <div className="px-5 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 bg-gray-50/30">
+                          {labels.category[language]}
+                        </div>
+                        {projectCategories.map((category, index) => {
+                          const projectsInCategory = allProjects.filter(p => {
+                            const catId = typeof p.category === 'string' ? p.category : p.category?._id;
+                            return catId === category._id;
                           });
 
                           return (
                             <div
-                              key={project._id}
+                              key={category._id}
                               className="relative group/proj"
-                              onMouseEnter={() => setActiveProject(project._id)}
+                              onMouseEnter={() => setActiveProject(category._id)}
                             >
                               <button
                                 onClick={() => {
-                                  navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}`);
+                                  navigate(`/projects?category=${category._id}`);
                                   setShowProjectDropdown(false);
                                 }}
-                                className={`w-full cursor-pointer text-left px-5 py-3 text-[15px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-semibold transition-colors flex items-center justify-between ${index < projects.length - 1 ? 'border-b border-gray-100' : ''}`}
+                                className={`w-full cursor-pointer text-left px-5 py-3 text-[15px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-semibold transition-colors flex items-center justify-between ${index < projectCategories.length - 1 ? 'border-b border-gray-100' : ''}`}
                               >
-                                <span>{getLocalizedValue(project.name)}</span>
-                                {projectZones.length > 0 && (
+                                <span>{getLocalizedValue(category.name)}</span>
+                                {projectsInCategory.length > 0 && (
                                   <ChevronDown className="w-4 h-4 -rotate-90 text-gray-400 group-hover/proj:text-[#41398B]" />
                                 )}
                               </button>
 
-                              {/* Nested Areas/Zones Dropdown */}
+                              {/* Nested Projects Dropdown */}
                               <AnimatePresence>
-                                {activeProject === project._id && projectZones.length > 0 && (
+                                {activeProject === category._id && projectsInCategory.length > 0 && (
                                   <motion.div
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -10 }}
                                     className="absolute left-full top-0 ml-0.5 w-[220px] bg-white rounded-lg shadow-[0_10px_25px_rgba(72,95,119,0.1)] z-[60] border border-gray-100 overflow-hidden text-black"
                                   >
+                                    <div className="px-5 py-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 bg-gray-50/30">
+                                      {labels.generalInformation[language]}
+                                    </div>
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}`);
+                                        navigate(`/projects?category=${category._id}`);
                                         setShowProjectDropdown(false);
                                       }}
                                       className="w-full cursor-pointer text-left px-5 py-3 text-[14px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-medium transition-colors border-b border-gray-100"
                                     >
-                                      {labels.viewAllIn[language]} {getLocalizedValue(project.name)}
+                                      {labels.viewAllIn[language]} {getLocalizedValue(category.name)}
                                     </button>
-                                    {projectZones.map((zone, zIdx) => (
+                                    {projectsInCategory.map((project, pIdx) => (
                                       <button
-                                        key={zone._id}
+                                        key={project._id}
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}&zoneId=${encodeURIComponent(getLocalizedValue(zone.name))}`);
+                                          navigate(`/projects/${project._id}`);
                                           setShowProjectDropdown(false);
                                         }}
-                                        className={`w-full cursor-pointer text-left px-5 py-3 text-[14px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-medium transition-colors ${zIdx < projectZones.length - 1 ? 'border-b border-gray-100' : ''}`}
+                                        className={`w-full cursor-pointer text-left px-5 py-3 text-[14px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-medium transition-colors ${pIdx < projectsInCategory.length - 1 ? 'border-b border-gray-100' : ''}`}
                                       >
-                                        {getLocalizedValue(zone.name)}
+                                        {getLocalizedValue(project.title)}
                                       </button>
                                     ))}
                                   </motion.div>
@@ -927,29 +935,32 @@ export default function Header({ showNavigation = true }) {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden pl-4 flex flex-col gap-1"
                       >
-                        {projects.map((project) => {
-                          const projectZones = zones.filter(z => {
-                            const pId = typeof z.property === 'string' ? z.property : z.property?._id;
-                            return pId === project._id;
+                        <div className="px-2 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-50">
+                          {labels.category[language]}
+                        </div>
+                        {projectCategories.map((category) => {
+                          const projectsInCategory = allProjects.filter(p => {
+                            const catId = typeof p.category === 'string' ? p.category : p.category?._id;
+                            return catId === category._id;
                           });
 
                           return (
-                            <div key={project._id} className="flex flex-col">
+                            <div key={category._id} className="flex flex-col">
                               <button
                                 onClick={() => {
-                                  if (projectZones.length > 0) {
-                                    setActiveProjectMobile(activeProjectMobile === project._id ? null : project._id);
+                                  if (projectsInCategory.length > 0) {
+                                    setActiveProjectMobile(activeProjectMobile === category._id ? null : category._id);
                                   } else {
-                                    navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}`);
+                                    navigate(`/projects?category=${category._id}`);
                                     setIsMobileMenuOpen(false);
                                   }
                                 }}
                                 className="flex items-center justify-between w-full py-2 text-gray-600 hover:text-[#41398B] text-sm font-medium"
                               >
-                                {getLocalizedValue(project.name)}
-                                {projectZones.length > 0 && (
+                                {getLocalizedValue(category.name)}
+                                {projectsInCategory.length > 0 && (
                                   <motion.div
-                                    animate={{ rotate: activeProjectMobile === project._id ? 180 : 0 }}
+                                    animate={{ rotate: activeProjectMobile === category._id ? 180 : 0 }}
                                     transition={{ duration: 0.2 }}
                                   >
                                     <ChevronDown size={14} />
@@ -958,32 +969,35 @@ export default function Header({ showNavigation = true }) {
                               </button>
 
                               <AnimatePresence>
-                                {activeProjectMobile === project._id && projectZones.length > 0 && (
+                                {activeProjectMobile === category._id && projectsInCategory.length > 0 && (
                                   <motion.div
                                     initial={{ height: 0, opacity: 0 }}
                                     animate={{ height: "auto", opacity: 1 }}
                                     exit={{ height: 0, opacity: 0 }}
                                     className="overflow-hidden pl-4 flex flex-col gap-1"
                                   >
+                                    <div className="px-2 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-50">
+                                      {labels.generalInformation[language]}
+                                    </div>
                                     <button
                                       onClick={() => {
-                                        navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}`);
+                                        navigate(`/projects?category=${category._id}`);
                                         setIsMobileMenuOpen(false);
                                       }}
                                       className="text-left py-2 text-xs text-gray-500 hover:text-[#41398B]"
                                     >
-                                      {labels.viewAllIn[language]} {getLocalizedValue(project.name)}
+                                      {labels.viewAllIn[language]} {getLocalizedValue(category.name)}
                                     </button>
-                                    {projectZones.map((zone) => (
+                                    {projectsInCategory.map((project) => (
                                       <button
-                                        key={zone._id}
+                                        key={project._id}
                                         onClick={() => {
-                                          navigate(`/listing?projectId=${encodeURIComponent(getLocalizedValue(project.name))}&zoneId=${encodeURIComponent(getLocalizedValue(zone.name))}`);
+                                          navigate(`/projects/${project._id}`);
                                           setIsMobileMenuOpen(false);
                                         }}
                                         className="text-left py-2 text-xs text-gray-500 hover:text-[#41398B]"
                                       >
-                                        {getLocalizedValue(zone.name)}
+                                        {getLocalizedValue(project.title)}
                                       </button>
                                     ))}
                                   </motion.div>

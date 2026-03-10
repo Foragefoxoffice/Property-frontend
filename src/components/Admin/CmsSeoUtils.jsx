@@ -193,6 +193,38 @@ const CMS_CONTENT = {
             ogDesc: "Đọc các bài viết, hướng dẫn và phân tích thị trường bất động sản từ chuyên gia 183 Housing Solutions. Nguồn thông tin tin cậy về bất động sản Việt Nam.",
         },
     },
+    projectPage: {
+        en: {
+            metaTitle: "Premier Properties & Projects | 183 Housing Solutions",
+            metaDesc: "Explore our curated list of premier real estate projects in Vietnam. From luxury apartments to master-planned communities, find your next investment here.",
+            keywords: ["real estate projects", "Vietnam properties", "investment properties", "new developments", "luxury real estate"],
+            ogTitle: "Explore Premier Real Estate Projects | 183 Housing Solutions",
+            ogDesc: "Discover high-quality real estate projects across Vietnam. Detailed information on locations, amenities, and pricing for your next property investment.",
+        },
+        vn: {
+            metaTitle: "Dự Án Bất Động Sản Nổi Bật | 183 Housing Solutions",
+            metaDesc: "Khám phá danh sách các dự án bất động sản hàng đầu tại Việt Nam. Từ căn hộ cao cấp đến các khu đô thị hiện đại, tìm kiếm cơ hội đầu tư của bạn tại đây.",
+            keywords: ["dự án bất động sản", "bất động sản Việt Nam", "đầu tư bất động sản", "dự án mới", "bất động sản cao cấp"],
+            ogTitle: "Khám Phá Các Dự Án Bất Động Sản Nổi Bật | 183 Housing Solutions",
+            ogDesc: "Tìm hiểu thông tin chi tiết về các dự án bất động sản uy tín tại Việt Nam. Thông tin về vị trí, tiện ích và giá bán cho kế hoạch đầu tư tiếp theo của bạn.",
+        },
+    },
+    project: {
+        en: {
+            metaTitle: "Project Details | 183 Housing Solutions",
+            metaDesc: "Detailed overview of this premier real estate project. Explore features, location, amenities, and floor plans to help you make an informed decision.",
+            keywords: ["project details", "property features", "real estate location", "amenities", "floor plans"],
+            ogTitle: "Project Overview | 183 Housing Solutions",
+            ogDesc: "View comprehensive details of this real estate project. Learn about the location, high-end amenities, and unique features that make this property stand out.",
+        },
+        vn: {
+            metaTitle: "Chi Tiết Dự Án | 183 Housing Solutions",
+            metaDesc: "Tổng quan chi tiết về dự án bất động sản nổi bật này. Khám phá các tính năng, vị trí, tiện ích và mặt bằng để giúp bạn đưa ra quyết định đúng đắn.",
+            keywords: ["chi tiết dự án", "tính năng bất động sản", "vị trí dự án", "tiện ích", "mặt bằng"],
+            ogTitle: "Tổng Quan Dự Án | 183 Housing Solutions",
+            ogDesc: "Xem thông tin toàn diện về dự án bất động sản này. Tìm hiểu về vị trí, tiện ích cao cấp và những đặc điểm độc đáo làm nên giá trị của dự án.",
+        },
+    },
 };
 
 /**

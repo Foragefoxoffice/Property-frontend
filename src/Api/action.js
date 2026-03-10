@@ -679,6 +679,7 @@ export const updateProjectPage = (id, data) => API.put(`/project-page/${id}`, da
    🏗️ PROJECT MANAGEMENT APIs
    ========================================================= */
 export const getAllProjectsAdmin = () => API.get("/projects/admin/all");
+export const getAllProjects = () => API.get("/projects");
 export const getProjectById = (id) => API.get(`/projects/${id}`);
 export const createProject = (data) => API.post("/projects", data);
 export const updateProject = (id, data) => API.put(`/projects/${id}`, data);

@@ -15,6 +15,8 @@ import ProjectLocationForm from './ProjectLocationForm';
 import ProjectPhotosForm from './ProjectPhotosForm';
 import ProjectProduct from './ProjectProduct';
 import ProjectVideoForm from './ProjectVideoForm';
+import ProjectSeoForm from './ProjectSeoForm';
+import ProjectRelatedForm from './ProjectRelatedForm';
 
 export default function ProjectPageForm() {
     const { language } = useLanguage();
@@ -26,6 +28,8 @@ export default function ProjectPageForm() {
     const [photosForm] = Form.useForm();
     const [productForm] = Form.useForm();
     const [videoForm] = Form.useForm();
+    const [relatedForm] = Form.useForm();
+    const [seoForm] = Form.useForm();
 
     const [pageData, setPageData] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -38,6 +42,8 @@ export default function ProjectPageForm() {
         photos: false,
         product: false,
         video: false,
+        related: false,
+        seo: false,
     });
 
     const toggleAccordion = (key) => {
@@ -49,6 +55,8 @@ export default function ProjectPageForm() {
             photos: key === 'photos' ? !prev.photos : false,
             product: key === 'product' ? !prev.product : false,
             video: key === 'video' ? !prev.video : false,
+            related: key === 'related' ? !prev.related : false,
+            seo: key === 'seo' ? !prev.seo : false,
         }));
     };
 
@@ -59,6 +67,8 @@ export default function ProjectPageForm() {
     const [photosLoading, setPhotosLoading] = useState(false);
     const [productLoading, setProductLoading] = useState(false);
     const [videoLoading, setVideoLoading] = useState(false);
+    const [relatedLoading, setRelatedLoading] = useState(false);
+    const [seoLoading, setSeoLoading] = useState(false);
 
     const headerLang = language === 'vi' ? 'vn' : 'en';
 
@@ -111,10 +121,36 @@ export default function ProjectPageForm() {
                     projectProducts: page.projectProducts || [],
                 });
 
-                // Set Video Form
                 videoForm.setFieldsValue({
                     projectVideoTitle: page.projectVideoTitle,
                     projectVideoTabs: page.projectVideoTabs || [],
+                });
+
+                // Set Related Form
+                relatedForm.setFieldsValue({
+                    relatedProjectTitle: page.relatedProjectTitle || { vi: '', en: '' }
+                });
+
+                // Set SEO Form
+                seoForm.setFieldsValue({
+                    projectSeoMetaTitle_en: page.projectSeoMetaTitle_en,
+                    projectSeoMetaTitle_vn: page.projectSeoMetaTitle_vn,
+                    projectSeoMetaDescription_en: page.projectSeoMetaDescription_en,
+                    projectSeoMetaDescription_vn: page.projectSeoMetaDescription_vn,
+                    projectSeoMetaKeywords_en: page.projectSeoMetaKeywords_en || [],
+                    projectSeoMetaKeywords_vn: page.projectSeoMetaKeywords_vn || [],
+                    projectSeoSlugUrl_en: page.projectSeoSlugUrl_en,
+                    projectSeoSlugUrl_vn: page.projectSeoSlugUrl_vn,
+                    projectSeoCanonicalUrl_en: page.projectSeoCanonicalUrl_en,
+                    projectSeoCanonicalUrl_vn: page.projectSeoCanonicalUrl_vn,
+                    projectSeoSchemaType_en: page.projectSeoSchemaType_en,
+                    projectSeoSchemaType_vn: page.projectSeoSchemaType_vn,
+                    projectSeoOgTitle_en: page.projectSeoOgTitle_en,
+                    projectSeoOgTitle_vn: page.projectSeoOgTitle_vn,
+                    projectSeoOgDescription_en: page.projectSeoOgDescription_en,
+                    projectSeoOgDescription_vn: page.projectSeoOgDescription_vn,
+                    projectSeoAllowIndexing: page.projectSeoAllowIndexing ?? true,
+                    projectSeoOgImage: page.projectSeoOgImage,
                 });
 
             } else {
@@ -175,6 +211,25 @@ export default function ProjectPageForm() {
                 projectProducts: pageData.projectProducts,
                 projectVideoTitle: pageData.projectVideoTitle,
                 projectVideoTabs: pageData.projectVideoTabs,
+                relatedProjectTitle: pageData.relatedProjectTitle,
+                projectSeoMetaTitle_en: pageData.projectSeoMetaTitle_en,
+                projectSeoMetaTitle_vn: pageData.projectSeoMetaTitle_vn,
+                projectSeoMetaDescription_en: pageData.projectSeoMetaDescription_en,
+                projectSeoMetaDescription_vn: pageData.projectSeoMetaDescription_vn,
+                projectSeoMetaKeywords_en: pageData.projectSeoMetaKeywords_en,
+                projectSeoMetaKeywords_vn: pageData.projectSeoMetaKeywords_vn,
+                projectSeoSlugUrl_en: pageData.projectSeoSlugUrl_en,
+                projectSeoSlugUrl_vn: pageData.projectSeoSlugUrl_vn,
+                projectSeoCanonicalUrl_en: pageData.projectSeoCanonicalUrl_en,
+                projectSeoCanonicalUrl_vn: pageData.projectSeoCanonicalUrl_vn,
+                projectSeoSchemaType_en: pageData.projectSeoSchemaType_en,
+                projectSeoSchemaType_vn: pageData.projectSeoSchemaType_vn,
+                projectSeoOgTitle_en: pageData.projectSeoOgTitle_en,
+                projectSeoOgTitle_vn: pageData.projectSeoOgTitle_vn,
+                projectSeoOgDescription_en: pageData.projectSeoOgDescription_en,
+                projectSeoOgDescription_vn: pageData.projectSeoOgDescription_vn,
+                projectSeoAllowIndexing: pageData.projectSeoAllowIndexing,
+                projectSeoOgImage: pageData.projectSeoOgImage,
             }),
             ...currentValues
         };
@@ -321,6 +376,47 @@ export default function ProjectPageForm() {
         }
     };
 
+    const handleRelatedSubmit = async (values) => {
+        try {
+            setRelatedLoading(true);
+            const payload = getPayload(values);
+
+            if (pageData) {
+                await updateProjectPage(pageData._id, payload);
+                CommonToaster('Related projects title updated successfully!', 'success');
+            } else {
+                await createProjectPage(payload);
+                CommonToaster('Project page created successfully!', 'success');
+            }
+            fetchPageData();
+        } catch (error) {
+            CommonToaster(error.response?.data?.message || 'Failed to save related projects title', 'error');
+        } finally {
+            setRelatedLoading(false);
+        }
+    };
+
+    const handleSeoSubmit = async (values) => {
+        try {
+            setSeoLoading(true);
+            const payload = getPayload(values);
+
+            if (pageData) {
+                await updateProjectPage(pageData._id, payload);
+                CommonToaster('SEO settings updated successfully!', 'success');
+            } else {
+                await createProjectPage(payload);
+                CommonToaster('Project page created successfully!', 'success');
+            }
+            fetchPageData();
+        } catch (error) {
+            CommonToaster(error.response?.data?.message || 'Failed to save SEO settings', 'error');
+        } finally {
+            setLoading(false);
+            setSeoLoading(false);
+        }
+    };
+
     if (loading && !pageData) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -427,6 +523,29 @@ export default function ProjectPageForm() {
                     isOpen={openAccordions.video}
                     onToggle={() => toggleAccordion('video')}
                     headerLang={headerLang}
+                />
+
+                <ProjectRelatedForm
+                    form={relatedForm}
+                    onSubmit={handleRelatedSubmit}
+                    loading={relatedLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.related}
+                    onToggle={() => toggleAccordion('related')}
+                    headerLang={headerLang}
+                />
+
+                <ProjectSeoForm
+                    form={seoForm}
+                    onSubmit={handleSeoSubmit}
+                    loading={seoLoading}
+                    pageData={pageData}
+                    onCancel={fetchPageData}
+                    isOpen={openAccordions.seo}
+                    onToggle={() => toggleAccordion('seo')}
+                    headerLang={headerLang}
+                    isProjectPage={true}
                 />
             </div>
         </div>

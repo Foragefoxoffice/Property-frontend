@@ -6,24 +6,37 @@ import SmoothScroll from '../components/SmoothScroll';
 import { getProjectCategories, getAllProjectsAdmin, getProjectPage } from '../Api/action';
 import { useLanguage } from '../Language/LanguageContext';
 import { getImageUrl } from '../utils/imageHelper';
-import ProjectBanner from '../components/Projects/ProjectBanner';
 import Loader from '../components/Loader/Loader';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 export default function ProjectPage() {
     const { language } = useLanguage();
+    const [searchParams] = useSearchParams();
+    const categoryParam = searchParams.get('category');
 
     const stripHtml = (html) => {
         if (!html) return "";
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        let text = doc.body.textContent || "";
-        return text.replace(/\s+/g, ' ').trim();
+        try {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            let text = doc.body.textContent || "";
+            return text.replace(/\s+/g, ' ').trim();
+        } catch (e) {
+            return html.replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+        }
     };
     const [pageData, setPageData] = useState(null);
     const [categories, setCategories] = useState([]);
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [selectedCategory, setSelectedCategory] = useState(categoryParam || 'all');
+
+    useEffect(() => {
+        if (categoryParam) {
+            setSelectedCategory(categoryParam);
+        } else {
+            setSelectedCategory('all');
+        }
+    }, [categoryParam]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -59,15 +72,30 @@ export default function ProjectPage() {
         });
 
     // Use page data for SEO if available, otherwise fallback
-    const seoTitle = pageData?.[`projectSeoMetaTitle_${language}`] || (language === 'vi' ? 'Dự Án' : 'Projects');
-    const seoDesc = pageData?.[`projectSeoMetaDescription_${language}`] || (language === 'vi' ? 'Khám phá các dự án bất động sản của chúng tôi' : 'Explore our real estate projects');
+    const langKey = language === 'vi' ? 'vn' : 'en';
+
+    const seoTitle = pageData?.[`projectSeoMetaTitle_${langKey}`] || (language === 'vi' ? 'Dự Án' : 'Projects');
+    const seoDesc = pageData?.[`projectSeoMetaDescription_${langKey}`] || (language === 'vi' ? 'Khám phá các dự án bất động sản của chúng tôi' : 'Explore our real estate projects');
+    const seoKeywords = pageData?.[`projectSeoMetaKeywords_${langKey}`] || [];
+    const canonicalUrl = pageData?.[`projectSeoCanonicalUrl_${langKey}`];
+    const ogTitle = pageData?.[`projectSeoOgTitle_${langKey}`] || seoTitle;
+    const ogDescription = pageData?.[`projectSeoOgDescription_${langKey}`] || seoDesc;
+    const ogImage = pageData?.projectSeoOgImage;
+    const allowIndexing = pageData?.projectSeoAllowIndexing !== false;
 
     return (
         <div className="min-h-screen bg-white font-['Manrope']">
             <SEO
                 title={seoTitle}
                 description={seoDesc}
+                keywords={seoKeywords}
+                canonicalUrl={canonicalUrl}
+                ogTitle={ogTitle}
+                ogDescription={ogDescription}
+                ogImage={ogImage}
+                allowIndexing={allowIndexing}
             />
+
             <SmoothScroll />
             <Header />
 
@@ -77,15 +105,16 @@ export default function ProjectPage() {
                 </div>
             ) : (
                 <>
-                    {/* Main Project Banner */}
-                    <ProjectBanner />
 
                     <div className="max-w-7xl mx-auto px-6 py-16">
 
                         {/* Category Filter Tabs */}
                         <div className="flex flex-wrap items-center justify-center gap-3 mb-16">
                             <button
-                                onClick={() => setSelectedCategory('all')}
+                                onClick={() => {
+                                    setSelectedCategory('all');
+                                    setSearchParams({});
+                                }}
                                 className={`px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${selectedCategory === 'all'
                                     ? 'bg-[#41398B] text-white shadow-sm shadow-purple-200 scale-105'
                                     : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
@@ -96,7 +125,10 @@ export default function ProjectPage() {
                             {categories.map(cat => (
                                 <button
                                     key={cat._id}
-                                    onClick={() => setSelectedCategory(cat._id)}
+                                    onClick={() => {
+                                        setSelectedCategory(cat._id);
+                                        setSearchParams({ category: cat._id });
+                                    }}
                                     className={`px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${selectedCategory === cat._id
                                         ? 'bg-[#41398B] text-white shadow-sm shadow-purple-200 scale-105'
                                         : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
@@ -118,11 +150,16 @@ export default function ProjectPage() {
                                     year: 'numeric'
                                 });
 
-                                // Extract Description Snippet (Prefer Main Description over Intro Content)
-                                const descSource = project.projectMainDescription?.[language] || project.projectMainDescription?.en
-                                    || project.projectIntroContent?.[language] || project.projectIntroContent?.en || "";
+                                // Extract Description Snippet
+                                const descSource = project.projectMainDescription?.[language] || 
+                                                 project.projectMainDescription?.vi || 
+                                                 project.projectMainDescription?.en ||
+                                                 project.projectIntroContent?.[language] || 
+                                                 project.projectIntroContent?.vi || 
+                                                 project.projectIntroContent?.en || "";
 
-                                const plainTextIntro = stripHtml(descSource).substring(0, 150) + "...";
+                                const plainText = stripHtml(descSource);
+                                const plainTextIntro = plainText.length > 150 ? plainText.substring(0, 150) + "..." : plainText;
 
                                 return (
                                     <Link

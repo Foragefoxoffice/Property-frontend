@@ -52,7 +52,7 @@ export default function ProjectOverview({ projectData = null }) {
                     {/* Left: Featured Image Slider */}
                     <div className="w-full lg:w-[75%] flex flex-col group">
                         {/* Section Title */}
-                        <h2 className="text-2xl md:text-3xl font-extrabold text-[#111827] mb-7 text-center lg:text-center uppercase tracking-tight leading-tight">
+                        <h2 className="text-2xl md:text-2xl font-bold text-[#111827] mb-7 text-center lg:text-center uppercase tracking-tight leading-tight">
                             {displayTitle}
                         </h2>
 

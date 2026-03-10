@@ -255,7 +255,7 @@ export default function ProjectProduct({
                                 />
 
                                 {/* Multi Add Products Section */}
-                                <div className="mt-8 pt-6 border-t border-gray-100 font-['Manrope']">
+                                <div className="pt-6 border-t border-gray-100 font-['Manrope']">
                                     <Form.List name="projectProducts">
                                         {(fields, { add, remove }) => (
                                             <div className="space-y-8">
