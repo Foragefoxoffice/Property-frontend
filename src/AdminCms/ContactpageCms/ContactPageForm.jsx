@@ -13,6 +13,7 @@ import ContactPageSeoForm from './ContactPageSeoForm';
 import { validateVietnameseFields } from '@/utils/formValidation';
 import { useLanguage } from '../../Language/LanguageContext';
 
+console.log("Rendering ContactPageForm!!");
 export default function ContactPageForm() {
     const [bannerForm] = Form.useForm();
     const [reachOutForm] = Form.useForm();

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Home, Users, UserCog, LayoutGrid, Key, BedDouble, Trash, ChevronDown, Folder, Tags, User, UserCheck, UserLockIcon, PersonStanding, SettingsIcon, UserPlus2, MessageSquare, Phone, CheckCheck, Star } from "lucide-react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, Link } from "react-router-dom";
 import Header from "../Header/Header";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
@@ -132,15 +132,15 @@ const DashboardLayout = () => {
                 <div className="w-[280px] flex flex-col items-center py-6 h-full overflow-y-auto scrollbar-hide">
                     <div className="flex flex-col w-full gap-4 px-4">
                         {/* MY PROFILE */}
-                        <button
-                            onClick={() => navigate("/dashboard/profile")}
-                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                        <Link
+                            to="/dashboard/profile"
+                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                  ${isActive("/dashboard/profile") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
                         >
                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white"><User className="w-4 h-4" /></span>
                             <span className="text-sm font-medium">{t.myProfile}</span>
-                        </button>
+                        </Link>
 
                         {/* PROPERTIES DROPDOWN */}
                         {(!isHidden("properties.lease") || !isHidden("properties.sale") || !isHidden("properties.homestay")) && (
@@ -163,41 +163,41 @@ const DashboardLayout = () => {
                                     <div className="ml-10 mt-2 flex flex-col gap-2">
                                         {/* LEASE */}
                                         {!isHidden("properties.lease") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/lease")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/lease"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/lease") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Key className="w-4 h-4" /> </span>
                                                 <span>{t.lease}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* SALE */}
                                         {!isHidden("properties.sale") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/sale")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/sale"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/sale") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home className="w-4 h-4" /> </span>
                                                 <span>{t.saleTab}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* HOME STAY */}
                                         {!isHidden("properties.homestay") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/homestay")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/homestay"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/homestay") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <BedDouble className="w-4 h-4" /> </span>
                                                 <span>{"Homestay"}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 )}
@@ -223,25 +223,25 @@ const DashboardLayout = () => {
 
                                 {openProjects && (
                                     <div className="ml-10 mt-2 flex flex-col gap-2">
-                                        <button
-                                            onClick={() => navigate("/dashboard/cms/project-categories")}
-                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                        <Link
+                                            to="/dashboard/cms/project-categories"
+                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/project-categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                         >
                                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags className="w-4 h-4" /> </span>
                                             <span className="text-sm">{t.projectCategories}</span>
-                                        </button>
+                                        </Link>
 
-                                        <button
-                                            onClick={() => navigate("/dashboard/cms/projects")}
-                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                        <Link
+                                            to="/dashboard/cms/projects"
+                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/projects") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                         >
                                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                             <span className="text-sm">{t.projectCms}</span>
-                                        </button>
+                                        </Link>
                                     </div>
                                 )}
                             </div>
@@ -269,130 +269,130 @@ const DashboardLayout = () => {
                                     <div className="ml-10 mt-2 flex flex-col gap-2">
                                         {/* HOME PAGE */}
                                         {!isHidden("cms.homePage") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/home")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/home"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/home") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home className="w-4 h-4" /> </span>
                                                 <span>{"Home Page"}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* ABOUT US */}
                                         {!isHidden("cms.aboutUs") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/about")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/about"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/about") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Users className="w-4 h-4" /> </span>
                                                 <span>{"About Us"}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* CONTACT */}
                                         {!isHidden("cms.contactUs") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/contact")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/contact"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/contact") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserCog className="w-4 h-4" /> </span>
                                                 <span>{"Contact"}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* HEADER */}
                                         {!isHidden("cms.header") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/header")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/header"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/header") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                                 <span>{"Header"}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* FOOTER */}
                                         {!isHidden("cms.footer") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/footer")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/footer"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/footer") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                                 <span>{"Footer"}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* AGENT */}
                                         {!isHidden("cms.agent") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/agent")}
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/agent"
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/agent") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <User className="w-4 h-4" /> </span>
                                                 <span className="text-sm">{"Property Consultant"}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                         {/* TERMS & CONDITIONS */}
                                         {!isHidden("cms.termsConditions") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/terms-conditions")}
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/terms-conditions"
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/terms-conditions") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                                 <span className="text-sm">{"Terms & Conditions"}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                         {/* PRIVACY POLICY */}
                                         {!isHidden("cms.privacyPolicy") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/privacy-policy")}
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/privacy-policy"
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/privacy-policy") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                                 <span className="text-sm">{"Privacy Policy"}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* BLOG BANNER */}
                                         {!isHidden("cms.blogBanner") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/blog-banner")}
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/blog-banner"
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/blog-banner") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                                 <span className="text-sm">{"News Banner"}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* PROJECT BANNER */}
                                         {!isHidden("cms.projectBanner") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/project-banner")}
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/project-banner"
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/project-banner") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                                 <span className="text-sm">{"Project Banner"}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 )}
@@ -420,41 +420,41 @@ const DashboardLayout = () => {
                                     <div className="ml-10 mt-2 flex flex-col gap-2">
                                         {/* CATEGORY */}
                                         {!isHidden("blogs.category") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/categories")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/categories"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags className="w-4 h-4" /> </span>
                                                 <span>{t.categories}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* ADD BLOG */}
                                         {!isHidden("blogs.blogCms") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/cms/blogs")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/cms/blogs"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/cms/blogs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Folder className="w-4 h-4" /> </span>
                                                 <span>{t.addBlog || "News Cms"}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* SUBSCRIPTION */}
                                         {!isHidden("blogs.subscription") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/subscription")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/subscription"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/subscription") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <CheckCheck className="w-4 h-4" /> </span>
                                                 <span>{t.subscription}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 )}
@@ -482,28 +482,28 @@ const DashboardLayout = () => {
                                     <div className="ml-10 mt-2 flex flex-col gap-2">
                                         {/* USER DETAILS */}
                                         {!isHidden("userManagement.userDetails") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/user-details")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/user-details"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/user-details") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserLockIcon className="w-4 h-4" /> </span>
                                                 <span>{t.userDetails}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* ENQUIRES */}
                                         {!isHidden("userManagement.enquires") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/enquiry")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/enquiry"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/enquiry") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <FaQuestionCircle className="w-4 h-4" /> </span>
                                                 <span>{t.enquires}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 )}
@@ -531,28 +531,28 @@ const DashboardLayout = () => {
                                     <div className="ml-10 mt-2 flex flex-col gap-2">
                                         {/* ROLES */}
                                         {!isHidden("menuStaffs.roles") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/roles")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/roles"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/roles") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <SettingsIcon className="w-4 h-4" /> </span>
                                                 <span>{t.roles}</span>
-                                            </button>
+                                            </Link>
                                         )}
 
                                         {/* STAFFS */}
                                         {!isHidden("menuStaffs.staffs") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/staffs")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/staffs"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/staffs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <UserPlus2 className="w-4 h-4" /> </span>
                                                 <span>{t.staffs}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 )}
@@ -580,15 +580,15 @@ const DashboardLayout = () => {
                                     <div className="ml-10 mt-2 flex flex-col gap-2">
                                         {/* CONTACT ENQUIRY */}
                                         {!isHidden("otherEnquiry.contactEnquiry") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/contact-enquiry")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/contact-enquiry"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                       ${isActive("/dashboard/contact-enquiry") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Phone className="w-4 h-4" /> </span>
                                                 <span>{t.contactEnquiry}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 )}
@@ -615,27 +615,27 @@ const DashboardLayout = () => {
                                 {openSettings && (
                                     <div className="ml-10 mt-2 flex flex-col gap-2">
                                         {/* NOTIFICATION */}
-                                        <button
-                                            onClick={() => navigate("/dashboard/settings/notification")}
-                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                        <Link
+                                            to="/dashboard/settings/notification"
+                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                        ${isActive("/dashboard/settings/notification") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                      `}
                                         >
                                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <MessageSquare className="w-4 h-4" /> </span>
                                             <span>{t.notification}</span>
-                                        </button>
+                                        </Link>
 
                                         {/* TESTIMONIALS */}
                                         {!isHidden("settings.testimonials") && (
-                                            <button
-                                                onClick={() => navigate("/dashboard/settings/testimonials")}
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                                            <Link
+                                                to="/dashboard/settings/testimonials"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                                    ${isActive("/dashboard/settings/testimonials") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                                  `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Star className="w-4 h-4" /> </span>
                                                 <span>{t.testimonials}</span>
-                                            </button>
+                                            </Link>
                                         )}
                                     </div>
                                 )}
@@ -646,41 +646,41 @@ const DashboardLayout = () => {
 
                         {/* LANDLORDS */}
                         {!isHidden("landlords") && (
-                            <button
-                                onClick={() => navigate("/dashboard/landlords")}
-                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                            <Link
+                                to="/dashboard/landlords"
+                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                  ${isActive("/dashboard/landlords") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
                             >
                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><Users className="w-4 h-4" /></span>
                                 <span>{t.owners}</span>
-                            </button>
+                            </Link>
                         )}
 
 
                         {/* MASTERS */}
                         {!isHidden("masters") && (
-                            <button
-                                onClick={() => navigate("/dashboard/masters")}
-                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                            <Link
+                                to="/dashboard/masters"
+                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                  ${isActive("/dashboard/masters") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
                             >
                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><LayoutGrid className="w-4 h-4" /></span>
                                 <span>{t.masters}</span>
-                            </button>
+                            </Link>
                         )}
 
                         {/* TRASH */}
-                        <button
-                            onClick={() => navigate("/dashboard/trash")}
-                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition 
+                        <Link
+                            to="/dashboard/trash"
+                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
                  ${isActive("/dashboard/trash") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
                         >
                             <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"><Trash className="w-4 h-4" /></span>
                             <span>{t.trash}</span>
-                        </button>
+                        </Link>
                     </div>
                 </div>
 

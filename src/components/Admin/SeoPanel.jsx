@@ -51,8 +51,10 @@ const CheckItem = ({ label, checkData }) => {
     );
 };
 
+const EMPTY_ARRAY = [];
+
 /* ── Main component ──────────────────────────────────────────── */
-const SeoPanel = ({ seoData, htmlContent = "", images = [], onAnalysisUpdate }) => {
+const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisUpdate }) => {
     const [isOpen, setIsOpen] = useState(true);
     const [analysis, setAnalysis] = useState({ checks: {}, score: 0 });
 
