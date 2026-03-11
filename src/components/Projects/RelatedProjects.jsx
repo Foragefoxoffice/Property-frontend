@@ -102,7 +102,9 @@ export default function RelatedProjects({ currentCategoryId, currentProjectId, c
 
                             return (
                                 <Link
-                                    to={`/projects/${project._id}`}
+                                    to={`/projects/${project.slug?.[language] || project.slug?.en || project.slug?.vi || project._id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     key={project._id}
                                     className="group flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1.5 overflow-hidden"
                                 >

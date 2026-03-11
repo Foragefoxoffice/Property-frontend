@@ -62,6 +62,14 @@ export default function Roles() {
             ]
         },
         {
+            label: t.projects,
+            key: "projects",
+            subModules: [
+                { key: "category", label: t.projectCategories, controls: ["hide", "add", "edit", "delete"] },
+                { key: "projectCms", label: t.projectCms, controls: ["hide", "view", "add", "edit", "delete"] }
+            ]
+        },
+        {
             label: t.blogs,
             key: "blogs",
             subModules: [

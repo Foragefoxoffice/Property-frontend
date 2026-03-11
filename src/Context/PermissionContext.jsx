@@ -116,6 +116,8 @@ export const PermissionProvider = ({ children }) => {
             { path: "blogs.subscription", route: "/dashboard/subscription" },
             { path: "cms.homePage", route: "/dashboard/cms/home" },
             { path: "blogs.blogCms", route: "/dashboard/cms/blogs" },
+            { path: "projects.category", route: "/dashboard/cms/project-categories" },
+            { path: "projects.projectCms", route: "/dashboard/cms/projects" },
             { path: "landlords", route: "/dashboard/landlords" },
             { path: "masters", route: "/dashboard/masters" },
             { path: "settings.notification", route: "/dashboard/settings/notification" },
