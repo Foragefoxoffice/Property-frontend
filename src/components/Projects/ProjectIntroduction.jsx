@@ -37,8 +37,8 @@ export default function ProjectIntroduction({ projectData = null }) {
     if (!activeData) return null;
 
     const title = language === 'vi'
-        ? (activeData.projectIntroTitle?.vi || activeData.projectIntroTitle?.en || (projectData ? 'GIỚI THIỆU DỰ ÁN' : (pageData?.projectIntroTitle?.vi || 'GIỚI THIỆU DỰ ÁN')))
-        : (activeData.projectIntroTitle?.en || activeData.projectIntroTitle?.vi || (projectData ? 'PROJECT INTRODUCTION' : (pageData?.projectIntroTitle?.en || 'PROJECT INTRODUCTION')));
+        ? (activeData.projectIntroTitle?.vi || activeData.projectIntroTitle?.en || "")
+        : (activeData.projectIntroTitle?.en || activeData.projectIntroTitle?.vi || "");
 
     const content = language === 'vi'
         ? (activeData.projectIntroContent?.vi || activeData.projectIntroContent?.en)
@@ -46,6 +46,10 @@ export default function ProjectIntroduction({ projectData = null }) {
 
     const videoUrl = activeData.projectIntroVideo;
     const mediaType = activeData.mediaType || 'image';
+
+    // Hide section if no content and no media
+    if (!content && !videoUrl) return null;
+
 
     const getYoutubeId = (url) => {
         if (!url) return '';

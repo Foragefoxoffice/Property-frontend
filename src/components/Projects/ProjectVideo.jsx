@@ -22,9 +22,8 @@ export default function ProjectVideo({ projectData = null }) {
     if (!projectData) return null;
 
     const sections = projectData.projectVideoTabs || [];
-    const sectionTitle = projectData.projectVideoTitle?.[language] || 
-                        projectData.projectVideoTitle?.en || 
-                        (language === 'vi' ? 'THƯ VIỆN VIDEO' : 'VIDEO LIBRARY');
+    const sectionTitle = projectData.projectVideoTitle?.[language] ||
+        projectData.projectVideoTitle?.en || "";
 
     if (sections.length === 0) return null;
 
@@ -32,14 +31,14 @@ export default function ProjectVideo({ projectData = null }) {
     const getEmbedUrl = (url) => {
         if (!url) return "";
         if (url.includes("embed/")) return url;
-        
+
         let videoId = "";
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
         const match = url.match(regExp);
         if (match && match[2].length === 11) {
             videoId = match[2];
         }
-        
+
         return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
     };
 
@@ -59,11 +58,10 @@ export default function ProjectVideo({ projectData = null }) {
                             <button
                                 key={idx}
                                 onClick={() => setActiveTab(idx)}
-                                className={`flex-1 min-w-fit px-6 py-4 text-[13px] font-bold uppercase tracking-wider transition-all duration-300 border-r border-gray-200 last:border-r-0 ${
-                                    activeTab === idx 
-                                    ? 'bg-[#111827] text-white' 
-                                    : 'bg-white text-gray-500 hover:text-[#111827] hover:bg-gray-50'
-                                }`}
+                                className={`flex-1 min-w-fit px-6 py-4 text-[13px] font-bold uppercase tracking-wider transition-all duration-300 border-r border-gray-200 last:border-r-0 ${activeTab === idx
+                                        ? 'bg-[#111827] text-white'
+                                        : 'bg-white text-gray-500 hover:text-[#111827] hover:bg-gray-50'
+                                    }`}
                             >
                                 {title}
                             </button>

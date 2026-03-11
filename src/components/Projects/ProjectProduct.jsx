@@ -21,14 +21,13 @@ export default function ProjectProduct({ projectData = null }) {
 
     if (!projectData) return null;
 
-    const sectionTitle = projectData.projectProductTitle?.[language] || 
-                        projectData.projectProductTitle?.en || 
-                        (language === 'vi' ? 'DÒNG SẢN PHẨM' : 'PRODUCT TYPE');
-    
+    const sectionTitle = projectData.projectProductTitle?.[language] ||
+        projectData.projectProductTitle?.en || "";
+
     const sectionDes = projectData.projectProductDes?.[language] || projectData.projectProductDes?.en || "";
     const products = projectData.projectProducts || [];
 
-    if (products.length === 0 && !sectionTitle) return null;
+    if (products.length === 0) return null;
 
     return (
         <section className="py-16 bg-gray-50 font-['Manrope']">
@@ -39,7 +38,7 @@ export default function ProjectProduct({ projectData = null }) {
                         {sectionTitle}
                     </h2>
                     {sectionDes && (
-                        <div 
+                        <div
                             className="text-[#4b5563] text-[15px] md:text-[16px] leading-[1.8] project-product-rich-text"
                             dangerouslySetInnerHTML={{ __html: sectionDes }}
                         />
@@ -58,8 +57,8 @@ export default function ProjectProduct({ projectData = null }) {
                                 {/* Product Image/Floorplan */}
                                 {productImage ? (
                                     <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8 overflow-hidden group">
-                                        <img 
-                                            src={getImageUrl(productImage)} 
+                                        <img
+                                            src={getImageUrl(productImage)}
                                             alt={productTitle}
                                             className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.02]"
                                         />
@@ -75,7 +74,7 @@ export default function ProjectProduct({ projectData = null }) {
                                     <h3 className="text-xl md:text-2xl font-extrabold text-[#111827] mb-6 text-center md:text-left">
                                         {productTitle}
                                     </h3>
-                                    <div 
+                                    <div
                                         className="project-product-item-rich-text text-[#374151] text-[14.5px] md:text-[15.5px] leading-[1.7]"
                                         dangerouslySetInnerHTML={{ __html: productDes }}
                                     />

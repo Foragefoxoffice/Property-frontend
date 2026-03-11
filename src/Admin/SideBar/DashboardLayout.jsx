@@ -381,19 +381,6 @@ const DashboardLayout = () => {
                                                 <span className="text-sm">{"News Banner"}</span>
                                             </Link>
                                         )}
-
-                                        {/* PROJECT BANNER */}
-                                        {!isHidden("cms.projectBanner") && (
-                                            <Link
-                                                to="/dashboard/cms/project-banner"
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
-                      ${isActive("/dashboard/cms/project-banner") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-                    `}
-                                            >
-                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
-                                                <span className="text-sm">{"Project Banner"}</span>
-                                            </Link>
-                                        )}
                                     </div>
                                 )}
                             </div>

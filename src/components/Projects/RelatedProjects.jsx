@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getAllProjectsAdmin, getProjectPage } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
 import { getImageUrl } from '../../utils/imageHelper';
+import ProjectSkeleton from './ProjectSkeleton';
 
 export default function RelatedProjects({ currentCategoryId, currentProjectId, currentProjectData = null }) {
     const { language } = useLanguage();
@@ -35,20 +36,20 @@ export default function RelatedProjects({ currentCategoryId, currentProjectId, c
                 const pageData = pageRes.data?.data || null;
 
                 // Set Title Logic
-                let title = currentProjectData?.relatedProjectTitle?.[language] || 
-                            currentProjectData?.relatedProjectTitle?.vi || 
-                            currentProjectData?.relatedProjectTitle?.en;
-                
+                let title = currentProjectData?.relatedProjectTitle?.[language] ||
+                    currentProjectData?.relatedProjectTitle?.vi ||
+                    currentProjectData?.relatedProjectTitle?.en;
+
                 if (!title) {
-                    title = pageData?.relatedProjectTitle?.[language] || 
-                            pageData?.relatedProjectTitle?.vi || 
-                            pageData?.relatedProjectTitle?.en;
+                    title = pageData?.relatedProjectTitle?.[language] ||
+                        pageData?.relatedProjectTitle?.vi ||
+                        pageData?.relatedProjectTitle?.en;
                 }
-                
+
                 if (!title) {
                     title = (language === 'vi' ? 'Dự án liên quan' : 'Related Projects');
                 }
-                
+
                 setSectionTitle(title);
 
                 // Filter projects
@@ -85,17 +86,17 @@ export default function RelatedProjects({ currentCategoryId, currentProjectId, c
                 <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${relatedProjects.length < 3 ? 'justify-center' : ''}`}>
                     {loading ? (
                         [1, 2, 3].map(i => (
-                            <div key={i} className="animate-pulse bg-white rounded-2xl h-[400px] border border-gray-100 shadow-sm" />
+                            <ProjectSkeleton key={i} />
                         ))
                     ) : (
                         relatedProjects.map(project => {
-                            const descSource = project.projectMainDescription?.[language] || 
-                                             project.projectMainDescription?.vi || 
-                                             project.projectMainDescription?.en ||
-                                             project.projectIntroContent?.[language] || 
-                                             project.projectIntroContent?.vi || 
-                                             project.projectIntroContent?.en || "";
-                            
+                            const descSource = project.projectMainDescription?.[language] ||
+                                project.projectMainDescription?.vi ||
+                                project.projectMainDescription?.en ||
+                                project.projectIntroContent?.[language] ||
+                                project.projectIntroContent?.vi ||
+                                project.projectIntroContent?.en || "";
+
                             const plainText = stripHtml(descSource);
                             const plainTextIntro = plainText.length > 120 ? plainText.substring(0, 120) + "..." : plainText;
 

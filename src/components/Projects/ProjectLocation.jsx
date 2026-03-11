@@ -24,11 +24,13 @@ export default function ProjectLocation({ projectData = null }) {
     const projectTitle = projectData.title?.[language] || projectData.title?.en || "";
 
     const sectionTitle = projectData.projectLocationTitle?.[language] ||
-        projectData.projectLocationTitle?.en ||
-        (language === 'vi' ? `${projectTitle} LOCATION` : `${projectTitle} LOCATION`).toUpperCase();
+        projectData.projectLocationTitle?.en || "";
 
     const locationDes = projectData.projectLocationDes?.[language] || projectData.projectLocationDes?.en || "";
     const locationImages = projectData.projectLocationImages || [];
+
+    // Hide section if no description and no images
+    if (!locationDes && locationImages.length === 0) return null;
 
     const mainLocationImage = locationImages[0];
     const subLocationImages = locationImages.slice(1);

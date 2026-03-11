@@ -8,6 +8,7 @@ import { useLanguage } from '../Language/LanguageContext';
 import { getImageUrl } from '../utils/imageHelper';
 import Loader from '../components/Loader/Loader';
 import { Link, useSearchParams } from 'react-router-dom';
+import ProjectSkeleton, { ProjectSkeletonGrid } from '../components/Projects/ProjectSkeleton';
 
 export default function ProjectPage() {
     const { language } = useLanguage();
@@ -99,46 +100,51 @@ export default function ProjectPage() {
             <SmoothScroll />
             <Header />
 
-            {loading ? (
-                <div className="flex-1 flex items-center justify-center min-h-[60vh]">
-                    <Loader />
+            {/* Show Header always, show skeleton/filter while loading */}
+            <div className="max-w-7xl mx-auto px-6 py-16">
+
+                {/* Category Filter Tabs - Show even when loading if pageData exists */}
+                <div className="flex flex-wrap items-center justify-center gap-3 mb-16">
+                    <button
+                        onClick={() => {
+                            setSelectedCategory('all');
+                            setSearchParams({});
+                        }}
+                        disabled={loading}
+                        className={`px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${selectedCategory === 'all'
+                            ? 'bg-[#41398B] text-white shadow-sm shadow-purple-200 scale-105'
+                            : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                            }`}
+                    >
+                        {language === 'vi' ? 'Tất cả' : 'All'}
+                    </button>
+                    {categories.map(cat => (
+                        <button
+                            key={cat._id}
+                            disabled={loading}
+                            onClick={() => {
+                                setSelectedCategory(cat._id);
+                                setSearchParams({ category: cat._id });
+                            }}
+                            className={`px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${selectedCategory === cat._id
+                                ? 'bg-[#41398B] text-white shadow-sm shadow-purple-200 scale-105'
+                                : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
+                                }`}
+                        >
+                            {cat.name?.[language] || cat.name?.en}
+                        </button>
+                    ))}
+                    {loading && categories.length === 0 && (
+                        [1, 2, 3].map(i => (
+                            <div key={i} className="h-10 w-24 bg-gray-100 rounded-full animate-pulse" />
+                        ))
+                    )}
                 </div>
-            ) : (
-                <>
 
-                    <div className="max-w-7xl mx-auto px-6 py-16">
-
-                        {/* Category Filter Tabs */}
-                        <div className="flex flex-wrap items-center justify-center gap-3 mb-16">
-                            <button
-                                onClick={() => {
-                                    setSelectedCategory('all');
-                                    setSearchParams({});
-                                }}
-                                className={`px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${selectedCategory === 'all'
-                                    ? 'bg-[#41398B] text-white shadow-sm shadow-purple-200 scale-105'
-                                    : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {language === 'vi' ? 'Tất cả' : 'All'}
-                            </button>
-                            {categories.map(cat => (
-                                <button
-                                    key={cat._id}
-                                    onClick={() => {
-                                        setSelectedCategory(cat._id);
-                                        setSearchParams({ category: cat._id });
-                                    }}
-                                    className={`px-8 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${selectedCategory === cat._id
-                                        ? 'bg-[#41398B] text-white shadow-sm shadow-purple-200 scale-105'
-                                        : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
-                                        }`}
-                                >
-                                    {cat.name?.[language] || cat.name?.en}
-                                </button>
-                            ))}
-                        </div>
-
+                {loading ? (
+                    <ProjectSkeletonGrid count={6} />
+                ) : (
+                    <>
                         {/* Projects Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
                             {filteredProjects.map(project => {
@@ -151,12 +157,12 @@ export default function ProjectPage() {
                                 });
 
                                 // Extract Description Snippet
-                                const descSource = project.projectMainDescription?.[language] || 
-                                                 project.projectMainDescription?.vi || 
-                                                 project.projectMainDescription?.en ||
-                                                 project.projectIntroContent?.[language] || 
-                                                 project.projectIntroContent?.vi || 
-                                                 project.projectIntroContent?.en || "";
+                                const descSource = project.projectMainDescription?.[language] ||
+                                    project.projectMainDescription?.vi ||
+                                    project.projectMainDescription?.en ||
+                                    project.projectIntroContent?.[language] ||
+                                    project.projectIntroContent?.vi ||
+                                    project.projectIntroContent?.en || "";
 
                                 const plainText = stripHtml(descSource);
                                 const plainTextIntro = plainText.length > 150 ? plainText.substring(0, 150) + "..." : plainText;
@@ -216,9 +222,9 @@ export default function ProjectPage() {
                                 </p>
                             </div>
                         )}
-                    </div>
-                </>
-            )}
+                    </>
+                )}
+            </div>
 
             <Footer />
 

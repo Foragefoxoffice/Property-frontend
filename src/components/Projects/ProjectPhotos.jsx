@@ -25,9 +25,8 @@ export default function ProjectPhotos({ projectData = null }) {
     const sections = projectData.projectPhotoTabs || [];
     if (sections.length === 0) return null;
 
-    const sectionTitle = projectData.projectPhotoTitle?.[language] || 
-                        projectData.projectPhotoTitle?.en || 
-                        (language === 'vi' ? 'THƯ VIỆN ẢNH (THỰC TẾ)' : 'PROJECT PHOTOS (ACTUAL)');
+    const sectionTitle = projectData.projectPhotoTitle?.[language] ||
+        projectData.projectPhotoTitle?.en || "";
 
     return (
         <section className="py-16 bg-white font-['Manrope']">
@@ -45,11 +44,10 @@ export default function ProjectPhotos({ projectData = null }) {
                             <button
                                 key={idx}
                                 onClick={() => setActiveTab(idx)}
-                                className={`flex-1 min-w-fit px-6 py-4 text-[13px] font-bold uppercase tracking-wider transition-all duration-300 border-r border-gray-200 last:border-r-0 ${
-                                    activeTab === idx 
-                                    ? 'bg-[#111827] text-white' 
-                                    : 'bg-white text-gray-500 hover:text-[#111827] hover:bg-gray-50'
-                                }`}
+                                className={`flex-1 min-w-fit px-6 py-4 text-[13px] font-bold uppercase tracking-wider transition-all duration-300 border-r border-gray-200 last:border-r-0 ${activeTab === idx
+                                        ? 'bg-[#111827] text-white'
+                                        : 'bg-white text-gray-500 hover:text-[#111827] hover:bg-gray-50'
+                                    }`}
                             >
                                 {title}
                             </button>

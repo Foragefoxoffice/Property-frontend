@@ -34,24 +34,13 @@ export default function ProjectBanner({ projectData = null }) {
         fetchPageData();
     }, [projectData]);
 
-    // Determine data source: Prefer projectData if it has banner images
-    const hasProjectBanner = projectData && projectData.projectBannerImages && projectData.projectBannerImages.length > 0;
-    const activeData = hasProjectBanner ? projectData : pageData;
+    const activeData = projectData || pageData;
 
-    if (loading || !activeData) {
-        return (
-            <div className="w-full h-[80vh] bg-gray-100 animate-pulse flex items-center justify-center">
-                <div className="text-gray-400 font-medium uppercase tracking-widest">Loading Banner...</div>
-            </div>
-        );
-    }
+    if (loading || !activeData) return null;
 
-    const bannerImages = (activeData.projectBannerImages && activeData.projectBannerImages.length > 0)
-        ? activeData.projectBannerImages
-        : [projectData?.mainImage].filter(Boolean); // Fallback to mainImage if no banner images
+    const bannerImages = activeData.projectBannerImages || [];
 
-    // If still no images, use a placeholder
-    const finalImages = bannerImages.length > 0 ? bannerImages : ["https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2670&auto=format&fit=crop"];
+    if (bannerImages.length === 0) return null;
 
     const title = language === 'vi'
         ? (activeData.projectBannerTitle?.vi || activeData.projectBannerTitle?.en || projectData?.title?.vi || projectData?.title?.en || "")
@@ -86,7 +75,7 @@ export default function ProjectBanner({ projectData = null }) {
                     nextArrow={<CustomArrow direction="right" />}
                     className="h-full w-full custom-project-banner-carousel"
                 >
-                    {finalImages.map((img, index) => (
+                    {bannerImages.map((img, index) => (
                         <div key={index} className="relative h-[60vh] md:h-[85vh] w-full">
                             <img
                                 src={getImageUrl(img)}

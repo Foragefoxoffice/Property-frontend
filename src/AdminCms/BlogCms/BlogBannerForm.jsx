@@ -150,7 +150,7 @@ export default function BlogBannerForm({
                                                             Tiêu Đề Tin tức
                                                         </span>
                                                     }
-                                                    name={['newsTitle', 'vi']}
+                                                    name={['blogTitle', 'vi']}
                                                     rules={[
                                                         { required: true, message: 'Vui lòng nhập tiêu đề tin tức' },
                                                         { max: 200, message: 'Tối đa 200 ký tự' }
@@ -180,7 +180,7 @@ export default function BlogBannerForm({
                                                             News Title
                                                         </span>
                                                     }
-                                                    name={['newsTitle', 'en']}
+                                                    name={['blogTitle', 'en']}
                                                     rules={[
                                                         { required: true, message: 'Please enter news title in English' },
                                                         { max: 200, message: 'Maximum 200 characters allowed' }

@@ -155,7 +155,7 @@ export default function ProjectProduct({
     };
 
     return (
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-indigo-100 transition-all duration-300 shadow-lg hover:shadow-xl">
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl mt-0">
             {/* Accordion Header */}
             <div
                 className="flex items-center justify-between p-6 cursor-pointer bg-gradient-to-r from-purple-50/50 to-indigo-50/50"

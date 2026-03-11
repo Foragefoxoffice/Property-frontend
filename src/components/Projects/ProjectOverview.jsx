@@ -43,6 +43,10 @@ export default function ProjectOverview({ projectData = null }) {
 
     const overviewImages = projectData.projectOverviewImages || [];
     const overviewTable = projectData.projectOverviewTable || [];
+
+    // Hide section if no images and no table data
+    if (overviewImages.length === 0 && overviewTable.length === 0) return null;
+
     const activeImage = overviewImages[activeImageIndex];
 
     return (
