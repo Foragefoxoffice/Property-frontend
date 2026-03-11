@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Table, Button, Space, Modal, ConfigProvider, Spin, Select } from "antd";
-import { Search, Plus, Edit2, Trash2, X, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Calendar, Languages, Eye } from "lucide-react";
+import { ConfigProvider, Spin } from "antd";
+import { Search, Plus, Trash2, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react";
 import { getAllProjectsAdmin, deleteProject } from "../../Api/action";
 import { useLanguage } from "../../Language/LanguageContext";
 import { CommonToaster } from "@/Common/CommonToaster";
@@ -82,7 +82,7 @@ export default function ProjectListPage() {
         <div className="min-h-screen px-6 py-6 font-primary relative">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">{t.pageTitle}</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">{t.projectManagement}</h1>
                     <p className="text-sm text-gray-500 mt-1">{t.pageDescription}</p>
                 </div>
                 <Link to="/dashboard/cms/projects/create">

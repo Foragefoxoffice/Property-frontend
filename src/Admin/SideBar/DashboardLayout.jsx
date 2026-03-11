@@ -685,8 +685,8 @@ const DashboardLayout = () => {
                 </div>
 
                 {/* MAIN CONTENT */}
-                <div className="flex-1 overflow-auto p-4">
-                    <Outlet />
+                <div className="flex-1 overflow-auto bg-gray-50/50 p-6">
+                    <Outlet key={location.pathname} />
                 </div>
 
             </div>

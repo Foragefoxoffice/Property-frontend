@@ -136,11 +136,11 @@ export default function HomePageSeoForm({
     const handleGenerate = (field) => {
         const content = buildCmsContent(activeTab, 'home');
         const map = {
-            metaTitle:       `homeSeoMetaTitle_${activeTab}`,
+            metaTitle: `homeSeoMetaTitle_${activeTab}`,
             metaDescription: `homeSeoMetaDescription_${activeTab}`,
-            metaKeywords:    `homeSeoMetaKeywords_${activeTab}`,
-            ogTitle:         `homeSeoOgTitle_${activeTab}`,
-            ogDescription:   `homeSeoOgDescription_${activeTab}`,
+            metaKeywords: `homeSeoMetaKeywords_${activeTab}`,
+            ogTitle: `homeSeoOgTitle_${activeTab}`,
+            ogDescription: `homeSeoOgDescription_${activeTab}`,
         };
         const valMap = {
             metaTitle: content.metaTitle,

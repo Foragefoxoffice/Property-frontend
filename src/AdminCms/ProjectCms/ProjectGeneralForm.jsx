@@ -95,6 +95,11 @@ export default function ProjectGeneralForm({
                             form={form}
                             layout="vertical"
                             onFinish={(values) => onSubmit(values, mainImage)}
+                            onValuesChange={(changedValues) => {
+                                if ('published' in changedValues && form.getFieldValue('id')) {
+                                    form.submit();
+                                }
+                            }}
                             className="space-y-8"
                         >
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -128,11 +133,14 @@ export default function ProjectGeneralForm({
 
                                 <Form.Item
                                     label={<div className="font-bold text-gray-700 font-['Manrope']">{t.publishedStatus}</div>}
-                                    name="published"
-                                    valuePropName="checked"
                                 >
                                     <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                        <Switch />
+                                        <Form.Item name="published" valuePropName="checked" noStyle>
+                                            <Switch
+                                                checkedChildren={language === 'vi' ? 'Đã đăng' : 'Published'}
+                                                unCheckedChildren={language === 'vi' ? 'Bản nháp' : 'Draft'}
+                                            />
+                                        </Form.Item>
                                         <span className="text-sm text-gray-600 font-medium">{t.visibleOnWebsite}</span>
                                     </div>
                                 </Form.Item>

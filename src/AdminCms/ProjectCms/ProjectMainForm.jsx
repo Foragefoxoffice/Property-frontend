@@ -111,6 +111,7 @@ export default function ProjectMainForm() {
                 setMainImage(project.mainImage || '');
 
                 generalForm.setFieldsValue({
+                    id: project._id,
                     title: project.title,
                     category: project.category?._id || project.category,
                     published: project.published,

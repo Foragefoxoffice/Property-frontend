@@ -143,11 +143,11 @@ export default function ContactPageSeoForm({
     const handleGenerate = (field) => {
         const content = buildCmsContent(activeTab, 'contact');
         const map = {
-            metaTitle:       `contactSeoMetaTitle_${activeTab}`,
+            metaTitle: `contactSeoMetaTitle_${activeTab}`,
             metaDescription: `contactSeoMetaDescription_${activeTab}`,
-            metaKeywords:    `contactSeoMetaKeywords_${activeTab}`,
-            ogTitle:         `contactSeoOgTitle_${activeTab}`,
-            ogDescription:   `contactSeoOgDescription_${activeTab}`,
+            metaKeywords: `contactSeoMetaKeywords_${activeTab}`,
+            ogTitle: `contactSeoOgTitle_${activeTab}`,
+            ogDescription: `contactSeoOgDescription_${activeTab}`,
         };
         const valMap = {
             metaTitle: content.metaTitle,

@@ -157,11 +157,11 @@ export default function PrivacyPolicySeoForm({
     const handleGenerate = (field) => {
         const content = buildCmsContent(activeTab, 'privacy');
         const map = {
-            metaTitle:       `privacyPolicySeoMetaTitle_${activeTab}`,
+            metaTitle: `privacyPolicySeoMetaTitle_${activeTab}`,
             metaDescription: `privacyPolicySeoMetaDescription_${activeTab}`,
-            metaKeywords:    `privacyPolicySeoMetaKeywords_${activeTab}`,
-            ogTitle:         `privacyPolicySeoOgTitle_${activeTab}`,
-            ogDescription:   `privacyPolicySeoOgDescription_${activeTab}`,
+            metaKeywords: `privacyPolicySeoMetaKeywords_${activeTab}`,
+            ogTitle: `privacyPolicySeoOgTitle_${activeTab}`,
+            ogDescription: `privacyPolicySeoOgDescription_${activeTab}`,
         };
         const valMap = {
             metaTitle: content.metaTitle,

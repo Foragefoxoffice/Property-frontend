@@ -472,7 +472,7 @@ export default function Header({ showNavigation = true }) {
               >
                 <div className="flex items-center gap-1 font-semibold text-[16px]">
                   <AnimatedNavLink
-                    onClick={() => navigate("/listing")}
+                    onClick={() => navigate("/projects")}
                     text={labels.project[language]}
                     hasDropdown={true}
                     isDropdownOpen={showProjectDropdown}

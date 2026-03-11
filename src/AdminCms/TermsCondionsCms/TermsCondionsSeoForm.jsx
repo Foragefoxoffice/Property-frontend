@@ -156,11 +156,11 @@ export default function TermsCondionsSeoForm({
     const handleGenerate = (field) => {
         const content = buildCmsContent(activeTab, 'terms');
         const map = {
-            metaTitle:       `termsconditionsSeoMetaTitle_${activeTab}`,
+            metaTitle: `termsconditionsSeoMetaTitle_${activeTab}`,
             metaDescription: `termsconditionsSeoMetaDescription_${activeTab}`,
-            metaKeywords:    `termsconditionsSeoMetaKeywords_${activeTab}`,
-            ogTitle:         `termsConditionSeoOgTitle_${activeTab}`,
-            ogDescription:   `termsConditionSeoOgDescription_${activeTab}`,
+            metaKeywords: `termsconditionsSeoMetaKeywords_${activeTab}`,
+            ogTitle: `termsConditionSeoOgTitle_${activeTab}`,
+            ogDescription: `termsConditionSeoOgDescription_${activeTab}`,
         };
         const valMap = {
             metaTitle: content.metaTitle,

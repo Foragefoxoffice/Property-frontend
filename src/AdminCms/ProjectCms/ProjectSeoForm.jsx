@@ -133,11 +133,11 @@ export default function ProjectSeoForm({
         const type = isProjectPage ? 'projectPage' : 'project';
         const content = buildCmsContent(activeTab, type);
         const map = {
-            metaTitle:       `projectSeoMetaTitle_${activeTab}`,
+            metaTitle: `projectSeoMetaTitle_${activeTab}`,
             metaDescription: `projectSeoMetaDescription_${activeTab}`,
-            metaKeywords:    `projectSeoMetaKeywords_${activeTab}`,
-            ogTitle:         `projectSeoOgTitle_${activeTab}`,
-            ogDescription:   `projectSeoOgDescription_${activeTab}`,
+            metaKeywords: `projectSeoMetaKeywords_${activeTab}`,
+            ogTitle: `projectSeoOgTitle_${activeTab}`,
+            ogDescription: `projectSeoOgDescription_${activeTab}`,
         };
         const valMap = {
             metaTitle: content.metaTitle,

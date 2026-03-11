@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Form,
     Input,
@@ -26,12 +26,14 @@ export default function HomePageAboutForm({
 }) {
 
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('vn');
+    const [activeTab, setActiveTab] = useState(headerLang || 'vn');
+    const prevHeaderLangRef = useRef(headerLang);
 
-    // Sync activeTab with headerLang whenever headerLang changes
+    // Sync activeTab with headerLang whenever headerLang explicitly changes
     useEffect(() => {
-        if (headerLang) {
+        if (headerLang && headerLang !== prevHeaderLangRef.current) {
             setActiveTab(headerLang);
+            prevHeaderLangRef.current = headerLang;
         }
     }, [headerLang]);
 
@@ -80,6 +82,7 @@ export default function HomePageAboutForm({
                                 className="mb-6"
                                 items={[
                                     {
+                                        forceRender: true,
                                         key: 'vn',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
@@ -232,6 +235,7 @@ export default function HomePageAboutForm({
                                         )
                                     },
                                     {
+                                        forceRender: true,
                                         key: 'en',
                                         label: (
                                             <span className="text-sm font-semibold font-['Manrope']">
