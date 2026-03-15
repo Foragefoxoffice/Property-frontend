@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Phone } from 'lucide-react';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 
 export default function ProjectForm({ projectName, projectId }) {
+    const { language } = useLanguage();
+    const t = translations[language];
+    
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         fullName: '',
@@ -18,7 +23,7 @@ export default function ProjectForm({ projectName, projectId }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.fullName || !formData.phone) {
-            toast.error("Please fill in required fields (*)");
+            toast.error(t.fillRequiredFields || "Please fill in required fields (*)");
             return;
         }
 
@@ -29,11 +34,11 @@ export default function ProjectForm({ projectName, projectId }) {
                 projectName,
                 projectId
             });
-            toast.success("Registration successful!");
+            toast.success(t.registrationSuccess || "Registration successful!");
             setFormData({ fullName: '', phone: '', message: '' });
         } catch (error) {
             console.error("Error submitting enquiry:", error);
-            toast.error("Something went wrong. Please try again.");
+            toast.error(t.genericError || "Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -53,12 +58,12 @@ export default function ProjectForm({ projectName, projectId }) {
 
             <div className="relative z-10 max-w-7xl mx-auto text-center text-white">
                 <h2 className="text-2xl md:text-3xl font-bold mb-4 tracking-wider uppercase">
-                    REGISTER FOR A TOUR AND PROJECT CONSULTATION
+                    {t.projectEnquiryTitle}
                 </h2>
                 
                 <div className="flex items-center justify-center gap-2 mb-10 text-lg md:text-xl font-medium">
                     <Phone className="w-5 h-5 fill-white" />
-                    <span>HOTLINE: 0909.769.666</span>
+                    <span>{t.hotlineLabel}: 0909.769.666</span>
                 </div>
 
                 <form onSubmit={handleSubmit} className="max-w-6xl mx-auto">
@@ -66,7 +71,7 @@ export default function ProjectForm({ projectName, projectId }) {
                         <input
                             type="text"
                             name="fullName"
-                            placeholder="Full name (*)"
+                            placeholder={t.fullNamePlaceholder}
                             value={formData.fullName}
                             onChange={handleChange}
                             className="flex-1 px-6 py-4 bg-transparent border-b md:border-b-0 md:border-r border-white/30 outline-none placeholder:text-gray-300 text-white font-medium"
@@ -75,7 +80,7 @@ export default function ProjectForm({ projectName, projectId }) {
                         <input
                             type="tel"
                             name="phone"
-                            placeholder="Phone number (*)"
+                            placeholder={t.phonePlaceholder}
                             value={formData.phone}
                             onChange={handleChange}
                             className="flex-1 px-6 py-4 bg-transparent border-b md:border-b-0 md:border-r border-white/30 outline-none placeholder:text-gray-300 text-white font-medium"
@@ -84,7 +89,7 @@ export default function ProjectForm({ projectName, projectId }) {
                         <input
                             type="text"
                             name="message"
-                            placeholder="Message"
+                            placeholder={t.messagePlaceholder}
                             value={formData.message}
                             onChange={handleChange}
                             className="flex-[1.5] px-6 py-4 bg-transparent border-b md:border-b-0 outline-none placeholder:text-gray-300 text-white font-medium"
@@ -94,13 +99,13 @@ export default function ProjectForm({ projectName, projectId }) {
                             disabled={loading}
                             className="px-10 py-4 bg-black hover:bg-white hover:text-black text-white font-bold transition-all duration-300 uppercase tracking-widest disabled:opacity-50"
                         >
-                            {loading ? "Registering..." : "REGISTER"}
+                            {loading ? (t.registering || "Registering...") : (t.registerBtn || "REGISTER")}
                         </button>
                     </div>
                 </form>
 
                 <p className="mt-8 text-sm md:text-base text-gray-300 font-medium">
-                    We are committed to ensuring the absolute confidentiality of your information.
+                    {t.confidentialityNotice}
                 </p>
             </div>
         </section>

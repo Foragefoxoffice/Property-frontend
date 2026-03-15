@@ -578,7 +578,15 @@ export const translations = {
     profileUpdatedSuccess: "Profile updated successfully!",
     staffProfileUpdatedSuccess: "Staff profile updated successfully!",
     passwordUpdatedSuccess: "Password updated successfully!",
-    listingproperty: "Property"
+    listingproperty: "Property",
+    projectEnquiryTitle: "REGISTER FOR A TOUR AND PROJECT CONSULTATION",
+    hotlineLabel: "HOTLINE",
+    fullNamePlaceholder: "Full name (*)",
+    phonePlaceholder: "Phone number (*)",
+    messagePlaceholder: "Message",
+    registerBtn: "REGISTER",
+    confidentialityNotice: "We are committed to ensuring the absolute confidentiality of your information.",
+    registrationSuccess: "Registration successful!",
   },
 
   vi: {
@@ -1162,5 +1170,13 @@ export const translations = {
     profileUpdatedSuccess: "Cập nhật hồ sơ thành công!",
     staffProfileUpdatedSuccess: "Cập nhật hồ sơ nhân viên thành công!",
     passwordUpdatedSuccess: "Cập nhật mật khẩu thành công!",
+    projectEnquiryTitle: "ĐĂNG KÝ THAM QUAN VÀ TƯ VẤN DỰ ÁN",
+    hotlineLabel: "HOTLINE",
+    fullNamePlaceholder: "Họ và tên (*)",
+    phonePlaceholder: "Số điện thoại (*)",
+    messagePlaceholder: "Lời nhắn",
+    registerBtn: "ĐĂNG KÝ",
+    confidentialityNotice: "Chúng tôi cam kết bảo mật tuyệt đối thông tin của quý khách.",
+    registrationSuccess: "Đăng ký thành công!",
   },
 };
