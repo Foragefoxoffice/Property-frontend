@@ -124,19 +124,19 @@ export default function ProjectOverview({ projectData = null }) {
 
                                     // Special styling for price or emphasized fields
                                     const isEmphasized = head?.toLowerCase().includes('price') ||
-                                        head?.toLowerCase().includes('giá') ||
+                                        (head?.toLowerCase().includes('giá') && !head?.toLowerCase().includes('giá trị')) ||
                                         head?.toLowerCase().includes('booking');
 
                                     return (
                                         <div key={index} className="py-4 flex items-start transition-colors hover:bg-gray-50/50 px-3 -mx-3 rounded-lg group/row overflow-hidden border-b border-gray-100 last:border-0">
-                                            <div className="w-[30%] flex-shrink-0 pr-4">
-                                                <span className="text-[13px] md:text-[14px] font-extrabold text-[#111827] uppercase tracking-wide opacity-80 group-hover/row:opacity-100 transition-opacity whitespace-normal break-words">
+                                            <div className="w-[25%] flex-shrink-0 pr-4">
+                                                <span className="text-[13px] md:text-[14px] font-extrabold text-[#111827] uppercase tracking-wide opacity-80 group-hover/row:opacity-100 transition-opacity">
                                                     {head}:
                                                 </span>
                                             </div>
-                                            <div className="w-[75%] break-words whitespace-normal overflow-hidden">
+                                            <div className="flex-1 overflow-hidden">
                                                 <div
-                                                    className={`text-[14px] md:text-[15.5px] leading-[1.6] font-semibold project-overview-rich-text break-words whitespace-normal ${isEmphasized ? 'text-rose-500 underline decoration-rose-200 decoration-2 underline-offset-4' : 'text-slate-600'}`}
+                                                    className={`text-[14px] md:text-[15.5px] leading-[1.6] font-semibold project-overview-rich-text ${isEmphasized ? 'text-rose-500 underline decoration-rose-200 decoration-2 underline-offset-4' : 'text-slate-600'}`}
                                                     dangerouslySetInnerHTML={{ __html: des }}
                                                 />
                                             </div>

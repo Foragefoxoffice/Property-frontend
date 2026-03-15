@@ -89,6 +89,7 @@ import Notification from "./Admin/Notification/Notification.jsx";
 import TestimonialsCms from "./AdminCms/TestimonialCms/TestimonialsCms.jsx";
 import ProjectBannerForm from "./AdminCms/ProjectCms/ProjectBannerForm.jsx";
 import ProjectListPage from "./AdminCms/ProjectCms/ProjectListPage.jsx";
+import ProjectEnquiryListPage from "./AdminCms/ProjectCms/ProjectEnquiryListPage.jsx";
 import ProjectMainForm from "./AdminCms/ProjectCms/ProjectMainForm.jsx";
 import ProjectCategoryListPage from "./AdminCms/ProjectCms/ProjectCategoryListPage.jsx";
 import GiveTestimonial from "./Pages/GiveTestimonial.jsx";
@@ -222,6 +223,7 @@ const router = createBrowserRouter(
         <Route path="cms/projects/create" element={<ProjectMainForm />} />
         <Route path="cms/projects/edit/:id" element={<ProjectMainForm />} />
         <Route path="cms/project-categories" element={<ProjectCategoryListPage />} />
+        <Route path="cms/project-enquiry" element={<ProjectEnquiryListPage />} />
         <Route path="cms/:section" element={<CMSPlaceholder />} />
 
         <Route path="settings/notification" element={<Notification />} />

@@ -18,6 +18,7 @@ import ProjectPhotos from '../components/Projects/ProjectPhotos';
 import HomeLatestBlogs from '../components/Home/HomeLatestBlogs';
 import RelatedProjects from '../components/Projects/RelatedProjects';
 import ProjectMainDescription from '../components/Projects/ProjectMainDescription';
+import ProjectForm from '../components/Projects/ProjectForm';
 
 export default function ProjectDetailsPage() {
     const { id } = useParams();
@@ -107,6 +108,12 @@ export default function ProjectDetailsPage() {
 
             {/* Project Video Library Section */}
             <ProjectVideo projectData={project} />
+
+            {/* Project Enquiry Form Section */}
+            <ProjectForm 
+                projectName={project?.title?.[language] || project?.title?.en} 
+                projectId={project?._id}
+            />
 
             {/* Related Projects Section */}
             <RelatedProjects 

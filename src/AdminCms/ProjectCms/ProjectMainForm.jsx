@@ -21,6 +21,7 @@ import ProjectVideoForm from './ProjectVideoForm';
 import ProjectGeneralForm from './ProjectGeneralForm';
 import ProjectSeoForm from './ProjectSeoForm';
 import ProjectRelatedForm from './ProjectRelatedForm';
+import ProjectEnquirySection from './ProjectEnquirySection';
 
 export default function ProjectMainForm() {
     const { id } = useParams();
@@ -52,6 +53,7 @@ export default function ProjectMainForm() {
         video: false,
         related: false,
         seo: false,
+        enquiries: false,
     });
 
     const toggleAccordion = (key) => {
@@ -66,6 +68,7 @@ export default function ProjectMainForm() {
             video: key === 'video' ? !prev.video : false,
             related: key === 'related' ? !prev.related : false,
             seo: key === 'seo' ? !prev.seo : false,
+            enquiries: key === 'enquiries' ? !prev.enquiries : false,
         }));
     };
 
@@ -366,6 +369,14 @@ export default function ProjectMainForm() {
                     onToggle={() => toggleAccordion('seo')}
                     headerLang={headerLang}
                 />
+                {id && (
+                    <ProjectEnquirySection
+                        projectName={projectData?.title?.[language] || projectData?.title?.en}
+                        isOpen={openAccordions.enquiries}
+                        onToggle={() => toggleAccordion('enquiries')}
+                        language={language}
+                    />
+                )}
             </div>
         </div>
     );

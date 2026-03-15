@@ -32,6 +32,8 @@ export default function ProjectIntroForm({
     onToggle,
     headerLang
 }) {
+    const { language } = useLanguage();
+    const t = translations[language] || translations['en'];
     const { can } = usePermissions();
     const [activeTab, setActiveTab] = useState('vi');
 
@@ -266,7 +268,7 @@ export default function ProjectIntroForm({
                                                             theme="snow"
                                                             modules={modulesVi}
                                                             formats={formats}
-                                                            className="h-[400px] mb-12 rounded-lg"
+                                                            className="mb-12 rounded-lg"
                                                         />
                                                     </Form.Item>
                                                 </>
@@ -309,7 +311,7 @@ export default function ProjectIntroForm({
                                                             theme="snow"
                                                             modules={modulesEn}
                                                             formats={formats}
-                                                            className="h-[400px] mb-12 rounded-lg"
+                                                            className="mb-12 rounded-lg"
                                                         />
                                                     </Form.Item>
                                                 </>
@@ -433,6 +435,7 @@ export default function ProjectIntroForm({
 
                                 /* Quill Border Fixes */
                                 .quill {
+                                    height: 450px;
                                     border-radius: 12px;
                                     overflow: hidden;
                                     display: flex;
@@ -445,18 +448,21 @@ export default function ProjectIntroForm({
                                     box-shadow: 0 0 0 2px rgba(65, 57, 139, 0.1);
                                 }
                                 .ql-toolbar.ql-snow {
+                                    flex-shrink: 0;
                                     border: none !important;
                                     border-bottom: 1px solid #f3f4f6 !important;
                                     background: #f9fafb;
                                     padding: 12px !important;
                                 }
                                 .ql-container.ql-snow {
+                                    flex: 1;
+                                    overflow-y: auto !important;
                                     border: none !important;
                                     font-family: 'Manrope', sans-serif !important;
                                     font-size: 14px !important;
                                 }
                                 .ql-editor {
-                                    min-height: 250px;
+                                    min-height: 100%;
                                     padding: 16px !important;
                                 }
                                 .ql-editor.ql-blank::before {

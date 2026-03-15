@@ -70,7 +70,7 @@ export default function ProjectIntroduction({ projectData = null }) {
                             {title}
                         </h2>
                         <div
-                            className="text-[15px] md:text-[16px] leading-[1.8] text-gray-600 project-intro-rich-text text-center w-full break-words whitespace-normal"
+                            className="text-[15px] md:text-[16px] leading-[1.8] text-gray-600 project-intro-rich-text text-center w-full"
                             dangerouslySetInnerHTML={{ __html: content }}
                         />
                     </div>
@@ -103,9 +103,9 @@ export default function ProjectIntroduction({ projectData = null }) {
 
             <style>{`
                 .project-intro-rich-text p {
-                    margin-bottom: 1.5rem;
+                    margin-bottom: 6px;
                     line-height: 1.8;
-                    word-break: break-word;
+                    overflow-wrap: break-word;
                     white-space: normal;
                     text-align: center;
                 }

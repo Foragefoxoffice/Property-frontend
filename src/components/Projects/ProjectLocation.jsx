@@ -45,7 +45,7 @@ export default function ProjectLocation({ projectData = null }) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-12 items-center">
                     {/* Left Column: Description Content */}
-                    <div className="text-[#374151] text-[15px] md:text-[16px] leading-[1.8] project-location-rich-text pr-0 lg:pr-10 min-w-0 break-words">
+                    <div className="text-[#374151] text-[15px] md:text-[16px] leading-[1.8] project-location-rich-text pr-0 lg:pr-10 min-w-0">
                         <div
                             className="w-full max-w-full overflow-hidden"
                             dangerouslySetInnerHTML={{ __html: locationDes }}

@@ -50,6 +50,7 @@ const DashboardLayout = () => {
             '/dashboard/cms/project-banner': 'cms.projectBanner',
             '/dashboard/cms/project-categories': 'projects.category',
             '/dashboard/cms/projects': 'projects.projectCms',
+            '/dashboard/cms/project-enquiry': 'projects.projectEnquiries',
             '/dashboard/cms/categories': 'blogs.category',
             '/dashboard/cms/blogs': 'blogs.blogCms',
             '/dashboard/landlords': 'landlords',
@@ -114,7 +115,7 @@ const DashboardLayout = () => {
             setOpenSettings(true);
         }
 
-        if (path.includes('/dashboard/cms/projects') || path.includes('/dashboard/cms/project-categories')) {
+        if (path.includes('/dashboard/cms/projects') || path.includes('/dashboard/cms/project-categories') || path.includes('/dashboard/cms/project-enquiry')) {
             setOpenProjects(true);
         }
     }, [location.pathname]);
@@ -199,53 +200,6 @@ const DashboardLayout = () => {
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <BedDouble className="w-4 h-4" /> </span>
                                                 <span>{"Homestay"}</span>
-                                            </Link>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* PROJECTS DROPDOWN */}
-                        {(!isHidden("projects.category") || !isHidden("projects.projectCms")) && (
-                            <div className="w-full">
-                                <button
-                                    onClick={() => setOpenProjects(!openProjects)}
-                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-xl
-                hover:bg-[#41398B] hover:text-white transition"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white text-left">
-                                            <LayoutGrid className="w-4 h-4" />
-                                        </span>
-                                        <span className="text-sm font-medium">{t.projects}</span>
-                                    </div>
-                                    <ChevronDown className={`transition ${openProjects ? "rotate-180" : ""}`} />
-                                </button>
-
-                                {openProjects && (
-                                    <div className="ml-10 mt-2 flex flex-col gap-2">
-                                        {!isHidden("projects.category") && (
-                                            <Link
-                                                to="/dashboard/cms/project-categories"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
-                                                ${isActive("/dashboard/cms/project-categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-                                                `}
-                                            >
-                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags className="w-4 h-4" /> </span>
-                                                <span className="text-sm">{t.projectCategories}</span>
-                                            </Link>
-                                        )}
-
-                                        {!isHidden("projects.projectCms") && (
-                                            <Link
-                                                to="/dashboard/cms/projects"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
-                                                ${isActive("/dashboard/cms/projects") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
-                                                `}
-                                            >
-                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
-                                                <span className="text-sm">{t.projectCms}</span>
                                             </Link>
                                         )}
                                     </div>
@@ -385,6 +339,65 @@ const DashboardLayout = () => {
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
                                                 <span className="text-sm">{"News Banner"}</span>
+                                            </Link>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                                                {/* PROJECTS DROPDOWN */}
+                        {(!isHidden("projects.category") || !isHidden("projects.projectCms")) && (
+                            <div className="w-full">
+                                <button
+                                    onClick={() => setOpenProjects(!openProjects)}
+                                    className="group flex w-full items-center justify-between px-2 py-2 rounded-xl
+                hover:bg-[#41398B] hover:text-white transition"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B] group-hover:bg-white text-left">
+                                            <LayoutGrid className="w-4 h-4" />
+                                        </span>
+                                        <span className="text-sm font-medium">{t.projects}</span>
+                                    </div>
+                                    <ChevronDown className={`transition ${openProjects ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {openProjects && (
+                                    <div className="ml-10 mt-2 flex flex-col gap-2">
+                                        {!isHidden("projects.category") && (
+                                            <Link
+                                                to="/dashboard/cms/project-categories"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                ${isActive("/dashboard/cms/project-categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                                                `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Tags className="w-4 h-4" /> </span>
+                                                <span className="text-sm">{t.projectCategories}</span>
+                                            </Link>
+                                        )}
+
+                                        {!isHidden("projects.projectCms") && (
+                                            <Link
+                                                to="/dashboard/cms/projects"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                ${isActive("/dashboard/cms/projects") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                                                `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <LayoutGrid className="w-4 h-4" /> </span>
+                                                <span className="text-sm">{t.projectCms}</span>
+                                            </Link>
+                                        )}
+
+                                        {!isHidden("projects.projectEnquiries") && (
+                                            <Link
+                                                to="/dashboard/cms/project-enquiry"
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                ${isActive("/dashboard/cms/project-enquiry") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
+                                                `}
+                                            >
+                                                <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <MessageSquare className="w-4 h-4" /> </span>
+                                                <span className="text-sm">{t.projectEnquiries}</span>
                                             </Link>
                                         )}
                                     </div>
