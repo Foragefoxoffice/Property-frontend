@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../Language/LanguageContext';
+import { cleanHTML } from '../../utils/htmlSanitizer';
 
 export default function ProjectMainDescription({ projectData }) {
     const { language } = useLanguage();
@@ -17,7 +18,15 @@ export default function ProjectMainDescription({ projectData }) {
             <div className="max-w-4xl mx-auto px-6">
                 <div 
                     className="main-description-rich-text text-[#374151] text-[16px] md:text-[17px] leading-[1.8]"
-                    dangerouslySetInnerHTML={{ __html: mainDescription }}
+                    style={{ 
+                        wordBreak: 'initial', 
+                        overflowWrap: 'break-word', 
+                        whiteSpace: 'normal',
+                        textAlign: 'left',
+                        display: 'block',
+                        width: '100%'
+                    }}
+                    dangerouslySetInnerHTML={{ __html: cleanHTML(mainDescription) }}
                 />
             </div>
 

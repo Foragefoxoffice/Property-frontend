@@ -15,6 +15,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import { uploadBlogImage } from '../../Api/action';
 import { getImageUrl } from '../../utils/imageHelper';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { sanitizeBeforeSave, quillModules, quillFormats } from '@/utils/htmlSanitizer';
 
 export default function BlogContentForm({
     form,
@@ -54,23 +55,8 @@ export default function BlogContentForm({
         };
     };
 
-    const modules = useMemo(() => ({
-        toolbar: {
-            container: [
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                [{ 'font': [] }],
-                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' },
-                { 'indent': '-1' }, { 'indent': '+1' }],
-                [{ 'color': [] }, { 'background': [] }],
-                ['link', 'image', 'video'],
-                ['clean']
-            ],
-        },
-        clipboard: {
-            matchVisual: false,
-        }
-    }), []);
+    const modules = useMemo(() => quillModules, []);
+    const formats = quillFormats;
 
     // Custom modules for each tab to bind correct ref
     const modulesEn = useMemo(() => ({
@@ -93,12 +79,7 @@ export default function BlogContentForm({
         }
     }), [modules]);
 
-    const formats = [
-        'header', 'font', 'size',
-        'bold', 'italic', 'underline', 'strike', 'blockquote',
-        'list', 'bullet', 'indent',
-        'link', 'image', 'video', 'color', 'background'
-    ];
+
 
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -136,7 +117,16 @@ export default function BlogContentForm({
                         <Form
                             form={form}
                             layout="vertical"
-                            onFinish={onSubmit}
+                            onFinish={(values) => {
+                                // Sanitize content before saving
+                                if (values.content) {
+                                    values.content = {
+                                        vi: sanitizeBeforeSave(values.content?.vi || ''),
+                                        en: sanitizeBeforeSave(values.content?.en || '')
+                                    };
+                                }
+                                onSubmit(values);
+                            }}
                             onFinishFailed={onFormFinishFailed}
                         >
                             <Tabs

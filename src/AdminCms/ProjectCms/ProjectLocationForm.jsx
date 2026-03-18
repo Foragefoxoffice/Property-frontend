@@ -23,6 +23,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import { uploadGeneralImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { X } from 'lucide-react';
+import { sanitizeBeforeSave } from '@/utils/htmlSanitizer';
 
 export default function ProjectLocationForm({
     form,
@@ -191,6 +192,13 @@ export default function ProjectLocationForm({
     };
 
     const handleSubmit = (values) => {
+        // Sanitize content before saving
+        if (values.projectLocationDes) {
+            values.projectLocationDes = {
+                vi: sanitizeBeforeSave(values.projectLocationDes?.vi || ''),
+                en: sanitizeBeforeSave(values.projectLocationDes?.en || '')
+            };
+        }
         onSubmit(values, locationImages);
     };
 

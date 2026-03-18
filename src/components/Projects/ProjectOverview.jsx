@@ -20,6 +20,18 @@ export default function ProjectOverview({ projectData = null }) {
         </button>
     );
 
+    const cleanHTML = (html) => {
+        if (!html) return '';
+
+        return html
+            .replace(/&nbsp;/g, ' ')              // fix non-breaking spaces
+            .replace(/\u00A0/g, ' ')              // unicode nbsp
+            .replace(/<p>\s*<\/p>/g, '')          // remove empty paragraphs
+            .replace(/\s{2,}/g, ' ')              // remove extra spaces (safe)
+            .trim();
+    };
+    
+
     useEffect(() => {
         const fetchPageData = async () => {
             try {
@@ -130,14 +142,19 @@ export default function ProjectOverview({ projectData = null }) {
                                     return (
                                         <div key={index} className="py-4 flex items-start transition-colors hover:bg-gray-50/50 px-3 -mx-3 rounded-lg group/row border-b border-gray-100 last:border-0">
                                             <div className="w-[30%] md:w-[25%] flex-shrink-0 pr-4">
-                                                <span className="text-[13px] md:text-[14px] font-extrabold text-[#111827] uppercase tracking-wide opacity-80 group-hover/row:opacity-100 transition-opacity whitespace-normal break-words">
+                                                <span className="text-[13px] md:text-[14px] font-extrabold text-[#111827] uppercase tracking-wide opacity-80 group-hover/row:opacity-100 transition-opacity whitespace-normal">
                                                     {head}:
                                                 </span>
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div
-                                                    className={`text-[14px] md:text-[15.5px] leading-[1.6] font-semibold project-overview-rich-text break-words whitespace-normal ${isEmphasized ? 'text-rose-500 underline decoration-rose-200 decoration-2 underline-offset-4' : 'text-slate-600'}`}
-                                                    dangerouslySetInnerHTML={{ __html: des }}
+                                                    className={`text-[14px] md:text-[15.5px] leading-[1.6] font-semibold project-overview-rich-text whitespace-normal ${isEmphasized ? 'text-rose-500 underline decoration-rose-200 decoration-2 underline-offset-4' : 'text-slate-600'}`}
+                                                    style={{
+                                                        wordBreak: 'normal',
+                                                        overflowWrap: 'normal',
+                                                        whiteSpace: 'normal',
+                                                    }}
+                                                    dangerouslySetInnerHTML={{ __html: cleanHTML(des) }}
                                                 />
                                             </div>
                                         </div>
@@ -154,6 +171,14 @@ export default function ProjectOverview({ projectData = null }) {
             </div>
 
             <style>{`
+
+
+
+.project-overview-rich-text {
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    white-space: normal !important;
+}
                 .project-overview-rich-text ul {
                     list-style-type: disc;
                     padding-left: 1.25rem;
@@ -169,8 +194,6 @@ export default function ProjectOverview({ projectData = null }) {
                     margin: 0;
                     line-height: 1.6;
                     white-space: normal;
-                    word-break: break-word;
-                    overflow-wrap: break-word;
                 }
                 .project-overview-rich-text p:last-child {
                     margin-bottom: 0;

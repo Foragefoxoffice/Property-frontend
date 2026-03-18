@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getProjectPage } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
 import { getImageUrl } from '../../utils/imageHelper';
+import { cleanHTML } from '../../utils/htmlSanitizer';
 
 export default function ProjectLocation({ projectData = null }) {
     const { language } = useLanguage();
@@ -47,8 +48,16 @@ export default function ProjectLocation({ projectData = null }) {
                     {/* Left Column: Description Content */}
                     <div className="text-[#374151] text-[15px] md:text-[16px] leading-[1.8] project-location-rich-text pr-0 lg:pr-10 min-w-0">
                         <div
-                            className="w-full max-w-full overflow-hidden"
-                            dangerouslySetInnerHTML={{ __html: locationDes }}
+                            className="w-full max-w-full"
+                            style={{ 
+                                wordBreak: 'initial', 
+                                overflowWrap: 'break-word', 
+                                whiteSpace: 'normal',
+                                textAlign: 'left',
+                                display: 'block',
+                                width: '100%'
+                            }}
+                            dangerouslySetInnerHTML={{ __html: cleanHTML(locationDes) }}
                         />
                     </div>
 

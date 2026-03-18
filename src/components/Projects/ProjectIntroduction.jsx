@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getProjectIntro, getProjectPage } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
+import { cleanHTML } from '../../utils/htmlSanitizer';
 
 export default function ProjectIntroduction({ projectData = null }) {
     const { language } = useLanguage();
@@ -71,7 +72,13 @@ export default function ProjectIntroduction({ projectData = null }) {
                         </h2>
                         <div
                             className="text-[15px] md:text-[16px] leading-[1.8] text-gray-600 project-intro-rich-text text-center w-full"
-                            dangerouslySetInnerHTML={{ __html: content }}
+                            style={{ 
+                                wordBreak: 'normal', 
+                                overflowWrap: 'break-word', 
+                                whiteSpace: 'normal',
+                                textAlign: 'center'
+                            }}
+                            dangerouslySetInnerHTML={{ __html: cleanHTML(content) }}
                         />
                     </div>
 
@@ -105,7 +112,6 @@ export default function ProjectIntroduction({ projectData = null }) {
                 .project-intro-rich-text p {
                     margin-bottom: 6px;
                     line-height: 1.8;
-                    overflow-wrap: break-word;
                     white-space: normal;
                     text-align: center;
                 }

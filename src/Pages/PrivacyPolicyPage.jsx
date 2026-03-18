@@ -5,6 +5,7 @@ import { useLanguage } from '../Language/LanguageContext';
 import Footer from '@/Admin/Footer/Footer';
 import Header from '@/Admin/Header/Header';
 import { Spin } from 'antd';
+import { cleanHTML } from '@/utils/htmlSanitizer';
 
 
 export default function PrivacyPolicyPage() {
@@ -176,7 +177,14 @@ export default function PrivacyPolicyPage() {
                     {contentBody && (
                         <div
                             className="prose prose-lg max-w-none text-gray-600 font-['Manrope'] prose-headings:font-bold prose-headings:text-gray-800 prose-a:text-[#41398B] prose-a:no-underline hover:prose-a:underline"
-                            dangerouslySetInnerHTML={{ __html: contentBody }}
+                            style={{
+                                wordBreak: 'initial',
+                                overflowWrap: 'break-word',
+                                whiteSpace: 'normal',
+                                display: 'block',
+                                width: '100%'
+                            }}
+                            dangerouslySetInnerHTML={{ __html: cleanHTML(contentBody) }}
                         />
                     )}
 

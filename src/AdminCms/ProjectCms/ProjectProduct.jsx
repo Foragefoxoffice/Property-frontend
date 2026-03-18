@@ -26,6 +26,7 @@ import { uploadGeneralImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
+import { sanitizeBeforeSave, quillModules, quillFormats } from '@/utils/htmlSanitizer';
 
 const { TextArea } = Input;
 
@@ -84,23 +85,8 @@ export default function ProjectProduct({
     };
 
     // Quill Modules
-    const modules = useMemo(() => ({
-        toolbar: {
-            container: [
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                [{ 'font': [] }],
-                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' },
-                { 'indent': '-1' }, { 'indent': '+1' }],
-                [{ 'color': [] }, { 'background': [] }],
-                ['link', 'image', 'video'],
-                ['clean']
-            ],
-        },
-        clipboard: {
-            matchVisual: false,
-        }
-    }), []);
+    const modules = useMemo(() => quillModules, []);
+    const formats = quillFormats;
 
     const getImageUrl = (url) => {
         if (!url) return '';
@@ -150,6 +136,24 @@ export default function ProjectProduct({
     };
 
     const handleSubmit = (values) => {
+        // Sanitize content before saving
+        if (values.projectProductDes) {
+            values.projectProductDes = {
+                vi: sanitizeBeforeSave(values.projectProductDes?.vi || ''),
+                en: sanitizeBeforeSave(values.projectProductDes?.en || '')
+            };
+        }
+
+        if (values.projectProducts) {
+            values.projectProducts = values.projectProducts.map(product => ({
+                ...product,
+                projectProductProducDes: {
+                    vi: sanitizeBeforeSave(product.projectProductProducDes?.vi || ''),
+                    en: sanitizeBeforeSave(product.projectProductProducDes?.en || '')
+                }
+            }));
+        }
+
         onSubmit(values);
     };
 

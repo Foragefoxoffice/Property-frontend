@@ -21,6 +21,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import { uploadProjectIntroImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { usePermissions } from '../../Context/PermissionContext';
+import { sanitizeBeforeSave } from '@/utils/htmlSanitizer';
 
 export default function ProjectIntroForm({
     form,
@@ -176,6 +177,13 @@ export default function ProjectIntroForm({
 
     // Handle form submission
     const handleSubmit = (values) => {
+        // Sanitize content before saving
+        if (values.projectIntroContent) {
+            values.projectIntroContent = {
+                vi: sanitizeBeforeSave(values.projectIntroContent?.vi || ''),
+                en: sanitizeBeforeSave(values.projectIntroContent?.en || '')
+            };
+        }
         onSubmit(values);
     };
 

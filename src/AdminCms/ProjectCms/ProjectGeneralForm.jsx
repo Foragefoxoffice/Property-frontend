@@ -6,6 +6,7 @@ import { uploadGeneralImage } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
 import { translations } from '../../Language/translations';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { sanitizeBeforeSave, quillModules, quillFormats } from '@/utils/htmlSanitizer';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -42,20 +43,8 @@ export default function ProjectGeneralForm({
         }
     };
 
-    const modules = useMemo(() => ({
-        toolbar: [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'color': [] }, { 'background': [] }],
-            ['link', 'clean']
-        ],
-    }), []);
-
-    const formats = [
-        'header', 'bold', 'italic', 'underline', 'strike',
-        'list', 'bullet', 'color', 'background', 'link'
-    ];
+    const modules = useMemo(() => quillModules, []);
+    const formats = quillFormats;
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
@@ -94,7 +83,16 @@ export default function ProjectGeneralForm({
                         <Form
                             form={form}
                             layout="vertical"
-                            onFinish={(values) => onSubmit(values, mainImage)}
+                            onFinish={(values) => {
+                                // Sanitize content before saving
+                                if (values.projectMainDescription) {
+                                    values.projectMainDescription = {
+                                        vi: sanitizeBeforeSave(values.projectMainDescription?.vi || ''),
+                                        en: sanitizeBeforeSave(values.projectMainDescription?.en || '')
+                                    };
+                                }
+                                onSubmit(values, mainImage);
+                            }}
                             onValuesChange={(changedValues) => {
                                 if ('published' in changedValues && form.getFieldValue('id')) {
                                     form.submit();

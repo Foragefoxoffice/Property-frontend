@@ -6,6 +6,7 @@ import { Twitter, Facebook, Linkedin, Link as LinkIcon, Calendar, Clock, Share2 
 import { useLanguage } from '../Language/LanguageContext';
 
 import { getImageUrl } from '../utils/imageHelper';
+import { cleanHTML } from '../utils/htmlSanitizer';
 import Loader from '@/components/Loader/Loader';
 import Header from '@/Admin/Header/Header';
 import Footer from '@/Admin/Footer/Footer';
@@ -241,16 +242,19 @@ export default function BlogDetailPage() {
                                 </div>
 
                                 {/* Blog Content */}
-                                <article style={{ lineHeight: '1.8' }} className="news-content prose prose-lg max-w-none w-full break-words
+                                <article style={{ lineHeight: '1.8' }} className="news-content prose prose-lg max-w-none w-full
                                 prose-headings:font-bold prose-headings:text-gray-900 
                                 prose-h1:text-4xl prose-h2:text-3xl prose-h2:text-[#41398B] prose-h3:text-2xl 
-                                prose-p:text-gray-600 prose-p:leading-relaxed [&_p]:!text-left [&_p]:[hyphens:none]
+                                prose-p:text-gray-600 prose-p:leading-relaxed [&_p]:!text-left
                                 prose-a:text-[#41398B] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
                                 prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-8
                                 prose-blockquote:border-l-4 prose-blockquote:border-[#41398B] prose-blockquote:bg-purple-50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:italic prose-blockquote:text-gray-700
                                 prose-strong:text-gray-900 prose-strong:font-bold
                                 prose-li:marker:text-[#41398B]">
-                                    <div dangerouslySetInnerHTML={{ __html: getLocalized(blog.content) }} />
+                                    <div 
+                                        style={{ wordBreak: 'initial', overflowWrap: 'break-word' }}
+                                        dangerouslySetInnerHTML={{ __html: cleanHTML(getLocalized(blog.content)) }} 
+                                    />
                                 </article>
                                 <div className='flex justify-between'>
                                     <div>

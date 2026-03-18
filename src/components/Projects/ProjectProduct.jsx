@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getProjectPage } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
 import { getImageUrl } from '../../utils/imageHelper';
+import { cleanHTML } from '../../utils/htmlSanitizer';
 
 export default function ProjectProduct({ projectData = null }) {
     const { language } = useLanguage();
@@ -40,7 +41,15 @@ export default function ProjectProduct({ projectData = null }) {
                     {sectionDes && (
                         <div
                             className="text-[#4b5563] text-[15px] md:text-[16px] leading-[1.8] project-product-rich-text"
-                            dangerouslySetInnerHTML={{ __html: sectionDes }}
+                            style={{ 
+                                wordBreak: 'initial', 
+                                overflowWrap: 'break-word', 
+                                whiteSpace: 'normal',
+                                textAlign: 'center',
+                                display: 'block',
+                                width: '100%'
+                            }}
+                            dangerouslySetInnerHTML={{ __html: cleanHTML(sectionDes) }}
                         />
                     )}
                 </div>
@@ -76,7 +85,15 @@ export default function ProjectProduct({ projectData = null }) {
                                     </h3>
                                     <div
                                         className="project-product-item-rich-text text-[#374151] text-[14.5px] md:text-[15.5px] leading-[1.7]"
-                                        dangerouslySetInnerHTML={{ __html: productDes }}
+                                        style={{ 
+                                            wordBreak: 'initial', 
+                                            overflowWrap: 'break-word', 
+                                            whiteSpace: 'normal',
+                                            textAlign: 'left',
+                                            display: 'block',
+                                            width: '100%'
+                                        }}
+                                        dangerouslySetInnerHTML={{ __html: cleanHTML(productDes) }}
                                     />
                                 </div>
                             </div>

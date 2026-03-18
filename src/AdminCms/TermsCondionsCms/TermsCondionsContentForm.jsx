@@ -12,6 +12,7 @@ import {
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { onFormFinishFailed } from '@/utils/formValidation';
+import { sanitizeBeforeSave, quillModules, quillFormats } from '@/utils/htmlSanitizer';
 import { usePermissions } from '../../Context/PermissionContext';
 
 export default function TermsCondionsContentForm({
@@ -35,15 +36,8 @@ export default function TermsCondionsContentForm({
         }
     }, [headerLang]);
 
-    const quillModules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link', 'image', 'code-block'],
-            ['clean']
-        ],
-    };
+    const modules = quillModules;
+    const formats = quillFormats;
 
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -81,7 +75,16 @@ export default function TermsCondionsContentForm({
                         <Form
                             form={form}
                             layout="vertical"
-                            onFinish={onSubmit}
+                            onFinish={(values) => {
+                                // Sanitize content before saving
+                                if (values.termsConditionContent_vn) {
+                                    values.termsConditionContent_vn = sanitizeBeforeSave(values.termsConditionContent_vn);
+                                }
+                                if (values.termsConditionContent_en) {
+                                    values.termsConditionContent_en = sanitizeBeforeSave(values.termsConditionContent_en);
+                                }
+                                onSubmit(values);
+                            }}
                             onFinishFailed={onFormFinishFailed}
                             disabled={!canEdit}
                         >
@@ -129,7 +132,8 @@ export default function TermsCondionsContentForm({
                                                 >
                                                     <ReactQuill
                                                         theme="snow"
-                                                        modules={quillModules}
+                                                        modules={modules}
+                                                        formats={formats}
                                                         className="bg-white rounded-[10px]"
                                                         placeholder="Nhập nội dung ở đây..."
                                                     />
@@ -176,7 +180,8 @@ export default function TermsCondionsContentForm({
                                                 >
                                                     <ReactQuill
                                                         theme="snow"
-                                                        modules={quillModules}
+                                                        modules={modules}
+                                                        formats={formats}
                                                         className="bg-white rounded-[10px]"
                                                         placeholder="Write your content here..."
                                                     />

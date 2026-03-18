@@ -238,7 +238,7 @@ export default function HomeBanner({ homePageData }) {
             {/* Filter Card */}
             <div className='mt-[-80px] mx-4 md:mx-0 relative z-20 animate-slideUpFade animation-delay-400'>
                 {/* Tabs */}
-                <div className="flex gap-2 md:gap-3 justify-center">
+                <div className="flex gap-2 md:gap-3 md:justify-center justify-between">
                     <button
                         className={`px-2 py-2 md:py-3 md:px-8 rounded-t-md font-medium text-base cursor-pointer transition-all ${selectedTab === 'View All'
                             ? 'bg-[#fff] text-[#41398B]'
@@ -277,7 +277,7 @@ export default function HomeBanner({ homePageData }) {
                     </button>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-sm p-6 max-w-7xl mx-auto">
+                <div className="bg-white md:rounded-2xl rounded-t-none shadow-sm p-6 max-w-7xl mx-auto">
                     {/* Main Filters Row - Horizontal Layout */}
                     {/* Filters Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">

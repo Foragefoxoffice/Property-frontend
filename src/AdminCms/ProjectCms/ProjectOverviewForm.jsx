@@ -138,9 +138,41 @@ export default function ProjectOverviewForm({
         return url;
     };
 
+    const sanitizeBeforeSave = (html) => {
+        return html
+            ?.replace(/&nbsp;/g, ' ')
+            ?.replace(/\u00A0/g, ' ')
+            ?.replace(/\s{2,}/g, ' ')
+            ?.trim();
+    };
+
     const handleSubmit = (values) => {
+
+        // ✅ sanitize BEFORE sending
+        values.projectOverviewTable = values.projectOverviewTable?.map(item => ({
+            ...item,
+            des: {
+                vi: sanitizeBeforeSave(item.des?.vi || ''),
+                en: sanitizeBeforeSave(item.des?.en || '')
+            }
+        }));
+
+        // now send clean data
         onSubmit(values, overviewImages);
     };
+
+    const modules = {
+        clipboard: {
+            matchVisual: false
+        },
+        toolbar: [
+            ['bold', 'italic', 'underline'],
+            [{ color: [] }],
+            ['link'],
+            ['clean']
+        ]
+    };
+
 
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
@@ -221,7 +253,7 @@ export default function ProjectOverviewForm({
                                                                 <div className="space-y-4">
                                                                     {fields.map(({ key, name, ...restField }) => (
                                                                         <div key={key} className="flex flex-col md:flex-row items-start gap-4 bg-gray-50/50 p-4 rounded-xl border border-gray-100 hover:border-purple-200 transition-all group relative">
-                                                                            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                                                                            <div className="w-full">
                                                                                 <Form.Item
                                                                                     {...restField}
                                                                                     label={<span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Đầu Mục (Head)</span>}
@@ -240,14 +272,8 @@ export default function ProjectOverviewForm({
                                                                                 >
                                                                                     <ReactQuill
                                                                                         theme="snow"
-                                                                                        modules={{
-                                                                                            toolbar: [
-                                                                                                ['bold', 'italic', 'underline'],
-                                                                                                [{ 'color': [] }],
-                                                                                                ['link'],
-                                                                                                ['clean']
-                                                                                            ]
-                                                                                        }}
+                                                                                        modules={modules}
+                                                                                        formats={formats}
                                                                                         className="bg-white rounded-lg"
                                                                                         placeholder="Nhập nội dung chi tiết..."
                                                                                     />
@@ -311,7 +337,7 @@ export default function ProjectOverviewForm({
                                                                 <div className="space-y-4">
                                                                     {fields.map(({ key, name, ...restField }) => (
                                                                         <div key={key} className="flex flex-col md:flex-row items-start gap-4 bg-gray-50/50 p-4 rounded-xl border border-gray-100 hover:border-purple-200 transition-all group relative">
-                                                                            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                                                                            <div className="w-full">
                                                                                 <Form.Item
                                                                                     {...restField}
                                                                                     label={<span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Head</span>}
@@ -330,14 +356,8 @@ export default function ProjectOverviewForm({
                                                                                 >
                                                                                     <ReactQuill
                                                                                         theme="snow"
-                                                                                        modules={{
-                                                                                            toolbar: [
-                                                                                                ['bold', 'italic', 'underline'],
-                                                                                                [{ 'color': [] }],
-                                                                                                ['link'],
-                                                                                                ['clean']
-                                                                                            ]
-                                                                                        }}
+                                                                                        modules={modules}
+                                                                                        formats={formats}
                                                                                         className="bg-white rounded-lg"
                                                                                         placeholder="Enter details..."
                                                                                     />
