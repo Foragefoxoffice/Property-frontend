@@ -88,7 +88,6 @@ export default function ProjectIntroForm({
             container: [
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                 [{ 'font': [] }],
-                [{ 'align': [] }],
                 ['bold', 'italic', 'underline', 'strike', 'blockquote'],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' },
                 { 'indent': '-1' }, { 'indent': '+1' }],
@@ -126,7 +125,7 @@ export default function ProjectIntroForm({
         'header', 'font', 'size',
         'bold', 'italic', 'underline', 'strike', 'blockquote',
         'list', 'indent',
-        'link', 'image', 'video', 'align', 'color', 'background'
+        'link', 'image', 'video', 'color', 'background'
     ];
 
     // Single media upload handler (for the main specific media type: image)

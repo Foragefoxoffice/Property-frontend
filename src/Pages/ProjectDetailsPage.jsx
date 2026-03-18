@@ -21,7 +21,7 @@ import ProjectMainDescription from '../components/Projects/ProjectMainDescriptio
 import ProjectForm from '../components/Projects/ProjectForm';
 
 export default function ProjectDetailsPage() {
-    const { id } = useParams();
+    const { slug } = useParams();
     const { language } = useLanguage();
 
     const stripHtml = (html) => {
@@ -37,7 +37,7 @@ export default function ProjectDetailsPage() {
         const fetchProject = async () => {
             try {
                 setLoading(true);
-                const res = await getProjectById(id);
+                const res = await getProjectById(slug);
                 setProject(res.data?.data || null);
             } catch (error) {
                 console.error("Error fetching project details:", error);
@@ -47,10 +47,10 @@ export default function ProjectDetailsPage() {
                 }, 800);
             }
         };
-        if (id) {
+        if (slug) {
             fetchProject();
         }
-    }, [id]);
+    }, [slug]);
 
     if (loading) return <Loader />;
 

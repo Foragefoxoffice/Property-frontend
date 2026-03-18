@@ -84,7 +84,6 @@ export default function BlogMainForm({
             container: [
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                 [{ 'font': [] }],
-                [{ 'align': [] }],
                 ['bold', 'italic', 'underline', 'strike', 'blockquote'],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' },
                 { 'indent': '-1' }, { 'indent': '+1' }],
@@ -123,7 +122,7 @@ export default function BlogMainForm({
         'header', 'font', 'size',
         'bold', 'italic', 'underline', 'strike', 'blockquote',
         'list', 'bullet', 'indent',
-        'link', 'image', 'video', 'align', 'color', 'background'
+        'link', 'image', 'video', 'color', 'background'
     ];
 
     // Handle featured image upload

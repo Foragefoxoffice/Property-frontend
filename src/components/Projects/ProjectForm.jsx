@@ -8,7 +8,7 @@ import { translations } from '../../Language/translations';
 export default function ProjectForm({ projectName, projectId }) {
     const { language } = useLanguage();
     const t = translations[language];
-    
+
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         fullName: '',
@@ -47,9 +47,9 @@ export default function ProjectForm({ projectName, projectId }) {
     return (
         <section className="relative py-16 px-4 overflow-hidden">
             {/* Background with Overlay */}
-            <div 
+            <div
                 className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-                style={{ 
+                style={{
                     backgroundImage: `url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=2000')`,
                 }}
             >
@@ -60,7 +60,7 @@ export default function ProjectForm({ projectName, projectId }) {
                 <h2 className="text-2xl md:text-3xl font-bold mb-4 tracking-wider uppercase">
                     {t.projectEnquiryTitle}
                 </h2>
-                
+
                 <div className="flex items-center justify-center gap-2 mb-10 text-lg md:text-xl font-medium">
                     <Phone className="w-5 h-5 fill-white" />
                     <span>{t.hotlineLabel}: 0909.769.666</span>
@@ -97,7 +97,7 @@ export default function ProjectForm({ projectName, projectId }) {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-10 py-4 bg-black hover:bg-white hover:text-black text-white font-bold transition-all duration-300 uppercase tracking-widest disabled:opacity-50"
+                            className="px-10 py-4 bg-[#41398B] hover:bg-white hover:text-black text-white font-bold transition-all duration-300 uppercase tracking-widest disabled:opacity-50"
                         >
                             {loading ? (t.registering || "Registering...") : (t.registerBtn || "REGISTER")}
                         </button>

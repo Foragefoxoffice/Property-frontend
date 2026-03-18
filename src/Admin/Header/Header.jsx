@@ -551,7 +551,7 @@ export default function Header({ showNavigation = true }) {
                                         key={project._id}
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          navigate(`/projects/${project._id}`);
+                                          navigate(`/projects/${project.slug?.[language] || project.slug?.en || project.slug?.vi || project._id}`);
                                           setShowProjectDropdown(false);
                                         }}
                                         className={`w-full cursor-pointer text-left px-5 py-3 text-[14px] text-[#2a2a2a] hover:text-[#41398B] hover:bg-[#f8f7ff] font-medium transition-colors ${pIdx < projectsInCategory.length - 1 ? 'border-b border-gray-100' : ''}`}
@@ -992,7 +992,7 @@ export default function Header({ showNavigation = true }) {
                                       <button
                                         key={project._id}
                                         onClick={() => {
-                                          navigate(`/projects/${project._id}`);
+                                          navigate(`/projects/${project.slug?.[language] || project.slug?.en || project.slug?.vi || project._id}`);
                                           setIsMobileMenuOpen(false);
                                         }}
                                         className="text-left py-2 text-xs text-gray-500 hover:text-[#41398B]"

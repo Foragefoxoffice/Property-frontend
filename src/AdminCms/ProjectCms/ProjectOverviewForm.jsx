@@ -7,7 +7,6 @@ import {
     ConfigProvider,
     Upload,
     Spin,
-    Space
 } from 'antd';
 import { useLanguage } from '../../Language/LanguageContext';
 import { translations } from '../../Language/translations';
@@ -66,7 +65,7 @@ export default function ProjectOverviewForm({
         'header', 'font', 'size',
         'bold', 'italic', 'underline', 'strike', 'blockquote',
         'list', 'indent',
-        'link', 'image', 'video', 'align', 'color', 'background'
+        'link', 'image', 'video', 'color', 'background'
     ];
 
     // Handle multi-image upload

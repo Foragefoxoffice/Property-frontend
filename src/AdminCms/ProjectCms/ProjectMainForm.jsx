@@ -369,14 +369,14 @@ export default function ProjectMainForm() {
                     onToggle={() => toggleAccordion('seo')}
                     headerLang={headerLang}
                 />
-                {id && (
+                {/* {id && (
                     <ProjectEnquirySection
                         projectName={projectData?.title?.[language] || projectData?.title?.en}
                         isOpen={openAccordions.enquiries}
                         onToggle={() => toggleAccordion('enquiries')}
                         language={language}
                     />
-                )}
+                )} */}
             </div>
         </div>
     );

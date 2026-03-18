@@ -263,7 +263,7 @@ const router = createBrowserRouter(
         <Route path="/property-showcase/:id/:slug?" element={<PropertyShowcasePage />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/projects" element={<ProjectPage />} />
-        <Route path="/projects/:id" element={<ProjectDetailsPage />} />
+        <Route path="/projects/:slug" element={<ProjectDetailsPage />} />
         <Route path="/project-introduction" element={<ProjectIntroductionPage />} />
       </Route>
     </Route>

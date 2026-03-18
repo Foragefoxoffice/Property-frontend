@@ -50,11 +50,11 @@ export default function ProjectOverview({ projectData = null }) {
     const activeImage = overviewImages[activeImageIndex];
 
     return (
-        <section className="py-10 bg-white font-['Manrope'] overflow-hidden">
+        <section className="py-10 bg-white font-['Manrope']">
             <div className="max-w-[1500px] mx-auto px-6">
-                <div className="flex flex-col lg:flex-col gap-12 lg:gap-6 items-center">
+                <div className="flex flex-col gap-12 lg:gap-6 items-center">
                     {/* Left: Featured Image Slider */}
-                    <div className="w-full lg:w-[75%] flex flex-col group">
+                    <div className="w-full lg:w-[85%] flex flex-col group">
                         {/* Section Title */}
                         <h2 className="text-2xl md:text-2xl font-bold text-[#111827] mb-7 text-center lg:text-center uppercase tracking-tight leading-tight">
                             {displayTitle}
@@ -114,7 +114,7 @@ export default function ProjectOverview({ projectData = null }) {
                     </div>
 
                     {/* Right: Overview Table/Specs */}
-                    <div className="w-full lg:w-[70%] flex flex-col pt-10 lg:pt-[30px]">
+                    <div className="w-full lg:w-[85%] flex flex-col pt-10 lg:pt-[30px]">
                         <div className="divide-y divide-gray-100 border-t border-gray-100 flex-grow">
                             {overviewTable.length > 0 ? (
                                 overviewTable.map((row, index) => {
@@ -128,15 +128,15 @@ export default function ProjectOverview({ projectData = null }) {
                                         head?.toLowerCase().includes('booking');
 
                                     return (
-                                        <div key={index} className="py-4 flex items-start transition-colors hover:bg-gray-50/50 px-3 -mx-3 rounded-lg group/row overflow-hidden border-b border-gray-100 last:border-0">
-                                            <div className="w-[25%] flex-shrink-0 pr-4">
-                                                <span className="text-[13px] md:text-[14px] font-extrabold text-[#111827] uppercase tracking-wide opacity-80 group-hover/row:opacity-100 transition-opacity">
+                                        <div key={index} className="py-4 flex items-start transition-colors hover:bg-gray-50/50 px-3 -mx-3 rounded-lg group/row border-b border-gray-100 last:border-0">
+                                            <div className="w-[30%] md:w-[25%] flex-shrink-0 pr-4">
+                                                <span className="text-[13px] md:text-[14px] font-extrabold text-[#111827] uppercase tracking-wide opacity-80 group-hover/row:opacity-100 transition-opacity whitespace-normal break-words">
                                                     {head}:
                                                 </span>
                                             </div>
-                                            <div className="flex-1 overflow-hidden">
+                                            <div className="flex-1 min-w-0">
                                                 <div
-                                                    className={`text-[14px] md:text-[15.5px] leading-[1.6] font-semibold project-overview-rich-text ${isEmphasized ? 'text-rose-500 underline decoration-rose-200 decoration-2 underline-offset-4' : 'text-slate-600'}`}
+                                                    className={`text-[14px] md:text-[15.5px] leading-[1.6] font-semibold project-overview-rich-text break-words whitespace-normal ${isEmphasized ? 'text-rose-500 underline decoration-rose-200 decoration-2 underline-offset-4' : 'text-slate-600'}`}
                                                     dangerouslySetInnerHTML={{ __html: des }}
                                                 />
                                             </div>
@@ -168,6 +168,9 @@ export default function ProjectOverview({ projectData = null }) {
                 .project-overview-rich-text p {
                     margin: 0;
                     line-height: 1.6;
+                    white-space: normal;
+                    word-break: break-word;
+                    overflow-wrap: break-word;
                 }
                 .project-overview-rich-text p:last-child {
                     margin-bottom: 0;

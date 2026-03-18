@@ -291,8 +291,8 @@ export default function ProjectEnquiryListPage() {
             </div>
 
             {/* Pagination */}
-            <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 bg-white border border-t-0 border-gray-100 rounded-b-xl text-sm text-gray-700 shadow-sm gap-4">
-                 <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 mt-3 bg-white border border-t-0 border-gray-100 rounded-b-xl text-sm text-gray-700 shadow-sm gap-4">
+                <div className="flex items-center gap-2">
                     <span>{isVI ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
                     <select
                         className="border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:ring-2 focus:ring-[#41398B] focus:border-transparent outline-none bg-white transition-all shadow-sm"
@@ -307,35 +307,35 @@ export default function ProjectEnquiryListPage() {
                         ))}
                     </select>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                     <span className="text-gray-500 font-medium">
                         {totalRows === 0 ? "0–0" : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
                     </span>
                     <div className="flex items-center gap-1">
-                        <button 
-                            onClick={goToFirst} 
+                        <button
+                            onClick={goToFirst}
                             disabled={currentPage === 1}
                             className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
                         >
                             <ChevronsLeft size={20} />
                         </button>
-                        <button 
-                            onClick={goToPrev} 
+                        <button
+                            onClick={goToPrev}
                             disabled={currentPage === 1}
                             className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
                         >
                             <ChevronLeft size={20} />
                         </button>
-                        <button 
-                            onClick={goToNext} 
+                        <button
+                            onClick={goToNext}
                             disabled={currentPage === totalPages || totalRows === 0}
                             className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
                         >
                             <ChevronRight size={20} />
                         </button>
-                        <button 
-                            onClick={goToLast} 
+                        <button
+                            onClick={goToLast}
                             disabled={currentPage === totalPages || totalRows === 0}
                             className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
                         >
