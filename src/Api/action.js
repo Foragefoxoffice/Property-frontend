@@ -3,7 +3,7 @@ import axios from "axios";
 // ✅ Create axios instance
 const API = axios.create({
   baseURL: (
-    import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1"
+    import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1"
   ).replace(/\/$/, ""),
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
@@ -302,7 +302,7 @@ export const uploadPropertyMedia = (file, type) => {
   const token = localStorage.getItem("token");
   // Ensure we strip trailing slash if present
   const envURL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, "") : null;
-  const baseURL = envURL || "https://dev.placetest.in/api/v1";
+  const baseURL = envURL || "https://183housingsolutions.com/api/v1";
 
   console.log("🚀 Uploading Media...");
   console.log("📍 Target URL:", `${baseURL}/upload/property-media`);
@@ -333,7 +333,7 @@ export const uploadBannerImage = (file) => {
 
   // Use plain axios to avoid Content-Type conflicts
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/home-banner/upload`, formData, {
     headers: {
@@ -354,7 +354,7 @@ export const uploadHomePageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/home-page/upload`, formData, {
     headers: {
@@ -377,7 +377,7 @@ export const uploadAboutPageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/about-page/upload`, formData, {
     headers: {
@@ -398,7 +398,7 @@ export const uploadContactPageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/contact-page/upload`, formData, {
     headers: {
@@ -436,7 +436,7 @@ export const uploadBlogImage = (file) => {
   formData.append("file", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/upload`, formData, {
     headers: {
@@ -451,7 +451,7 @@ export const uploadGeneralImage = (file) => {
   formData.append("file", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/upload`, formData, {
     headers: {
@@ -471,7 +471,7 @@ export const uploadHeaderImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/header/upload`, formData, {
     headers: {
@@ -491,7 +491,7 @@ export const uploadFooterImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/footer/upload`, formData, {
     headers: {
@@ -511,7 +511,7 @@ export const uploadAgentImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/agent/upload`, formData, {
     headers: {
@@ -571,7 +571,7 @@ export const uploadTermsConditionsPageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/terms-conditions-page/upload-image`, formData, {
     headers: {
@@ -591,7 +591,7 @@ export const uploadPrivacyPolicyPageImage = (file) => {
   formData.append("image", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/privacy-policy-page/upload-image`, formData, {
     headers: {
@@ -615,7 +615,7 @@ export const uploadTestimonialImage = (file) => {
   formData.append("file", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/upload`, formData, {
     headers: {
@@ -637,7 +637,7 @@ export const uploadProjectBannerImage = (file) => {
   formData.append("file", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/upload`, formData, {
     headers: {
@@ -658,7 +658,7 @@ export const uploadProjectIntroImage = (file) => {
   formData.append("file", file);
 
   const token = localStorage.getItem("token");
-  const baseURL = import.meta.env.VITE_API_URL || "https://dev.placetest.in/api/v1";
+  const baseURL = import.meta.env.VITE_API_URL || "https://183housingsolutions.com/api/v1";
 
   return axios.post(`${baseURL}/upload`, formData, {
     headers: {
