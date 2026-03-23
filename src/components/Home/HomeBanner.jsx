@@ -202,7 +202,7 @@ export default function HomeBanner({ homePageData }) {
             return imagePath;
         }
         // Otherwise, prepend the backend base URL
-        const baseURL = import.meta.env.VITE_API_URL || 'https://183housingsolutions.com/api/v1';
+        const baseURL = import.meta.env.VITE_API_URL || 'https://dev.placetest.in/api/v1';
         const serverURL = baseURL.replace('/api/v1', '');
         return `${serverURL}${imagePath}`;
     };
