@@ -12,7 +12,7 @@ export default function ContactBanner({ data }) {
         if (imagePath.startsWith('http') || imagePath.startsWith('data:')) {
             return imagePath;
         }
-        const baseURL = import.meta.env.VITE_API_URL || 'https://dev.placetest.in/api/v1';
+        const baseURL = import.meta.env.VITE_API_URL || 'https://183housingsolutions.com/api/v1';
         const serverURL = baseURL.replace('/api/v1', ''); // Remove /api/v1 suffix if present for static files
         // ensuring slash
         return `${serverURL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
