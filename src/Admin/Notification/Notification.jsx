@@ -14,7 +14,8 @@ export default function Notification() {
     const [settings, setSettings] = useState({
         contactEnquiryEmail: "",
         favoritesEnquiryEmail: "",
-        propertyEnquiryEmail: ""
+        propertyEnquiryEmail: "",
+        projectEnquiryEmail: ""
     });
 
     useEffect(() => {
@@ -29,7 +30,8 @@ export default function Notification() {
                 setSettings({
                     contactEnquiryEmail: res.data.data.contactEnquiryEmail || "",
                     favoritesEnquiryEmail: res.data.data.favoritesEnquiryEmail || "",
-                    propertyEnquiryEmail: res.data.data.propertyEnquiryEmail || ""
+                    propertyEnquiryEmail: res.data.data.propertyEnquiryEmail || "",
+                    projectEnquiryEmail: res.data.data.projectEnquiryEmail || ""
                 });
             }
         } catch (error) {
@@ -155,7 +157,30 @@ export default function Notification() {
                                     />
                                 </div>
                                 <p className="mt-2 text-xs text-gray-500 italic">
-                                    {t.propertyEmailHelp}
+                                    {t.propertyEmailHelp || "Recipient email for property showcase enquiries."}
+                                </p>
+                            </div>
+
+                            {/* Project Enquiry */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    {t.projectEnquiryRecipientEmail}
+                                </label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Mail className="h-5 w-5 text-gray-400 group-focus-within:text-[#41398B] transition-colors" />
+                                    </div>
+                                    <input
+                                        type="email"
+                                        required
+                                        placeholder={t.enterEmailAddress || "Enter email address"}
+                                        value={settings.projectEnquiryEmail}
+                                        onChange={(e) => setSettings({ ...settings, projectEnquiryEmail: e.target.value })}
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#41398B] focus:border-[#41398B] outline-none transition shadow-sm text-gray-900"
+                                    />
+                                </div>
+                                <p className="mt-2 text-xs text-gray-500 italic">
+                                    {t.projectEmailHelp}
                                 </p>
                             </div>
 

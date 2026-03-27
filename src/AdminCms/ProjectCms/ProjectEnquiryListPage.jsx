@@ -19,12 +19,14 @@ import CommonSkeleton from "../../Common/CommonSkeleton";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { useNavigate } from "react-router-dom";
+import { useSocket } from "../../Context/SocketContext";
 
 export default function ProjectEnquiryListPage() {
     const navigate = useNavigate();
     const goBack = () => navigate(-1);
     const { language } = useLanguage();
     const isVI = language === "vi";
+    const { socket } = useSocket();
 
     const [enquiries, setEnquiries] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -54,6 +56,25 @@ export default function ProjectEnquiryListPage() {
     useEffect(() => {
         fetchEnquiries();
     }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNewProjectEnquiry = (data) => {
+            console.log("🔔 New Real-time Project Enquiry:", data);
+            fetchEnquiries();
+            CommonToaster(
+                isVI ? `Có yêu cầu mới cho dự án "${data.enquiry.projectName}"!` : `New enquiry for "${data.enquiry.projectName}"!`,
+                "success"
+            );
+        };
+
+        socket.on('newProjectEnquiry', handleNewProjectEnquiry);
+
+        return () => {
+            socket.off('newProjectEnquiry', handleNewProjectEnquiry);
+        };
+    }, [socket, isVI]);
 
     // Search and Sort Logic
     const processedEnquiries = [...enquiries]
