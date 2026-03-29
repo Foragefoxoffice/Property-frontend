@@ -12,6 +12,7 @@ import ContactMapLink from './ContactMapLink';
 import ContactPageSeoForm from './ContactPageSeoForm';
 import { validateVietnameseFields } from '@/utils/formValidation';
 import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 
 console.log("Rendering ContactPageForm!!");
 export default function ContactPageForm() {
@@ -22,6 +23,7 @@ export default function ContactPageForm() {
     const [pageData, setPageData] = useState(null);
     const [loading, setLoading] = useState(false);
     const { language } = useLanguage();
+    const t = translations[language];
     const headerLang = language === 'vi' ? 'vn' : 'en';
 
     // Accordion state
@@ -211,10 +213,10 @@ export default function ContactPageForm() {
 
             if (pageData) {
                 await updateContactPage(pageData._id, finalPayload);
-                CommonToaster('Banner section updated successfully!', 'success');
+                CommonToaster(t?.toastBannerSectionUpdated || 'Banner section updated successfully!', 'success');
             } else {
                 await createContactPage(finalPayload);
-                CommonToaster('Contact page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Contact page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -238,11 +240,11 @@ export default function ContactPageForm() {
 
             if (pageData) {
                 await updateContactPage(pageData._id, finalPayload);
-                CommonToaster('Reach Out section updated successfully!', 'success');
+                CommonToaster(t?.toastReachOutSectionUpdated || 'Reach Out section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createContactPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('Contact page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Contact page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -270,11 +272,11 @@ export default function ContactPageForm() {
 
             if (pageData) {
                 await updateContactPage(pageData._id, finalPayload);
-                CommonToaster('Map section updated successfully!', 'success');
+                CommonToaster(t?.toastMapSectionUpdated || 'Map section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createContactPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('Contact page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Contact page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -302,11 +304,11 @@ export default function ContactPageForm() {
 
             if (pageData) {
                 await updateContactPage(pageData._id, finalPayload);
-                CommonToaster('SEO section updated successfully!', 'success');
+                CommonToaster(t?.toastSeoSectionUpdated || 'SEO section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createContactPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('Contact page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Contact page created successfully!', 'success');
             }
 
             fetchPageData();

@@ -72,7 +72,7 @@ export default function BlogMainForm({
                     const range = quill.getSelection();
                     quill.insertEmbed(range.index, 'image', url);
                 } catch (error) {
-                    CommonToaster('Image upload failed', 'error');
+                    CommonToaster(t.toastImageUploadError, 'error');
                     console.error(error);
                 }
             }
@@ -134,11 +134,11 @@ export default function BlogMainForm({
 
             form.setFieldsValue({ mainImage: uploadedUrl });
             setMainImageUrl(uploadedUrl);
-            CommonToaster('Image uploaded successfully!', 'success');
+            CommonToaster(t.toastImageUploaded, 'success');
 
             return false;
         } catch (error) {
-            CommonToaster('Failed to upload image', 'error');
+            CommonToaster(t.toastImageUploadError, 'error');
             console.error(error);
             return false;
         } finally {
@@ -149,12 +149,12 @@ export default function BlogMainForm({
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            CommonToaster('You can only upload image files!', 'error');
+            CommonToaster(t.toastImageTypeError, 'error');
             return Upload.LIST_IGNORE;
         }
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            CommonToaster('Image must be smaller than 5MB!', 'error');
+            CommonToaster(t.toastImageSizeError, 'error');
             return Upload.LIST_IGNORE;
         }
         handleImageUpload(file);
@@ -165,7 +165,7 @@ export default function BlogMainForm({
     const removeMainImage = () => {
         setMainImageUrl('');
         form.setFieldsValue({ mainImage: '' });
-        CommonToaster('Image removed', 'info');
+        CommonToaster(t.toastImageRemoved, 'info');
     };
 
     return (

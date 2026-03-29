@@ -1735,12 +1735,9 @@ export default function CreatePropertyListStep1({
                 }
               } catch (err) {
                 console.error("❌ Property No Validation Error:", err);
-                const errorMsg = err.response?.data?.message || "Property No already exists";
-                // Show error ONLY if it's about the property number
-                if (errorMsg.toLowerCase().includes("property no")) {
-                  CommonToaster(errorMsg, "error");
-                  return; // 🛑 Stop here
-                }
+                const errorMsg = err.response?.data?.message || (lang === "en" ? "Property No already exists" : "Mã căn đã tồn tại");
+                CommonToaster(errorMsg, "error");
+                return; // 🛑 Stop here
               }
 
               onChange && onChange(updatedForm);

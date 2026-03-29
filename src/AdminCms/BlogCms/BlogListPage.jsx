@@ -4,6 +4,7 @@ import { Table, Button, Space, Modal, ConfigProvider, Spin, Select } from "antd"
 import { Search, Plus, Edit2, Trash2, X, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Calendar, Languages, Eye, Clock, User, Tag, Share2, ExternalLink } from "lucide-react";
 import { getAdminBlogs, deleteBlog } from "../../Api/action";
 import { useLanguage } from "../../Language/LanguageContext";
+import { translations } from "../../Language/translations";
 import { CommonToaster } from "@/Common/CommonToaster";
 import { getImageUrl } from "../../utils/imageHelper";
 
@@ -20,50 +21,6 @@ export default function BlogListPage() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
 
-    // Translation object
-    const translations = {
-        en: {
-            pageTitle: "News Management",
-            pageDescription: "Manage your news posts here",
-            createBlog: "Create New News",
-            title: "Title",
-            slug: "Slug",
-            author: "Author",
-            published: "Published",
-            draft: "Draft",
-            actions: "Actions",
-            viewDetails: "View Details",
-            editBlog: "Edit News",
-            deleteBlog: "Delete News?",
-            deleteConfirmation: "Are you sure you want to delete this news? This action cannot be undone.",
-            yesDelete: "Yes, Delete",
-            cancel: "Cancel",
-            untitled: "Untitled",
-            deleting: "Deleting...",
-            sno: "S.No",
-        },
-        vi: {
-            pageTitle: "Quản lý Tin tức",
-            pageDescription: "Quản lý các bài viết tin tức của bạn",
-            createBlog: "Tạo Tin tức mới",
-            title: "Tiêu đề",
-            slug: "Đường dẫn",
-            author: "Tác giả",
-            published: "Đã xuất bản",
-            draft: "Bản nháp",
-            actions: "Hành động",
-            viewDetails: "View chi tiết",
-            editBlog: "Chỉnh sửa Tin tức",
-            deleteBlog: "Xóa Tin tức?",
-            deleteConfirmation: "Bạn có chắc chắn muốn xóa tin tức này? Hành động này không thể hoàn tác.",
-            yesDelete: "Có, Xóa",
-            cancel: "Hủy",
-            untitled: "Chưa có tiêu đề",
-            deleting: "Đang xóa...",
-            sno: "STT",
-        }
-    };
-
     const t = translations[language];
 
     useEffect(() => {
@@ -76,7 +33,7 @@ export default function BlogListPage() {
             setBlogs(res.data.data);
         } catch (error) {
             console.error(error);
-            CommonToaster("Failed to fetch news", "error");
+            CommonToaster(t.toastNewsFetchError, "error");
         } finally {
             setLoading(false);
         }
@@ -91,13 +48,13 @@ export default function BlogListPage() {
         setSubmitLoading(true);
         try {
             await deleteBlog(deletingBlogId);
-            CommonToaster("News deleted successfully", "success");
+            CommonToaster(t.toastNewsDeleted, "success");
             setDeleteModalVisible(false);
             setDeletingBlogId(null);
             fetchBlogs();
         } catch (error) {
             console.error(error);
-            CommonToaster("Failed to delete news", "error");
+            CommonToaster(t.toastNewsDeleteError, "error");
         } finally {
             setSubmitLoading(false);
         }
@@ -139,10 +96,10 @@ export default function BlogListPage() {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
-                        {t.pageTitle}
+                        {t.newsManagement}
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        {t.pageDescription}
+                        {t.newsManagementDescription}
                     </p>
                 </div>
                 <Link to="/dashboard/cms/blogs/create">
@@ -150,7 +107,7 @@ export default function BlogListPage() {
                         className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg font-medium transition shadow-md cursor-pointer"
                     >
                         <Plus size={18} />
-                        {t.createBlog}
+                        {t.createNews}
                     </button>
                 </Link>
             </div>
@@ -160,7 +117,7 @@ export default function BlogListPage() {
                 <Search className="absolute top-2.5 left-3 text-gray-400 w-5 h-5" />
                 <input
                     type="text"
-                    placeholder="Search by title..."
+                    placeholder={t.searchPlaceholder}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:border-[#41398B] shadow-sm"
@@ -172,11 +129,11 @@ export default function BlogListPage() {
                     <table className="w-full text-sm border-collapse">
                         <thead className="bg-gray-50 text-gray-700">
                             <tr>
-                                <th className="px-6 py-4 text-left font-medium">{t.sno}</th>
-                                <th className="px-6 py-4 text-left font-medium">{t.title}</th>
-                                <th className="px-6 py-4 text-left font-medium">{t.author}</th>
-                                <th className="px-6 py-4 text-center font-medium">{t.published}</th>
-                                <th className="px-6 py-4 text-right font-medium">{t.actions}</th>
+                                <th className="px-6 py-4 text-left font-medium">{t.snoNews}</th>
+                                <th className="px-6 py-4 text-left font-medium">{t.newsTitle}</th>
+                                <th className="px-6 py-4 text-left font-medium">{t.newsAuthor}</th>
+                                <th className="px-6 py-4 text-center font-medium">{t.newsPublished}</th>
+                                <th className="px-6 py-4 text-right font-medium">{t.newsActions}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -193,7 +150,7 @@ export default function BlogListPage() {
                             ) : visibleData.length === 0 ? (
                                 <tr>
                                     <td colSpan="5" className="text-center py-12 text-gray-500">
-                                        No news found.
+                                        {t.noNewsFound}
                                     </td>
                                 </tr>
                             ) : (
@@ -215,7 +172,7 @@ export default function BlogListPage() {
                                                     />
                                                 )}
                                                 <span className="font-semibold text-gray-800 line-clamp-1">
-                                                    {blog.title?.[language] || blog.title?.en || blog.title?.vi || t.untitled}
+                                                    {blog.title?.[language] || blog.title?.en || blog.title?.vi || t.untitledNews}
                                                 </span>
                                             </div>
                                         </td>
@@ -230,7 +187,7 @@ export default function BlogListPage() {
                                                     : "bg-gray-50 text-gray-500 border-gray-100"
                                                     }`}
                                             >
-                                                {blog.published ? t.published : t.draft}
+                                                {blog.published ? t.newsPublished : t.newsDraft}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right relative">
@@ -255,7 +212,7 @@ export default function BlogListPage() {
                                                             <span className="w-8 flex justify-center">
                                                                 <Eye size={15} className="text-[#41398B] group-hover:scale-110 transition" />
                                                             </span>
-                                                            {t.viewDetails}
+                                                            {t.viewNewsDetails}
                                                         </button>
                                                     </Link>
                                                     <Link to={`/dashboard/cms/blogs/edit/${blog._id}`}>
@@ -265,7 +222,7 @@ export default function BlogListPage() {
                                                             <span className="w-8 flex justify-center">
                                                                 <Pencil size={15} className="text-blue-600 group-hover:scale-110 transition" />
                                                             </span>
-                                                            {t.editBlog}
+                                                            {t.editNews}
                                                         </button>
                                                     </Link>
                                                     <button
@@ -278,7 +235,7 @@ export default function BlogListPage() {
                                                         <span className="w-8 flex justify-center">
                                                             <Trash2 size={15} className="group-hover:scale-110 transition" />
                                                         </span>
-                                                        {t.yesDelete.replace("Yes, ", "")}
+                                                        {t.yesDeleteNews.replace("Yes, ", "")}
                                                     </button>
                                                 </div>
                                             )}
@@ -295,7 +252,7 @@ export default function BlogListPage() {
             <div className="flex justify-end items-center px-6 py-2 bg-white rounded-xl text-sm text-gray-700 mt-4 border border-gray-100 shadow-sm">
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
-                        <span>{language === "vi" ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
+                        <span>{t.rowsPerPage}</span>
                         <Select
                             value={rowsPerPage}
                             onChange={(val) => {
@@ -315,7 +272,7 @@ export default function BlogListPage() {
                     <span className="font-medium text-gray-600">
                         {totalRows === 0
                             ? "0–0"
-                            : `${startIndex + 1}–${endIndex} ${language === "vi" ? "trên" : "of"} ${totalRows}`}
+                            : `${startIndex + 1}–${endIndex} ${t.of} ${totalRows}`}
                     </span>
                     <div className="flex items-center gap-1">
                         <button
@@ -359,11 +316,11 @@ export default function BlogListPage() {
                                 <AlertTriangle className="text-red-600 w-5 h-5" />
                             </div>
                             <h3 className="font-bold text-lg text-gray-900">
-                                {t.deleteBlog}
+                                {t.deleteNewsMsg}
                             </h3>
                         </div>
                         <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-                            {t.deleteConfirmation}
+                            {t.deleteNewsConfirmation}
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
@@ -377,7 +334,7 @@ export default function BlogListPage() {
                                 disabled={submitLoading}
                                 className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition disabled:opacity-50"
                             >
-                                {submitLoading ? t.deleting : t.yesDelete}
+                                {submitLoading ? t.deletingNews : t.yesDeleteNews}
                             </button>
                         </div>
                     </div>

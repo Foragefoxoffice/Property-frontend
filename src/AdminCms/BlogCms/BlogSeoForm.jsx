@@ -22,6 +22,7 @@ import { usePermissions } from '../../Context/PermissionContext';
 import { useLanguage } from '../../Language/LanguageContext';
 import { translations } from '../../Language/translations';
 import { X } from 'lucide-react';
+import { CommonToaster } from '@/Common/CommonToaster';
 import SeoPanel from '../../components/Admin/SeoPanel';
 import { LabelRow, GenerateAllBanner, buildCmsContent, InputWithCount, TextAreaWithCount } from '../../components/Admin/CmsSeoUtils';
 
@@ -180,11 +181,11 @@ export default function BlogSeoForm({
                         ogImage: absoluteUrl
                     }
                 });
-                message.success('Image uploaded successfully');
+                CommonToaster(t.toastImageUploaded, 'success');
             }
         } catch (error) {
             console.error('Upload failed:', error);
-            message.error('Failed to upload image');
+            CommonToaster(t.toastImageUploadError, 'error');
         }
         return false; // Prevent auto upload
     };

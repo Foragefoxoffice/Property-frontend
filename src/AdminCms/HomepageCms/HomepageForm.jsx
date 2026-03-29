@@ -15,6 +15,7 @@ import HomePageFindPropertyForm from './HomePageFindPropertyForm';
 import HomePageBlogForm from './HomePageBlogForm';
 import HomePageSeoForm from './HomePageSeoForm';
 import { validateVietnameseFields } from '@/utils/formValidation';
+import { translations } from '../../Language/translations';
 
 export default function HomepageForm() {
     const [bannerForm] = Form.useForm();
@@ -58,6 +59,7 @@ export default function HomepageForm() {
     const [seoLoading, setSeoLoading] = useState(false);
 
     const { language } = useLanguage();
+    const t = translations[language];
     const headerLang = language === 'vi' ? 'vn' : 'en';
 
     // Fetch the home page data
@@ -191,7 +193,7 @@ export default function HomepageForm() {
                 blogForm.resetFields();
                 seoForm.resetFields();
             } else {
-                CommonToaster('Failed to fetch page data', 'error');
+                CommonToaster(t?.toastGeneralInfoUpdated || 'Failed to fetch page data', 'error');
                 console.error(error);
             }
         } finally {
@@ -246,12 +248,12 @@ export default function HomepageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('Banner section updated successfully!', 'success');
+                CommonToaster(t?.toastBannerSectionUpdated || 'Banner section updated successfully!', 'success');
             } else {
                 // For first time creation, need about data too
                 const aboutValues = await aboutForm.validateFields();
                 await createHomePage({ ...payload, ...aboutValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Home page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -291,12 +293,12 @@ export default function HomepageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('About section updated successfully!', 'success');
+                CommonToaster(t?.toastIntroSectionUpdated || 'About section updated successfully!', 'success');
             } else {
                 // For first time creation, need banner data too
                 const bannerValues = await bannerForm.validateFields();
                 await createHomePage({ ...payload, ...bannerValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Home page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -353,13 +355,13 @@ export default function HomepageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('Features section updated successfully!', 'success');
+                CommonToaster(t?.toastProductSectionUpdated || 'Features section updated successfully!', 'success');
             } else {
                 // For first time creation, need banner and about data too
                 const bannerValues = await bannerForm.validateFields();
                 const aboutValues = await aboutForm.validateFields();
                 await createHomePage({ ...payload, ...bannerValues, ...aboutValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Home page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -420,14 +422,14 @@ export default function HomepageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('FAQ section updated successfully!', 'success');
+                CommonToaster(t?.toastFaqSectionUpdated || 'FAQ section updated successfully!', 'success');
             } else {
                 // For first time creation, need all other sections too
                 const bannerValues = await bannerForm.validateFields();
                 const aboutValues = await aboutForm.validateFields();
                 const featureValues = await featureForm.validateFields();
                 await createHomePage({ ...payload, ...bannerValues, ...aboutValues, ...featureValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Home page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -501,13 +503,13 @@ export default function HomepageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('Find Property section updated successfully!', 'success');
+                CommonToaster(t?.toastFindPropertySectionUpdated || 'Find Property section updated successfully!', 'success');
             } else {
                 // For first time creation, need all other sections too
                 const bannerValues = await bannerForm.validateFields();
                 const aboutValues = await aboutForm.validateFields();
                 await createHomePage({ ...payload, ...bannerValues, ...aboutValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Home page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -586,13 +588,13 @@ export default function HomepageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('News section updated successfully!', 'success');
+                CommonToaster(t?.toastNewsSectionUpdated || 'News section updated successfully!', 'success');
             } else {
                 // For first time creation, need all other sections too
                 const bannerValues = await bannerForm.validateFields();
                 const aboutValues = await aboutForm.validateFields();
                 await createHomePage({ ...payload, ...bannerValues, ...aboutValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Home page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -675,13 +677,13 @@ export default function HomepageForm() {
 
             if (pageData) {
                 await updateHomePage(pageData._id, payload);
-                CommonToaster('SEO settings updated successfully!', 'success');
+                CommonToaster(t?.toastSeoSectionUpdated || 'SEO settings updated successfully!', 'success');
             } else {
                 // For first time creation, need all other sections too
                 const bannerValues = await bannerForm.validateFields();
                 const aboutValues = await aboutForm.validateFields();
                 await createHomePage({ ...payload, ...bannerValues, ...aboutValues });
-                CommonToaster('Home page created successfully!', 'success');
+                CommonToaster(t?.toastProjectCreated || 'Home page created successfully!', 'success');
             }
 
             fetchPageData();

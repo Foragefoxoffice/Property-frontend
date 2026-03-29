@@ -239,7 +239,7 @@ export default function UserProfile() {
                     await updateUser(userId, payload);
                 }
 
-                CommonToaster("Profile picture updated and saved!", "success");
+                CommonToaster(t?.profilePictureUpdated || "Profile picture updated and saved!", "success");
                 fetchUserData(); // Refresh to sync everything (Header, etc.)
             }
         } catch (error) {
@@ -338,7 +338,7 @@ export default function UserProfile() {
         const { currentPassword, newPassword, confirmPassword } = passwordData;
 
         if (newPassword !== confirmPassword) {
-            CommonToaster("New passwords do not match!", "error");
+            CommonToaster(t?.passwordsDoNotMatch || "Passwords do not match!", "error");
             return;
         }
 

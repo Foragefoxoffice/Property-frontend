@@ -122,7 +122,7 @@ export default function BlogCmsForm() {
                 mainForm.resetFields();
                 seoForm.resetFields();
             } else {
-                CommonToaster('Failed to fetch blog data', 'error');
+                CommonToaster(t.toastNewsFetchError, 'error');
                 console.error(error);
             }
         } finally {
@@ -167,17 +167,17 @@ export default function BlogCmsForm() {
 
             if (blogData) {
                 await updateBlog(blogData._id, finalPayload);
-                CommonToaster('News updated successfully!', 'success');
+                CommonToaster(t.toastNewsUpdated, 'success');
             } else {
                 await createBlog(finalPayload);
-                CommonToaster('News created successfully!', 'success');
+                CommonToaster(t.toastNewsCreated, 'success');
                 navigate('/dashboard/cms/blogs');
                 return;
             }
 
             fetchBlogData();
         } catch (error) {
-            CommonToaster(error.response?.data?.message || 'Failed to save news', 'error');
+            CommonToaster(error.response?.data?.message || t.toastNewsSaveError, 'error');
             console.error(error);
         } finally {
             setMainLoading(false);
@@ -230,11 +230,11 @@ export default function BlogCmsForm() {
 
             if (blogData) {
                 await updateBlog(blogData._id, finalPayload);
-                CommonToaster('SEO section updated successfully!', 'success');
+                CommonToaster(t.toastSeoSectionUpdated, 'success');
             } else {
                 const mainValues = await mainForm.validateFields();
                 await createBlog({ ...finalPayload, ...mainValues });
-                CommonToaster('News created successfully!', 'success');
+                CommonToaster(t.toastNewsCreated, 'success');
                 navigate('/dashboard/cms/blogs');
                 return;
             }
@@ -242,9 +242,9 @@ export default function BlogCmsForm() {
             fetchBlogData();
         } catch (error) {
             if (error.errorFields) {
-                CommonToaster('Please fill in the News Content and Metadata first', 'error');
+                CommonToaster(t.toastFillMainFormFirst, 'error');
             } else {
-                CommonToaster(error.response?.data?.message || 'Failed to save SEO section', 'error');
+                CommonToaster(error.response?.data?.message || t.toastSeoSaveError, 'error');
                 console.error(error);
             }
         } finally {

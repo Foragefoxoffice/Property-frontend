@@ -17,6 +17,7 @@ import AboutAgentForm from './AboutAgentForm';
 import AboutOverviewForm from './AboutOverviewForm';
 import AboutPageSeoForm from './AboutPageSeoForm';
 import { validateVietnameseFields } from '@/utils/formValidation';
+import { translations } from '../../Language/translations';
 
 export default function AboutPageForm() {
     const [bannerForm] = Form.useForm();
@@ -69,6 +70,7 @@ export default function AboutPageForm() {
     const [seoLoading, setSeoLoading] = useState(false);
 
     const { language } = useLanguage();
+    const t = translations[language];
     const headerLang = language === 'vi' ? 'vn' : 'en';
 
     // Helper to get preserved data
@@ -319,10 +321,10 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('Banner section updated successfully!', 'success');
+                CommonToaster(t?.toastBannerSectionUpdated || 'Banner section updated successfully!', 'success');
             } else {
                 await createAboutPage(finalPayload);
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -346,11 +348,11 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('History section updated successfully!', 'success');
+                CommonToaster(t?.toastHistorySectionUpdated || 'History section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createAboutPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -378,11 +380,11 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('Buying process section updated successfully!', 'success');
+                CommonToaster(t?.toastBuyingSectionUpdated || 'Buying process section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createAboutPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -410,11 +412,11 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('Why Choose Us section updated successfully!', 'success');
+                CommonToaster(t?.toastWhyChooseUpdated || 'Why Choose Us section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createAboutPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -442,11 +444,11 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('Vision & Mission section updated successfully!', 'success');
+                CommonToaster(t?.toastVisionMissionSectionUpdated || 'Vision & Mission section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createAboutPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -474,11 +476,11 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('Agent section updated successfully!', 'success');
+                CommonToaster(t?.toastAgentSectionUpdated || 'Agent section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createAboutPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -506,11 +508,11 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('Overview section updated successfully!', 'success');
+                CommonToaster(t?.toastOverviewSectionUpdated || 'Overview section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createAboutPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -538,11 +540,11 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('Find Property section updated successfully!', 'success');
+                CommonToaster(t?.toastFindPropertySectionUpdated || 'Find Property section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createAboutPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();
@@ -570,11 +572,11 @@ export default function AboutPageForm() {
 
             if (pageData) {
                 await updateAboutPage(pageData._id, finalPayload);
-                CommonToaster('SEO section updated successfully!', 'success');
+                CommonToaster(t?.toastSeoSectionUpdated || 'SEO section updated successfully!', 'success');
             } else {
                 const bannerValues = await bannerForm.validateFields();
                 await createAboutPage({ ...finalPayload, ...bannerValues });
-                CommonToaster('About page created successfully!', 'success');
+                CommonToaster(t?.toastProjectUpdated || 'About page created successfully!', 'success');
             }
 
             fetchPageData();

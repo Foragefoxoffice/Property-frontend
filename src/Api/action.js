@@ -17,6 +17,9 @@ API.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    const lang = localStorage.getItem("language") || "vi";
+    config.headers["Accept-Language"] = lang;
+
     // Log bulk upload requests
     if (config.url?.includes('bulk-upload')) {
       console.log("📤 Axios Request Config:", {
