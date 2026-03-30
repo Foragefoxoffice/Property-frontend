@@ -153,6 +153,7 @@ export const translations = {
     toastNewsSectionUpdated: "News section updated successfully!",
     toastWhyChooseUpdated: "Why Choose Us section updated successfully!",
     toastSeoSectionUpdated: "SEO settings updated successfully!",
+    toastRelatedSectionUpdated: "Related projects title updated successfully!",
     toastBannerSaveError: "Failed to save banner section",
     toastIntroSaveError: "Failed to save intro section",
     toastOverviewSaveError: "Failed to save overview section",
@@ -631,6 +632,9 @@ export const translations = {
     toastAgentSectionUpdated: "Agent section updated successfully!",
     toastReachOutSectionUpdated: "Reach Out section updated successfully!",
     toastMapSectionUpdated: "Map section updated successfully!",
+    toastFillAllFields: "Please fill all English and Vietnamese fields",
+    toastUpdateSuccess: "Property updated successfully!",
+    toastAddSuccess: "Property added successfully!",
   },
 
   vi: {
@@ -788,6 +792,7 @@ export const translations = {
     toastNewsSectionUpdated: "Đã cập nhật mục tin tức thành công!",
     toastWhyChooseUpdated: "Đã cập nhật mục tại sao chọn chúng tôi thành công!",
     toastSeoSectionUpdated: "Đã cập nhật cài đặt SEO thành công!",
+    toastRelatedSectionUpdated: "Đã cập nhật mục dự án liên quan thành công!",
     toastBannerSaveError: "Lưu mục banner thất bại",
     toastIntroSaveError: "Lưu mục giới thiệu thất bại",
     toastOverviewSaveError: "Lưu mục tổng quan thất bại",
@@ -1266,5 +1271,8 @@ export const translations = {
     toastAgentSectionUpdated: "Đã cập nhật mục đại lý thành công!",
     toastReachOutSectionUpdated: "Đã cập nhật mục liên hệ thành công!",
     toastMapSectionUpdated: "Đã cập nhật mục bản đồ thành công!",
+    toastFillAllFields: "Vui lòng điền tất cả các trường tiếng Anh và tiếng Việt",
+    toastUpdateSuccess: "Cập nhật dự án thành công!",
+    toastAddSuccess: "Thêm dự án thành công!",
   },
 };

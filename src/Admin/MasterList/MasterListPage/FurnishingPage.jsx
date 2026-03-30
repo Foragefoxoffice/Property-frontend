@@ -86,17 +86,17 @@ export default function FurnishingPage() {
   // ✅ Add/Edit Submit
   const handleSubmit = async () => {
     if (!form.name_en || !form.name_vi) {
-      CommonToaster("Please fill all English and Vietnamese fields", "error");
+      CommonToaster(isVI ? "Vui lòng điền tất cả các trường tiếng Anh và tiếng Việt" : "Please fill all English and Vietnamese fields", "error");
       return;
     }
 
     try {
       if (editingFurnishing) {
         await updateFurnishing(editingFurnishing._id, form);
-        CommonToaster("Furnishing updated successfully", "success");
+        CommonToaster(isVI ? "Cập nhật nội thất thành công!" : "Furnishing updated successfully", "success");
       } else {
         await createFurnishing(form);
-        CommonToaster("Furnishing added successfully", "success");
+        CommonToaster(isVI ? "Thêm nội thất thành công!" : "Furnishing added successfully", "success");
       }
 
       setShowModal(false);
@@ -113,7 +113,7 @@ export default function FurnishingPage() {
       const msg =
         error.response?.data?.message ||
         error.response?.data?.error ||
-        "Unknown error";
+        (isVI ? "Lỗi không xác định" : "Unknown error");
 
       console.log("FURNISHING ERROR:", msg);
 
@@ -159,7 +159,7 @@ export default function FurnishingPage() {
   const handleDelete = async () => {
     try {
       await deleteFurnishing(deleteConfirm.id);
-      CommonToaster("Furnishing deleted successfully!", "success");
+      CommonToaster(isVI ? "Xóa nội thất thành công!" : "Furnishing deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchFurnishings();
     } catch (error) {
@@ -186,7 +186,7 @@ export default function FurnishingPage() {
       );
       fetchFurnishings();
     } catch {
-      CommonToaster("Failed to update status", "error");
+      CommonToaster(isVI ? "Không thể cập nhật trạng thái." : "Failed to update status", "error");
     }
   };
 

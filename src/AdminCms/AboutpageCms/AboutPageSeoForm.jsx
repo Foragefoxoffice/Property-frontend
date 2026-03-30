@@ -22,6 +22,7 @@ import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
 import SeoPanel from '../../components/Admin/SeoPanel';
 import { LabelRow, GenerateAllBanner, buildCmsContent, InputWithCount, TextAreaWithCount } from '../../components/Admin/CmsSeoUtils';
+import { CommonToaster } from '@/Common/CommonToaster';
 
 const { TextArea } = Input;
 
@@ -182,7 +183,7 @@ export default function AboutPageSeoForm({
             [`aboutSeoOgTitle_${activeTab}`]: content.ogTitle,
             [`aboutSeoOgDescription_${activeTab}`]: content.ogDesc,
         });
-        message.success(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!');
+        CommonToaster(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!', 'success');
     };
 
     // Handle OG Image upload
@@ -200,11 +201,11 @@ export default function AboutPageSeoForm({
 
                 setOgImage(absoluteUrl);
                 form.setFieldsValue({ aboutSeoOgImage: absoluteUrl });
-                message.success('Image uploaded successfully');
+                CommonToaster(t.toastImageUploaded, 'success');
             }
         } catch (error) {
             console.error('Upload failed:', error);
-            message.error('Failed to upload image');
+            CommonToaster(t.toastImageUploadError, 'error');
         }
         return false; // Prevent auto upload
     };

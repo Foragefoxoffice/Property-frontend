@@ -11,6 +11,8 @@ import {
 } from '@ant-design/icons';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 
 const { TextArea } = Input;
 
@@ -24,8 +26,9 @@ export default function HomePageBlogForm({
     onToggle,
     headerLang // Receive the global language prop
 }) {
-
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeTab, setActiveTab] = useState('vn');
 
     // Sync activeTab with headerLang whenever headerLang changes
@@ -189,7 +192,7 @@ export default function HomePageBlogForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
+                                        {language === 'vi' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 {can('cms.homePage', 'edit') && (

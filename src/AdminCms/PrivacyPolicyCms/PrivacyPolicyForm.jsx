@@ -5,6 +5,7 @@ import {
     updatePrivacyPolicyPage,
 } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 import { validateVietnameseFields } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 import PrivacyPolicyBannerForm from './PrivacyPolicyBannerForm';
@@ -27,6 +28,7 @@ export default function PrivacyPolicyForm() {
     });
 
     const { language } = useLanguage();
+    const t = translations[language];
     const headerLang = language === 'vi' ? 'vn' : 'en';
 
     // Toggle accordion
@@ -96,7 +98,7 @@ export default function PrivacyPolicyForm() {
                 contentForm.resetFields();
                 seoForm.resetFields();
             } else {
-                CommonToaster('Failed to fetch page data', 'error');
+                CommonToaster(t.toastFetchError, 'error');
                 console.error(error);
             }
         } finally {
@@ -121,16 +123,11 @@ export default function PrivacyPolicyForm() {
             };
 
             await updatePrivacyPolicyPage(finalPayload);
-            CommonToaster(
-                headerLang === 'vn'
-                    ? 'Cập nhật banner thành công!'
-                    : 'Banner section updated successfully!',
-                'success'
-            );
+            CommonToaster(t.toastUpdateSuccess, 'success');
 
             fetchPageData();
         } catch (error) {
-            CommonToaster(error.response?.data?.message || 'Failed to save banner section', 'error');
+            CommonToaster(error.response?.data?.message || t.toastUpdateError, 'error');
             console.error(error);
         } finally {
             setBannerLoading(false);
@@ -150,16 +147,11 @@ export default function PrivacyPolicyForm() {
             };
 
             await updatePrivacyPolicyPage(finalPayload);
-            CommonToaster(
-                headerLang === 'vn'
-                    ? 'Cập nhật nội dung thành công!'
-                    : 'Content section updated successfully!',
-                'success'
-            );
+            CommonToaster(t.toastUpdateSuccess, 'success');
 
             fetchPageData();
         } catch (error) {
-            CommonToaster(error.response?.data?.message || 'Failed to save content section', 'error');
+            CommonToaster(error.response?.data?.message || t.toastUpdateError, 'error');
             console.error(error);
         } finally {
             setContentLoading(false);
@@ -179,16 +171,11 @@ export default function PrivacyPolicyForm() {
             };
 
             await updatePrivacyPolicyPage(finalPayload);
-            CommonToaster(
-                headerLang === 'vn'
-                    ? 'Cập nhật SEO thành công!'
-                    : 'SEO settings updated successfully!',
-                'success'
-            );
+            CommonToaster(t.toastUpdateSuccess, 'success');
 
             fetchPageData();
         } catch (error) {
-            CommonToaster(error.response?.data?.message || 'Failed to save SEO settings', 'error');
+            CommonToaster(error.response?.data?.message || t.toastUpdateError, 'error');
             console.error(error);
         } finally {
             setSeoLoading(false);

@@ -14,6 +14,8 @@ import 'react-quill-new/dist/quill.snow.css';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { sanitizeBeforeSave, quillModules, quillFormats } from '@/utils/htmlSanitizer';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 
 export default function PrivacyPolicyContentForm({
     form,
@@ -26,6 +28,8 @@ export default function PrivacyPolicyContentForm({
     headerLang
 }) {
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const canEdit = can('cms.privacyPolicy', 'edit') || can('cms.privacyPolicy', 'create');
 
     const [activeTab, setActiveTab] = useState('vn');
@@ -200,7 +204,7 @@ export default function PrivacyPolicyContentForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
+                                        {language === 'vi' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 {canEdit && (

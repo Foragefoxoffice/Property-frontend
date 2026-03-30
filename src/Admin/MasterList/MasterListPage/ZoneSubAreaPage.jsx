@@ -135,19 +135,19 @@ export default function ZoneSubAreaPage() {
   // ✅ Save
   const handleSubmit = async () => {
     if (!form.name_en || !form.name_vi) {
-      CommonToaster("Please fill all English and Vietnamese fields", "error");
+      CommonToaster(isVI ? "Vui lòng điền tất cả các trường tiếng Anh và tiếng Việt" : "Please fill all English and Vietnamese fields", "error");
       return;
     }
     try {
       if (editingZone) {
         await updateZoneSubArea(editingZone._id, form);
-        CommonToaster("Zone/Sub-area updated successfully!", "success");
+        CommonToaster(isVI ? "Cập nhật khu vực / tiểu khu thành công!" : "Zone/Sub-area updated successfully!", "success");
       } else {
         await createZoneSubArea({
           ...form,
           property: form.property,
         });
-        CommonToaster("Zone/Sub-area added successfully!", "success");
+        CommonToaster(isVI ? "Thêm khu vực / tiểu khu thành công!" : "Zone/Sub-area added successfully!", "success");
       }
       setShowModal(false);
       fetchZones();
@@ -180,7 +180,7 @@ export default function ZoneSubAreaPage() {
   const handleDelete = async () => {
     try {
       await deleteZoneSubArea(deleteConfirm.id);
-      CommonToaster("Deleted successfully!", "success");
+      CommonToaster(isVI ? "Xóa khu vực / tiểu khu thành công!" : "Zone/Sub-area deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchZones();
     } catch (error) {
@@ -220,7 +220,7 @@ export default function ZoneSubAreaPage() {
       );
       fetchZones();
     } catch {
-      CommonToaster("Failed to update status.", "error");
+      CommonToaster(isVI ? "Không thể cập nhật trạng thái." : "Failed to update status.", "error");
     }
   };
 

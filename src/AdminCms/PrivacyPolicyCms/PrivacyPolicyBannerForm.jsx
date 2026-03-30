@@ -17,6 +17,8 @@ import { onFormFinishFailed } from '@/utils/formValidation';
 import { uploadPrivacyPolicyPageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 import { X } from 'lucide-react';
 
 export default function PrivacyPolicyBannerForm({
@@ -30,6 +32,8 @@ export default function PrivacyPolicyBannerForm({
     headerLang
 }) {
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const canEdit = can('cms.privacyPolicy', 'edit') || can('cms.privacyPolicy', 'create');
 
     const [activeTab, setActiveTab] = useState('vn');
@@ -60,11 +64,11 @@ export default function PrivacyPolicyBannerForm({
 
             form.setFieldsValue({ privacyPolicyBannerImage: uploadedUrl });
             setBannerImageUrl(uploadedUrl);
-            CommonToaster('Image uploaded successfully!', 'success');
+            CommonToaster(t.toastImageUploaded, 'success');
 
             return false;
         } catch (error) {
-            CommonToaster('Failed to upload image', 'error');
+            CommonToaster(t.toastImageUploadError, 'error');
             console.error(error);
             return false;
         } finally {
@@ -75,12 +79,12 @@ export default function PrivacyPolicyBannerForm({
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            CommonToaster('You can only upload image files!', 'error');
+            CommonToaster(t.toastImageTypeError, 'error');
             return Upload.LIST_IGNORE;
         }
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            CommonToaster('Image must be smaller than 5MB!', 'error');
+            CommonToaster(t.toastImageSizeError, 'error');
             return Upload.LIST_IGNORE;
         }
         handleImageUpload(file);
@@ -91,7 +95,7 @@ export default function PrivacyPolicyBannerForm({
     const removeBannerImage = () => {
         setBannerImageUrl('');
         form.setFieldsValue({ privacyPolicyBannerImage: '' });
-        CommonToaster('Image removed', 'info');
+        CommonToaster(t.toastImageRemoved, 'info');
     };
 
     return (
@@ -295,7 +299,7 @@ export default function PrivacyPolicyBannerForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
+                                        {language === 'vi' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 {canEdit && (

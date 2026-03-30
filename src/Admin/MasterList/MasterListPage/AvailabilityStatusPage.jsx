@@ -173,7 +173,7 @@ export default function AvailabilityStatusPage() {
   const handleDelete = async () => {
     try {
       await deleteAvailabilityStatus(deleteConfirm.id);
-      CommonToaster("Deleted successfully!", "success");
+      CommonToaster(isVI ? "Xóa thành công!" : "Deleted successfully!", "success");
       setDeleteConfirm({ show: false, id: null });
       fetchStatuses();
     } catch (error) {
@@ -191,10 +191,10 @@ export default function AvailabilityStatusPage() {
     const newStatus = status.status === "Active" ? "Inactive" : "Active";
     try {
       await updateAvailabilityStatus(status._id, { status: newStatus });
-      CommonToaster(`Marked as ${newStatus}`, "success");
+      CommonToaster(isVI ? `Đã đánh dấu là ${newStatus}` : `Marked as ${newStatus}`, "success");
       fetchStatuses();
     } catch {
-      CommonToaster("Failed to update status.", "error");
+      CommonToaster(isVI ? "Không thể cập nhật trạng thái." : "Failed to update status.", "error");
     }
   };
 

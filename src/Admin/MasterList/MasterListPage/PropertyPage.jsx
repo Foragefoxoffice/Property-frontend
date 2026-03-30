@@ -110,17 +110,17 @@ export default function PropertyPage() {
   // ✅ Submit Add/Edit
   const handleSubmit = async () => {
     if (!form.name_en || !form.name_vi) {
-      CommonToaster("Please fill all English and Vietnamese fields", "error");
+      CommonToaster(t.toastFillAllFields, "error");
       return;
     }
 
     try {
       if (editingProperty) {
         await updateProperty(editingProperty._id, form);
-        CommonToaster("Property updated successfully", "success");
+        CommonToaster(t.toastUpdateSuccess, "success");
       } else {
         await createProperty(form);
-        CommonToaster("Property added successfully", "success");
+        CommonToaster(t.toastAddSuccess, "success");
       }
 
       setShowModal(false);

@@ -14,6 +14,8 @@ import {
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 
 const { TextArea } = Input;
 
@@ -28,6 +30,8 @@ export default function AboutPageHistoryForm({
     headerLang
 }) {
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeTab, setActiveTab] = useState('vn');
 
     useEffect(() => {
@@ -367,7 +371,7 @@ export default function AboutPageHistoryForm({
                                         onClick={onCancel}
                                         className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                     >
-                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
+                                        {language === 'vi' ? 'Hủy' : 'Cancel'}
                                     </Button>
                                 )}
                                 {can('cms.aboutUs', 'edit') && (

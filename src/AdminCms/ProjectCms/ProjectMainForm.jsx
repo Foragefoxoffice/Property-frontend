@@ -353,7 +353,7 @@ export default function ProjectMainForm() {
                 />
                 <ProjectRelatedForm
                     form={relatedForm}
-                    onSubmit={(values) => handleSectionSubmit(values, 'Related projects title updated successfully!', setRelatedLoading)}
+                    onSubmit={(values) => handleSectionSubmit(values, t.toastRelatedSectionUpdated, setRelatedLoading)}
                     loading={relatedLoading}
                     pageData={projectData}
                     isOpen={openAccordions.related}
@@ -362,7 +362,7 @@ export default function ProjectMainForm() {
                 />
                 <ProjectSeoForm
                     form={seoForm}
-                    onSubmit={(values) => handleSectionSubmit(values, 'SEO settings updated successfully!', setSeoLoading)}
+                    onSubmit={(values) => handleSectionSubmit(values, t.toastSeoSectionUpdated, setSeoLoading)}
                     loading={seoLoading}
                     pageData={projectData}
                     isOpen={openAccordions.seo}

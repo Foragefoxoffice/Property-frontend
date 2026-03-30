@@ -22,6 +22,7 @@ import { usePermissions } from '../../Context/PermissionContext';
 import { X } from 'lucide-react';
 import SeoPanel from '../../components/Admin/SeoPanel';
 import { LabelRow, GenerateAllBanner, buildCmsContent, InputWithCount, TextAreaWithCount } from '../../components/Admin/CmsSeoUtils';
+import { CommonToaster } from '@/Common/CommonToaster';
 
 const { TextArea } = Input;
 
@@ -178,7 +179,7 @@ export default function BlogPageSeoForm({
             [`blogSeoOgTitle_${activeTab}`]: content.ogTitle,
             [`blogSeoOgDescription_${activeTab}`]: content.ogDesc,
         });
-        message.success(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!');
+        CommonToaster(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!', 'success');
     };
 
     const handleOgImageUpload = async (file) => {
@@ -188,11 +189,11 @@ export default function BlogPageSeoForm({
                 const absoluteUrl = res.data.url || res.data.data?.url;
                 setOgImage(absoluteUrl);
                 form.setFieldsValue({ blogSeoOgImage: absoluteUrl });
-                message.success('Image uploaded successfully');
+                CommonToaster(t.toastImageUploaded, 'success');
             }
         } catch (error) {
             console.error('Upload failed:', error);
-            message.error('Failed to upload image');
+            CommonToaster(t.toastImageUploadError, 'error');
         }
         return false;
     };

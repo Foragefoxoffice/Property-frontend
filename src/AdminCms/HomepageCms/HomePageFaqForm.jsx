@@ -22,6 +22,8 @@ import { CommonToaster } from '@/Common/CommonToaster';
 import { onFormFinishFailed } from '@/utils/formValidation';
 import { X } from 'lucide-react';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 
 const { TextArea } = Input;
 
@@ -37,6 +39,8 @@ export default function HomePageFaqForm({
 }) {
 
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeTab, setActiveTab] = useState('vn');
 
     // Sync activeTab with headerLang whenever headerLang changes
@@ -59,11 +63,11 @@ export default function HomePageFaqForm({
 
             form.setFieldsValue({ homeFaqBg: uploadedUrl });
             setFaqBgUrl(uploadedUrl);
-            CommonToaster('Image uploaded successfully!', 'success');
+            CommonToaster(t.toastImageUploaded, 'success');
 
             return false;
         } catch (error) {
-            CommonToaster('Failed to upload image', 'error');
+            CommonToaster(t.toastImageUploadError, 'error');
             console.error(error);
             return false;
         } finally {
@@ -74,12 +78,12 @@ export default function HomePageFaqForm({
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            CommonToaster('You can only upload image files!', 'error');
+            CommonToaster(t.toastImageTypeError, 'error');
             return Upload.LIST_IGNORE;
         }
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            CommonToaster('Image must be smaller than 5MB!', 'error');
+            CommonToaster(t.toastImageSizeError, 'error');
             return Upload.LIST_IGNORE;
         }
         handleImageUpload(file);
@@ -90,7 +94,7 @@ export default function HomePageFaqForm({
     const removeImage = () => {
         setFaqBgUrl('');
         form.setFieldsValue({ homeFaqBg: '' });
-        CommonToaster('Image removed', 'info');
+        CommonToaster(t.toastImageRemoved, 'info');
     };
 
     return (
@@ -652,7 +656,7 @@ export default function HomePageFaqForm({
                                                                         size="large"
                                                                         className="!border-2 !border-[#41398B] !text-[#41398B] hover:!border-[#41398B] hover:!text-[#41398B] font-semibold font-['Manrope'] mt-5 h-12"
                                                                     >
-                                                                        Add FAQ Question
+                                                                        {activeTab === 'vn' ? 'Thêm câu hỏi FAQ' : 'Add FAQ Question'}
                                                                     </Button>
                                                                 </Form.Item>
                                                             </>
@@ -742,4 +746,3 @@ export default function HomePageFaqForm({
         </div>
     );
 }
-

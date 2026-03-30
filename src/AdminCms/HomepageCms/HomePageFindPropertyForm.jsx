@@ -19,6 +19,8 @@ import { uploadHomePageImage } from '../../Api/action';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { X } from 'lucide-react';
 import { usePermissions } from '../../Context/PermissionContext';
+import { useLanguage } from '../../Language/LanguageContext';
+import { translations } from '../../Language/translations';
 
 const { TextArea } = Input;
 
@@ -33,6 +35,8 @@ export default function HomePageFindPropertyForm({
     headerLang
 }) {
     const { can } = usePermissions();
+    const { language } = useLanguage();
+    const t = translations[language];
     const [activeTab, setActiveTab] = useState('vn');
 
     // Sync activeTab with headerLang whenever headerLang changes
@@ -55,11 +59,11 @@ export default function HomePageFindPropertyForm({
 
             form.setFieldsValue({ homeFindBg: uploadedUrl });
             setFindBgUrl(uploadedUrl);
-            CommonToaster('Image uploaded successfully!', 'success');
+            CommonToaster(t.toastImageUploaded, 'success');
 
             return false;
         } catch (error) {
-            CommonToaster('Failed to upload image', 'error');
+            CommonToaster(t.toastImageUploadError, 'error');
             console.error(error);
             return false;
         } finally {
@@ -70,12 +74,12 @@ export default function HomePageFindPropertyForm({
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            CommonToaster('You can only upload image files!', 'error');
+            CommonToaster(t.toastImageTypeError, 'error');
             return Upload.LIST_IGNORE;
         }
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            CommonToaster('Image must be smaller than 5MB!', 'error');
+            CommonToaster(t.toastImageSizeError, 'error');
             return Upload.LIST_IGNORE;
         }
         handleImageUpload(file);
@@ -86,7 +90,7 @@ export default function HomePageFindPropertyForm({
     const removeImage = () => {
         setFindBgUrl('');
         form.setFieldsValue({ homeFindBg: '' });
-        CommonToaster('Image removed', 'info');
+        CommonToaster(t.toastImageRemoved, 'info');
     };
 
     return (
@@ -396,4 +400,3 @@ export default function HomePageFindPropertyForm({
         </div>
     );
 }
-

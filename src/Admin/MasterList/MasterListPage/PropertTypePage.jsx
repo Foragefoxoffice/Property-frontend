@@ -111,22 +111,22 @@ export default function PropertyTypePage() {
   // ✅ Submit Add/Edit
   const handleSubmit = async () => {
     if (!form.name_en || !form.name_vi) {
-      CommonToaster("Please fill all English and Vietnamese fields", "error");
+      CommonToaster(isVI ? "Vui lòng điền tất cả các trường tiếng Anh và tiếng Việt" : "Please fill all English and Vietnamese fields", "error");
       return;
     }
     try {
       if (editingType) {
         await updatePropertyType(editingType._id, form);
-        CommonToaster("Property Type updated successfully", "success");
+        CommonToaster(isVI ? "Cập nhật loại tài sản thành công!" : "Property Type updated successfully", "success");
       } else {
         await createPropertyType(form);
-        CommonToaster("Property Type added successfully", "success");
+        CommonToaster(isVI ? "Thêm loại tài sản thành công!" : "Property Type added successfully", "success");
       }
       setShowModal(false);
       fetchPropertyTypes();
       setEditingType(null);
     } catch {
-      CommonToaster("Failed to save data.", "error");
+      CommonToaster(isVI ? "Không thể lưu dữ liệu." : "Failed to save data.", "error");
     }
   };
 
@@ -136,7 +136,7 @@ export default function PropertyTypePage() {
     try {
       await deletePropertyType(deleteConfirm.id);
       CommonToaster(
-        isVI ? "Xóa thành công!" : "Deleted successfully!",
+        isVI ? "Xóa loại tài sản thành công!" : "Deleted successfully!",
         "success"
       );
       setDeleteConfirm({ show: false, id: null });
@@ -149,7 +149,7 @@ export default function PropertyTypePage() {
           ? "Không thể xóa loại tài sản."
           : "Failed to delete Property Type.");
 
-      CommonToaster(msg, "error");
+      CommonToaster(isVI ? "Không thể xóa dữ liệu chính này vì nó nằm trong một thuộc tính đã được tạo. Hãy xóa thuộc tính đó trước." : "Cannot delete this master data because it is present in a created property. Delete the property first.", "error");
     }
   };
 
@@ -168,7 +168,7 @@ export default function PropertyTypePage() {
       );
       fetchPropertyTypes();
     } catch {
-      CommonToaster("Failed to update status.", "error");
+      CommonToaster(isVI ? "Không thể cập nhật trạng thái." : "Failed to update status.", "error");
     }
   };
 

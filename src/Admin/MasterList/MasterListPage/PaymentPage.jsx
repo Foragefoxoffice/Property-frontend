@@ -87,17 +87,17 @@ export default function PaymentPage() {
   // Add / Edit
   const handleSubmit = async () => {
     if (!form.name_en || !form.name_vi) {
-      CommonToaster("Please fill all English and Vietnamese fields", "error");
+      CommonToaster(isVI ? "Vui lòng điền tất cả các trường tiếng Anh và tiếng Việt" : "Please fill all English and Vietnamese fields", "error");
       return;
     }
 
     try {
       if (editingPayment) {
         await updatePayment(editingPayment._id, form);
-        CommonToaster("Payment updated successfully", "success");
+        CommonToaster(isVI ? "Cập nhật phương thức thanh toán thành công!" : "Payment updated successfully", "success");
       } else {
         await createPayment(form);
-        CommonToaster("Payment added successfully", "success");
+        CommonToaster(isVI ? "Thêm phương thức thanh toán thành công!" : "Payment added successfully", "success");
       }
 
       setShowModal(false);
@@ -115,7 +115,7 @@ export default function PaymentPage() {
       const msg =
         error?.response?.data?.message ||
         error?.response?.data?.error ||
-        "Unknown error";
+        (isVI ? "Lỗi không xác định" : "Unknown error");
 
       console.log("PAYMENT ERROR:", msg);
 
@@ -194,7 +194,7 @@ export default function PaymentPage() {
       );
       fetchPayments();
     } catch {
-      CommonToaster("Failed to update status", "error");
+      CommonToaster(isVI ? "Không thể cập nhật trạng thái." : "Failed to update status", "error");
     }
   };
 
