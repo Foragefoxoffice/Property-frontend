@@ -24,6 +24,8 @@ import { ToastContainer } from "react-toastify";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import ScrollUpButton from "./components/ScrollUpButton.jsx";
 import FloatingContactButtons from "./components/FloatingContactButtons.jsx";
+import MaintenanceGuard from "./components/MaintenanceGuard.jsx";
+
 
 // ADMIN PAGES
 import PropertyManager from "./Admin/Property/PropertyManager";
@@ -125,7 +127,8 @@ const RootLayout = () => (
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<RootLayout />}>
+    <Route element={<MaintenanceGuard><RootLayout /></MaintenanceGuard>}>
+
       {/* ---------- PUBLIC ROUTES ---------- */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
