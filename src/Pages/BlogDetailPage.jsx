@@ -252,7 +252,7 @@ export default function BlogDetailPage() {
                                 prose-strong:text-gray-900 prose-strong:font-bold
                                 prose-li:marker:text-[#41398B]">
                                     <div 
-                                        style={{ wordBreak: 'initial', overflowWrap: 'break-word' }}
+                                        className="overflow-hidden"
                                         dangerouslySetInnerHTML={{ __html: cleanHTML(getLocalized(blog.content)) }} 
                                     />
                                 </article>

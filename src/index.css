@@ -579,9 +579,17 @@ button {
 
 /* --- Absolute Rich Text Word-Breaking Fix --- */
 .project-overview-rich-text,
-.project-overview-rich-text * {
+.project-overview-rich-text *,
+.property-description-summary,
+.property-description-summary *,
+.ql-editor-summary,
+.ql-editor-summary *,
+.news-content,
+.news-content *,
+.main-description-rich-text,
+.main-description-rich-text * {
   word-break: normal !important;
-  overflow-wrap: normal !important;
+  overflow-wrap: break-word !important;
   word-wrap: normal !important;
   white-space: normal !important;
 }

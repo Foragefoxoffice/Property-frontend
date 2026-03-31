@@ -109,6 +109,15 @@ function SimpleSlider({ items, type = "image" }) {
   );
 }
 
+const cleanHtml = (html) => {
+  if (!html) return "";
+
+  return html
+    .replace(/&nbsp;/g, " ")
+    .replace(/\u00A0/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+};
 /* -------------------------------------------------------
    MAIN COMPONENT
 ------------------------------------------------------- */
@@ -459,9 +468,9 @@ export default function PropertyDetailsSection({ property }) {
             <section className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12">
               <h2 className="text-xl font-semibold mb-5">{t.description}</h2>
               <div
-                className="text-gray-700 leading-6 ql-editor-summary property-description-summary break-words overflow-hidden [&_*]:max-w-full [&_img]:h-auto [&_iframe]:w-full [&_iframe]:max-w-full"
+                className="text-gray-700 leading-6 ql-editor-summary property-description-summary overflow-hidden"
                 dangerouslySetInnerHTML={{
-                  __html: getLocalizedValue(what?.whatNearbyDescription) || t.noDescription
+                  __html: cleanHtml(getLocalizedValue(what?.whatNearbyDescription)) || t.noDescription
                 }}
               />
             </section>

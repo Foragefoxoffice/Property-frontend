@@ -17,15 +17,7 @@ export default function ProjectMainDescription({ projectData }) {
         <section className="py-12 bg-white font-['Manrope']">
             <div className="max-w-4xl mx-auto px-6">
                 <div 
-                    className="main-description-rich-text text-[#374151] text-[16px] md:text-[17px] leading-[1.8]"
-                    style={{ 
-                        wordBreak: 'initial', 
-                        overflowWrap: 'break-word', 
-                        whiteSpace: 'normal',
-                        textAlign: 'left',
-                        display: 'block',
-                        width: '100%'
-                    }}
+                    className="main-description-rich-text text-[#374151] text-[16px] md:text-[17px] leading-[1.8] overflow-hidden"
                     dangerouslySetInnerHTML={{ __html: cleanHTML(mainDescription) }}
                 />
             </div>

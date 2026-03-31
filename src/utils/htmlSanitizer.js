@@ -4,13 +4,12 @@
  * This helps prevent character-level word breaking in various browsers.
  */
 export const cleanHTML = (html) => {
-    if (!html) return '';
+    if (!html) return "";
 
     return html
-        .replace(/&nbsp;/g, ' ')              // fix non-breaking spaces
-        .replace(/\u00A0/g, ' ')              // unicode nbsp
-        .replace(/<p>\s*<\/p>/g, '')          // remove empty paragraphs
-        .replace(/\s{2,}/g, ' ')              // remove extra spaces (safe)
+        .replace(/&nbsp;/g, " ")
+        .replace(/\u00A0/g, " ")
+        .replace(/\s{2,}/g, " ")
         .trim();
 };
 

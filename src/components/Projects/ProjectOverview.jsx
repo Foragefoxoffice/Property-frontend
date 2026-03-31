@@ -27,10 +27,16 @@ export default function ProjectOverview({ projectData = null }) {
             .replace(/&nbsp;/g, ' ')              // fix non-breaking spaces
             .replace(/\u00A0/g, ' ')              // unicode nbsp
             .replace(/<p>\s*<\/p>/g, '')          // remove empty paragraphs
+
+            // Fix broken words like "phù hợ p", "fre sh", "fami lies" 
+            .replace(/(\p{L}{2,})\s+([\p{L}]{1,2})(?!\p{L})/gu, (match, a, b) => {
+                return a + b;
+            })
+
             .replace(/\s{2,}/g, ' ')              // remove extra spaces (safe)
             .trim();
     };
-    
+
 
     useEffect(() => {
         const fetchPageData = async () => {
@@ -148,12 +154,7 @@ export default function ProjectOverview({ projectData = null }) {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div
-                                                    className={`text-[14px] md:text-[15.5px] leading-[1.6] font-semibold project-overview-rich-text whitespace-normal ${isEmphasized ? 'text-rose-500 underline decoration-rose-200 decoration-2 underline-offset-4' : 'text-slate-600'}`}
-                                                    style={{
-                                                        wordBreak: 'normal',
-                                                        overflowWrap: 'normal',
-                                                        whiteSpace: 'normal',
-                                                    }}
+                                                    className={`text-[14px] md:text-[15.5px] leading-[1.6] font-semibold project-overview-rich-text overflow-hidden ${isEmphasized ? 'text-rose-500 underline decoration-rose-200 decoration-2 underline-offset-4' : 'text-slate-600'}`}
                                                     dangerouslySetInnerHTML={{ __html: cleanHTML(des) }}
                                                 />
                                             </div>

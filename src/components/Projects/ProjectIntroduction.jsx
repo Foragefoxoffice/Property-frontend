@@ -71,13 +71,7 @@ export default function ProjectIntroduction({ projectData = null }) {
                             {title}
                         </h2>
                         <div
-                            className="text-[15px] md:text-[16px] leading-[1.8] text-gray-600 project-intro-rich-text text-center w-full"
-                            style={{ 
-                                wordBreak: 'normal', 
-                                overflowWrap: 'break-word', 
-                                whiteSpace: 'normal',
-                                textAlign: 'center'
-                            }}
+                            className="text-[15px] md:text-[16px] leading-[1.8] text-gray-600 project-intro-rich-text overflow-hidden"
                             dangerouslySetInnerHTML={{ __html: cleanHTML(content) }}
                         />
                     </div>
