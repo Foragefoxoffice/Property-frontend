@@ -312,7 +312,7 @@ export default function TestimonialsCms() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#94A3B8] w-5 h-5" />
                         <input
                             type="text"
-                            placeholder={t.searchPlaceholder || "Search by author or content..."}
+                            placeholder={t.searchPlaceholderTestimonials || "Search by author or content..."}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-12 pr-4 py-3 bg-white border border-[#E2E8F0] rounded-xl focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] outline-none transition-all"
