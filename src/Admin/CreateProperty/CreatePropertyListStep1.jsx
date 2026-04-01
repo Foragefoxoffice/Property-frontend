@@ -781,7 +781,7 @@ export default function CreatePropertyListStep1({
       </div>
 
       {/* Form Section */}
-      <div className=" p-8 pt-2">
+      <div className=" p-4 pt-2">
         {/* === Listing Info === */}
         <h2 className="text-lg font-semibold mb-8">{t.listingInfo}</h2>
         <div className="grid grid-cols-3 gap-7">

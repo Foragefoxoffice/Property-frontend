@@ -10,12 +10,19 @@ import { DayPicker, getDefaultClassNames } from "react-day-picker";
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  captionLayout = "label",
+  captionLayout = "dropdown",
   buttonVariant = "ghost",
   formatters,
   components,
@@ -33,6 +40,8 @@ function Calendar({
         className
       )}
       captionLayout={captionLayout}
+      startMonth={new Date(1900, 0)}
+      endMonth={new Date(2100, 11)}
       formatters={{
         formatMonthDropdown: (date) =>
           date.toLocaleString("default", { month: "short" }),
@@ -68,10 +77,8 @@ function Calendar({
           "relative has-focus:border-ring border border-input shadow-xs has-focus:ring-ring/50 has-focus:ring-[3px] rounded-md",
           defaultClassNames.dropdown_root
         ),
-        dropdown: cn("absolute bg-popover inset-0 opacity-0", defaultClassNames.dropdown),
-        caption_label: cn("select-none font-medium", captionLayout === "label"
-          ? "text-sm"
-          : "rounded-md pl-2 pr-1 flex items-center gap-1 text-sm h-8 [&>svg]:text-muted-foreground [&>svg]:size-3.5", defaultClassNames.caption_label),
+        dropdown: cn("absolute inset-0", defaultClassNames.dropdown),
+        caption_label: cn("select-none font-medium", captionLayout === "label" ? "text-sm" : "hidden"),
         table: "w-full border-collapse",
         weekdays: cn("flex", defaultClassNames.weekdays),
         weekday: cn(
@@ -118,6 +125,43 @@ function Calendar({
 
           return (<ChevronDownIcon className={cn("size-4", className)} {...props} />);
         },
+        Dropdown: (props) => {
+          const { value, onChange, options, children } = props;
+          const selected = options?.find((option) => option.value === value);
+          const handleChange = (newValue) => {
+            const changeEvent = {
+              target: { value: newValue },
+            };
+            onChange?.(changeEvent);
+          };
+          return (
+            <Select
+              value={value?.toString()}
+              onValueChange={(val) => handleChange(val)}
+            >
+              <SelectTrigger className="pr-1.5 focus:ring-0 h-8 w-fit gap-1 bg-transparent border-none shadow-none text-sm font-semibold hover:bg-black/5 dark:hover:bg-white/5 data-[state=open]:bg-black/5 dark:data-[state=open]:bg-white/5 transition-colors">
+                <SelectValue>{selected?.label || children}</SelectValue>
+              </SelectTrigger>
+              <SelectContent position="popper" className="max-h-80 overflow-y-auto min-w-[var(--radix-select-trigger-width)]">
+                {options?.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value.toString()}
+                    className="text-sm cursor-pointer whitespace-nowrap"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          );
+        },
+        MonthDropdown: (props) => (
+          <DayPicker.components.Dropdown {...props} />
+        ),
+        YearDropdown: (props) => (
+          <DayPicker.components.Dropdown {...props} />
+        ),
         DayButton: CalendarDayButton,
         WeekNumber: ({ children, ...props }) => {
           return (
