@@ -548,28 +548,33 @@ export default function PropertyDetailsSection({ property }) {
                 {videos.map((url, i) => (
                   <div
                     key={i}
-                    className="relative group rounded-2xl overflow-hidden bg-white transition h-64"
+                    onClick={() => setPreviewUrl(url)}
+                    className="relative group rounded-2xl overflow-hidden cursor-pointer h-64 bg-gradient-to-br from-[#1a1535] to-[#2e2860] flex items-center justify-center"
                   >
-                    {/* Fake Thumbnail (muted video) */}
-                    <video
-                      src={url}
-                      muted
-                      playsInline
-                      className="w-full h-full object-contain bg-black/5"
-                    />
-
-                    {/* Overlay + Eye */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/0 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <button
-                        onClick={() => setPreviewUrl(url)}
-                        className="p-3 bg-[#41398B] rounded-full shadow hover:scale-110 transition"
-                      >
-                        <PlayIcon
-                          className="text-white cursor-pointer"
-                          size={20}
-                        />
-                      </button>
+                    {/* Static thumbnail — NO video src loaded until click */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                      {/* Animated ring */}
+                      <div className="relative flex items-center justify-center">
+                        <span className="absolute inline-flex h-20 w-20 rounded-full bg-white/10 animate-ping"></span>
+                        <button
+                          className="relative z-10 w-16 h-16 bg-[#41398B] group-hover:bg-[#5248a8] rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover:scale-110"
+                        >
+                          <PlayIcon className="text-white ml-1" size={24} />
+                        </button>
+                      </div>
+                      <span className="text-white/70 text-sm font-medium mt-2">
+                        {language === 'vi' ? 'Nhấp để xem video' : 'Click to play video'} {videos.length > 1 ? `#${i + 1}` : ''}
+                      </span>
                     </div>
+
+                    {/* Subtle grid overlay */}
+                    <div
+                      className="absolute inset-0 opacity-10"
+                      style={{
+                        backgroundImage: 'linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px)',
+                        backgroundSize: '32px 32px'
+                      }}
+                    />
                   </div>
                 ))}
               </div>

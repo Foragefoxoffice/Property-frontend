@@ -21,6 +21,7 @@ import { Select as AntdSelect, Switch, Input } from "antd";
 const { TextArea } = Input;
 import { CommonToaster } from "@/Common/CommonToaster";
 import { usePermissions } from "../../Context/PermissionContext";
+import { getImageUrl } from "@/utils/imageHelper";
 
 
 /* =========================================================
@@ -486,7 +487,7 @@ export default function CreatePropertyListStep2({
       >
         {type === "video" ? (
           <video
-            src={f.url}
+            src={getImageUrl(f.url)}
             className="w-full h-full object-cover"
             muted
             loop
@@ -494,7 +495,7 @@ export default function CreatePropertyListStep2({
           />
         ) : (
           <img
-            src={f.url}
+            src={getImageUrl(f.url)}
             className="w-full h-full object-contain"
             alt=""
           />
@@ -626,14 +627,14 @@ export default function CreatePropertyListStep2({
               </button>
               {type === "video" ? (
                 <video
-                  src={preview}
+                  src={getImageUrl(preview)}
                   className="w-full h-full object-contain rounded-lg"
                   controls
                   autoPlay
                 />
               ) : (
                 <img
-                  src={preview}
+                  src={getImageUrl(preview)}
                   className="w-full h-full object-contain rounded-lg"
                   alt="Preview"
                 />

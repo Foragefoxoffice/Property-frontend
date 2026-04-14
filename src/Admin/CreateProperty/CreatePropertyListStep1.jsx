@@ -361,6 +361,7 @@ export default function CreatePropertyListStep1({
       areaZone: false,
       blockName: false,
       propertyNo: false,
+      propertyType: false,
       dateListed: false,
       availableFrom: false,
       availabilityStatus: false,
@@ -785,67 +786,119 @@ export default function CreatePropertyListStep1({
         {/* === Listing Info === */}
         <h2 className="text-lg font-semibold mb-8">{t.listingInfo}</h2>
         <div className="grid grid-cols-3 gap-7">
-          <div style={{ pointerEvents: "none" }}>
-            <Input
-              label={lang === "en" ? "Transaction Type" : "Loại giao dịch"}
-              name="transactionType"
-              value={
-                (() => {
-                  const type = form.transactionType;
-                  const map = {
-                    "Sale": { en: "Sale", vi: "Bán" },
-                    "Lease": { en: "Lease", vi: "Cho thuê" },
-                    "Home Stay": { en: "Homestay", vi: "Homestay" }
-                  };
-
-                  if (typeof type === 'object') {
-                    return type?.[lang] || "";
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Transaction Type" : "Loại giao dịch"}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.listingInformationVisibility?.transactionType}
+                  style={{
+                    backgroundColor: form.listingInformationVisibility?.transactionType
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      listingInformationVisibility: {
+                        ...p.listingInformationVisibility,
+                        transactionType: val,
+                      },
+                    }))
                   }
+                />
+              </div>
+            </div>
+            <div style={{ pointerEvents: "none" }}>
+              <Input
+                name="transactionType"
+                value={
+                  (() => {
+                    const type = form.transactionType;
+                    const map = {
+                      "Sale": { en: "Sale", vi: "Bán" },
+                      "Lease": { en: "Lease", vi: "Cho thuê" },
+                      "Home Stay": { en: "Homestay", vi: "Homestay" }
+                    };
 
-                  return map[type]?.[lang] || type || "";
-                })()
-              }
-              onChange={(e) => {
-                const val = e.target.value;
+                    if (typeof type === 'object') {
+                      return type?.[lang] || "";
+                    }
 
-                setForm((prev) => {
-                  // If currently storing object { en, vi }
-                  if (typeof prev.transactionType === "object") {
+                    return map[type]?.[lang] || type || "";
+                  })()
+                }
+                onChange={(e) => {
+                  const val = e.target.value;
+
+                  setForm((prev) => {
+                    if (typeof prev.transactionType === "object") {
+                      return {
+                        ...prev,
+                        transactionType: {
+                          ...prev.transactionType,
+                          [lang]: val,
+                        },
+                      };
+                    }
+
                     return {
                       ...prev,
                       transactionType: {
-                        ...prev.transactionType,
-                        [lang]: val,
+                        en: lang === "en" ? val : prev.transactionType || "",
+                        vi: lang === "vi" ? val : prev.transactionType || "",
                       },
                     };
-                  }
-
-                  // If currently storing a string → convert to object
-                  return {
-                    ...prev,
-                    transactionType: {
-                      en: lang === "en" ? val : prev.transactionType || "",
-                      vi: lang === "vi" ? val : prev.transactionType || "",
-                    },
-                  };
-                });
-              }}
-              placeholder={
-                lang === "en" ? "Enter Transaction Type" : "Nhập loại giao dịch"
-              }
-              disabled={!!defaultTransactionType}
-            />
-
-
+                  });
+                }}
+                placeholder={
+                  lang === "en" ? "Enter Transaction Type" : "Nhập loại giao dịch"
+                }
+                disabled={!!defaultTransactionType}
+              />
+            </div>
           </div>
 
-          <div style={{ pointerEvents: "none" }}>
-            <Input
-              label={lang === "en" ? "Property ID" : "Mã bất động sản"}
-              name="propertyId"
-              placeholder={lang === "en" ? "Auto Generated" : "Tự động tạo"}
-              value={form.propertyId}
-            />
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Property ID" : "Mã bất động sản"}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.listingInformationVisibility?.propertyId}
+                  style={{
+                    backgroundColor: form.listingInformationVisibility?.propertyId
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      listingInformationVisibility: {
+                        ...p.listingInformationVisibility,
+                        propertyId: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <div style={{ pointerEvents: "none" }}>
+              <Input
+                name="propertyId"
+                placeholder={lang === "en" ? "Auto Generated" : "Tự động tạo"}
+                value={form.propertyId}
+              />
+            </div>
           </div>
 
           <div className="flex flex-col w-full gap-1">
@@ -891,15 +944,19 @@ export default function CreatePropertyListStep1({
               value={form.projectId || undefined}
               onChange={(val) => {
                 if (!val) {
-                  setForm((p) => ({
-                    ...p,
-                    projectId: "",
-                    projectName: null,
-                    zoneId: "",
-                    zoneName: null,
-                    blockId: "",
-                    blockName: null,
-                  }));
+                  setForm((p) => {
+                    const updated = {
+                      ...p,
+                      projectId: "",
+                      projectName: null,
+                      zoneId: "",
+                      zoneName: null,
+                      blockId: "",
+                      blockName: null,
+                    };
+                    onChange && onChange(updated);
+                    return updated;
+                  });
                   return;
                 }
 
@@ -907,17 +964,21 @@ export default function CreatePropertyListStep1({
                   (p) => p._id === val
                 );
 
-                setForm((p) => ({
-                  ...p,
-                  projectName: project?.name || { en: "", vi: "" },
-                  projectId: project?._id || "",
+                setForm((p) => {
+                  const updated = {
+                    ...p,
+                    projectName: project?.name || { en: "", vi: "" },
+                    projectId: project?._id || "",
 
-                  // ❌ reset zone & block
-                  zoneName: null,
-                  zoneId: "",
-                  blockName: null,
-                  blockId: "",
-                }));
+                    // ❌ reset zone & block
+                    zoneName: null,
+                    zoneId: "",
+                    blockName: null,
+                    blockId: "",
+                  };
+                  onChange && onChange(updated);
+                  return updated;
+                });
               }}
             >
               {dropdowns.properties.map((p) => (
@@ -978,26 +1039,34 @@ export default function CreatePropertyListStep1({
               value={form.zoneId || undefined}
               onChange={(val) => {
                 if (!val) {
-                  setForm((p) => ({
-                    ...p,
-                    zoneId: "",
-                    zoneName: null,
-                    blockId: "",
-                    blockName: null,
-                  }));
+                  setForm((p) => {
+                    const updated = {
+                      ...p,
+                      zoneId: "",
+                      zoneName: null,
+                      blockId: "",
+                      blockName: null,
+                    };
+                    onChange && onChange(updated);
+                    return updated;
+                  });
                   return;
                 }
                 const zone = dropdowns.zones.find((z) => z._id === val);
 
-                setForm((p) => ({
-                  ...p,
-                  zoneName: zone?.name || { en: "", vi: "" },
-                  zoneId: zone?._id || "",
+                setForm((p) => {
+                  const updated = {
+                    ...p,
+                    zoneName: zone?.name || { en: "", vi: "" },
+                    zoneId: zone?._id || "",
 
-                  // ❌ reset block
-                  blockName: null,
-                  blockId: "",
-                }));
+                    // ❌ reset block
+                    blockName: null,
+                    blockId: "",
+                  };
+                  onChange && onChange(updated);
+                  return updated;
+                });
               }}
             >
               {dropdowns.zones
@@ -1055,21 +1124,29 @@ export default function CreatePropertyListStep1({
               value={form.blockId || undefined}
               onChange={(val) => {
                 if (!val) {
-                  setForm((p) => ({
-                    ...p,
-                    blockId: "",
-                    blockName: null,
-                  }));
+                  setForm((p) => {
+                    const updated = {
+                      ...p,
+                      blockId: "",
+                      blockName: null,
+                    };
+                    onChange && onChange(updated);
+                    return updated;
+                  });
                   return;
                 }
 
                 const block = dropdowns.blocks.find((b) => b._id === val);
 
-                setForm((p) => ({
-                  ...p,
-                  blockName: block?.name || { en: "", vi: "" },
-                  blockId: block?._id || "",
-                }));
+                setForm((p) => {
+                  const updated = {
+                    ...p,
+                    blockName: block?.name || { en: "", vi: "" },
+                    blockId: block?._id || "",
+                  };
+                  onChange && onChange(updated);
+                  return updated;
+                });
               }}
             >
               {dropdowns.blocks
@@ -1087,13 +1164,12 @@ export default function CreatePropertyListStep1({
 
           </div>
 
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full gap-1">
             {/* Top row: Label + Switch */}
-            <div className="flex items-center justify-between w-full">
-              <label className="text-sm font-medium">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
                 {lang === "en" ? "Property No" : "Mã căn"}
               </label>
-              {/* 
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">
                   {lang === "en" ? "Hide" : "Ẩn"}
@@ -1115,7 +1191,7 @@ export default function CreatePropertyListStep1({
                     }))
                   }
                 />
-              </div> */}
+              </div>
             </div>
 
             {/* Input field */}
@@ -1128,21 +1204,77 @@ export default function CreatePropertyListStep1({
             />
           </div>
 
-          <Select
-            label={lang === "en" ? "Property Type" : "Loại căn"}
-            name="propertyType"
-            lang={lang}
-            options={filteredPropertyTypes}
-            value={form.propertyType}
-            onChange={handleInputChange}
-          />
-          <div style={{ pointerEvents: "none" }}>
-            <DatePicker
-              label={lang === "en" ? "Date Listed" : "Ngày niêm yết"}
-              name="dateListed"
-              value={form.dateListed}
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Property Type" : "Loại căn"}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.listingInformationVisibility?.propertyType}
+                  style={{
+                    backgroundColor: form.listingInformationVisibility?.propertyType
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      listingInformationVisibility: {
+                        ...p.listingInformationVisibility,
+                        propertyType: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <Select
+              name="propertyType"
+              lang={lang}
+              options={filteredPropertyTypes}
+              value={form.propertyType}
               onChange={handleInputChange}
             />
+          </div>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Date Listed" : "Ngày niêm yết"}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.listingInformationVisibility?.dateListed}
+                  style={{
+                    backgroundColor: form.listingInformationVisibility?.dateListed
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) =>
+                    setForm((p) => ({
+                      ...p,
+                      listingInformationVisibility: {
+                        ...p.listingInformationVisibility,
+                        dateListed: val,
+                      },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <div style={{ pointerEvents: "none" }}>
+              <DatePicker
+                name="dateListed"
+                value={form.dateListed}
+                onChange={handleInputChange}
+              />
+            </div>
           </div>
           {form.transactionType === "Home Stay" ? (
             ""
@@ -1187,16 +1319,42 @@ export default function CreatePropertyListStep1({
                 />
               </div>
 
-              <Select
-                label={
-                  lang === "en" ? "Availability Status" : "Trạng thái sẵn có"
-                }
-                name="availabilityStatus"
-                lang={lang}
-                options={dropdowns.statuses}
-                value={form.availabilityStatus}
-                onChange={handleInputChange}
-              />
+              <div className="flex flex-col w-full gap-1">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-sm text-[#131517] font-semibold">
+                    {lang === "en" ? "Availability Status" : "Trạng thái sẵn có"}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">
+                      {lang === "en" ? "Hide" : "Ẩn"}
+                    </span>
+                    <Switch
+                      checked={form.listingInformationVisibility?.availabilityStatus}
+                      style={{
+                        backgroundColor: form.listingInformationVisibility?.availabilityStatus
+                          ? "#41398B"
+                          : "#d9d9d9",
+                      }}
+                      onChange={(val) =>
+                        setForm((p) => ({
+                          ...p,
+                          listingInformationVisibility: {
+                            ...p.listingInformationVisibility,
+                            availabilityStatus: val,
+                          },
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+                <Select
+                  name="availabilityStatus"
+                  lang={lang}
+                  options={dropdowns.statuses}
+                  value={form.availabilityStatus}
+                  onChange={handleInputChange}
+                />
+              </div>
             </>
           )}
         </div>
@@ -1512,10 +1670,33 @@ export default function CreatePropertyListStep1({
             />
           </div>
         </div>
-        <div className="mt-8">
+        <div className="flex flex-col w-full mt-8">
+          <div className="flex items-center justify-between">
+            <label className="text-sm text-[#131517] font-semibold">
+              {lang === "en" ? "Property Title" : "Tiêu đề bất động sản"}
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">
+                {lang === "en" ? "Hide" : "Ẩn"}
+              </span>
+              <Switch
+                checked={form.titleVisibility}
+                style={{
+                  backgroundColor: form.titleVisibility
+                    ? "#41398B"
+                    : "#d9d9d9",
+                }}
+                onChange={(val) =>
+                  setForm((p) => ({
+                    ...p,
+                    titleVisibility: val,
+                  }))
+                }
+              />
+            </div>
+          </div>
           <LocalizedTextarea
             key={`${lang}-title`}
-            label={lang === "en" ? "Property Title" : "Tiêu đề bất động sản"}
             name="title"
             lang={lang}
             value={form.title?.[lang]}
