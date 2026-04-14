@@ -433,13 +433,13 @@ export default function CreatePropertyPreview({
           />
         </Section>
 
-        <Section title={labels.floorPlans[lang]}>
+        {/* <Section title={labels.floorPlans[lang]}>
           <MediaGrid
             files={iv.floorPlan}
             type="image"
             onPreview={openPreview}
           />
-        </Section>
+        </Section> */}
 
         {/* === Financial Details === */}
         <Section title={labels.financialDetails[lang]}>

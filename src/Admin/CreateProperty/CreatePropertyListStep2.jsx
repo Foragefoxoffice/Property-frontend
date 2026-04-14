@@ -562,6 +562,7 @@ export default function CreatePropertyListStep2({
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
+            autoScroll={false}
             onDragEnd={(event) => {
               const { active, over } = event;
               if (active && over && active.id !== over.id) {
