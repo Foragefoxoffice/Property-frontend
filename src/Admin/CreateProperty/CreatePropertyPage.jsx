@@ -1,5 +1,3 @@
-/*** COMPLETE & CLEANED CREATE/EDIT PROPERTY PAGE ***/
-
 import React, { useState, useEffect } from "react";
 import Steps from "./Steps";
 import CreatePropertyListStep1 from "./CreatePropertyListStep1";
@@ -166,7 +164,7 @@ function mapApiToForm(api) {
     ------------------------------------------ */
     videoVisibility: api.videoVisibility || false,
     floorImageVisibility: api.floorImageVisibility || false,
-    googleMapVisibility: api.listingInformationVisibility?.googleMap || false, // ✅ Added root mapping
+    googleMapVisibility: api.listingInformationVisibility?.googleMap || false,
     titleVisibility: api.titleVisibility || false,
     descriptionVisibility: api.descriptionVisibility || false,
     whatNearbyVisibility: api.whatNearbyVisibility || false,
@@ -195,15 +193,21 @@ function mapApiToForm(api) {
       view: false,
     },
 
-    financialVisibility: api.financialVisibility || {
+    financialVisibility: {
+      price: false,
+      leasePrice: false,
+      pricePerNight: false,
+      currency: false,
       contractLength: false,
       deposit: false,
       paymentTerm: false,
       feeTaxes: false,
       legalDocs: false,
       agentFee: false,
+      agentFeeAgenda: false,
       checkIn: false,
       checkOut: false,
+      ...(api.financialVisibility || {}),
     },
 
     /* -----------------------------------------
@@ -557,7 +561,7 @@ export default function CreatePropertyPage({
         googleMap: n.googleMapVisibility !== undefined ? n.googleMapVisibility : (n.listingInformationVisibility?.googleMap || false), // ✅ Merged
       },
 
-      propertyInformationVisibility: n.propertyInformationVisibility || {
+      propertyInformationVisibility: {
         unit: false,
         unitSize: false,
         bedrooms: false,
@@ -565,17 +569,24 @@ export default function CreatePropertyPage({
         floorRange: false,
         furnishing: false,
         view: false,
+        ...(n.propertyInformationVisibility || {}),
       },
 
-      financialVisibility: n.financialVisibility || {
+      financialVisibility: {
+        price: false,
+        leasePrice: false,
+        pricePerNight: false,
+        currency: false,
         contractLength: false,
         deposit: false,
         paymentTerm: false,
         feeTaxes: false,
         legalDocs: false,
         agentFee: false,
+        agentFeeAgenda: false,
         checkIn: false,
         checkOut: false,
+        ...(n.financialVisibility || {}),
       },
 
       /* ================================================
@@ -658,10 +669,11 @@ export default function CreatePropertyPage({
   /* =====================================================================================
       FINAL SUBMIT (CREATE / UPDATE)
   ===================================================================================== */
-  const handleSubmitFinal = async (status) => {
+  const handleSubmitFinal = async (status, data = null) => {
     try {
       setIsSubmitting(true);
-      const payload = buildPayload(propertyData, dropdowns);
+      const fullData = data ? { ...propertyData, ...data } : propertyData;
+      const payload = buildPayload(fullData, dropdowns);
       console.log("🚀 FINAL PAYLOAD:", JSON.stringify(payload, null, 2));
 
       let res;

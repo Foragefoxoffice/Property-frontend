@@ -70,7 +70,30 @@ export default function CreatePropertyListStep3({
   const { isApprover } = usePermissions();
   const handleComplete = async () => {
     const finalStatus = isApprover ? "Published" : "Pending";
-    await onComplete(finalStatus);
+    const payload = {
+      contactManagement: {
+        contactManagementOwner: form.owner || { en: "", vi: "" },
+        contactManagementOwnerNotes: form.ownerNotes || { en: "", vi: "" },
+        contactManagementConsultant: {
+          en: me?.name || "",
+          vi: me?.name || "",
+        },
+        contactManagementConnectingPoint: form.connectingPoint || {
+          en: "",
+          vi: "",
+        },
+        contactManagementConnectingPointNotes:
+          form.connectingPointNotes || { en: "", vi: "" },
+        contactManagementInternalNotes: form.internalNotes || {
+          en: "",
+          vi: "",
+        },
+        contactManagementSource: form.source || { en: "", vi: "" },
+        contactManagementOwnerPhone: form.ownerPhone || [],
+      },
+    };
+    onChange && onChange(payload);
+    await onComplete(finalStatus, payload);
   };
   const [lang, setLang] = useState("vi");
   const initialized = useRef(false);

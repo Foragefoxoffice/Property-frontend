@@ -63,7 +63,14 @@ export default function CreatePropertyListStep2({
   const { isApprover } = usePermissions();
   const handleComplete = async () => {
     const finalStatus = isApprover ? "Published" : "Pending";
-    await onComplete(finalStatus);
+    const updated = {
+      ...form,
+      propertyImages: images,
+      propertyVideos: videos,
+      floorPlans: floorPlans,
+    };
+    onChange && onChange(updated);
+    await onComplete(finalStatus, updated);
   };
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -178,15 +185,21 @@ export default function CreatePropertyListStep2({
     // floorImageVisibility: initialData.floorImageVisibility || false, // ❌ Removed
     googleMapVisibility: initialData.googleMapVisibility || false, // ✅ Added
     googleMapsIframe: initialData.googleMapsIframe || { en: "", vi: "" }, // ✅ Added
-    financialVisibility: initialData.financialVisibility || {
+    financialVisibility: {
+      price: false,
+      leasePrice: false,
+      pricePerNight: false,
+      currency: false,
       contractLength: false,
       deposit: false,
       paymentTerm: false,
       feeTaxes: false,
       legalDocs: false,
       agentFee: false,
+      agentFeeAgenda: false,
       checkIn: false,
       checkOut: false,
+      ...(initialData.financialVisibility || {}),
     },
   });
 
@@ -259,6 +272,26 @@ export default function CreatePropertyListStep2({
         // Currency
         if (initialData.currency && JSON.stringify(initialData.currency) !== JSON.stringify(prev.currency)) {
           newUpdates.currency = initialData.currency;
+        }
+
+        // Visibility
+        if (initialData.financialVisibility && JSON.stringify(initialData.financialVisibility) !== JSON.stringify(prev.financialVisibility)) {
+          newUpdates.financialVisibility = {
+            price: false,
+            leasePrice: false,
+            pricePerNight: false,
+            currency: false,
+            contractLength: false,
+            deposit: false,
+            paymentTerm: false,
+            feeTaxes: false,
+            legalDocs: false,
+            agentFee: false,
+            agentFeeAgenda: false,
+            checkIn: false,
+            checkOut: false,
+            ...initialData.financialVisibility,
+          };
         }
 
         if (Object.keys(newUpdates).length > 0) {
@@ -849,10 +882,37 @@ export default function CreatePropertyListStep2({
           {/** 👉 KEEP YOUR EXACT SALE UI FIELDS HERE **/}
 
           {/* Currency */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.currency}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.currency}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.currency}
+                  style={{
+                    backgroundColor: form.financialVisibility?.currency
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        currency: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -906,10 +966,37 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Price */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.price}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.price}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.price}
+                  style={{
+                    backgroundColor: form.financialVisibility?.price
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        price: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
+            </div>
             <input
               type="text"
               value={formatNumber(form.price)}
@@ -1277,6 +1364,31 @@ export default function CreatePropertyListStep2({
               <label className="text-sm text-[#131517] font-semibold">
                 {t.agentFee}
               </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.agentFee}
+                  style={{
+                    backgroundColor: form.financialVisibility?.agentFee
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        agentFee: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
             </div>
             <input
               type="text"
@@ -1299,10 +1411,37 @@ export default function CreatePropertyListStep2({
         <div className="grid grid-cols-3 gap-5">
           {/** 👉 KEEP YOUR EXACT LEASE UI FIELDS HERE **/}
 
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.currency}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.currency}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.currency}
+                  style={{
+                    backgroundColor: form.financialVisibility?.currency
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        currency: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -1356,10 +1495,37 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Lease Price */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.leasePrice}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.leasePrice}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.leasePrice}
+                  style={{
+                    backgroundColor: form.financialVisibility?.leasePrice
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        leasePrice: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
+            </div>
             <input
               type="text"
               value={formatNumber(form.leasePrice)}
@@ -1597,6 +1763,31 @@ export default function CreatePropertyListStep2({
               <label className="text-sm text-[#131517] font-semibold">
                 {t.agentFee}
               </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.agentFee}
+                  style={{
+                    backgroundColor: form.financialVisibility?.agentFee
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        agentFee: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
             </div>
             <input
               type="text"
@@ -1613,10 +1804,37 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Agent Payment Agenda */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.agentFeeAgenda}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.agentFeeAgenda}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.agentFeeAgenda}
+                  style={{
+                    backgroundColor: form.financialVisibility?.agentFeeAgenda
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        agentFeeAgenda: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
+            </div>
             <input
               value={form.financialDetailsAgentPaymentAgenda?.[lang] || ""}
               onChange={(e) =>
@@ -1639,10 +1857,37 @@ export default function CreatePropertyListStep2({
           {/** 👉 KEEP YOUR EXACT HOME STAY UI FIELDS HERE **/}
 
           {/* Currency */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.currency}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.currency}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.currency}
+                  style={{
+                    backgroundColor: form.financialVisibility?.currency
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        currency: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
+            </div>
             <AntdSelect
               showSearch
               allowClear
@@ -1696,10 +1941,37 @@ export default function CreatePropertyListStep2({
           </div>
 
           {/* Price Per Night */}
-          <div className="flex flex-col">
-            <label className="text-sm text-[#131517] font-semibold mb-2">
-              {t.pricePerNight}
-            </label>
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.pricePerNight}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.pricePerNight}
+                  style={{
+                    backgroundColor: form.financialVisibility?.pricePerNight
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        pricePerNight: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
+            </div>
             <input
               type="text"
               value={formatNumber(form.pricePerNight)}

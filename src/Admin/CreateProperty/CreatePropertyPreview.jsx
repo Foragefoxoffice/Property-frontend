@@ -386,7 +386,7 @@ export default function CreatePropertyPreview({
         {/* === Description === */}
         <Section title={labels.description[lang]}>
           <div
-            className="text-gray-700 leading-relaxed overflow-hidden"
+            className="text-gray-700 leading-relaxed overflow-hidden rich-text-display"
             dangerouslySetInnerHTML={{ __html: safe(wn.whatNearbyDescription) || labels.noDescription[lang] }}
           />
         </Section>

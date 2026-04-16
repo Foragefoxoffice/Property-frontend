@@ -26,6 +26,7 @@ import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { translateError } from "../../utils/translateError";
 import CommonSkeleton from "../../Common/CommonSkeleton";
+import CommonRichText from "../../Common/CommonRichText";
 
 export default function TestimonialsCms() {
     const { language, toggleLanguage } = useLanguage();
@@ -363,9 +364,10 @@ export default function TestimonialsCms() {
 
                                     {/* Content */}
                                     <div className="flex-grow min-w-0">
-                                        <p className="text-[#475569] leading-relaxed italic break-words">
-                                            "{language === 'en' ? (item.text_en || item.text) : (item.text_vn || item.text)}"
-                                        </p>
+                                        <div 
+                                            className="text-[#475569] leading-relaxed italic break-words rich-text-display"
+                                            dangerouslySetInnerHTML={{ __html: language === 'en' ? (item.text_en || item.text) : (item.text_vn || item.text) }}
+                                        />
                                     </div>
 
                                     {/* Actions */}
@@ -490,24 +492,21 @@ export default function TestimonialsCms() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#475569] mb-2">{t.contentEnLabel || "Testimonial Content (English)"}</label>
-                                    <textarea
-                                        required
-                                        rows={3}
-                                        placeholder="Write the testimonial in English..."
+                                    <CommonRichText
+                                        label={t.contentEnLabel || "Testimonial Content (English)"}
                                         value={manualForm.text_en}
-                                        onChange={(e) => setManualForm({ ...manualForm, text_en: e.target.value })}
-                                        className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] outline-none transition-all resize-none"
+                                        onChange={(content) => setManualForm({ ...manualForm, text_en: content })}
+                                        placeholder="Write the testimonial in English..."
+                                        minHeight="120px"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-[#475569] mb-2">{t.contentVnLabel || "Testimonial Content (Vietnamese)"}</label>
-                                    <textarea
-                                        rows={3}
-                                        placeholder="Write the testimonial in Vietnamese..."
+                                    <CommonRichText
+                                        label={t.contentVnLabel || "Testimonial Content (Vietnamese)"}
                                         value={manualForm.text_vn}
-                                        onChange={(e) => setManualForm({ ...manualForm, text_vn: e.target.value })}
-                                        className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:ring-2 focus:ring-[#41398B]/20 focus:border-[#41398B] outline-none transition-all resize-none"
+                                        onChange={(content) => setManualForm({ ...manualForm, text_vn: content })}
+                                        placeholder="Write the testimonial in Vietnamese..."
+                                        minHeight="120px"
                                     />
                                 </div>
 

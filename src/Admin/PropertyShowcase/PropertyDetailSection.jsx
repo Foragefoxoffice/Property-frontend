@@ -544,12 +544,12 @@ export default function PropertyDetailsSection({ property }) {
             >
               <h2 className="text-xl font-semibold mb-5">{t.video}</h2>
 
-              <div className="grid sm:grid-cols-2 gap-5">
+              <div className="grid sm:grid-cols-1 gap-5">
                 {videos.map((url, i) => (
                   <div
                     key={i}
                     onClick={() => setPreviewUrl(url)}
-                    className="relative group rounded-2xl overflow-hidden cursor-pointer h-64 bg-gradient-to-br from-[#1a1535] to-[#2e2860] flex items-center justify-center"
+                    className="relative group rounded-2xl overflow-hidden cursor-pointer h-84 bg-gradient-to-br from-[#1a1535] to-[#2e2860] flex items-center justify-center"
                   >
                     {/* Static thumbnail — NO video src loaded until click */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">

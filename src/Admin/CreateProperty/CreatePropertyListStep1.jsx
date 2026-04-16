@@ -14,8 +14,8 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { usePermissions } from "../../Context/PermissionContext";
-import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import CommonRichText from "../../Common/CommonRichText";
 
 /* ======================================================
    REUSABLE INPUT COMPONENTS
@@ -156,52 +156,14 @@ const LocalizedTextarea = memo(
 
 const LocalizedRichText = memo(
   ({ label, name, lang, value, onChange, placeholder }) => {
-    const modules = {
-      toolbar: [
-        [{ 'header': [1, 2, false] }],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-        ['link', 'clean']
-      ],
-    };
-
-    const formats = [
-      'header',
-      'bold', 'italic', 'underline', 'strike', 'blockquote',
-      'list', 'bullet', 'indent',
-      'link'
-    ];
-
     return (
-      <div className="flex flex-col">
-        <label className="text-sm text-[#131517] font-semibold mb-2">
-          {label}
-        </label>
-        <ReactQuill
-          theme="snow"
-          value={value || ""}
-          onChange={(content) => onChange(lang, name, content)}
-          placeholder={placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")}
-          modules={modules}
-          formats={formats}
-          className="bg-white rounded-lg"
-        />
-        <style>{`
-          .ql-container.ql-snow {
-            border-bottom-left-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
-            border-color: #B2B2B3;
-          }
-          .ql-toolbar.ql-snow {
-            border-top-left-radius: 0.5rem;
-            border-top-right-radius: 0.5rem;
-            border-color: #B2B2B3;
-          }
-          .ql-editor {
-            min-height: 120px;
-          }
-        `}</style>
-      </div>
+      <CommonRichText
+        label={label}
+        value={value || ""}
+        onChange={(content) => onChange(lang, name, content)}
+        placeholder={placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")}
+        minHeight="250px"
+      />
     );
   }
 );
@@ -313,7 +275,7 @@ export default function CreatePropertyListStep1({
     });
 
     onChange && onChange(updatedForm); // sync parent
-    await onComplete(finalStatus);
+    await onComplete(finalStatus, updatedForm);
   };
 
   const [lang, setLang] = useState("vi");
@@ -802,15 +764,17 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       listingInformationVisibility: {
-                        ...p.listingInformationVisibility,
+                        ...form.listingInformationVisibility,
                         transactionType: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1611,15 +1575,17 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       propertyInformationVisibility: {
-                        ...p.propertyInformationVisibility,
+                        ...form.propertyInformationVisibility,
                         furnishing: val,
                       },
-                    }))
-                  }
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>

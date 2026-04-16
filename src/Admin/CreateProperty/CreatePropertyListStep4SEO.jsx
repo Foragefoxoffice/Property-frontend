@@ -84,7 +84,7 @@ export default function CreatePropertyListStep4SEO({
     });
 
     onChange({ seoInformation: updatedSeo });
-    await onComplete(finalStatus);
+    await onComplete(finalStatus, { seoInformation: updatedSeo });
   };
 
   const labels = {
