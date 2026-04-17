@@ -236,7 +236,7 @@ const DashboardLayout = () => {
                     `}
                                             >
                                                 <span className="p-3 rounded-full bg-[#E8E8FF] text-[#41398B]"> <Home className="w-4 h-4" /> </span>
-                                                <span>{"Home Page"}</span>
+                                                <span>{"Home"}</span>
                                             </Link>
                                         )}
 
@@ -346,7 +346,7 @@ const DashboardLayout = () => {
                             </div>
                         )}
 
-                                                {/* PROJECTS DROPDOWN */}
+                        {/* PROJECTS DROPDOWN */}
                         {(!isHidden("projects.category") || !isHidden("projects.projectCms")) && (
                             <div className="w-full">
                                 <button

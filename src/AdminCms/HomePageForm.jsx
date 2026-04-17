@@ -352,7 +352,7 @@ export default function HomePageForm() {
                 marginBottom: '32px',
                 fontFamily: 'Manrope, sans-serif'
             }}>
-                Home Page
+                Home
             </h2>
 
             <ConfigProvider theme={{ token: { colorPrimary: '#41398B' } }}>

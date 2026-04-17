@@ -153,10 +153,10 @@ export default function PropertyDetailsSection({ property }) {
   const visList = p.listingInformationVisibility || {};
   const visProp = p.propertyInformationVisibility || {};
   const visFin = p.financialVisibility || {};
-  const visDec = p.descriptionVisibility || {};
-  const visWhatNearby = p.whatNearbyVisibility || false;
-  const visVideo = p.videoVisibility || {};
-  const visFloor = p.floorImageVisibility || {};
+  const visDec = p.descriptionVisibility;
+  const visWhatNearby = p.whatNearbyVisibility;
+  const visVideo = p.videoVisibility;
+  const visFloor = p.floorImageVisibility;
 
   const { isFavorite, addFavorite: addFavoriteContext, removeFavorite } = useFavorites();
   const navigate = useNavigate();
@@ -479,29 +479,31 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              PROPERTY UTILITY (UI preserved)
           ------------------------------------------------------- */}
-          <section
-            ref={sectionRefs["Property Utility"]}
-            className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12"
-          >
-            <h2 className="text-xl font-semibold mb-5">{t.propertyUtility}</h2>
+          {show(p.propertyUtilityVisibility) && utilities.length > 0 && (
+            <section
+              ref={sectionRefs["Property Utility"]}
+              className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12"
+            >
+              <h2 className="text-xl font-semibold mb-5">{t.propertyUtility}</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-              {utilities.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 border-b py-3 last:border-b-0"
-                >
-                  <img
-                    src={item?.propertyUtilityIcon}
-                    className="w-6 h-6 object-contain"
-                  />
-                  <span className="font-medium">
-                    {safeVal(item?.propertyUtilityUnitName)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+                {utilities.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 border-b py-3 last:border-b-0"
+                  >
+                    <img
+                      src={item?.propertyUtilityIcon}
+                      className="w-6 h-6 object-contain"
+                    />
+                    <span className="font-medium">
+                      {safeVal(item?.propertyUtilityUnitName)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* -------------------------------------------------------
              PAYMENT OVERVIEW (UI preserved)
@@ -537,7 +539,7 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              VIDEO (Thumbnails + Popup)
           ------------------------------------------------------- */}
-          {show(visVideo.videoVisibility) && videos.length > 0 && (
+          {show(visVideo) && videos.length > 0 && (
             <section
               ref={sectionRefs["Video"]}
               className="bg-white md:p-6 p-3 rounded-2xl mb-16"
@@ -863,7 +865,8 @@ export default function PropertyDetailsSection({ property }) {
                     {/* Price */}
                     <div className="flex items-baseline gap-1 mb-2">
                       {(() => {
-                        const trType = getLocalizedValue(prop.listingInformation?.listingInformationTransactionType);
+                        const trType = safeVal(prop.listingInformation?.listingInformationTransactionType);
+                        const visFin = prop.financialVisibility || {};
                         const pSale = prop.financialDetails?.financialDetailsPrice;
                         const pLease = prop.financialDetails?.financialDetailsLeasePrice;
                         const pNight = prop.financialDetails?.financialDetailsPricePerNight;
@@ -873,8 +876,19 @@ export default function PropertyDetailsSection({ property }) {
 
                         let dPrice = t.contactForPrice;
                         let dSuffix = null;
+                        let isHidden = false;
 
-                        const fP = (val) => `${Number(val).toLocaleString()} ${cCode}`;
+                        // Check visibility
+                        if (trType === 'Sale' && visFin.price) isHidden = true;
+                        if (trType === 'Lease' && visFin.leasePrice) isHidden = true;
+                        if (trType === 'Home Stay' && visFin.pricePerNight) isHidden = true;
+
+                        if (isHidden) {
+                          return <span className="text-2xl font-bold text-[#2a2a2a]">{t.contactForPrice}</span>;
+                        }
+
+                        const dCurrency = visFin.currency ? "" : cCode;
+                        const fP = (val) => `${Number(val).toLocaleString()} ${dCurrency}`.trim();
 
                         if (trType === 'Sale' && pSale) {
                           dPrice = fP(pSale);

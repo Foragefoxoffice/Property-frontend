@@ -52,7 +52,7 @@ export const translations = {
     saveSettings: "Save Settings",
     // Navigation
     cmsAdmin: "CMS Admin",
-    home: "Home Page",
+    home: "Home",
     aboutUs: "About Us",
     header: "Header",
     footer: "Footer",
@@ -228,7 +228,7 @@ export const translations = {
     deletePermission: "Delete",
     copy: "Copy",
     // Module Labels
-    homePage: "Home Page",
+    homePage: "Home",
     contactUs: "Contact Us",
     propertyConsultant: "Property Consultant",
     blogCms: "News CMS",

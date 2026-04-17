@@ -40,6 +40,7 @@ export default function PropertyHome({ property }) {
 
     // Price calculation
     const financialDetails = property?.financialDetails || {};
+    const financialVisibility = property?.financialVisibility || {};
     const currency = financialDetails?.financialDetailsCurrency;
     const currencyCode = (typeof currency === 'object' ? currency?.code : currency) || '';
 
@@ -51,8 +52,19 @@ export default function PropertyHome({ property }) {
 
         let price = t.contactForPrice || "Contact for Price";
         let suffix = "";
+        let isHidden = false;
 
-        const formatPrice = (val) => `${Number(val).toLocaleString()} ${currencyCode}`;
+        // Check visibility
+        if (trType === "Sale" && financialVisibility.price) isHidden = true;
+        if (trType === "Lease" && financialVisibility.leasePrice) isHidden = true;
+        if (trType === "Home Stay" && financialVisibility.pricePerNight) isHidden = true;
+
+        if (isHidden) {
+            return { price: t.contactForPrice || "Contact for Price", suffix: "", isHidden: true };
+        }
+
+        const dispCurrency = financialVisibility.currency ? "" : currencyCode;
+        const formatPrice = (val) => `${Number(val).toLocaleString()} ${dispCurrency}`.trim();
 
         if (trType === "Sale" && pSale) {
             price = formatPrice(pSale);
@@ -66,10 +78,10 @@ export default function PropertyHome({ property }) {
             price = formatPrice(pSale);
         }
 
-        return { price, suffix };
+        return { price, suffix, isHidden: false };
     };
 
-    const { price, suffix } = getPrice();
+    const { price, suffix, isHidden: priceHidden } = getPrice();
 
     const handleShare = async () => {
         const shareData = {
@@ -172,7 +184,7 @@ export default function PropertyHome({ property }) {
                     {t.home || 'Home'}
                 </button>
                 <span className="text-gray-400">›</span>
-                {transactionType && (
+                {transactionType && (!property?.listingInformationVisibility?.transactionType) && (
                     <>
                         <button
                             onClick={() => navigate(`/listing?type=${safeVal(property?.listingInformation?.listingInformationTransactionType)}`)}
@@ -183,12 +195,12 @@ export default function PropertyHome({ property }) {
                         <span className="text-gray-400">›</span>
                     </>
                 )}
-                <span className="text-[#41398B] font-semibold">{normalizeFancyText(title || t.untitledProperty)}</span>
+                <span className="text-[#41398B] font-semibold">{normalizeFancyText((!property?.titleVisibility ? title : "") || t.untitledProperty)}</span>
             </div>
 
             {/* Category Badge */}
             <div className="flex items-center gap-2">
-                {transactionType && (
+                {transactionType && (!property?.listingInformationVisibility?.transactionType) && (
                     <div className="mb-4">
                         <button
                             onClick={() => navigate(`/listing?type=${safeVal(property?.listingInformation?.listingInformationTransactionType)}`)}
@@ -198,7 +210,7 @@ export default function PropertyHome({ property }) {
                         </button>
                     </div>
                 )}
-                {propertyType && (
+                {propertyType && (!property?.listingInformationVisibility?.propertyType) && (
                     <div className="mb-4">
                         <button
                             onClick={() => navigate(`/listing?propertyType=${safeVal(property?.listingInformation?.listingInformationPropertyType)}`)}
@@ -216,9 +228,9 @@ export default function PropertyHome({ property }) {
                 {/* Left: Title and Location */}
                 <div className="flex-1">
                     <h1 className="text-2xl md:text-[32px] font-bold text-[#222222] md:mb-3 mb-0 leading-tight md:pr-20 pr-0">
-                        {normalizeFancyText(title || t.untitledProperty)}
+                        {normalizeFancyText((!property?.titleVisibility ? title : "") || t.untitledProperty)}
                     </h1>
-                    {location && (
+                    {location && (!property?.listingInformationVisibility?.areaZone) && (
                         <div className="flex items-center gap-2 text-gray-600">
                             <MapPin className="w-4 h-4 text-[#41398B]" />
                             <span className="text-base">{location}</span>

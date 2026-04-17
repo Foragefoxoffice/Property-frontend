@@ -50,7 +50,7 @@ export default function Header({ showNavigation = true }) {
   const labels = {
     logout: { en: "Logout", vi: "Đăng xuất" },
     loggedOut: { en: "You're Logged Out!", vi: "Bạn đã đăng xuất!" },
-    homepages: { en: "Homepage", vi: "Trang chủ" },
+    homepages: { en: "Home", vi: "Trang chủ" },
     properties: { en: "Properties", vi: "Bất động sản" },
     propertiesLease: { en: "Properties for Lease", vi: "Bất động sản cho thuê" },
     propertiesSale: { en: "Properties for Sale", vi: "Bất động sản bán" },

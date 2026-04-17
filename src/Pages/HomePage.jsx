@@ -46,7 +46,7 @@ export default function HomePage() {
     // Prepare SEO Data
     const metaTitle = homePageData?.[`homeSeoMetaTitle_${langKey}`] ||
         homePageData?.[`heroTitle_${langKey}`] ||
-        (langKey === 'en' ? 'Home Page' : 'Trang Chủ');
+        (langKey === 'en' ? 'Home' : 'Trang Chủ');
 
     const metaDesc = homePageData?.[`homeSeoMetaDescription_${langKey}`] ||
         homePageData?.[`heroDescription_${langKey}`] ||
