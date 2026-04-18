@@ -23,10 +23,8 @@ const CommonRichText = ({
                 [{ color: [] }, { background: [] }],
                 [{ script: "sub" }, { script: "super" }],
                 ["blockquote", "code-block"],
-                [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
-                [{ direction: "rtl" }, { align: [] }],
+                [{ list: "ordered" }, { list: "bullet" }],
                 ["link", "image", "video"],
-                ["clean"],
             ],
         },
     };
@@ -45,9 +43,6 @@ const CommonRichText = ({
         "code-block",
         "list",
         "bullet",
-        "indent",
-        "direction",
-        "align",
         "link",
         "image",
         "video",
@@ -103,6 +98,22 @@ const CommonRichText = ({
                 }
                 /* Spacing between paragraphs */
                 .rich-text-wrapper .ql-editor p {
+                    margin-bottom: 0.75rem;
+                }
+                /* Blockquote styling */
+                .rich-text-wrapper .ql-editor blockquote {
+                    border-left: 4px solid #41398B;
+                    padding-left: 1rem;
+                    margin-left: 0;
+                    margin-bottom: 0.75rem;
+                    font-style: italic;
+                    color: #4b5563;
+                }
+                /* Code block styling */
+                .rich-text-wrapper .ql-editor pre {
+                    background-color: #f1f5f9;
+                    padding: 0.75rem;
+                    border-radius: 0.5rem;
                     margin-bottom: 0.75rem;
                 }
                 /* Custom scrollbar for editor */

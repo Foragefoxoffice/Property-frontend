@@ -1672,7 +1672,7 @@ export default function CreatePropertyListStep1({
 
         {/* === Description === */}
         <div className="flex flex-col w-full mt-5">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <label className="text-sm text-[#131517] font-semibold">
               {lang === "en" ? "Description" : "Mô tả"}
             </label>

@@ -767,10 +767,12 @@ export default function ListingPage() {
                                                         />
                                                         {/* Badges */}
                                                         <div className="absolute top-3 left-3 flex gap-2">
-                                                            <span className={`px-2 py-1.5 text-[11px] ${getCategoryBadgeClass(property.listingInformation?.listingInformationTransactionType)} text-white text-xs font-bold uppercase tracking-wider rounded-sm shadow-lg`}>
-                                                                {getCategoryLabel(property.listingInformation?.listingInformationTransactionType)}
-                                                            </span>
-                                                            {property.listingInformation?.listingInformationPropertyType && (
+                                                            {property.listingInformation?.listingInformationTransactionType && !property.listingInformationVisibility?.transactionType && (
+                                                                <span className={`px-2 py-1.5 text-[11px] ${getCategoryBadgeClass(property.listingInformation?.listingInformationTransactionType)} text-white text-xs font-bold uppercase tracking-wider rounded-sm shadow-lg`}>
+                                                                    {getCategoryLabel(property.listingInformation?.listingInformationTransactionType)}
+                                                                </span>
+                                                            )}
+                                                            {property.listingInformation?.listingInformationPropertyType && !property.listingInformationVisibility?.propertyType && (
                                                                 <span className="px-2 py-1.5 text-[11px] bg-[#41398B]/90 backdrop-blur-sm text-white text-xs font-bold uppercase tracking-wider rounded-sm shadow-lg">
                                                                     {getLocalizedValue(property.listingInformation.listingInformationPropertyType)}
                                                                 </span>
@@ -800,42 +802,52 @@ export default function ListingPage() {
                                                         <div className="flex items-baseline gap-0 mb-0">
                                                             {(() => {
                                                                 const type = getLocalizedValue(property.listingInformation?.listingInformationTransactionType);
+                                                                const financialVisibility = property.financialVisibility || {};
                                                                 const priceSale = property.financialDetails?.financialDetailsPrice;
                                                                 const priceLease = property.financialDetails?.financialDetailsLeasePrice;
                                                                 const priceNight = property.financialDetails?.financialDetailsPricePerNight;
                                                                 const genericPrice = property.financialDetails?.financialDetailsPrice;
 
-                                                                // Handle currency safely (extract code)
+                                                                // Handle currency safely
                                                                 const currencyData = property.financialDetails?.financialDetailsCurrency;
                                                                 const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
+                                                                const dispCurrency = financialVisibility.currency ? "" : currencyCode;
 
                                                                 let displayPrice = t.contactForPrice;
                                                                 let displaySuffix = null;
+                                                                let isPriceHidden = false;
+
+                                                                // Check visibility based on transaction type
+                                                                if (type === 'Sale' && financialVisibility.price) isPriceHidden = true;
+                                                                else if (type === 'Lease' && financialVisibility.leasePrice) isPriceHidden = true;
+                                                                else if (type === 'Home Stay' && financialVisibility.pricePerNight) isPriceHidden = true;
 
                                                                 // Helper to format price with currency
-                                                                const formatP = (p) => `${Number(p).toLocaleString()} ${currencyCode}`;
+                                                                const formatP = (p) => `${Number(p).toLocaleString()} ${dispCurrency}`.trim();
 
-                                                                if (type === 'Sale' && priceSale) {
-                                                                    displayPrice = formatP(priceSale);
-                                                                } else if (type === 'Lease' && priceLease) {
-                                                                    displayPrice = formatP(priceLease);
-                                                                    displaySuffix = ' / month';
-                                                                } else if (type === 'Home Stay' && priceNight) {
-                                                                    displayPrice = formatP(priceNight);
-                                                                    displaySuffix = ' / night';
-                                                                } else if (genericPrice) {
-                                                                    displayPrice = formatP(genericPrice);
-                                                                    if (selectedCategory === 'Lease') {
+                                                                if (!isPriceHidden) {
+                                                                    if (type === 'Sale' && priceSale) {
+                                                                        displayPrice = formatP(priceSale);
+                                                                    } else if (type === 'Lease' && priceLease) {
+                                                                        displayPrice = formatP(priceLease);
                                                                         displaySuffix = ' / month';
-                                                                    } else if (selectedCategory === 'Home Stay') {
+                                                                    } else if (type === 'Home Stay' && priceNight) {
+                                                                        displayPrice = formatP(priceNight);
                                                                         displaySuffix = ' / night';
+                                                                    } else if (genericPrice) {
+                                                                        displayPrice = formatP(genericPrice);
+                                                                        if (selectedCategory === 'Lease') {
+                                                                            displaySuffix = ' / month';
+                                                                        } else if (selectedCategory === 'Home Stay') {
+                                                                            displaySuffix = ' / night';
+                                                                        }
                                                                     }
                                                                 }
 
                                                                 return (
                                                                     <>
                                                                         <span className="text-[20px] font-bold text-[#2a2a2a]">{displayPrice}</span>
-                                                                        {displaySuffix && <span className="text-md text-gray-500 font-medium">{displaySuffix}</span>}
+                                                                        {displaySuffix && !isPriceHidden && <span className="text-md text-gray-500 font-medium">{displaySuffix}</span>}
                                                                     </>
                                                                 );
                                                             })()}
@@ -844,10 +856,11 @@ export default function ListingPage() {
                                                         {/* Title */}
                                                         <h3 className="md:text-[17px] text-[15px] font-semibold text-gray-900 mb-2 line-clamp-2 md:min-h-[2rem] min-h-[0rem] group-hover:text-[#41398B] transition-colors">
                                                             {normalizeFancyText(
-                                                                getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
-                                                                getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
-                                                                getLocalizedValue(property.listingInformation?.listingInformationProjectCommunity) ||
-                                                                t.untitledProperty
+                                                                (!property.titleVisibility ? (
+                                                                    getLocalizedValue(property.listingInformation?.listingInformationPropertyTitle) ||
+                                                                    getLocalizedValue(property.listingInformation?.listingInformationBlockName) ||
+                                                                    getLocalizedValue(property.listingInformation?.listingInformationProjectCommunity)
+                                                                ) : "") || t.untitledProperty
                                                             )}
                                                         </h3>
 
@@ -856,7 +869,7 @@ export default function ListingPage() {
                                                             className="md:text-[16px] text-[14px] text-gray-500 mb-4 line-clamp-2 md:min-h-[2rem] min-h-[0rem] ql-editor-summary"
                                                             dangerouslySetInnerHTML={{
                                                                 __html: getLocalizedValue(property.whatNearby?.whatNearbyDescription) ||
-                                                                    getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) ||
+                                                                    (!property.listingInformationVisibility?.areaZone ? getLocalizedValue(property.listingInformation?.listingInformationZoneSubArea) : "") ||
                                                                     'Description not specified'
                                                             }}
                                                         />

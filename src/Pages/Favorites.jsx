@@ -164,21 +164,31 @@ export default function Favorites({ isDashboard = false }) {
                                 const prop = fav.property;
                                 if (!prop) return null; // Safety check
 
+                                const financialVisibility = prop.financialVisibility || {};
                                 const priceSale = prop.financialDetails?.financialDetailsPrice;
                                 const priceLease = prop.financialDetails?.financialDetailsLeasePrice;
                                 const priceNight = prop.financialDetails?.financialDetailsPricePerNight;
                                 const genericPrice = prop.financialDetails?.financialDetailsPrice;
                                 const currencyData = prop.financialDetails?.financialDetailsCurrency;
                                 const currencyCode = (typeof currencyData === 'object' ? currencyData?.code : currencyData) || '';
+                                const dispCurrency = financialVisibility.currency ? "" : currencyCode;
                                 const type = getLocalizedValue(prop.listingInformation?.listingInformationTransactionType);
 
                                 let displayPrice = t.contactForPrice;
-                                const formatP = (p) => `${Number(p).toLocaleString()} ${currencyCode}`;
+                                let isPriceHidden = false;
 
-                                if (type === 'Sale' && priceSale) displayPrice = formatP(priceSale);
-                                else if (type === 'Lease' && priceLease) displayPrice = `${formatP(priceLease)} / month`;
-                                else if (type === 'Home Stay' && priceNight) displayPrice = `${formatP(priceNight)} / night`;
-                                else if (genericPrice) displayPrice = formatP(genericPrice);
+                                if (type === 'Sale' && financialVisibility.price) isPriceHidden = true;
+                                else if (type === 'Lease' && financialVisibility.leasePrice) isPriceHidden = true;
+                                else if (type === 'Home Stay' && financialVisibility.pricePerNight) isPriceHidden = true;
+
+                                const formatP = (p) => `${Number(p).toLocaleString()} ${dispCurrency}`.trim();
+
+                                if (!isPriceHidden) {
+                                    if (type === 'Sale' && priceSale) displayPrice = formatP(priceSale);
+                                    else if (type === 'Lease' && priceLease) displayPrice = `${formatP(priceLease)} / month`;
+                                    else if (type === 'Home Stay' && priceNight) displayPrice = `${formatP(priceNight)} / night`;
+                                    else if (genericPrice) displayPrice = formatP(genericPrice);
+                                }
 
                                 return (
                                     <div key={fav._id} className="p-4 md:p-5 hover:bg-gray-50 transition-colors group border-b last:border-0 border-gray-100">

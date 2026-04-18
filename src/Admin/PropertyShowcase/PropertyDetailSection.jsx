@@ -115,7 +115,7 @@ const cleanHtml = (html) => {
   return html
     .replace(/&nbsp;/g, " ")
     .replace(/\u00A0/g, " ")
-    .replace(/\s{2,}/g, " ")
+    .replace(/[^\S\n\r]{2,}/g, " ")
     .trim();
 };
 /* -------------------------------------------------------
@@ -468,7 +468,7 @@ export default function PropertyDetailsSection({ property }) {
             <section className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12">
               <h2 className="text-xl font-semibold mb-5">{t.description}</h2>
               <div
-                className="text-gray-700 leading-6 ql-editor-summary property-description-summary overflow-hidden"
+                className="text-gray-700 leading-6 rich-text-display property-description-summary"
                 dangerouslySetInnerHTML={{
                   __html: cleanHtml(getLocalizedValue(what?.whatNearbyDescription)) || t.noDescription
                 }}
@@ -914,10 +914,10 @@ export default function PropertyDetailsSection({ property }) {
                     {/* Title */}
                     <h3 className="text-[18px] font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#41398B] transition-colors">
                       {normalizeFancyText(
-                        getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) ||
-                        getLocalizedValue(prop.listingInformation?.listingInformationBlockName) ||
-                        getLocalizedValue(prop.listingInformation?.listingInformationProjectCommunity) ||
-                        t.untitledProperty
+                        ((!prop.titleVisibility ? getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) : "") ||
+                          (!prop.listingInformationVisibility?.blockName ? getLocalizedValue(prop.listingInformation?.listingInformationBlockName) : "") ||
+                          (!prop.listingInformationVisibility?.projectCommunity ? getLocalizedValue(prop.listingInformation?.listingInformationProjectCommunity) : "") ||
+                          t.untitledProperty)
                       )}
                     </h3>
 
@@ -925,8 +925,8 @@ export default function PropertyDetailsSection({ property }) {
                     <div
                       className="text-[16px] text-gray-500 mb-4 line-clamp-2 ql-editor-summary"
                       dangerouslySetInnerHTML={{
-                        __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
-                          getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
+                        __html: (!prop.whatNearbyVisibility ? getLocalizedValue(prop.whatNearby?.whatNearbyDescription) : "") ||
+                          (!prop.listingInformationVisibility?.areaZone ? getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) : "") ||
                           'Location not specified'
                       }}
                     />
