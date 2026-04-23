@@ -51,6 +51,16 @@ const formatDMY = (dateStr) => {
   return `${day}/${month}/${year}`;
 };
 
+const cleanHtml = (html) => {
+  if (!html) return "";
+
+  return html
+    .replace(/&nbsp;/g, " ")
+    .replace(/\u00A0/g, " ")
+    .replace(/[^\S\n\r]{2,}/g, " ")
+    .trim();
+};
+
 const formatNumber = (value) => {
   if (!value && value !== 0) return "—";
   const numeric = value.toString().replace(/,/g, "");
@@ -386,8 +396,12 @@ export default function CreatePropertyPreview({
         {/* === Description === */}
         <Section title={labels.description[lang]}>
           <div
-            className="text-gray-700 leading-relaxed overflow-hidden rich-text-display"
-            dangerouslySetInnerHTML={{ __html: safe(wn.whatNearbyDescription) || labels.noDescription[lang] }}
+            className="text-gray-700 leading-relaxed rich-text-display preview-description-rich-text"
+            dangerouslySetInnerHTML={{
+              __html:
+                cleanHtml(safe(wn.whatNearbyDescription)) ||
+                labels.noDescription[lang],
+            }}
           />
         </Section>
 
@@ -700,7 +714,7 @@ const Section = ({ title, children }) => (
       <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
       <div className="h-[2px] flex-1 ml-4 bg-gradient-to-r from-gray-200 to-transparent" />
     </div>
-    <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+    <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition w-full overflow-hidden">
       {children}
     </div>
   </div>
