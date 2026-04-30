@@ -13,9 +13,6 @@ import { LanguageProvider } from "./Language/LanguageContext.jsx";
 import { PermissionProvider, usePermissions } from "./Context/PermissionContext.jsx";
 import { FavoritesProvider } from "./Context/FavoritesContext.jsx";
 import { SocketProvider } from "./Context/SocketContext.jsx";
-import PublicLayout from "./components/Layout/PublicLayout.jsx";
-import UserDashboardLayout from "./components/Layout/UserDashboardLayout.jsx";
-import UserProfile from "./Pages/UserProfile.jsx";
 
 import ManageProperty from "./Admin/Property/ManageProperty.jsx";
 import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage.jsx";
@@ -23,10 +20,6 @@ import PropertyShowcasePage from "./Admin/PropertyShowcase/PropertyShowcasePage.
 import { ToastContainer } from "react-toastify";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import ScrollUpButton from "./components/ScrollUpButton.jsx";
-import FloatingContactButtons from "./components/FloatingContactButtons.jsx";
-import MaintenanceGuard from "./components/MaintenanceGuard.jsx";
-
-
 // ADMIN PAGES
 import PropertyManager from "./Admin/Property/PropertyManager";
 import CreatePropertyPage from "./Admin/CreateProperty/CreatePropertyPage";
@@ -58,17 +51,10 @@ import ManageTrashProperty from "./Admin/Property/ManageTrashProperty.jsx"
 import FiltersPage from "./Admin/Filters/Filter.jsx";
 import BulkUpload from "./Admin/Property/BulkUpload.jsx";
 
-// Pages
-import ListingPage from "./Pages/ListingPage";
 import HomepageForm from "./AdminCms/HomepageCms/HomepageForm.jsx";
 import AboutPageForm from "./AdminCms/AboutpageCms/AboutPageForm.jsx";
 import ContactPageForm from "./AdminCms/ContactpageCms/ContactPageForm.jsx";
 import CMSPlaceholder from "./AdminCms/CMSPlaceholder.jsx";
-import HomePage from "./Pages/HomePage.jsx";
-import AboutPage from "./Pages/AboutPage.jsx";
-import ContactPage from "./Pages/ContactPage.jsx";
-import BlogPage from "./Pages/BlogPage.jsx";
-import BlogDetailPage from "./Pages/BlogDetailPage.jsx";
 import BlogListPage from "./AdminCms/BlogCms/BlogListPage.jsx";
 import BlogBannerPage from "./AdminCms/BlogCms/BlogBannerPage.jsx";
 import BlogCmsForm from "./AdminCms/BlogCms/BlogCmsForm.jsx";
@@ -81,12 +67,9 @@ import UsersDetails from "./Admin/UserDetails/UsersDetails.jsx";
 import Roles from "./Admin/Property/Roles.jsx";
 import ContactEnquiry from "./Admin/Enquiry/ContactEnquiry.jsx";
 import Subscription from "./Admin/Subscription/Subscription.jsx";
-import Favorites from "./Pages/Favorites.jsx";
 import Enquires from "./Admin/Enquiry/Enquires.jsx";
 import TermsCondionsForm from "./AdminCms/TermsCondionsCms/TermsCondionsForm.jsx";
-import TermsConditionPage from "./Pages/TermsConditionPage.jsx";
 import PrivacyPolicyForm from "./AdminCms/PrivacyPolicyCms/PrivacyPolicyForm.jsx";
-import PrivacyPolicyPage from "./Pages/PrivacyPolicyPage.jsx";
 import Notification from "./Admin/Notification/Notification.jsx";
 import TestimonialsCms from "./AdminCms/TestimonialCms/TestimonialsCms.jsx";
 import ProjectBannerForm from "./AdminCms/ProjectCms/ProjectBannerForm.jsx";
@@ -94,10 +77,7 @@ import ProjectListPage from "./AdminCms/ProjectCms/ProjectListPage.jsx";
 import ProjectEnquiryListPage from "./AdminCms/ProjectCms/ProjectEnquiryListPage.jsx";
 import ProjectMainForm from "./AdminCms/ProjectCms/ProjectMainForm.jsx";
 import ProjectCategoryListPage from "./AdminCms/ProjectCms/ProjectCategoryListPage.jsx";
-import GiveTestimonial from "./Pages/GiveTestimonial.jsx";
-import ProjectPage from "./Pages/ProjectPage.jsx";
-import ProjectDetailsPage from "./Pages/ProjectDetailsPage.jsx";
-import ProjectIntroductionPage from "./Pages/ProjectIntroductionPage.jsx";
+import UserProfile from "./Pages/UserProfile.jsx";
 
 const DashboardIndex = () => {
   const { getFirstAccessiblePath, loading } = usePermissions();
@@ -120,14 +100,13 @@ const RootLayout = () => (
       pauseOnHover
       theme="colored"
     />
-    <FloatingContactButtons />
     <Outlet />
   </>
 );
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route element={<MaintenanceGuard><RootLayout /></MaintenanceGuard>}>
+    <Route element={<RootLayout />}>
 
       {/* ---------- PUBLIC ROUTES ---------- */}
       <Route path="/login" element={<Login />} />
@@ -234,41 +213,7 @@ const router = createBrowserRouter(
         <Route path="profile" element={<UserProfile />} />
       </Route>
 
-      {/* ---------- USER DASHBOARD ---------- */}
-      <Route
-        path="/user-dashboard"
-        element={
-          <ProtectedRoute allowUser={true}>
-            <UserDashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="favorites" element={<Favorites isDashboard={true} />} />
-        <Route path="profile" element={<UserProfile />} />
-        <Route path="give-testimonial" element={<GiveTestimonial />} />
-        <Route index element={<Favorites isDashboard={true} />} />
-      </Route>
-
-      {/* OTHER NON-DASHBOARD PAGES */}
-      <Route path="/manage-property" element={<ManageProperty />} />
-      <Route path="/filters" element={<FiltersPage />} />
-
-      {/* Pages with Public Layout */}
-      <Route element={<PublicLayout />}>
-        <Route path="/listing" element={<ListingPage />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/blogs" element={<BlogPage />} />
-        <Route path="/blogs/:slug" element={<BlogDetailPage />} />
-        <Route path="/terms-conditions" element={<TermsConditionPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-        <Route path="/property-showcase/:id/:slug?" element={<PropertyShowcasePage />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/projects" element={<ProjectPage />} />
-        <Route path="/projects/:slug" element={<ProjectDetailsPage />} />
-        <Route path="/project-introduction" element={<ProjectIntroductionPage />} />
-      </Route>
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Route>
   )
 );
