@@ -66,7 +66,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
       title: property.title,
       description: property.description,
       images: [property.images[0]?.url],
-      url: `https://183housingsolutions.com/property-showcase/${params.id}/${property.slug}`,
+      url: `https://api.183housingsolutions.com/property-showcase/${params.id}/${property.slug}`,
     },
   };
 }
@@ -84,7 +84,7 @@ Ported verbatim: `LanguageContext`, `FavoritesContext`, `PermissionContext`, `So
 All wrapped in `app/layout.tsx` inside a `Providers` client component.
 
 ### API Layer
-Single `lib/api.ts` — Axios instance pointing to `https://183housingsolutions.com/api/v1`.
+Single `lib/api.ts` — Axios instance pointing to `https://api.183housingsolutions.com/api/v1`.
 Server-side fetches use native `fetch()` (for Next.js caching). Client-side fetches use the Axios instance.
 
 ## Tech Stack

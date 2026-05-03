@@ -166,8 +166,8 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_ADMIN_URL=http://localhost:5173
 
 # Production (comment out above, uncomment below):
-# NEXT_PUBLIC_API_URL=https://183housingsolutions.com/api/v1
-# NEXT_PUBLIC_SITE_URL=https://183housingsolutions.com
+# NEXT_PUBLIC_API_URL=https://api.183housingsolutions.com/api/v1
+# NEXT_PUBLIC_SITE_URL=https://api.183housingsolutions.com
 # NEXT_PUBLIC_ADMIN_URL=https://admin.183housingsolutions.com
 ```
 
@@ -495,7 +495,7 @@ git commit -m "feat: port language files and all context providers"
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: (process.env.NEXT_PUBLIC_API_URL || 'https://183housingsolutions.com/api/v1').replace(/\/$/, ''),
+  baseURL: (process.env.NEXT_PUBLIC_API_URL || 'https://api.183housingsolutions.com/api/v1').replace(/\/$/, ''),
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 })
@@ -587,7 +587,7 @@ export default API
 // Property-frontend-next/lib/serverFetch.ts
 // Used only in Server Components — no localStorage, no axios
 
-const BASE = (process.env.NEXT_PUBLIC_API_URL || 'https://183housingsolutions.com/api/v1').replace(/\/$/, '')
+const BASE = (process.env.NEXT_PUBLIC_API_URL || 'https://api.183housingsolutions.com/api/v1').replace(/\/$/, '')
 
 export async function serverGet<T>(path: string, revalidate = 300): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
