@@ -356,7 +356,7 @@ export default function OwnerView() {
                           </div>
 
                           <a
-                            href={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}${getLocalizedValue(prop.seoInformation?.slugUrl) ? `/${getLocalizedValue(prop.seoInformation?.slugUrl)}` : ''}`}
+                            href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}${getLocalizedValue(prop.seoInformation?.slugUrl) ? `/${getLocalizedValue(prop.seoInformation?.slugUrl)}` : ''}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}

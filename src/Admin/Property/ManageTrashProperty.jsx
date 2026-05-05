@@ -383,7 +383,7 @@ export default function ManageTrashProperty() {
                     <td className="px-6 py-4 text-right flex gap-2 justify-end">
                       {/* VIEW */}
                       <a
-                        href={`/property-showcase/${info?.listingInformationPropertyId}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
+                        href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${info?.listingInformationPropertyId}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 border rounded-full hover:bg-gray-100 flex items-center justify-center h-10 w-10"

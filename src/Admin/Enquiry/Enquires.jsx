@@ -558,7 +558,7 @@ export default function Enquires() {
                                                     )}
 
                                                     <a
-                                                        href={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId}${getLocalizedValue(prop.seoInformation?.slugUrl) ? `/${getLocalizedValue(prop.seoInformation?.slugUrl)}` : ''}`}
+                                                        href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${prop.listingInformation?.listingInformationPropertyId}${getLocalizedValue(prop.seoInformation?.slugUrl) ? `/${getLocalizedValue(prop.seoInformation?.slugUrl)}` : ''}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#41398B] text-white text-xs font-semibold rounded-lg hover:bg-[#352e7a] transition-all shadow-sm hover:shadow-md"

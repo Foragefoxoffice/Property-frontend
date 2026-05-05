@@ -1024,7 +1024,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
                           </div>
 
                           <a
-                            href={`/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}${prop.seoInformation?.slugUrl ? `/${safeText(prop.seoInformation.slugUrl)}` : ''}`}
+                            href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}${prop.seoInformation?.slugUrl ? `/${safeText(prop.seoInformation.slugUrl)}` : ''}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="bg-[#41398B] hover:bg-[#352e7a] text-white p-2 rounded-lg transition-all shadow-sm"

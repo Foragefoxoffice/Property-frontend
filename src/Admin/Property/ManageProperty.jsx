@@ -551,14 +551,14 @@ export default function ManageProperty({
                         )}
 
                         {can(permissionKey, 'view') && (
-                          <Link
-                            to={`/property-showcase/${p?.listingInformation?.listingInformationPropertyId || p._id}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
+                          <a
+                            href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${p?.listingInformation?.listingInformationPropertyId || p._id}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
                           >
                             <Eye className="w-4 h-4 text-gray-600" />
-                          </Link>
+                          </a>
                         )}
 
                         {can(permissionKey, 'preview') && (
