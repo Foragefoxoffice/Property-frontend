@@ -51,14 +51,9 @@ export default function Login() {
         await fetchFavorites();
         CommonToaster(t.loginSuccess, "success");
 
-        // Redirect based on user role
-        if (user?.role === "user") {
-          navigate("/");
-        } else {
-          // Staff, Admin, or other roles go to first accessible dashboard page
-          const firstPath = getFirstAccessiblePath(newPermissions);
-          navigate(firstPath);
-        }
+        // Redirect all users to profile/dashboard page to show their details
+        const firstPath = getFirstAccessiblePath(newPermissions);
+        navigate(firstPath || "/dashboard/profile");
       }
     } catch (err) {
       setError(

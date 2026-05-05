@@ -179,7 +179,7 @@ export default function Header({ showNavigation = true }) {
           <div className="flex items-center gap-5">
             {/* Visit Site Button */}
             <a
-              href="/"
+              href={import.meta.env.VITE_SITE_URL || "https://183housingsolutions.com"}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 bg-[#41398B] cursor-pointer text-white rounded-lg text-sm font-semibold transition-colors hover:bg-[#352e7a]"
