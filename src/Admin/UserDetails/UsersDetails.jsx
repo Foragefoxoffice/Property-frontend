@@ -322,7 +322,8 @@ export default function UsersDetails() {
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0">
                                                         {row.profileImage ? (
-                                                            <img src={row.profileImage} alt={row.name} className="w-full h-full object-cover" />
+                                                            <img src={getImageUrl(row.profileImage)} alt={row.name} className="w-full h-full object-cover" />
+
                                                         ) : (
                                                             <span className="text-lg font-bold text-gray-500">
                                                                 {row.name ? row.name.charAt(0).toUpperCase() : "U"}
@@ -687,7 +688,8 @@ export default function UsersDetails() {
                                 <div className="w-32 h-32 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                                     {viewingUser.profileImage ? (
                                         <img
-                                            src={viewingUser.profileImage}
+                                            src={getImageUrl(viewingUser.profileImage)}
+
                                             alt="profile"
                                             className="w-full h-full object-cover"
                                         />

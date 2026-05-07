@@ -417,7 +417,8 @@ export default function UserProfile() {
                             >
                                 <div className="w-28 h-28 rounded-full border-4 border-gray-50 shadow-sm overflow-hidden bg-gray-100 flex items-center justify-center transition-all group-hover:ring-4 group-hover:ring-[#41398B]/20">
                                     {userForm.profileImage ? (
-                                        <img src={userForm.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                        <img src={getImageUrl(userForm.profileImage)} alt="Profile" className="w-full h-full object-cover" />
+
                                     ) : (
                                         <User className="w-12 h-12 text-gray-300" />
                                     )}
@@ -539,7 +540,8 @@ export default function UserProfile() {
                             >
                                 <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100 flex items-center justify-center transition-all group-hover:ring-4 group-hover:ring-[#41398B]/20">
                                     {staffForm.profileImage ? (
-                                        <img src={staffForm.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                        <img src={getImageUrl(staffForm.profileImage)} alt="Profile" className="w-full h-full object-cover" />
+
                                     ) : (
                                         <span className="text-4xl font-bold text-gray-300 select-none">
                                             {staffForm.firstName?.en ? staffForm.firstName.en.charAt(0).toUpperCase() : ""}

@@ -20,6 +20,8 @@ import { FaWhatsapp } from "react-icons/fa";
 import { SiMessenger, SiZalo } from "react-icons/si";
 import { translations } from "../../Language/translations";
 import { safeVal, safeArray, normalizeFancyText } from "@/utils/display";
+import { getImageUrl } from "@/utils/imageHelper";
+
 import { getAgent, addFavorite } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -44,18 +46,19 @@ const MediaPreviewModal = ({ url, type, onClose }) => {
         </button>
         {type === "video" ? (
           <video
-            src={url}
+            src={getImageUrl(url)}
             controls
             autoPlay
             className="w-full h-[70vh] object-contain rounded-lg bg-black"
           />
         ) : (
           <img
-            src={url}
+            src={getImageUrl(url)}
             alt="Preview"
             className="w-full max-h-[80vh] object-contain rounded-lg bg-[#F8F7FC]"
           />
         )}
+
       </div>
     </div>
   );
@@ -79,14 +82,15 @@ function SimpleSlider({ items, type = "image" }) {
       <div className="rounded-xl overflow-hidden border">
         {type === "video" ? (
           <video controls className="w-full h-[400px] object-cover rounded-lg">
-            <source src={safeItems[index]} type="video/mp4" />
+            <source src={getImageUrl(safeItems[index])} type="video/mp4" />
           </video>
         ) : (
           <img
-            src={safeItems[index]}
+            src={getImageUrl(safeItems[index])}
             className="w-full h-[400px] object-cover rounded-lg"
           />
         )}
+
       </div>
 
       {safeItems.length > 1 && (
@@ -493,9 +497,10 @@ export default function PropertyDetailsSection({ property }) {
                     className="flex items-center gap-3 border-b py-3 last:border-b-0"
                   >
                     <img
-                      src={item?.propertyUtilityIcon}
+                      src={getImageUrl(item?.propertyUtilityIcon)}
                       className="w-6 h-6 object-contain"
                     />
+
                     <span className="font-medium">
                       {safeVal(item?.propertyUtilityUnitName)}
                     </span>
@@ -633,16 +638,11 @@ export default function PropertyDetailsSection({ property }) {
               <>
                 <div className="flex items-center gap-3 mb-2">
                   <img
-                    src={
-                      agentData?.agentImage
-                        ? agentData.agentImage.startsWith('/')
-                          ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${agentData.agentImage}`
-                          : agentData.agentImage
-                        : "/placeholder.jpg"
-                    }
+                    src={getImageUrl(agentData?.agentImage || "/placeholder.jpg")}
                     className="w-[250px] h-full object-cover pb-0"
                     alt="Agent"
                   />
+
                 </div>
 
                 <div>
@@ -810,7 +810,8 @@ export default function PropertyDetailsSection({ property }) {
                   <div className="relative img-style article-thumb h-56 overflow-hidden rounded-2xl">
                     <img
                       style={{ width: "100%" }}
-                      src={prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif'}
+                      src={getImageUrl(prop.imagesVideos?.propertyImages?.[0] || '/images/property/dummy-img.avif')}
+
                       alt={getLocalizedValue(prop.listingInformation?.listingInformationBlockName)}
                       className="w-full h-full object-cover rounded-2xl transition-transform duration-500 group-hover:scale-96"
                     />

@@ -471,10 +471,11 @@ export default function BlogMainForm({
                                         {mainImageUrl ? (
                                             <div className="relative w-48 h-36 rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-50 group">
                                                 <img
-                                                    src={mainImageUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${mainImageUrl}` : mainImageUrl}
+                                                    src={getImageUrl(mainImageUrl)}
                                                     alt="Featured"
                                                     className="w-full h-full object-cover"
                                                 />
+
                                                 <div className="absolute inset-0 flex justify-center items-center gap-2 opacity-0 group-hover:opacity-100">
                                                     <button
                                                         type="button"
@@ -594,10 +595,11 @@ export default function BlogMainForm({
                             <X className="w-5 h-5" />
                         </button>
                         <img
-                            src={previewImage.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${previewImage}` : previewImage}
+                            src={getImageUrl(previewImage)}
                             className="w-full h-full object-contain rounded-xl"
                             alt="Preview"
                         />
+
                     </div>
                 </div>
             )}

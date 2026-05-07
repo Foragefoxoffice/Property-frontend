@@ -18,6 +18,8 @@ import { Select as AntdSelect, Spin } from "antd";
 import { usePermissions } from "../../Context/PermissionContext";
 import { getListingProperties } from "../../Api/action";
 import { normalizeFancyText } from "../../utils/display";
+import { getImageUrl } from "../../utils/imageHelper";
+
 
 /* 💜 Skeleton Loader Component */
 const SkeletonLoader = () => (
@@ -85,18 +87,19 @@ const MediaPreviewModal = ({ url, type, onClose }) => {
         {/* Preview */}
         {type === "video" ? (
           <video
-            src={url}
+            src={getImageUrl(url)}
             controls
             autoPlay
             className="w-full h-[75vh] object-contain rounded-lg bg-black"
           />
         ) : (
           <img
-            src={url}
+            src={getImageUrl(url)}
             alt="Preview"
             className="w-full max-h-[80vh] object-contain rounded-lg bg-gray-50"
           />
         )}
+
       </div>
     </div>
   );
@@ -418,10 +421,11 @@ export default function CreatePropertyPreview({
                     {safe(u.propertyUtilityUnitName)}
                   </span>
                   <img
-                    src={u.propertyUtilityIcon}
+                    src={getImageUrl(u.propertyUtilityIcon)}
                     alt={safe(u.propertyUtilityUnitName)}
                     className="w-6 h-6 object-contain"
                   />
+
                 </div>
               ))}
             </div>
@@ -749,14 +753,14 @@ const MediaGrid = ({ files = [], type, onPreview }) => {
           {/* Thumbnail (object-contain as requested) */}
           {type === "video" ? (
             <video
-              src={url}
+              src={getImageUrl(url)}
               muted
               playsInline
               className="w-full h-full object-contain bg-black/5"
             />
           ) : (
             <img
-              src={url}
+              src={getImageUrl(url)}
               alt=""
               className="w-full h-full object-contain bg-gray-50"
             />
@@ -965,10 +969,11 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
                       {/* Image Area */}
                       <div className="relative w-full sm:w-1/3 h-40 sm:h-auto overflow-hidden">
                         <img
-                          src={prop.imagesVideos?.propertyImages?.[0] || "/dummy-img.jpg"}
+                          src={getImageUrl(prop.imagesVideos?.propertyImages?.[0] || "/dummy-img.jpg")}
                           alt={title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
+
                         <div className="absolute top-2 left-2">
                           <span className="bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider text-gray-800 shadow-sm border border-gray-100">
                             {lang === 'vi' ? prop.listingInformation?.listingInformationTransactionType?.vi : prop.listingInformation?.listingInformationTransactionType?.en}
@@ -1071,10 +1076,11 @@ const StaffPopupCard = ({ onClose, data, lang, title }) => {
             <div>
               <div className="w-44 h-44 rounded-xl overflow-hidden bg-[#e7e4fb] flex items-center justify-center">
                 <img
-                  src={data.staffsImage || "/dummy-img.jpg"}
+                  src={getImageUrl(data.staffsImage || "/dummy-img.jpg")}
                   alt={safeText(data.staffsName)}
                   className="w-full h-full object-cover"
                 />
+
               </div>
               <p className="text-sm text-gray-800 mt-4">
                 <span className="font-medium">Staff ID:</span>{" "}

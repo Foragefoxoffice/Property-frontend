@@ -4,6 +4,8 @@ import { Share2, Heart, LayoutGrid, ChevronLeft, ChevronRight, Image as ImageIco
 import { safeVal, safeArray, formatNumber, normalizeFancyText } from "@/utils/display";
 import { CommonToaster } from "@/Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
+import { getImageUrl } from "@/utils/imageHelper";
+
 import { translations } from "../../Language/translations";
 import { useFavorites } from "../../Context/FavoritesContext";
 import { useNavigate } from "react-router-dom";
@@ -280,10 +282,11 @@ export default function PropertyHome({ property }) {
                         onClick={() => openPopup(0)}
                     >
                         <img
-                            src={images[0]}
+                            src={getImageUrl(images[0])}
                             className="w-full h-full object-cover hover:brightness-90 transition-all duration-300"
                             alt="Property main"
                         />
+
                     </div>
 
                     {/* Small Images */}
@@ -294,10 +297,11 @@ export default function PropertyHome({ property }) {
                             onClick={() => openPopup(i + 1)}
                         >
                             <img
-                                src={img}
+                                src={getImageUrl(img)}
                                 className="w-full h-full object-cover hover:brightness-90 transition-all duration-300"
                                 alt={`Property ${i + 1}`}
                             />
+
                         </div>
                     ))}
 
@@ -315,9 +319,10 @@ export default function PropertyHome({ property }) {
                         <AnimatePresence initial={false} custom={direction}>
                             <motion.img
                                 key={current}
-                                src={images[current]}
+                                src={getImageUrl(images[current])}
                                 alt={`property-img-${current}`}
                                 className="w-full h-full absolute inset-0 object-cover cursor-grab active:cursor-grabbing"
+
                                 custom={direction}
                                 drag="x"
                                 dragConstraints={{ left: 0, right: 0 }}
@@ -383,9 +388,10 @@ export default function PropertyHome({ property }) {
                         <AnimatePresence initial={false} custom={popupDirection}>
                             <motion.img
                                 key={popupIndex}
-                                src={images[popupIndex]}
+                                src={getImageUrl(images[popupIndex])}
                                 alt={`Full view ${popupIndex + 1}`}
                                 className="max-w-full max-h-[85vh] object-contain shadow-2xl absolute cursor-grab active:cursor-grabbing"
+
                                 custom={popupDirection}
                                 drag="x"
                                 dragConstraints={{ left: 0, right: 0 }}
@@ -454,7 +460,8 @@ export default function PropertyHome({ property }) {
                                     }}
                                     className={`w-16 h-12 rounded-lg overflow-hidden transition-all duration-300 flex-shrink-0 opacity-50 hover:opacity-100 ${popupIndex === i ? "opacity-100 scale-110 ring-2 ring-white" : ""}`}
                                 >
-                                    <img src={img} alt={`thumb-${i}`} className="object-cover w-full h-full" />
+                                    <img src={getImageUrl(img)} alt={`thumb-${i}`} className="object-cover w-full h-full" />
+
                                 </button>
                             ))}
                         </div>
