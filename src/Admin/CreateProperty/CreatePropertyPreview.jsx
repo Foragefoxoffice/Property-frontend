@@ -421,7 +421,7 @@ export default function CreatePropertyPreview({
                     {safe(u.propertyUtilityUnitName)}
                   </span>
                   <img
-                    src={getImageUrl(u.propertyUtilityIcon)}
+                    src={u.propertyUtilityIcon}
                     alt={safe(u.propertyUtilityUnitName)}
                     className="w-6 h-6 object-contain"
                   />
