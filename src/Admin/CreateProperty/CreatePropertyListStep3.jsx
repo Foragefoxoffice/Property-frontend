@@ -116,31 +116,28 @@ export default function CreatePropertyListStep3({
   const [showAddOwnerModal, setShowAddOwnerModal] = useState(false);
 
   const [form, setForm] = useState({
-    owner: initialData.owner || "",
-    ownerNotes: initialData.ownerNotes || { en: "", vi: "" },
+    owner: initialData.owner || initialData.contactManagement?.contactManagementOwner || { en: "", vi: "" },
+    ownerNotes: initialData.ownerNotes || initialData.contactManagement?.contactManagementOwnerNotes || { en: "", vi: "" },
     consultant: initialData.consultant ||
       initialData.contactManagement?.contactManagementConsultant || {
       en: "",
       vi: "",
     },
-    connectingPoint: initialData.connectingPoint || "",
-    connectingPointNotes: initialData.connectingPointNotes || {
+    connectingPoint: initialData.connectingPoint || initialData.contactManagement?.contactManagementConnectingPoint || { en: "", vi: "" },
+    connectingPointNotes: initialData.connectingPointNotes || initialData.contactManagement?.contactManagementConnectingPointNotes || {
       en: "",
       vi: "",
     },
-    internalNotes: initialData.internalNotes || { en: "", vi: "" },
+    internalNotes: initialData.internalNotes || initialData.contactManagement?.contactManagementInternalNotes || { en: "", vi: "" },
+    source: initialData.source || initialData.contactManagement?.contactManagementSource || { en: "", vi: "" },
     ownerPhone: initialData.contactManagement?.contactManagementOwnerPhone || [],
+    agentFee: initialData.contactManagement?.contactManagementAgentFee || 0,
   });
 
   /* ✅ Sync existing edit data once dropdowns (owners/staffs) arrive */
   useEffect(() => {
     // Wait until owners OR staffs arrive
     if (!owners.length && !staffs.length) return;
-
-    // Prevent looping
-    if (initialized.current) return;
-
-    initialized.current = true;
 
     const cm = initialData.contactManagement || {};
 
@@ -156,6 +153,7 @@ export default function CreatePropertyListStep3({
       internalNotes: cm.contactManagementInternalNotes || { en: "", vi: "" },
       source: cm.contactManagementSource || { en: "", vi: "" },
       ownerPhone: cm.contactManagementOwnerPhone || [],
+      agentFee: cm.contactManagementAgentFee || 0,
     };
 
     // Pre-select owner & sync phone if missing
@@ -215,6 +213,8 @@ export default function CreatePropertyListStep3({
             vi: "",
           },
           contactManagementSource: updated.source || { en: "", vi: "" },
+          contactManagementOwnerPhone: updated.ownerPhone || [],
+          contactManagementAgentFee: updated.agentFee || 0,
         },
       });
   };
@@ -356,6 +356,7 @@ export default function CreatePropertyListStep3({
                               form.connectingPointNotes,
                             contactManagementInternalNotes: form.internalNotes,
                             contactManagementSource: form.source,
+                            contactManagementAgentFee: form.agentFee,
                           },
                         });
                     }}
@@ -515,6 +516,7 @@ export default function CreatePropertyListStep3({
                 },
                 contactManagementSource: form.source || { en: "", vi: "" },
                 contactManagementOwnerPhone: form.ownerPhone || [],
+                contactManagementAgentFee: form.agentFee || 0,
               },
             };
 

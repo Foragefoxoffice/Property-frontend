@@ -706,7 +706,23 @@ export default function CreatePropertyPage({
       STEP CHANGE HANDLER
   ===================================================================================== */
   const handleStepChange = (data) =>
-    setPropertyData((prev) => ({ ...prev, ...data }));
+    setPropertyData((prev) => {
+      const updated = { ...prev };
+      for (const key in data) {
+        // Deep merge for nested objects (except arrays and nulls)
+        if (
+          prev[key] &&
+          typeof data[key] === "object" &&
+          data[key] !== null &&
+          !Array.isArray(data[key])
+        ) {
+          updated[key] = { ...prev[key], ...data[key] };
+        } else {
+          updated[key] = data[key];
+        }
+      }
+      return updated;
+    });
 
   /* =====================================================================================
       UI STEP CONFIG
