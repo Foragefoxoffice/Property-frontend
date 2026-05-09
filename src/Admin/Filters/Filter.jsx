@@ -166,7 +166,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const [pRes, zRes, bRes, tRes, fRes, cRes] = await Promise.all([
+        const [pRes, zRes, bRes, tRes, fRes, cRes, aRes] = await Promise.all([
           getAllProperties(),
           getAllZoneSubAreas(),
           getAllBlocks(),
@@ -182,7 +182,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         const tList = tRes.data?.data || [];
         const fList = fRes.data?.data || [];
         const cList = cRes.data?.data || [];
-        const aList = res[6]?.data?.data || [];
+        const aList = aRes.data?.data || [];
 
         // ✅ Filter to only show Active items in dropdowns
         const filterActive = (items) => items.filter(item => item.status === "Active");
