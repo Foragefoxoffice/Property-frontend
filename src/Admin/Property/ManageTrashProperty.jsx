@@ -85,6 +85,7 @@ export default function ManageTrashProperty() {
         if (appliedFilters.propertyType?.name) params.propertyType = appliedFilters.propertyType.name;
         if (appliedFilters.propertyNumber) params.propertyNo = appliedFilters.propertyNumber;
         if (appliedFilters.floorRange?.name) params.floor = appliedFilters.floorRange.name;
+        if (appliedFilters.availabilityStatus?.name) params.availabilityStatus = appliedFilters.availabilityStatus.name;
 
         if (appliedFilters.currency?.code) {
           params.currency = appliedFilters.currency.code;

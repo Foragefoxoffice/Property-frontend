@@ -580,6 +580,7 @@ export default function CreatePropertyPreview({
             <Field
               label={labels.ownerNotes[lang]}
               value={safe(cm.contactManagementOwnerNotes)}
+              isTextArea={true}
             />
             <Field
               label={labels.consultant[lang]}
@@ -590,6 +591,7 @@ export default function CreatePropertyPreview({
             <Field
               label={labels.internalNotes[lang]}
               value={safe(cm.contactManagementInternalNotes)}
+              isTextArea={true}
             />
           </Grid3>
         </Section>
@@ -728,12 +730,12 @@ const Grid3 = ({ children }) => (
   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">{children}</div>
 );
 
-const Field = ({ label, value }) => (
+const Field = ({ label, value, isTextArea = false }) => (
   <div>
     <p className="text-sm text-[#131517] font-semibold mb-2 tracking-wide">
       {label}
     </p>
-    <div className="border border-[#B2B2B3] h-12 overflow-auto rounded-lg px-3 py-2 flex items-center text-sm text-gray-700 bg-gray-50">
+    <div className={`border border-[#B2B2B3] ${isTextArea ? "min-h-[120px] py-3" : "h-12 flex items-center"} overflow-auto rounded-lg px-3 text-sm text-gray-700 bg-gray-50 whitespace-pre-wrap`}>
       {value || "—"}
     </div>
   </div>

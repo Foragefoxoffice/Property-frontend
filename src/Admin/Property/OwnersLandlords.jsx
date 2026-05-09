@@ -14,6 +14,8 @@ import {
   Linkedin,
   Youtube,
   Globe,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   getAllOwners,
@@ -81,13 +83,10 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const [editMode, setEditMode] = useState(false);
   const [editingOwner, setEditingOwner] = useState(null);
 
-  const [formData, setFormData] = useState({
-    ownerName_en: "",
-    ownerName_vi: "",
-    ownerNotes_en: "",
-    ownerNotes_vi: "",
-    gender: "",
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   const navigate = useNavigate();
 
@@ -104,8 +103,18 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const fetchOwners = async () => {
     try {
       setLoading(true);
-      const res = await getAllOwners();
-      setOwners(res.data.data || []);
+      const params = {
+        page: currentPage,
+        limit: rowsPerPage,
+        keyword: searchTerm,
+        sortBy: sortBy,
+      };
+      const res = await getAllOwners(params);
+      if (res.data.success) {
+        setOwners(res.data.data || []);
+        setTotalRows(res.data.total || 0);
+        setTotalPages(res.data.totalPages || 1);
+      }
     } catch {
       CommonToaster(t.failedToLoadOwners, "error");
     } finally {
@@ -114,8 +123,11 @@ const OwnersLandlords = ({ openOwnerView }) => {
   };
 
   useEffect(() => {
-    fetchOwners();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchOwners();
+    }, 400); // debounce
+    return () => clearTimeout(timer);
+  }, [currentPage, rowsPerPage, sortBy, searchTerm]);
 
   /* ==========================================================
      ✅ Open Add Modal
@@ -239,25 +251,13 @@ const OwnersLandlords = ({ openOwnerView }) => {
   };
 
   /* ==========================================================
-     ✅ Filter Table
+     ✅ Render Helpers
   ========================================================== */
-  const filteredOwners = owners
-    .filter((item) => {
-      const searchLower = searchTerm.toLowerCase();
-      const matchesName = (item.ownerName?.[language] || "").toLowerCase().includes(searchLower);
-      const matchesPhone = item.phoneNumbers?.some(phone => phone.toLowerCase().includes(searchLower));
-      return matchesName || matchesPhone;
-    })
-    .sort((a, b) => {
-      if (sortBy === "name-asc") return (a.ownerName?.[language] || "").localeCompare(b.ownerName?.[language] || "");
-      if (sortBy === "name-desc") return (b.ownerName?.[language] || "").localeCompare(a.ownerName?.[language] || "");
-      if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
-      if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
-      return 0;
-    });
-
   const displayPhones = (item) =>
     item.phoneNumbers?.length ? item.phoneNumbers.join(", ") : "-";
+
+  const startIndex = totalRows === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1;
+  const endIndex = Math.min(currentPage * rowsPerPage, totalRows);
 
   const firstEmail = (item) =>
     item.emailAddresses?.length ? item.emailAddresses[0] : "-";
@@ -291,13 +291,19 @@ const OwnersLandlords = ({ openOwnerView }) => {
             placeholder={language === "vi" ? "Tìm kiếm..." : "Search owners..."}
             className="flex-1 outline-none text-sm"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // reset to first page on search
+            }}
           />
         </div>
 
         <Select
           value={sortBy}
-          onChange={(value) => setSortBy(value)}
+          onChange={(value) => {
+            setSortBy(value);
+            setCurrentPage(1);
+          }}
           className="w-full md:w-48 custom-selects"
           popupClassName="custom-dropdown"
           placeholder={language === "vi" ? "Sắp xếp" : "Sort by"}
@@ -317,16 +323,16 @@ const OwnersLandlords = ({ openOwnerView }) => {
           <table className="w-full">
             <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
               <tr>
-                <th className="px-6 py-3 text-left">Name</th>
-                <th className="px-6 py-3 text-left">Phone</th>
-                <th className="px-6 py-3 text-center">Actions</th>
+                <th className="px-6 py-3 text-left">{language === "vi" ? "Tên" : "Name"}</th>
+                <th className="px-6 py-3 text-left">{language === "vi" ? "Điện thoại" : "Phone"}</th>
+                <th className="px-6 py-3 text-center">{language === "vi" ? "Thao tác" : "Actions"}</th>
               </tr>
             </thead>
 
             <tbody className="text-sm">
-              {filteredOwners.map((item) => (
+              {owners.map((item) => (
                 <tr key={item._id} className="hover:bg-gray-100 transition">
-                  <td className="px-6 py-4">{item.ownerName?.[language]}</td>
+                  <td className="px-6 py-4">{item.ownerName?.[language] || item.ownerName?.en}</td>
                   <td className="px-6 py-4">{displayPhones(item)}</td>
 
                   {/* ACTIONS */}
@@ -365,15 +371,60 @@ const OwnersLandlords = ({ openOwnerView }) => {
                 </tr>
               ))}
 
-              {!filteredOwners.length && (
+              {!owners.length && (
                 <tr>
-                  <td colSpan={5} className="text-center py-6 text-gray-500">
-                    No results found.
+                  <td colSpan={3} className="text-center py-6 text-gray-500">
+                    {language === "vi" ? "Không tìm thấy kết quả." : "No results found."}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+
+          {/* PAGINATION */}
+          {!loading && totalRows > 0 && (
+            <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-t">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{language === "vi" ? "Số hàng mỗi trang" : "Rows per page"}:</span>
+                <select
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border rounded px-2 py-1 text-sm outline-none"
+                >
+                  {[5, 10, 20, 50].map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <p className="text-sm text-gray-600">
+                  {startIndex}-{endIndex} {language === "vi" ? "của" : "of"} {totalRows}
+                </p>
+
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="p-1.5 border rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="p-1.5 border rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

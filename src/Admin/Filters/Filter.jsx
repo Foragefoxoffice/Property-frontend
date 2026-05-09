@@ -7,6 +7,7 @@ import {
   getAllPropertyTypes,
   getAllFloorRanges,
   getAllCurrencies,
+  getAllAvailabilityStatuses,
 } from "@/Api/action";
 import { formatNumber, parseNumber } from "@/utils/display";
 import { ArrowRight } from "lucide-react";
@@ -90,6 +91,7 @@ const t = {
     propertyType: "Property Type",
     propertyNumber: "Property No",
     floorRange: "Floor Range",
+    availabilityStatus: "Availability Status",
     currency: "Currency",
     from: "From",
     to: "To",
@@ -106,6 +108,7 @@ const t = {
     propertyType: "Loại căn",
     propertyNumber: "Mã căn",
     floorRange: "Khoảng tầng",
+    availabilityStatus: "Trạng thái sẵn có",
     currency: "Tiền tệ",
     from: "Từ",
     to: "Đến",
@@ -131,6 +134,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [floorRanges, setFloorRanges] = useState([]);
   const [currencies, setCurrencies] = useState([]);
+  const [availabilityStatuses, setAvailabilityStatuses] = useState([]);
 
   // visible options (filtered by parent selection)
   const [projects, setProjects] = useState([]);
@@ -145,6 +149,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
     propertyType: null,
     propertyNumber: "",
     floorRange: null,
+    availabilityStatus: null,
     currency: null,
     priceFrom: "",
     priceTo: "",
@@ -168,6 +173,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           getAllPropertyTypes(),
           getAllFloorRanges(),
           getAllCurrencies(),
+          getAllAvailabilityStatuses(),
         ]);
 
         const pList = pRes.data?.data || [];
@@ -176,6 +182,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         const tList = tRes.data?.data || [];
         const fList = fRes.data?.data || [];
         const cList = cRes.data?.data || [];
+        const aList = res[6]?.data?.data || [];
 
         // ✅ Filter to only show Active items in dropdowns
         const filterActive = (items) => items.filter(item => item.status === "Active");
@@ -186,6 +193,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         setBlocksAll(filterActive(bList));
         setPropertyTypes(filterActive(tList));
         setFloorRanges(filterActive(fList));
+        setAvailabilityStatuses(filterActive(aList));
 
         // FIXED: currency now matches Select component format
         setCurrencies(
@@ -246,6 +254,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       blockId: normalizeSelect("blockId", defaultFilters.blockId),
       propertyType: normalizeSelect("propertyType", defaultFilters.propertyType),
       floorRange: normalizeSelect("floorRange", defaultFilters.floorRange),
+      availabilityStatus: normalizeSelect("availabilityStatus", defaultFilters.availabilityStatus),
       currency: normalizeSelect("currency", defaultFilters.currency),
       propertyNumber: defaultFilters.propertyNumber || "",
       priceFrom: formatNumber(defaultFilters.priceFrom || ""),
@@ -361,6 +370,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       const resolvedBlock = resolveName(prev.blockId, blocksAll, (b) => b.name?.[lang] || "");
       const resolvedPropertyType = resolveName(prev.propertyType, propertyTypes, (t) => t.name?.[lang] || "");
       const resolvedFloorRange = resolveName(prev.floorRange, floorRanges, (f) => f.name?.[lang] || "");
+      const resolvedAvailabilityStatus = resolveName(prev.availabilityStatus, availabilityStatuses, (a) => a.name?.[lang] || "");
       const resolvedCurrency = resolveName(prev.currency, currencies, (c) => c.name || "", "code");
 
       return {
@@ -370,6 +380,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         blockId: resolvedBlock,
         propertyType: resolvedPropertyType,
         floorRange: resolvedFloorRange,
+        availabilityStatus: resolvedAvailabilityStatus,
         currency: resolvedCurrency
       };
     });
@@ -387,6 +398,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       propertyType: null,
       propertyNumber: "",
       floorRange: null,
+      availabilityStatus: null,
       currency: null,
       priceFrom: "",
       priceTo: "",
@@ -469,6 +481,15 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           value={filters.floorRange}
           onChange={update}
           options={floorRanges}
+          lang={lang}
+        />
+
+        <Select
+          label={t[lang].availabilityStatus}
+          name="availabilityStatus"
+          value={filters.availabilityStatus}
+          onChange={update}
+          options={availabilityStatuses}
           lang={lang}
         />
       </div>

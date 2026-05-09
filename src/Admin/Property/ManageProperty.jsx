@@ -112,6 +112,7 @@ export default function ManageProperty({
         if (appliedFilters.propertyType?.name) params.propertyType = appliedFilters.propertyType.name;
         if (appliedFilters.propertyNumber) params.propertyNo = appliedFilters.propertyNumber;
         if (appliedFilters.floorRange?.name) params.floor = appliedFilters.floorRange.name;
+        if (appliedFilters.availabilityStatus?.name) params.availabilityStatus = appliedFilters.availabilityStatus.name;
         // Check for code first, then name
         if (appliedFilters.currency?.code) {
           params.currency = appliedFilters.currency.code;
