@@ -24,7 +24,7 @@ import { usePermissions } from "../../Context/PermissionContext";
 
 /* 🔹 Helper: Find matching ID by localized name */
 function findIdByName(arr, valueObj) {
-  if (!valueObj || typeof valueObj !== "object") return "";
+  if (!arr || !Array.isArray(arr) || !valueObj || typeof valueObj !== "object") return "";
   const valEn = valueObj.en || "";
   const valVi = valueObj.vi || "";
   const match = arr.find(
@@ -134,10 +134,9 @@ export default function CreatePropertyListStep3({
     agentFee: initialData.contactManagement?.contactManagementAgentFee || 0,
   });
 
-  /* ✅ Sync existing edit data once dropdowns (owners/staffs) arrive */
   useEffect(() => {
-    // Wait until owners OR staffs arrive
-    if (!owners.length && !staffs.length) return;
+    // Wait until initialData has some content (at least contactManagement or similar)
+    if (!initialData || Object.keys(initialData).length === 0) return;
 
     const cm = initialData.contactManagement || {};
 

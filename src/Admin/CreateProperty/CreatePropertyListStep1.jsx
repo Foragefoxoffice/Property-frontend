@@ -373,9 +373,8 @@ export default function CreatePropertyListStep1({
     !dropdowns.statuses ||
     !dropdowns.floorRanges;
 
-  /* ✅ Sync when editing an existing property */
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0 && dropdowns?.properties && dropdowns?.zones && dropdowns?.blocks) {
+    if (initialData && Object.keys(initialData).length > 0) {
 
       setForm((prev) => {
         // Only update fields if they are actually different and initialData has a value
@@ -400,6 +399,7 @@ export default function CreatePropertyListStep1({
 
         // Handle Project/Zone/Block restore logic specifically
         const findItem = (list, id, nameObj) => {
+          if (!list || !Array.isArray(list)) return null;
           if (id) {
             const found = list.find(item => item._id === id);
             if (found) return found;
