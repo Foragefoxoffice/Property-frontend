@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, PhoneCall, Facebook, Twitter, Instagram, Linkedin, Youtube, Globe, MapPin, Calendar, ExternalLink, Bed, Bath, Ruler, Clover } from "lucide-react";
-import { getAllOwners, getListingProperties } from "../../Api/action";
+import { getOwnerById, getListingProperties } from "../../Api/action";
 import { Spin } from "antd";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { useParams, useNavigate } from "react-router-dom";
 import { normalizeFancyText } from "../../utils/display";
+import { getImageUrl } from "../../utils/imageHelper";
 
 const socialIconMap = {
   Facebook: Facebook,
@@ -42,42 +43,46 @@ export default function OwnerView() {
   useEffect(() => {
     const fetchOwner = async () => {
       try {
-        const res = await getAllOwners();
-        const foundOwner = res.data.data.find((o) => o._id === id);
-        if (!foundOwner) {
+        const res = await getOwnerById(id);
+        if (!res.data.success || !res.data.data) {
           CommonToaster(language === "vi" ? "Không tìm thấy chủ sở hữu" : "Owner not found", "error");
           navigate(-1);
           return;
         }
-        setOwner(foundOwner);
-      } catch {
+        setOwner(res.data.data);
+      } catch (error) {
+        console.error("Error fetching owner:", error);
         CommonToaster(language === "vi" ? "Không thể tải chi tiết chủ sở hữu" : "Failed to fetch owner details", "error");
+        navigate(-1);
       } finally {
         setLoading(false);
       }
     };
 
     if (id) fetchOwner();
-  }, [id, language]);
+  }, [id, language, navigate]);
+
 
   useEffect(() => {
     const fetchOwnerProperties = async () => {
-      if (!owner || !owner.ownerName?.en) return;
+      if (!owner || (!owner.ownerName?.en && !owner.ownerName?.vi)) return;
       try {
         setLoadingProps(true);
         const res = await getListingProperties({
-          owner: owner.ownerName.en,
+          owner: owner.ownerName.en || owner.ownerName.vi,
           status: "all"
         });
         setProperties(res.data.data || []);
       } catch (error) {
         console.error("Error fetching owner properties:", error);
+        CommonToaster(language === "vi" ? "Không thể tải danh sách bất động sản" : "Failed to fetch properties list", "error");
       } finally {
         setLoadingProps(false);
       }
     };
     fetchOwnerProperties();
-  }, [owner]);
+  }, [owner, language]);
+
 
 
   if (loading)
@@ -284,7 +289,7 @@ export default function OwnerView() {
                     {/* Image Area */}
                     <div className="relative w-full sm:w-1/3 h-48 sm:h-auto overflow-hidden">
                       <img
-                        src={prop.imagesVideos?.propertyImages?.[0] || "/dummy-img.jpg"}
+                        src={getImageUrl(prop.imagesVideos?.propertyImages?.[0])}
                         alt={title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />

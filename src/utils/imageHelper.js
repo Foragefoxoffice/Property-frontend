@@ -5,9 +5,18 @@ export const getImageUrl = (imagePath) => {
         return imagePath;
     }
 
+    // Normalize slashes
+    let normalizedPath = imagePath.replace(/\\/g, '/');
+
     const baseURL = import.meta.env.VITE_API_URL || 'https://api.183housingsolutions.com/api/v1';
     // Remove /api/v1 to get the base server URL
-    const serverURL = baseURL.replace('/api/v1', '');
+    const serverURL = baseURL.replace('/api/v1', '').replace(/\/$/, '');
 
-    return `${serverURL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+    // Ensure normalizedPath doesn't have redundant server part if it was somehow stored partially
+    if (normalizedPath.startsWith('/uploads')) {
+        return `${serverURL}${normalizedPath}`;
+    }
+
+    return `${serverURL}${normalizedPath.startsWith('/') ? '' : '/'}${normalizedPath}`;
 };
+

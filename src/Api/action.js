@@ -177,6 +177,7 @@ export const deletePayment = (id) => API.delete(`/payment/${id}`);
    👥 OWNERS / LANDLORDS APIs
 ========================================================= */
 export const getAllOwners = (params) => API.get("/owners", { params });
+export const getOwnerById = (id) => API.get(`/owners/${id}`);
 export const createOwner = (data) => API.post("/owners", data);
 export const updateOwner = (id, data) => API.put(`/owners/${id}`, data);
 export const deleteOwner = (id) => API.delete(`/owners/${id}`);

@@ -97,6 +97,15 @@ const OwnersLandlords = ({ openOwnerView }) => {
     { iconName: "", link_en: "", link_vi: "" },
   ]);
 
+  const [formData, setFormData] = useState({
+    ownerName_en: "",
+    ownerName_vi: "",
+    ownerNotes_en: "",
+    ownerNotes_vi: "",
+    gender: "",
+  });
+
+
   /* ==========================================================
      ✅ Fetch Owners
   ========================================================== */
@@ -204,13 +213,14 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const validSocialMedia = socialMedia.filter(s => s.iconName.trim() && (s.link_en.trim() || s.link_vi.trim()));
     const payload = {
       ...formData,
-      phoneNumbers: phoneRows.map((p) => p.number.trim()),
-      emailAddresses: emailRows.map((e) => e.email.trim()),
-      socialMedia_iconName: socialMedia.map((s) => s.iconName.trim()),
-      socialMedia_link_en: socialMedia.map((s) => s.link_en.trim()),
-      socialMedia_link_vi: socialMedia.map((s) => s.link_vi.trim()),
+      phoneNumbers: phoneRows.map((p) => p.number.trim()).filter(Boolean),
+      emailAddresses: emailRows.map((e) => e.email.trim()).filter(Boolean),
+      socialMedia_iconName: validSocialMedia.map((s) => s.iconName.trim()),
+      socialMedia_link_en: validSocialMedia.map((s) => s.link_en.trim()),
+      socialMedia_link_vi: validSocialMedia.map((s) => s.link_vi.trim()),
     };
 
     try {
@@ -719,7 +729,7 @@ const AddEditOwnerModal = ({
                     next[idx].number = e.target.value;
                     setPhoneRows(next);
                   }}
-                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full"
+                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full outline-none focus:border-[#41398B]"
                 />
 
                 {idx === phoneRows.length - 1 ? (
@@ -742,6 +752,45 @@ const AddEditOwnerModal = ({
               </div>
             ))}
           </div>
+
+          {/* EMAIL ADDRESSES */}
+          <div className="mb-3">
+            <label className="font-medium text-sm">{text.email}</label>
+            {emailRows.map((row, idx) => (
+              <div key={idx} className="flex items-center gap-3 mt-3">
+                <input
+                  type="email"
+                  placeholder={text.emailPlaceholder}
+                  value={row.email}
+                  onChange={(e) => {
+                    const next = [...emailRows];
+                    next[idx].email = e.target.value;
+                    setEmailRows(next);
+                  }}
+                  className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full outline-none focus:border-[#41398B]"
+                />
+
+                {idx === emailRows.length - 1 ? (
+                  <CirclePlus
+                    className="cursor-pointer"
+                    size={22}
+                    onClick={() =>
+                      setEmailRows([...emailRows, { email: "" }])
+                    }
+                  />
+                ) : (
+                  <X
+                    className="cursor-pointer"
+                    size={20}
+                    onClick={() =>
+                      setEmailRows(emailRows.filter((_, i) => i !== idx))
+                    }
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
 
           {/* SOCIAL */}
           <div className="mb-3">
