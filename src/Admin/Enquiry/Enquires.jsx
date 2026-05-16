@@ -26,6 +26,7 @@ import { usePermissions } from "../../Context/PermissionContext";
 import { useSocket } from "../../Context/SocketContext";
 import { normalizeFancyText } from "../../utils/display";
 import { translateError } from "../../utils/translateError";
+import { getImageUrl } from "../../utils/imageHelper";
 
 export default function Enquires() {
     const [enquiries, setEnquiries] = useState([]);
@@ -452,9 +453,9 @@ export default function Enquires() {
                         onClick={() => setSelectedProperty(null)}
                     />
 
-                    <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl relative z-10 flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="enquiry-modal-content bg-white rounded-2xl w-full max-w-3xl shadow-2xl relative z-10 flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300">
                         {/* Header */}
-                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-20">
+                        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-20">
                             <h3 className="text-lg font-bold text-gray-900">{t.enquiryDetails}</h3>
                             <button
                                 onClick={() => setSelectedProperty(null)}
@@ -465,8 +466,8 @@ export default function Enquires() {
                         </div>
 
                         {/* Content */}
-                        <div className="overflow-y-auto p-6 scrollbar-hide">
-                            <h4 className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-4">
+                        <div className="overflow-y-auto overflow-x-hidden p-8 scrollbar-hide">
+                            <h4 className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-6">
                                 {selectedProperty.properties?.length || 0} {t.properties || "Properties"} in this Enquiry
                             </h4>
 
@@ -477,7 +478,7 @@ export default function Enquires() {
                                         <div className="w-full md:w-5/12 flex-shrink-0">
                                             <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 shadow-sm border border-gray-100">
                                                 <img
-                                                    src={prop.imagesVideos?.propertyImages?.[0] || 'https://via.placeholder.com/600x400'}
+                                                    src={getImageUrl(prop.imagesVideos?.propertyImages?.[0])}
                                                     alt="Property"
                                                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                                                 />
@@ -490,14 +491,14 @@ export default function Enquires() {
                                         </div>
 
                                         {/* Details */}
-                                        <div className="w-full md:w-7/12 flex flex-col">
+                                        <div className="w-full md:w-7/12 flex flex-col min-w-0">
                                             <div className="">
-                                                <h2 className="text-xl font-bold text-gray-900 mb-2 leading-tight">
+                                                <h2 className="text-xl font-bold text-gray-900 mb-2 leading-tight break-words">
                                                     {normalizeFancyText(getLocalizedValue(prop.listingInformation?.listingInformationPropertyTitle) || "Untitled Property")}
                                                 </h2>
 
                                                 <div
-                                                    className="text-sm text-gray-500 mb-3 line-clamp-2 ql-editor-summary"
+                                                    className="text-sm text-gray-500 mb-3 line-clamp-2 ql-editor-summary break-words overflow-hidden"
                                                     dangerouslySetInnerHTML={{
                                                         __html: getLocalizedValue(prop.whatNearby?.whatNearbyDescription) ||
                                                             getLocalizedValue(prop.listingInformation?.listingInformationZoneSubArea) ||
@@ -618,7 +619,7 @@ export default function Enquires() {
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[11000] p-4">
                     <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
                         {/* Header */}
-                        <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">
+                        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white">
                             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                                 <Search className="text-[#41398B]" size={24} />
                                 {language === "vi" ? "Chi tiết Yêu cầu" : "Enquiry Details"}
@@ -719,7 +720,7 @@ export default function Enquires() {
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#41398B]"></div>
                                     {t.message || (language === "vi" ? "Lời nhắn" : "Message")}
                                 </h4>
-                                <div className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+                                <div className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed break-words">
                                     {viewingEnquiry.message || "-"}
                                 </div>
                             </div>
@@ -791,7 +792,7 @@ export default function Enquires() {
                             </button>
                         </div>
                         <div className="bg-gray-50 rounded-lg p-4 border border-gray-100 max-h-[60vh] overflow-y-auto">
-                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
                                 {messageModal.message}
                             </p>
                         </div>

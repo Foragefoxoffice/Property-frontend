@@ -3,6 +3,7 @@ import { resetPassword } from "../Api/action";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "../Language/LanguageContext";
 import { translations } from "../Language/translations";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 import { Mail, Lock, Key, Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function ResetPassword() {
@@ -43,6 +44,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#f6f4ff] to-[#e5defc] relative overflow-hidden">
+      <LanguageSwitcher />
       {/* Subtle skyline background */}
       <div
         className="absolute bottom-0 left-0 w-full bg-contain bg-bottom bg-no-repeat h-120"

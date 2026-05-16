@@ -3,6 +3,7 @@ import { forgotPassword } from "../Api/action";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "../Language/LanguageContext";
 import { translations } from "../Language/translations";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 import { Mail, Loader2 } from "lucide-react";
 
 export default function ForgotPassword() {
@@ -34,6 +35,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#f6f4ff] to-[#e5defc] relative overflow-hidden">
+      <LanguageSwitcher />
       {/* Subtle skyline background */}
       <div
         className="absolute bottom-0 left-0 w-full bg-contain bg-bottom bg-no-repeat h-120"

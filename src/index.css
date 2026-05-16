@@ -692,4 +692,24 @@ button {
 .preview-description-rich-text ul,
 .preview-description-rich-text ol {
   list-style-position: inside !important;
+}
+
+/* Specific fix for Enquiry Details modal overflow - Page Specific */
+.enquiry-modal-content .ql-editor-summary,
+.enquiry-modal-content .ql-editor-summary * {
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+  max-width: 100% !important;
+}
+
+.enquiry-modal-content .ql-editor-summary {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.enquiry-modal-content .ql-editor-summary * {
+  display: inline !important;
 }
