@@ -31,6 +31,7 @@ import CommonSkeleton from "../../Common/CommonSkeleton";
 import { useLanguage } from "../../Language/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { usePermissions } from "../../Context/PermissionContext";
+import { getImageUrl } from "../../utils/imageHelper";
 
 export default function UsersDetails() {
     const navigate = useNavigate();
