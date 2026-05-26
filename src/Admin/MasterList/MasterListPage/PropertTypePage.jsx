@@ -136,8 +136,14 @@ export default function PropertyTypePage() {
       setShowModal(false);
       fetchPropertyTypes();
       setEditingType(null);
-    } catch {
-      CommonToaster(isVI ? "Không thể lưu dữ liệu." : "Failed to save data.", "error");
+    } catch (err) {
+      let msg = err?.response?.data?.error || (isVI ? "Không thể lưu dữ liệu." : "Failed to save data.");
+      if (msg?.toLowerCase().includes("already exists")) {
+        msg = isVI
+          ? "Loại tài sản với tên này đã tồn tại"
+          : "Property Type with this name already exists";
+      }
+      CommonToaster(msg, "error");
     }
   };
 

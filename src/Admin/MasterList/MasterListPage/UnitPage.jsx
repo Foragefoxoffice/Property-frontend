@@ -64,6 +64,14 @@ export default function UnitPage() {
     status: "Active",
   });
 
+  // ✅ Duplicate Error State
+  const [duplicateErrors, setDuplicateErrors] = useState({
+    name_en: false,
+    name_vi: false,
+    symbol_en: false,
+    symbol_vi: false,
+  });
+
   // ✅ Fetch all Units
   const fetchUnits = async () => {
     try {
@@ -96,8 +104,60 @@ export default function UnitPage() {
     if (totalRows === 0) setCurrentPage(1);
   }, [totalRows, totalPages]);
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // ✅ Check for duplicates
+  const checkDuplicates = (updatedForm) => {
+    const errors = {
+      name_en: false,
+      name_vi: false,
+      symbol_en: false,
+      symbol_vi: false,
+    };
+
+    units.forEach((unit) => {
+      // Skip current unit if editing
+      if (editingUnit && unit._id === editingUnit._id) return;
+
+      // Check name_en (case-insensitive)
+      if (
+        updatedForm.name_en &&
+        unit.name.en.toLowerCase() === updatedForm.name_en.toLowerCase()
+      ) {
+        errors.name_en = true;
+      }
+
+      // Check name_vi (case-insensitive)
+      if (
+        updatedForm.name_vi &&
+        unit.name.vi.toLowerCase() === updatedForm.name_vi.toLowerCase()
+      ) {
+        errors.name_vi = true;
+      }
+
+      // Check symbol_en (case-insensitive)
+      if (
+        updatedForm.symbol_en &&
+        unit.symbol.en.toLowerCase() === updatedForm.symbol_en.toLowerCase()
+      ) {
+        errors.symbol_en = true;
+      }
+
+      // Check symbol_vi (case-insensitive)
+      if (
+        updatedForm.symbol_vi &&
+        unit.symbol.vi.toLowerCase() === updatedForm.symbol_vi.toLowerCase()
+      ) {
+        errors.symbol_vi = true;
+      }
+    });
+
+    setDuplicateErrors(errors);
+  };
+
+  const handleChange = (e) => {
+    const updatedForm = { ...form, [e.target.name]: e.target.value };
+    setForm(updatedForm);
+    checkDuplicates(updatedForm);
+  }
 
   // ✅ Add/Edit
   const handleSubmit = async () => {
@@ -108,6 +168,22 @@ export default function UnitPage() {
         isVI
           ? "Vui lòng điền đầy đủ tất cả các trường tiếng Anh và tiếng Việt."
           : "Please fill all English and Vietnamese fields.",
+        "error"
+      );
+      return;
+    }
+
+    // Check if any duplicates exist
+    if (
+      duplicateErrors.name_en ||
+      duplicateErrors.name_vi ||
+      duplicateErrors.symbol_en ||
+      duplicateErrors.symbol_vi
+    ) {
+      CommonToaster(
+        isVI
+          ? "Vui lòng kiểm tra các trường có giá trị trùng lặp."
+          : "Please check for duplicate values in the fields.",
         "error"
       );
       return;
@@ -139,6 +215,12 @@ export default function UnitPage() {
         symbol_vi: "",
         status: "Active",
       });
+      setDuplicateErrors({
+        name_en: false,
+        name_vi: false,
+        symbol_en: false,
+        symbol_vi: false,
+      });
 
       fetchUnits();
       setCurrentPage(1);
@@ -149,16 +231,22 @@ export default function UnitPage() {
         error.response?.data?.error ||
         "Unknown error";
 
-      // 🔥 SAME DUPLICATE NAME HANDLING like Availability, Deposits, Zones
+      // 🔥 SAME DUPLICATE NAME/SYMBOL HANDLING like Availability, Deposits, Zones
       if (
         msg.toLowerCase().includes("unit with this name already exists") ||
+        msg.toLowerCase().includes("unit with this symbol already exists") ||
         msg.toLowerCase().includes("unit already exists") ||
-        msg.toLowerCase().includes("same name")
+        msg.toLowerCase().includes("same name") ||
+        msg.toLowerCase().includes("same symbol")
       ) {
         CommonToaster(
-          isVI
-            ? "Tên đơn vị này đã tồn tại."
-            : "This unit name already exists.",
+          msg.toLowerCase().includes("symbol")
+            ? isVI
+              ? "Ký hiệu đơn vị này đã tồn tại."
+              : "This unit symbol already exists."
+            : isVI
+              ? "Tên đơn vị này đã tồn tại."
+              : "This unit name already exists.",
           "error"
         );
         return;
@@ -180,6 +268,12 @@ export default function UnitPage() {
       symbol_en: unit.symbol.en,
       symbol_vi: unit.symbol.vi,
       status: unit.status,
+    });
+    setDuplicateErrors({
+      name_en: false,
+      name_vi: false,
+      symbol_en: false,
+      symbol_vi: false,
     });
     setActiveLang(language === "vi" ? "VI" : "EN");
     setShowModal(true);
@@ -285,6 +379,19 @@ export default function UnitPage() {
           onClick={() => {
             setShowModal(true);
             setEditingUnit(null);
+            setForm({
+              name_en: "",
+              name_vi: "",
+              symbol_en: "",
+              symbol_vi: "",
+              status: "Active",
+            });
+            setDuplicateErrors({
+              name_en: false,
+              name_vi: false,
+              symbol_en: false,
+              symbol_vi: false,
+            });
             setActiveLang(language === "vi" ? "VI" : "EN");
           }}
           className="flex items-center cursor-pointer gap-2 bg-[#41398B] hover:bg-[#41398be3] text-white px-4 py-2 rounded-lg text-sm"
@@ -372,7 +479,7 @@ export default function UnitPage() {
                       </button>
 
                       {openMenuIndex === i && (
-<div ref={menuRef} className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2">
+                        <div ref={menuRef} className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2">
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                             onClick={() => {
@@ -431,7 +538,7 @@ export default function UnitPage() {
                             {isVI ? "Xóa" : "Delete"}
                           </button>
                         </div>
-)}
+                      )}
                     </td>
                   </tr>
                 ))
@@ -542,6 +649,12 @@ export default function UnitPage() {
                 onClick={() => {
                   setShowModal(false);
                   setEditingUnit(null);
+                  setDuplicateErrors({
+                    name_en: false,
+                    name_vi: false,
+                    symbol_en: false,
+                    symbol_vi: false,
+                  });
                 }}
                 className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
               >
@@ -585,8 +698,16 @@ export default function UnitPage() {
                       placeholder="Type here"
                       value={form.name_en}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-1 focus:outline-none ${duplicateErrors.name_en
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                        }`}
                     />
+                    {duplicateErrors.name_en && (
+                      <p className="text-red-500 text-xs mt-1">
+                        This unit name already exists.
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -598,8 +719,16 @@ export default function UnitPage() {
                       placeholder="Type here"
                       value={form.symbol_en}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-1 focus:outline-none ${duplicateErrors.symbol_en
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                        }`}
                     />
+                    {duplicateErrors.symbol_en && (
+                      <p className="text-red-500 text-xs mt-1">
+                        This unit symbol already exists.
+                      </p>
+                    )}
                   </div>
                 </>
               ) : (
@@ -614,8 +743,16 @@ export default function UnitPage() {
                       placeholder="Nhập tại đây"
                       value={form.name_vi}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-1 focus:outline-none ${duplicateErrors.name_vi
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                        }`}
                     />
+                    {duplicateErrors.name_vi && (
+                      <p className="text-red-500 text-xs mt-1">
+                        Tên đơn vị này đã tồn tại.
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -627,8 +764,16 @@ export default function UnitPage() {
                       placeholder="Nhập tại đây"
                       value={form.symbol_vi}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-1 focus:outline-none ${duplicateErrors.symbol_vi
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                        }`}
                     />
+                    {duplicateErrors.symbol_vi && (
+                      <p className="text-red-500 text-xs mt-1">
+                        Ký hiệu đơn vị này đã tồn tại.
+                      </p>
+                    )}
                   </div>
                 </>
               )}
@@ -640,6 +785,12 @@ export default function UnitPage() {
                 onClick={() => {
                   setShowModal(false);
                   setEditingUnit(null);
+                  setDuplicateErrors({
+                    name_en: false,
+                    name_vi: false,
+                    symbol_en: false,
+                    symbol_vi: false,
+                  });
                 }}
                 className="px-5 py-2 cursor-pointer rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100"
               >
@@ -647,7 +798,19 @@ export default function UnitPage() {
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white"
+                disabled={
+                  duplicateErrors.name_en ||
+                  duplicateErrors.name_vi ||
+                  duplicateErrors.symbol_en ||
+                  duplicateErrors.symbol_vi
+                }
+                className={`px-6 py-2 cursor-pointer rounded-lg text-white ${duplicateErrors.name_en ||
+                    duplicateErrors.name_vi ||
+                    duplicateErrors.symbol_en ||
+                    duplicateErrors.symbol_vi
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-[#41398B] hover:bg-[#41398be3]"
+                  }`}
               >
                 {editingUnit
                   ? activeLang === "EN"
