@@ -78,6 +78,15 @@ const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
 
         /* When user selects → restore object */
         onChange={(option) => {
+          if (!option) {
+            onChange({
+              target: {
+                name,
+                value: { en: "", vi: "" },
+              },
+            });
+            return;
+          }
           const obj = JSON.parse(option.value); // full {en,vi}
 
           onChange({
@@ -1523,6 +1532,14 @@ export default function CreatePropertyListStep1({
 
               /* On change → restore object */
               onChange={(value) => {
+                if (!value) {
+                  setForm((prev) => ({
+                    ...prev,
+                    floorRangeId: "",
+                    floors: { en: "", vi: "" },
+                  }));
+                  return;
+                }
                 const parsed = JSON.parse(value); // restore {en,vi}
 
                 const fr = dropdowns.floorRanges.find(
@@ -1781,6 +1798,11 @@ export default function CreatePropertyListStep1({
 
                 /* When user selects */
                 onChange={(option) => {
+                  if (!option) {
+                    handleUtilityChange(i, "icon", "");
+                    handleUtilityChange(i, "name", { en: "", vi: "" });
+                    return;
+                  }
                   const parsed = JSON.parse(option.value); // restore object
 
                   handleUtilityChange(i, "icon", parsed.icon);

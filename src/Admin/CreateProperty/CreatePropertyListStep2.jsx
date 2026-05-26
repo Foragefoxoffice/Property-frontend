@@ -386,9 +386,14 @@ export default function CreatePropertyListStep2({
 
       // ✅ ALL MEDIA TYPES: Always upload to server
       try {
-        const uploadingMsg = lang === "en"
-          ? `Uploading ${type === "floor" ? "floor plan" : type}...`
-          : `Đang tải lên ${type === "floor" ? "sơ đồ mặt bằng" : (type === "video" ? "video" : "ảnh")}...`;
+        let uploadingMsg = "";
+        if (lang === "en") {
+          uploadingMsg = `Uploading ${type === "floor" ? "floor plan" : type}...`;
+        } else {
+          uploadingMsg = type === "image" ? "Đang tải ảnh lên..." :
+                         type === "video" ? "Đang tải video lên..." :
+                         "Đang tải sơ đồ mặt bằng lên...";
+        }
         CommonToaster(uploadingMsg, "info");
 
         const { uploadPropertyMedia } = await import("@/Api/action");
@@ -396,16 +401,26 @@ export default function CreatePropertyListStep2({
         url = response.data.url;
         isServerFile = true;
 
-        const successMsg = lang === "en"
-          ? `${type === "floor" ? "Floor plan" : type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`
-          : `${type === "floor" ? "Sơ đồ mặt bằng" : (type === "video" ? "Video" : "Ảnh")} đã được tải lên thành công!`;
+        let successMsg = "";
+        if (lang === "en") {
+          successMsg = `${type === "floor" ? "Floor plan" : type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`;
+        } else {
+          successMsg = type === "image" ? "Tải ảnh lên thành công" :
+                       type === "video" ? "Tải video lên thành công" :
+                       "Tải sơ đồ mặt bằng lên thành công";
+        }
         CommonToaster(successMsg, "success");
         console.log(`✅ ${type} uploaded: ${response.data.fileName} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
       } catch (error) {
         console.error(`${type} upload error:`, error);
-        const failMsg = lang === "en"
-          ? `Failed to upload ${type}. Please try again.`
-          : `Tải lên ${type === "floor" ? "sơ đồ mặt bằng" : (type === "video" ? "video" : "ảnh")} thất bại. Vui lòng thử lại.`;
+        let failMsg = "";
+        if (lang === "en") {
+          failMsg = `Failed to upload ${type}. Please try again.`;
+        } else {
+          failMsg = type === "image" ? "Tải ảnh lên thất bại" :
+                    type === "video" ? "Tải video lên thất bại" :
+                    "Tải sơ đồ mặt bằng lên thất bại";
+        }
         CommonToaster(failMsg, "error");
         continue;
       }

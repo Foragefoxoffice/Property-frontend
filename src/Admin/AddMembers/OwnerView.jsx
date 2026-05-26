@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, PhoneCall, Facebook, Twitter, Instagram, Linkedin, Youtube, Globe, MapPin, Calendar, ExternalLink, Bed, Bath, Ruler, Clover } from "lucide-react";
+import { ArrowLeft, PhoneCall, Facebook, Twitter, Instagram, Linkedin, Youtube, Globe, MapPin, Calendar, ExternalLink, Bed, Bath, Ruler, Clover, Mail } from "lucide-react";
 import { getOwnerById, getListingProperties } from "../../Api/action";
 import { Spin } from "antd";
 import { CommonToaster } from "../../Common/CommonToaster";
@@ -185,6 +185,14 @@ export default function OwnerView() {
                 <div key={i} className="flex items-center gap-2 text-gray-600 mt-3">
                   <PhoneCall size={16} />
                   <span className="text-sm">{num || "-"} </span>
+                </div>
+              ))}
+
+            {owner.emailAddresses?.length > 0 &&
+              owner.emailAddresses.map((email, i) => (
+                <div key={i} className="flex items-center gap-2 text-gray-600 mt-3">
+                  <Mail size={16} />
+                  <span className="text-sm">{email || "-"} </span>
                 </div>
               ))}
 

@@ -35,6 +35,16 @@ export default function ZoneSubAreaPage() {
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
   const [openMenuId, setOpenMenuId] = useState(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".action-menu-container")) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingZone, setEditingZone] = useState(null);
@@ -266,14 +276,21 @@ export default function ZoneSubAreaPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left font-medium">
+                  S.No
+                </th>
+
+                <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Dự án / Cộng đồng" : "Project / Community "}
                 </th>
+
                 <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Khu vực / Tiểu khu" : "Zone / Sub-area"}
                 </th>
+
                 <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Tình trạng" : "Status"}
                 </th>
+
                 <th className="px-6 py-3 text-right font-medium">
                   {isVI ? "Hành động" : "Actions"}
                 </th>
@@ -282,7 +299,7 @@ export default function ZoneSubAreaPage() {
             <tbody>
               {visibleData.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-6 text-gray-500">
+                  <td colSpan="5" className="text-center py-6 text-gray-500">
                     {isVI ? "Không có dữ liệu." : "No records found."}
                   </td>
                 </tr>
@@ -313,6 +330,9 @@ export default function ZoneSubAreaPage() {
                       className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
                         } hover:bg-gray-100`}
                     >
+                      <td className="px-6 py-3 font-medium text-gray-700">
+                        {startIndex + i + 1}
+                      </td>
                       <td className="px-6 py-3">
                         {showProject ? currentProject : ""}
                       </td>
@@ -337,7 +357,7 @@ export default function ZoneSubAreaPage() {
                       </td>
 
                       {/* Actions */}
-                      <td className="px-6 py-3 text-right relative">
+                      <td className="px-6 py-3 text-right relative action-menu-container">
                         <button
                           className="p-2 rounded-full hover:bg-gray-100"
                           onClick={() =>

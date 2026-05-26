@@ -16,6 +16,8 @@ import {
   Globe,
   ChevronLeft,
   ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import {
   getAllOwners,
@@ -27,7 +29,7 @@ import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { translateError } from "../../utils/translateError";
-import { Select } from "antd";
+import { Select, Tooltip } from "antd";
 import { useNavigate } from "react-router-dom";
 import { usePermissions } from "../../Context/PermissionContext";
 
@@ -213,11 +215,33 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const emails = emailRows.map((row) => row.email.trim()).filter(Boolean);
+    if (emails.length !== new Set(emails).size) {
+      CommonToaster(
+        activeLang === "VI"
+          ? "Các mục email trùng lặp không được phép."
+          : "Duplicate email entries are not allowed.",
+        "error"
+      );
+      return;
+    }
+
+    const phones = phoneRows.map((row) => row.number.trim()).filter(Boolean);
+    if (phones.length !== new Set(phones).size) {
+      CommonToaster(
+        activeLang === "VI"
+          ? "Các mục số điện thoại trùng lặp không được phép."
+          : "Duplicate phone entries are not allowed.",
+        "error"
+      );
+      return;
+    }
+
     const validSocialMedia = socialMedia.filter(s => s.iconName.trim() && (s.link_en.trim() || s.link_vi.trim()));
     const payload = {
       ...formData,
-      phoneNumbers: phoneRows.map((p) => p.number.trim()).filter(Boolean),
-      emailAddresses: emailRows.map((e) => e.email.trim()).filter(Boolean),
+      phoneNumbers: phones,
+      emailAddresses: emails,
       socialMedia_iconName: validSocialMedia.map((s) => s.iconName.trim()),
       socialMedia_link_en: validSocialMedia.map((s) => s.link_en.trim()),
       socialMedia_link_vi: validSocialMedia.map((s) => s.link_vi.trim()),
@@ -333,15 +357,30 @@ const OwnersLandlords = ({ openOwnerView }) => {
           <table className="w-full">
             <thead className="bg-gray-100 text-gray-600 uppercase text-sm">
               <tr>
-                <th className="px-6 py-3 text-left">{language === "vi" ? "Tên" : "Name"}</th>
-                <th className="px-6 py-3 text-left">{language === "vi" ? "Điện thoại" : "Phone"}</th>
-                <th className="px-6 py-3 text-center">{language === "vi" ? "Thao tác" : "Actions"}</th>
+                <th className="px-6 py-3 text-left">
+                  S.No
+                </th>
+
+                <th className="px-6 py-3 text-left">
+                  {language === "vi" ? "Tên" : "Name"}
+                </th>
+
+                <th className="px-6 py-3 text-left">
+                  {language === "vi" ? "Điện thoại" : "Phone"}
+                </th>
+
+                <th className="px-6 py-3 text-center">
+                  {language === "vi" ? "Thao tác" : "Actions"}
+                </th>
               </tr>
             </thead>
 
             <tbody className="text-sm">
-              {owners.map((item) => (
+              {owners.map((item, index) => (
                 <tr key={item._id} className="hover:bg-gray-100 transition">
+                  <td className="px-6 py-4 font-medium text-gray-700">
+                    {(currentPage - 1) * rowsPerPage + index + 1}
+                  </td>
                   <td className="px-6 py-4">{item.ownerName?.[language] || item.ownerName?.en}</td>
                   <td className="px-6 py-4">{displayPhones(item)}</td>
 
@@ -349,32 +388,38 @@ const OwnersLandlords = ({ openOwnerView }) => {
                   <td className="px-6 py-4 text-center">
                     <div className="flex justify-center gap-2">
                       {can("landlords", "view") && (
-                        <button
-                          onClick={() => navigate(`/dashboard/landlords/${item._id}`)}
-                          className="p-2 border rounded-full hover:bg-gray-200"
-                        >
-                          <Eye size={18} />
-                        </button>
+                        <Tooltip title={language === "vi" ? "Xem" : "View"}>
+                          <button
+                            onClick={() => navigate(`/dashboard/landlords/${item._id}`)}
+                            className="p-2 border rounded-full hover:bg-gray-200"
+                          >
+                            <Eye size={18} />
+                          </button>
+                        </Tooltip>
                       )}
 
                       {can("landlords", "edit") && (
-                        <button
-                          onClick={() => openEditModal(item)}
-                          className="p-2 border rounded-full hover:bg-gray-200"
-                        >
-                          <Edit2 size={18} className="text-blue-500" />
-                        </button>
+                        <Tooltip title={language === "vi" ? "Chỉnh sửa" : "Edit"}>
+                          <button
+                            onClick={() => openEditModal(item)}
+                            className="p-2 border rounded-full hover:bg-gray-200"
+                          >
+                            <Edit2 size={18} className="text-blue-500" />
+                          </button>
+                        </Tooltip>
                       )}
 
                       {can("landlords", "delete") && (
-                        <button
-                          onClick={() =>
-                            setDeleteConfirm({ show: true, id: item._id })
-                          }
-                          className="p-2 border rounded-full hover:bg-gray-200"
-                        >
-                          <Trash2 size={18} className="text-red-500" />
-                        </button>
+                        <Tooltip title={language === "vi" ? "Xóa" : "Delete"}>
+                          <button
+                            onClick={() =>
+                              setDeleteConfirm({ show: true, id: item._id })
+                            }
+                            className="p-2 border rounded-full hover:bg-gray-200"
+                          >
+                            <Trash2 size={18} className="text-red-500" />
+                          </button>
+                        </Tooltip>
                       )}
                     </div>
                   </td>
@@ -383,7 +428,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
 
               {!owners.length && (
                 <tr>
-                  <td colSpan={3} className="text-center py-6 text-gray-500">
+                  <td colSpan={4} className="text-center py-6 text-gray-500">
                     {language === "vi" ? "Không tìm thấy kết quả." : "No results found."}
                   </td>
                 </tr>
@@ -393,43 +438,48 @@ const OwnersLandlords = ({ openOwnerView }) => {
 
           {/* PAGINATION */}
           {!loading && totalRows > 0 && (
-            <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-t">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{language === "vi" ? "Số hàng mỗi trang" : "Rows per page"}:</span>
-                <select
-                  value={rowsPerPage}
-                  onChange={(e) => {
-                    setRowsPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  className="border rounded px-2 py-1 text-sm outline-none"
-                >
-                  {[5, 10, 20, 50].map((n) => (
-                    <option key={n} value={n}>{n}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <p className="text-sm text-gray-600">
-                  {startIndex}-{endIndex} {language === "vi" ? "của" : "of"} {totalRows}
-                </p>
-
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="p-1.5 border rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4 border-t">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <span>{language === "vi" ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
+                  <select
+                    value={rowsPerPage}
+                    onChange={(e) => {
+                      setRowsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="border rounded-md px-2 py-1 text-gray-700"
                   >
+                    {[5, 10, 20, 50].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <span>
+                  {totalRows === 0
+                    ? "0–0"
+                    : `${startIndex}–${endIndex} ${language === "vi" ? "trên" : "of"} ${totalRows}`}
+                </span>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+                    <ChevronsLeft size={16} />
+                  </button>
+                  <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
                     <ChevronLeft size={16} />
                   </button>
-
                   <button
-                    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className="p-1.5 border rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages || totalRows === 0}
                   >
                     <ChevronRight size={16} />
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages || totalRows === 0}
+                  >
+                    <ChevronsRight size={16} />
                   </button>
                 </div>
               </div>
@@ -683,7 +733,7 @@ const AddEditOwnerModal = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* OWNER NAME */}
           <div className="w-full">
-            <label className="text-sm font-semibold mb-2 block">{text.name}</label>
+            <label className="text-sm font-semibold mb-2 block">{text.name} <span className="text-red-500">*</span></label>
             <input
               type="text"
               placeholder={text.namePlaceholder}
@@ -698,7 +748,7 @@ const AddEditOwnerModal = ({
 
           {/* GENDER */}
           <div className="w-full">
-            <label className="text-sm font-semibold mb-2 block">{text.gender}</label>
+            <label className="text-sm font-semibold mb-2 block">{text.gender} <span className="text-red-500">*</span></label>
             <select
               value={formData.gender}
               onChange={(e) =>
@@ -725,8 +775,14 @@ const AddEditOwnerModal = ({
                   placeholder={text.phonePlaceholder}
                   value={row.number}
                   onChange={(e) => {
+                    const val = e.target.value;
+                    const isDuplicate = phoneRows.some((r, i) => i !== idx && r.number && r.number.trim() === val.trim());
+                    if (isDuplicate && val.trim() !== "") {
+                      CommonToaster(activeLang === "VI" ? "Số điện thoại này đã được nhập." : "This phone number is already entered.", "error");
+                      return;
+                    }
                     const next = [...phoneRows];
-                    next[idx].number = e.target.value;
+                    next[idx].number = val;
                     setPhoneRows(next);
                   }}
                   className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full outline-none focus:border-[#41398B]"
@@ -763,8 +819,14 @@ const AddEditOwnerModal = ({
                   placeholder={text.emailPlaceholder}
                   value={row.email}
                   onChange={(e) => {
+                    const val = e.target.value;
+                    const isDuplicate = emailRows.some((r, i) => i !== idx && r.email && r.email.trim() === val.trim());
+                    if (isDuplicate && val.trim() !== "") {
+                      CommonToaster(activeLang === "VI" ? "Email này đã được nhập." : "This email is already entered.", "error");
+                      return;
+                    }
                     const next = [...emailRows];
-                    next[idx].email = e.target.value;
+                    next[idx].email = val;
                     setEmailRows(next);
                   }}
                   className="border border-gray-300 rounded-lg px-3 py-3 text-sm w-full outline-none focus:border-[#41398B]"

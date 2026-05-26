@@ -37,10 +37,9 @@ export default function BlockPage() {
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
-  const menuRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (!event.target.closest(".action-menu-container")) {
         setOpenMenuIndex(null);
       }
     };
@@ -274,7 +273,7 @@ export default function BlockPage() {
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-b from-white to-[#f3f2ff]">
+    <div className="p-3 min-h-screen">
       {/* ✅ Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -322,17 +321,25 @@ export default function BlockPage() {
             <thead className="bg-gray-50 text-gray-700">
               <tr>
                 <th className="px-6 py-3 text-left font-medium">
+                  S.no
+                </th>
+
+                <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Dự án / Cộng đồng" : "Project / Community"}
                 </th>
+
                 <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Khu vực/Khu vực" : " Area /Zone"}
                 </th>
+
                 <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Tên tòa" : "Block Name"}
                 </th>
+
                 <th className="px-6 py-3 text-left font-medium">
                   {isVI ? "Trạng thái" : "Status"}
                 </th>
+
                 <th className="px-6 py-3 text-right font-medium">
                   {isVI ? "Hành động" : "Actions"}
                 </th>
@@ -342,7 +349,7 @@ export default function BlockPage() {
             <tbody>
               {visibleData.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="py-6 text-center text-gray-500">
+                  <td colSpan="6" className="py-6 text-center text-gray-500">
                     {isVI ? "Không có dữ liệu." : "No records found."}
                   </td>
                 </tr>
@@ -362,6 +369,9 @@ export default function BlockPage() {
                       className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"
                         } hover:bg-gray-100`}
                     >
+                      <td className="px-6 py-3 font-medium text-gray-700">
+                        {startIndex + i + 1}
+                      </td>
                       <td className="px-6 py-3">
                         {showProject ? currentProject : ""}
                       </td>
@@ -386,7 +396,7 @@ export default function BlockPage() {
                         </span>
                       </td>
 
-                      <td className="px-6 py-3 text-right relative">
+                      <td className="px-6 py-3 text-right relative action-menu-container">
                         <button
                           className="p-2 rounded-full hover:bg-gray-100"
                           onClick={(e) => { e.stopPropagation(); setOpenMenuIndex(openMenuIndex === i ? null : i); }}
@@ -395,7 +405,7 @@ export default function BlockPage() {
                         </button>
 
                         {openMenuIndex === i && (
-<div
+                          <div
                             className="absolute right-8 top-10 bg-white border 
                           border-gray-200 rounded-xl shadow-lg z-50 w-44 py-2"
                           >
@@ -441,7 +451,7 @@ export default function BlockPage() {
                               {isVI ? "Xóa" : "Delete"}
                             </button>
                           </div>
-)}
+                        )}
                       </td>
                     </tr>
                   );

@@ -61,7 +61,7 @@ export default function Currency({ goBack }) {
   const [currencyOptions, setCurrencyOptions] = useState([]);
 
   // Pagination state
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [form, setForm] = useState({
@@ -79,7 +79,10 @@ export default function Currency({ goBack }) {
     try {
       setLoading(true);
       const res = await getAllCurrencies();
-      setCurrencies(res.data.data || []);
+      const fetchedData = res.data.data || [];
+      // Sort ascending by createdAt to place newest currencies at the bottom
+      const sortedData = fetchedData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      setCurrencies(sortedData);
     } catch {
       CommonToaster(
         isVI
@@ -146,19 +149,12 @@ export default function Currency({ goBack }) {
 
   // Save
   const handleSubmit = async () => {
-    const { code_en, code_vi, name_en, name_vi, symbol_en, symbol_vi } = form;
-    if (
-      !code_en ||
-      !code_vi ||
-      !name_en ||
-      !name_vi ||
-      !symbol_en ||
-      !symbol_vi
-    ) {
+    const { name_en, name_vi } = form;
+    if (!name_en || !name_vi) {
       CommonToaster(
         isVI
-          ? "Vui lòng điền đầy đủ tất cả các trường tiếng Anh và tiếng Việt."
-          : "Please fill all English and Vietnamese fields.",
+          ? "Vui lòng chọn hoặc nhập Tên tiền tệ (cả tiếng Anh và tiếng Việt)."
+          : "Please select or enter a Currency Name (both English and Vietnamese).",
         "error"
       );
       return;
@@ -515,7 +511,7 @@ export default function Currency({ goBack }) {
                 setCurrentPage(1);
               }}
             >
-              {[5, 10, 20].map((n) => (
+              {[50, 100, 200].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>
@@ -679,7 +675,6 @@ export default function Currency({ goBack }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {activeLang === "EN" ? "Code" : "Mã"}
-                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -696,7 +691,6 @@ export default function Currency({ goBack }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {activeLang === "EN" ? "Currency Symbol" : "Ký hiệu tiền tệ"}
-                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"

@@ -208,8 +208,14 @@ export default function OwnerModal({ onClose, onSuccess }) {
                   className="border border-gray-300 rounded-lg px-3 py-3 flex-1"
                   value={row.number}
                   onChange={(e) => {
+                    const val = e.target.value;
+                    const isDuplicate = phoneRows.some((r, i) => i !== idx && r.number && r.number.trim() === val.trim());
+                    if (isDuplicate && val.trim() !== "") {
+                      CommonToaster(activeLang === "VI" ? "Số điện thoại này đã được nhập." : "This phone number is already entered.", "error");
+                      return;
+                    }
                     const next = [...phoneRows];
-                    next[idx].number = e.target.value;
+                    next[idx].number = val;
                     setPhoneRows(next);
                   }}
                 />

@@ -17,35 +17,13 @@ const CommonRichText = ({
     const modules = {
         toolbar: {
             container: [
-                [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                [{ size: ["small", false, "large", "huge"] }],
-                ["bold", "italic", "underline", "strike"],
-                [{ color: [] }, { background: [] }],
-                [{ script: "sub" }, { script: "super" }],
-                ["blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }],
-                ["link", "image", "video"],
             ],
         },
     };
 
     const formats = [
-        "header",
-        "size",
-        "bold",
-        "italic",
-        "underline",
-        "strike",
-        "color",
-        "background",
-        "script",
-        "blockquote",
-        "code-block",
         "list",
-        "bullet",
-        "link",
-        "image",
-        "video",
     ];
 
     return (
@@ -90,11 +68,8 @@ const CommonRichText = ({
                 .rich-text-wrapper .ql-editor ol {
                     padding-left: 1.5rem !important;
                 }
-                .rich-text-wrapper .ql-editor ul {
-                    list-style-type: disc !important;
-                }
-                .rich-text-wrapper .ql-editor ol {
-                    list-style-type: decimal !important;
+                .rich-text-wrapper .ql-editor li {
+                    list-style-type: none !important; /* let Quill ::before handle the markers */
                 }
                 /* Spacing between paragraphs */
                 .rich-text-wrapper .ql-editor p {

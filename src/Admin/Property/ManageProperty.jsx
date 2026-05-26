@@ -11,6 +11,10 @@ import {
   Upload,
   MoreVertical,
   CheckCircle,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
 } from "lucide-react";
 import {
   updatePropertyListing,
@@ -28,7 +32,7 @@ import { translations } from "../../Language/translations";
 import { translateError } from "../../utils/translateError";
 import { formatNumber } from "../../utils/display";
 import { Link, useNavigate } from "react-router-dom";
-import { Dropdown } from "antd";
+import { Dropdown, Tooltip } from "antd";
 import FiltersPage from "../Filters/Filter";
 import { usePermissions } from "../../Context/PermissionContext";
 
@@ -370,7 +374,7 @@ export default function ManageProperty({
         <Search className="absolute top-3 left-3 text-gray-400 w-5 h-5" />
         <input
           type="text"
-          placeholder={`${t.search}...`}
+          placeholder={t.searchPropertyPlaceholder}
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
@@ -443,6 +447,7 @@ export default function ManageProperty({
           <table className="w-full text-sm text-gray-700 min-w-[1000px]">
             <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
               <tr>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{language === "vi" ? "STT" : "S.no"}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyId}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyNo}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyType}</th>
@@ -484,6 +489,9 @@ export default function ManageProperty({
                     key={p._id || i}
                     className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition align-middle group`}
                   >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {startIndex + i}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <p className="text-sm text-gray-600 font-medium">
@@ -542,62 +550,74 @@ export default function ManageProperty({
                       <td className={`px-3 py-4 text-right flex justify-end gap-3 sticky right-0 z-10 shadow-[-4px_0_8px_rgba(0,0,0,0.05)] ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} group-hover:bg-gray-100`}>
                         {/* Approve Button */}
                         {isApprover && p.status === "Pending" && (
-                          <button
-                            onClick={() => handleApprove(p._id)}
-                            title="Approve"
-                            className="p-2 rounded-full hover:bg-green-100 bg-green-50 border border-green-200 h-10 w-10 cursor-pointer flex justify-center items-center text-green-600"
-                          >
-                            <CheckCircle size={18} />
-                          </button>
+                          <Tooltip title="Approve">
+                            <button
+                              onClick={() => handleApprove(p._id)}
+                              className="p-2 rounded-full hover:bg-green-100 bg-green-50 border border-green-200 h-10 w-10 cursor-pointer flex justify-center items-center text-green-600"
+                            >
+                              <CheckCircle size={18} />
+                            </button>
+                          </Tooltip>
                         )}
 
                         {can(permissionKey, 'view') && (
-                          <a
-                            href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${p?.listingInformation?.listingInformationPropertyId || p._id}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
-                          >
-                            <Eye className="w-4 h-4 text-gray-600" />
-                          </a>
+                          <Tooltip title={t.viewOnWebsite}>
+                            <a
+                              href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${p?.listingInformation?.listingInformationPropertyId || p._id}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
+                            >
+                              <Eye className="w-4 h-4 text-gray-600" />
+                            </a>
+                          </Tooltip>
                         )}
 
                         {can(permissionKey, 'preview') && (
-                          <button
-                            onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}?step=5`)}
-                            title="Preview"
-                            className="p-2 rounded-full hover:bg-purple-100 bg-purple-50 transition border border-purple-300 h-10 w-10 cursor-pointer flex justify-center items-center"
-                          >
-                            <Eye className="w-4 h-4 text-purple-600" />
-                          </button>
+                          <Tooltip title={t.preview}>
+                            <button
+                              onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}?step=5`)}
+                              className="p-2 rounded-full hover:bg-purple-100 bg-purple-50 transition border border-purple-300 h-10 w-10 cursor-pointer flex justify-center items-center"
+                            >
+                              <Eye className="w-4 h-4 text-purple-600" />
+                            </button>
+                          </Tooltip>
                         )}
 
                         {can(permissionKey, 'edit') && (
-                          <button
-                            onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}`)}
-                            className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
-                          >
-                            <Pencil color="#1d47ffff" className="w-4 h-4 text-gray-600" />
-                          </button>
+                          <Tooltip title={t.edit}>
+                            <button
+                              onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}`)}
+                              className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
+                            >
+                              <Pencil color="#1d47ffff" className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </Tooltip>
                         )}
 
                         {trashMode ? (
-                          <button onClick={() => handleRestore(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
-                            <RotateCcw className="w-4 h-4 text-green-600" />
-                          </button>
+                          <Tooltip title="Restore">
+                            <button onClick={() => handleRestore(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
+                              <RotateCcw className="w-4 h-4 text-green-600" />
+                            </button>
+                          </Tooltip>
                         ) : (
                           can(permissionKey, 'delete') && (
-                            <button onClick={() => confirmDelete(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
-                              <Trash2 className="w-4 h-4 text-red-500" />
-                            </button>
+                            <Tooltip title={t.delete}>
+                              <button onClick={() => confirmDelete(p._id)} className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center">
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </button>
+                            </Tooltip>
                           )
                         )}
 
                         {can(permissionKey, 'copy') && (
                           <Dropdown trigger={["click"]} menu={{ items: getCopyMenuItems(p) }} placement="bottomRight">
-                            <button className="p-2 rounded-full hover:bg-gray-200 transition border h-10 w-10">
-                              <MoreVertical />
-                            </button>
+                            <Tooltip title={t.moreOptions}>
+                              <button className="p-2 rounded-full hover:bg-gray-200 transition border h-10 w-10 flex justify-center items-center">
+                                <MoreVertical />
+                              </button>
+                            </Tooltip>
                           </Dropdown>
                         )}
                       </td>
@@ -611,7 +631,7 @@ export default function ManageProperty({
 
               {currentRows.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="text-center py-6 text-gray-500">
+                  <td colSpan="10" className="text-center py-6 text-gray-500">
                     {t.noPropertiesFound}
                   </td>
                 </tr>
@@ -623,32 +643,51 @@ export default function ManageProperty({
 
       {/* Pagination */}
       {!loading && totalRows > 0 && (
-        <div className="flex justify-between items-center px-6 py-4 text-sm text-gray-600 border-t bg-gray-50 mt-4 rounded-b-2xl">
-          <div className="flex items-center gap-2">
-            <span>{t.rowsPerPage}:</span>
-            <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="border rounded-md text-gray-700 focus:outline-none px-2 py-1">
-              {[5, 10, 20, 25, 50].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm mt-4">
+          <div className="flex items-center gap-6">
+            {/* Rows per page */}
+            <div className="flex items-center gap-2">
+              <span>{t.rowsPerPage}</span>
+              <select
+                value={rowsPerPage}
+                onChange={handleRowsPerPageChange}
+                className="border rounded-md px-2 py-1"
+              >
+                {[5, 10, 20, 25, 50].map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div className="flex items-center gap-3">
-            <p>
+            {/* Showing X of Y */}
+            <span>
               {totalRows === 0
                 ? `0–0 ${t.of} 0`
-                : `${(currentPage - 1) * rowsPerPage + 1}–${(currentPage - 1) * rowsPerPage + currentRows.length
-                } ${t.of} ${totalRows}`}
-            </p>
+                : `${(currentPage - 1) * rowsPerPage + 1}–${
+                    Math.min(currentPage * rowsPerPage, totalRows)
+                  } ${t.of} ${totalRows}`}
+            </span>
 
-            <button onClick={handlePrevPage} disabled={currentPage === 1} className={`p-1 px-2 rounded ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}>
-              &lt;
-            </button>
-            <button onClick={handleNextPage} disabled={currentPage === totalPages} className={`p-1 px-2 rounded ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}>
-              &gt;
-            </button>
+            {/* Pagination Buttons */}
+            <div className="flex items-center gap-1">
+              <button disabled={currentPage === 1} onClick={() => setCurrentPage(1)}>
+                <ChevronsLeft size={16} />
+              </button>
+
+              <button disabled={currentPage === 1} onClick={handlePrevPage}>
+                <ChevronLeft size={16} />
+              </button>
+
+              <button disabled={currentPage === totalPages} onClick={handleNextPage}>
+                <ChevronRight size={16} />
+              </button>
+
+              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}>
+                <ChevronsRight size={16} />
+              </button>
+            </div>
           </div>
         </div>
       )}
