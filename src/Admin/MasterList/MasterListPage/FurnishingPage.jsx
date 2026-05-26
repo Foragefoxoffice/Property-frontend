@@ -246,11 +246,11 @@ export default function FurnishingPage() {
           <table className="w-full text-sm border-collapse">
             <thead className="bg-gray-50 text-gray-700">
               <tr>
-                <th className="px-6 py-3">{isVI ? "STT" : "S.no"}</th>
-                <th className="px-6 py-3">
+                <th className="px-6 py-3 text-left">{isVI ? "STT" : "S.no"}</th>
+                <th className="px-6 py-3 text-left">
                   {isVI ? "Nội thất" : "Furnishing"}
                 </th>
-                <th className="px-6 py-3">{isVI ? "Tình trạng" : "Status"}</th>
+                <th className="px-6 py-3 text-left">{isVI ? "Tình trạng" : "Status"}</th>
                 <th className="px-6 py-3 text-right">
                   {isVI ? "Hành động" : "Actions"}
                 </th>
@@ -301,7 +301,7 @@ export default function FurnishingPage() {
                       </button>
 
                       {openMenuIndex === i && (
-<div ref={menuRef} className="absolute right-8 top-10 bg-white border border-gray-200 rounded-lg shadow-lg w-44 py-2 z-50">
+                        <div ref={menuRef} className="absolute right-8 top-10 bg-white border border-gray-200 rounded-lg shadow-lg w-44 py-2 z-50">
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             onClick={() => {
@@ -339,7 +339,7 @@ export default function FurnishingPage() {
                             {isVI ? "Xóa" : "Delete"}
                           </button>
                         </div>
-)}
+                      )}
                     </td>
                   </tr>
                 ))
