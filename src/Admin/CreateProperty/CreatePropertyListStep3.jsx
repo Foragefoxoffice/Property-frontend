@@ -559,7 +559,7 @@ const StaffPopupCard = ({ onClose, data, lang, title }) => {
   const defaultImage = "/dummy-img.jpg";
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setLoadingProps(false); } }}>
       <div className="bg-white w-full max-w-3xl rounded-2xl shadow-lg p-8 relative animate-fade-in">
         <button
           onClick={onClose}
@@ -663,7 +663,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
   }));
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget && typeof onClose === 'function') { onClose(); } }}>
       <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-8 relative animate-fade-in border border-gray-100">
         <button
           onClick={onClose}

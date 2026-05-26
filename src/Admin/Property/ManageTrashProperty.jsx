@@ -473,7 +473,7 @@ export default function ManageTrashProperty() {
 
       {/* DELETE CONFIRM MODAL */}
       {deleteConfirm.show && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
             <h2 className="text-lg font-semibold mb-4">
               {t.confirmPermanentDelete}
@@ -508,7 +508,7 @@ export default function ManageTrashProperty() {
 
       {/* FILTER MODAL */}
       {showFilterPopup && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center p-4 z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowFilterPopup(false); } }}>
           <div className="bg-white rounded-2xl w-full max-w-5xl p-6 overflow-y-auto max-h-[90vh]">
             <div className="flex justify-end">
               <button
@@ -532,7 +532,7 @@ export default function ManageTrashProperty() {
       )}
       {/* BULK DELETE CONFIRM MODAL */}
       {bulkDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setBulkDeleteConfirm(false); } }}>
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
             <h2 className="text-lg font-semibold mb-4">{t.confirmBulkDelete?.replace('{count}', selectedRowKeys.length)}</h2>
             <p className="text-gray-600 mb-6">

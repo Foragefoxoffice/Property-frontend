@@ -157,7 +157,7 @@ export default function Subscription() {
 
             {/* Delete Confirm */}
             {deleteConfirm.show && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
                     <div className="bg-white p-6 rounded-2xl max-w-sm w-full shadow-xl animate-in zoom-in-95 duration-200">
                         <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
                             <Trash2 size={24} />

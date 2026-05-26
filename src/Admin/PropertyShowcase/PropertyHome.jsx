@@ -367,7 +367,7 @@ export default function PropertyHome({ property }) {
 
             {/* 4. Fullscreen Image Popup Modal */}
             {isPopupOpen && (
-                <div className="fixed inset-0 bg-black z-[100] flex flex-col">
+                <div className="fixed inset-0 bg-black z-[100] flex flex-col" onMouseDown={(e) => { if (e.target === e.currentTarget) { setIsPopupOpen(false); } }}>
                     {/* Header with Close Button */}
                     <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-[110]">
                         <button

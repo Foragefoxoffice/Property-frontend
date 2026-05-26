@@ -332,7 +332,7 @@ export default function ContactEnquiry() {
 
             {/* Delete Confirmation Modal */}
             {deleteConfirm.show && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
                     <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in zoom-in-95 duration-200">
                         <div className="flex items-center mb-4">
                             <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
@@ -366,7 +366,7 @@ export default function ContactEnquiry() {
             )}
             {/* Message Details Modal */}
             {messageModal.show && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10000] p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) { setMessageModal({ show: false, message: "", userName: "" }); } }}>
                     <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl animate-in zoom-in-95 duration-200">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">

@@ -517,7 +517,7 @@ const OwnersSkeleton = () => {
    ✅ DELETE MODAL
 ========================================================== */
 const DeleteModal = ({ language, onCancel, onDelete, deleteLoading }) => (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowModal(false); } }}>
     <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
       <h3 className="text-lg font-semibold flex items-center gap-2">
         <AlertTriangle className="text-red-500" />
@@ -648,7 +648,7 @@ const AddEditOwnerModal = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex py-12 items-start justify-center z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 flex py-12 items-start justify-center z-50 overflow-y-auto" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowModal(false); } }}>
       <div className="bg-white rounded-xl w-full max-w-2xl shadow-xl">
 
         {/* HEADER */}

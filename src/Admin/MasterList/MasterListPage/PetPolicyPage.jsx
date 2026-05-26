@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     ArrowLeft,
     Plus,
@@ -24,6 +24,17 @@ export default function PetPolicyPage({ goBack }) {
     const [activeLang, setActiveLang] = useState("EN");
     const [tableLang, setTableLang] = useState("EN");
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
     const [policies, setPolicies] = useState([]);
     const [loading, setLoading] = useState(false);
     const [editingPolicy, setEditingPolicy] = useState(null);
@@ -207,15 +218,13 @@ export default function PetPolicyPage({ goBack }) {
                                         <td className="px-6 py-3 text-right relative">
                                             <button
                                                 className="p-2 rounded-full hover:bg-gray-100 transition"
-                                                onClick={() =>
-                                                    setOpenMenuIndex(openMenuIndex === i ? null : i)
-                                                }
+                                                onClick={(e) => { e.stopPropagation(); setOpenMenuIndex(openMenuIndex === i ? null : i); }}
                                             >
                                                 <MoreVertical className="w-4 h-4 text-gray-600" />
                                             </button>
 
                                             {openMenuIndex === i && (
-                                                <div className="absolute right-8 top-10 bg-white border rounded-lg shadow-lg z-50 w-44 py-2">
+<div ref={menuRef} className="absolute right-8 top-10 bg-white border rounded-lg shadow-lg z-50 w-44 py-2">
                                                     <button
                                                         className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                                         onClick={() => {
@@ -247,7 +256,7 @@ export default function PetPolicyPage({ goBack }) {
                                                         <Trash2 className="w-4 h-4 mr-2" /> Delete
                                                     </button>
                                                 </div>
-                                            )}
+)}
                                         </td>
                                     </tr>
                                 ))
@@ -259,7 +268,7 @@ export default function PetPolicyPage({ goBack }) {
 
             {/* Modal for Add/Edit */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowModal(false); } }}>
                     <div className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-6 relative">
                         <div className="flex justify-between mb-4 border-b pb-2">
                             <h2 className="text-lg font-semibold text-gray-800">
@@ -364,7 +373,7 @@ export default function PetPolicyPage({ goBack }) {
 
             {/* Delete Confirmation */}
             {deleteConfirm.show && (
-                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
                     <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
                         <div className="flex items-center mb-4">
                             <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />

@@ -73,7 +73,7 @@ const formatNumber = (value) => {
 /* === Media Preview Modal === */
 const MediaPreviewModal = ({ url, type, onClose }) => {
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowOwnerPopup(false); } }}>
       <div className="relative max-w-3xl w-full mx-4 bg-white rounded-2xl p-4 shadow-xl">
         {/* Close Button */}
         <button
@@ -697,7 +697,7 @@ export default function CreatePropertyPreview({
 
       {
         isSubmitting && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setLoadingProps(false); } }}>
             <div className="flex flex-col items-center gap-4">
               <div className="w-14 h-14 border-4 border-white border-t-[#41398B] rounded-full animate-spin"></div>
               <p className="text-white text-lg tracking-wide font-medium">
@@ -818,7 +818,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
   }));
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget && typeof onClose === 'function') { onClose(); } }}>
       <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-8 relative animate-fade-in border border-gray-100">
         {/* Close */}
         <button
@@ -1060,7 +1060,7 @@ const StaffPopupCard = ({ onClose, data, lang, title }) => {
   const safeText = (val) =>
     typeof val === "object" ? val?.[lang] || val?.en || "" : val || "";
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget && typeof onClose === 'function') { onClose(); } }}>
       <div className="bg-white w-full max-w-3xl rounded-2xl shadow-lg p-8 relative">
         <button
           onClick={onClose}

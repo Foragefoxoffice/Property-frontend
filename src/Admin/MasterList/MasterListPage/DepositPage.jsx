@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ArrowLeft,
   Plus,
@@ -33,13 +33,24 @@ export default function DepositPage() {
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingDeposit, setEditingDeposit] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
   // ✅ Pagination state
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [form, setForm] = useState({
@@ -301,15 +312,13 @@ export default function DepositPage() {
                     <td className="px-6 py-3 text-right relative">
                       <button
                         className="p-2 rounded-full hover:bg-gray-100"
-                        onClick={() =>
-                          setOpenMenuIndex(openMenuIndex === i ? null : i)
-                        }
+                        onClick={(e) => { e.stopPropagation(); setOpenMenuIndex(openMenuIndex === i ? null : i); }}
                       >
                         <MoreVertical size={16} className="text-gray-600" />
                       </button>
 
                       {openMenuIndex === i && (
-                        <div className="absolute right-8 top-10 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-44 py-2">
+<div ref={menuRef} className="absolute right-8 top-10 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-44 py-2">
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
                             onClick={() => {
@@ -347,7 +356,7 @@ export default function DepositPage() {
                             {isVI ? "Xóa" : "Delete"}
                           </button>
                         </div>
-                      )}
+)}
                     </td>
                   </tr>
                 ))
@@ -370,7 +379,7 @@ export default function DepositPage() {
               }}
               className="border rounded-md px-2 py-1 text-gray-700"
             >
-              {[5, 10, 20].map((n) => (
+              {[50, 100, 200].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>
@@ -408,7 +417,7 @@ export default function DepositPage() {
 
       {/* Delete Modal */}
       {deleteConfirm.show && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-lg">
             <div className="flex items-center mb-3">
               <AlertTriangle className="text-red-600 mr-2" />
@@ -441,7 +450,7 @@ export default function DepositPage() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowModal(false); } }}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center px-6 py-4">

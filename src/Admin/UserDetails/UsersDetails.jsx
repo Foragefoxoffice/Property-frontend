@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Select } from "antd";
 import {
     Search,
@@ -44,6 +44,17 @@ export default function UsersDetails() {
     const [showViewModal, setShowViewModal] = useState(false);
     const [viewingUser, setViewingUser] = useState(null);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -379,15 +390,13 @@ export default function UsersDetails() {
                                             <td className="px-6 py-4 text-right relative">
                                                 <button
                                                     className="p-2 rounded-full hover:bg-gray-100 transition"
-                                                    onClick={() =>
-                                                        setOpenMenuIndex(openMenuIndex === i ? null : i)
-                                                    }
+                                                    onClick={(e) => { e.stopPropagation(); setOpenMenuIndex(openMenuIndex === i ? null : i); }}
                                                 >
                                                     <MoreVertical size={16} className="text-gray-600" />
                                                 </button>
 
                                                 {openMenuIndex === i && (
-                                                    <div className="absolute right-8 top-12 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-48 py-2">
+<div ref={menuRef} className="absolute right-8 top-12 bg-white border border-gray-200 rounded-xl shadow-lg z-50 w-48 py-2">
                                                         <button
                                                             className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
                                                             onClick={() => openViewModal(row)}
@@ -424,7 +433,7 @@ export default function UsersDetails() {
                                                             </button>
                                                         )}
                                                     </div>
-                                                )}
+)}
                                             </td>
                                         </tr>
                                     ))
@@ -480,7 +489,7 @@ export default function UsersDetails() {
 
             {/* ✅ Delete Modal */}
             {deleteConfirm.show && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
                     <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
                         <div className="flex items-center mb-4">
                             <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
@@ -519,7 +528,7 @@ export default function UsersDetails() {
 
             {/* ✅ Add/Edit Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowModal(false); } }}>
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
                         {/* Header */}
                         <div className="flex justify-between items-center px-6 py-5 border-b border-gray-100">
@@ -665,7 +674,7 @@ export default function UsersDetails() {
 
             {/* ✅ View Details Modal */}
             {showViewModal && viewingUser && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowViewModal(false); } }}>
                     <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
                         {/* Header */}
                         <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-white">

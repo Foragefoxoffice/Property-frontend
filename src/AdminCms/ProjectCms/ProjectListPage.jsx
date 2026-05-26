@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ConfigProvider, Spin } from "antd";
 import { Search, Plus, Trash2, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react";
@@ -20,6 +20,17 @@ export default function ProjectListPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
 
     const t = translations[language];
 
@@ -154,11 +165,11 @@ export default function ProjectListPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right relative">
-                                            <button className="p-2 rounded-full hover:bg-gray-200 transition text-gray-500" onClick={() => setOpenMenuIndex(openMenuIndex === i ? null : i)}>
+                                            <button className="p-2 rounded-full hover:bg-gray-200 transition text-gray-500" onClick={(e) => { e.stopPropagation(); setOpenMenuIndex(openMenuIndex === i ? null : i); }}>
                                                 <MoreVertical size={18} />
                                             </button>
                                             {openMenuIndex === i && (
-                                                <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden text-left">
+<div ref={menuRef} className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden text-left">
                                                     <Link to={`/dashboard/cms/projects/edit/${project._id}`}>
                                                         <button className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group">
                                                             <span className="w-8 flex justify-center"><Pencil size={15} className="text-blue-600" /></span>
@@ -170,7 +181,7 @@ export default function ProjectListPage() {
                                                         {t.delete}
                                                     </button>
                                                 </div>
-                                            )}
+)}
                                         </td>
                                     </tr>
                                 ))
@@ -193,7 +204,7 @@ export default function ProjectListPage() {
 
             {/* Delete Modal */}
             {deleteModalVisible && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteModalVisible(false); } }}>
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
                         <div className="flex items-center mb-4">
                             <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3"><AlertTriangle className="text-red-600 w-5 h-5" /></div>

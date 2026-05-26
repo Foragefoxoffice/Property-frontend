@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ArrowLeft,
   Plus,
@@ -32,13 +32,24 @@ export default function FurnishingPage() {
   const [showModal, setShowModal] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const [furnishings, setFurnishings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingFurnishing, setEditingFurnishing] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
   // Pagination
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [form, setForm] = useState({
@@ -284,15 +295,13 @@ export default function FurnishingPage() {
                     <td className="px-6 py-3 text-right relative">
                       <button
                         className="p-2 rounded-full hover:bg-gray-100"
-                        onClick={() =>
-                          setOpenMenuIndex(openMenuIndex === i ? null : i)
-                        }
+                        onClick={(e) => { e.stopPropagation(); setOpenMenuIndex(openMenuIndex === i ? null : i); }}
                       >
                         <MoreVertical size={16} className="text-gray-600" />
                       </button>
 
                       {openMenuIndex === i && (
-                        <div className="absolute right-8 top-10 bg-white border border-gray-200 rounded-lg shadow-lg w-44 py-2 z-50">
+<div ref={menuRef} className="absolute right-8 top-10 bg-white border border-gray-200 rounded-lg shadow-lg w-44 py-2 z-50">
                           <button
                             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             onClick={() => {
@@ -330,7 +339,7 @@ export default function FurnishingPage() {
                             {isVI ? "Xóa" : "Delete"}
                           </button>
                         </div>
-                      )}
+)}
                     </td>
                   </tr>
                 ))
@@ -353,7 +362,7 @@ export default function FurnishingPage() {
               }}
               className="border rounded-md px-2 py-1"
             >
-              {[5, 10, 20].map((n) => (
+              {[50, 100, 200].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>
@@ -393,7 +402,7 @@ export default function FurnishingPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm.show && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-sm p-6">
             <div className="flex items-center mb-4">
               <AlertTriangle className="text-red-600 w-6 h-6 mr-2" />
@@ -426,7 +435,7 @@ export default function FurnishingPage() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowModal(false); } }}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
             <div className="flex justify-between items-center px-6 py-4">
               <h2 className="text-lg font-medium text-gray-800">

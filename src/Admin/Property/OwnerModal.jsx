@@ -131,7 +131,7 @@ export default function OwnerModal({ onClose, onSuccess }) {
      UI
   ======================================================= */
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-start justify-center z-999 overflow-y-auto py-12 px-4">
+    <div className="fixed inset-0 bg-black/40 flex items-start justify-center z-999 overflow-y-auto py-12 px-4" onMouseDown={(e) => { if (e.target === e.currentTarget && typeof onClose === 'function') { onClose(); } }}>
       <div className="bg-white rounded-2xl w-full max-w-2xl p-8 shadow-xl relative">
         {/* Close */}
         <button

@@ -655,7 +655,7 @@ export default function ManageProperty({
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm.show && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
           <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
             <div className="flex items-center mb-4">
               <h3 className="text-lg font-semibold text-black-800">
@@ -690,7 +690,7 @@ export default function ManageProperty({
 
       {/* Filters Modal */}
       {showFilterPopup && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 z-[50]">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 z-[50]" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowFilterPopup(false); } }}>
           <div className="bg-white rounded-2xl w-full max-w-5xl p-6 overflow-y-auto max-h-[90vh]">
             <div className="flex justify-end">
               <button onClick={() => setShowFilterPopup(false)} className="px-4 py-1 rounded-full cursor-pointer">

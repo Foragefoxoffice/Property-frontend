@@ -36,7 +36,7 @@ import { useFavorites } from '../../Context/FavoritesContext';
 ------------------------------------------------------- */
 const MediaPreviewModal = ({ url, type, onClose }) => {
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setLoadingRecent(false); } }}>
       <div className="relative max-w-3xl w-full mx-4 rounded-2xl shadow-xl">
         <button
           onClick={onClose}

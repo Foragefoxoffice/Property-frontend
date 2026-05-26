@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Select } from "antd";
 import { Search, Plus, Trash2, X, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight, Calendar, Languages } from "lucide-react";
 import { getCategories, deleteCategory, createCategory, updateCategory } from "../../Api/action";
@@ -23,6 +23,17 @@ export default function CategoryListPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
     const [activeTab, setActiveTab] = useState("vi");
 
     const [formData, setFormData] = useState({
@@ -224,14 +235,14 @@ export default function CategoryListPage() {
                                             <td className="px-6 py-4 text-right relative">
                                                 <button
                                                     className="p-2 rounded-full hover:bg-gray-200 transition text-gray-500"
-                                                    onClick={() => setOpenMenuIndex(openMenuIndex === i ? null : i)}
+                                                    onClick={(e) => { e.stopPropagation(); setOpenMenuIndex(openMenuIndex === i ? null : i); }}
                                                 >
                                                     <MoreVertical size={18} />
                                                 </button>
 
                                                 {/* Dropdown Menu */}
                                                 {openMenuIndex === i && (
-                                                    <div className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
+<div ref={menuRef} className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
                                                         {can('blogs.category', 'edit') && (
                                                             <button
                                                                 onClick={() => {
@@ -261,7 +272,7 @@ export default function CategoryListPage() {
                                                             </button>
                                                         )}
                                                     </div>
-                                                )}
+)}
                                             </td>
                                         </tr>
                                     ))
@@ -404,7 +415,7 @@ export default function CategoryListPage() {
             {/* Delete Confirmation Modal */}
             {
                 isDeleteModalOpen && (
-                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) { setIsDeleteModalOpen(false); } }}>
                         <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 animate-in zoom-in-95 duration-200">
                             <div className="flex items-center mb-3">
                                 <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">

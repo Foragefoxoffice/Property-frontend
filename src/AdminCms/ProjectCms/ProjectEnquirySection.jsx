@@ -109,7 +109,7 @@ export default function ProjectEnquirySection({ projectName, isOpen, onToggle, l
 
             {/* Message Modal */}
             {messageModal.show && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10001] p-4 transition-all">
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[10001] p-4 transition-all" onMouseDown={(e) => { if (e.target === e.currentTarget) { setMessageModal({ show: false, message: '', userName: '' }); } }}>
                     <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl border border-gray-100">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">

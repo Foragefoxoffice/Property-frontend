@@ -40,7 +40,7 @@ export default function ZoneSubAreaPage() {
   const [editingZone, setEditingZone] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
   const [properties, setProperties] = useState([]);
 
@@ -413,7 +413,7 @@ export default function ZoneSubAreaPage() {
               }}
               className="border rounded-md px-2 py-1 text-gray-700"
             >
-              {[5, 10, 20].map((n) => (
+              {[50, 100, 200].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>
@@ -451,7 +451,7 @@ export default function ZoneSubAreaPage() {
 
       {/* Delete Modal */}
       {deleteConfirm.show && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setDeleteConfirm({ show: false, id: null }); } }}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-lg">
             <div className="flex items-center mb-3">
               <AlertTriangle className="text-red-600 mr-2" />
@@ -484,7 +484,7 @@ export default function ZoneSubAreaPage() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onMouseDown={(e) => { if (e.target === e.currentTarget) { setShowModal(false); } }}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center px-6 py-4">
