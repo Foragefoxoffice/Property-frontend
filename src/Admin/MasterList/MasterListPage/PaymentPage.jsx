@@ -304,44 +304,56 @@ export default function PaymentPage() {
                       </button>
 
                       {openMenuIndex === i && (
-                        <div ref={menuRef} className="absolute right-8 top-10 bg-white border border-gray-200 rounded-lg shadow-lg w-44 py-2 z-50">
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => {
-                              handleEdit(row);
-                              setOpenMenuIndex(null);
-                            }}
+                        <React.Fragment>
+                          <div
+                            className="fixed inset-0 z-40"
+                            onClick={() => setOpenMenuIndex(null)}
+                          ></div>
+
+                          <div
+                            ref={menuRef}
+                            className="absolute right-8 top-10 bg-white border border-gray-200 rounded-lg shadow-lg w-44 py-2 z-50"
                           >
-                            <Pencil className="w-4 h-4 mr-2" />
-                            {isVI ? "Chỉnh sửa" : "Edit"}
-                          </button>
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            onClick={() => {
-                              handleToggleStatus(row);
-                              setOpenMenuIndex(null);
-                            }}
-                          >
-                            <Eye className="w-4 h-4 mr-2" />
-                            {row.status === "Active"
-                              ? isVI
-                                ? "Đánh dấu là không hoạt động"
-                                : "Mark as Inactive"
-                              : isVI
-                                ? "Đánh dấu là hoạt động"
-                                : "Mark as Active"}
-                          </button>
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                            onClick={() => {
-                              confirmDelete(row._id);
-                              setOpenMenuIndex(null);
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />{" "}
-                            {isVI ? "Xóa" : "Delete"}
-                          </button>
-                        </div>
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              onClick={() => {
+                                handleEdit(row);
+                                setOpenMenuIndex(null);
+                              }}
+                            >
+                              <Pencil className="w-4 h-4 mr-2" />
+                              {isVI ? "Chỉnh sửa" : "Edit"}
+                            </button>
+
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              onClick={() => {
+                                handleToggleStatus(row);
+                                setOpenMenuIndex(null);
+                              }}
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              {row.status === "Active"
+                                ? isVI
+                                  ? "Đánh dấu là không hoạt động"
+                                  : "Mark as Inactive"
+                                : isVI
+                                  ? "Đánh dấu là hoạt động"
+                                  : "Mark as Active"}
+                            </button>
+
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                              onClick={() => {
+                                confirmDelete(row._id);
+                                setOpenMenuIndex(null);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              {isVI ? "Xóa" : "Delete"}
+                            </button>
+                          </div>
+                        </React.Fragment>
                       )}
                     </td>
                   </tr>

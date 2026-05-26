@@ -229,31 +229,37 @@ export default function UnitPage() {
       const msg =
         error.response?.data?.message ||
         error.response?.data?.error ||
-        "Unknown error";
+        "";
 
-      // 🔥 SAME DUPLICATE NAME/SYMBOL HANDLING like Availability, Deposits, Zones
-      if (
-        msg.toLowerCase().includes("unit with this name already exists") ||
-        msg.toLowerCase().includes("unit with this symbol already exists") ||
-        msg.toLowerCase().includes("unit already exists") ||
-        msg.toLowerCase().includes("same name") ||
-        msg.toLowerCase().includes("same symbol")
-      ) {
+      // ✅ Friendly duplicate messages
+      if (msg.toLowerCase().includes("symbol already exists")) {
         CommonToaster(
-          msg.toLowerCase().includes("symbol")
-            ? isVI
-              ? "Ký hiệu đơn vị này đã tồn tại."
-              : "This unit symbol already exists."
-            : isVI
-              ? "Tên đơn vị này đã tồn tại."
-              : "This unit name already exists.",
+          isVI
+            ? "Ký hiệu này đã được sử dụng. Vui lòng nhập ký hiệu khác."
+            : "This symbol is already in use. Please enter a different symbol.",
           "error"
         );
         return;
       }
 
+      if (
+        msg.toLowerCase().includes("name already exists") ||
+        msg.toLowerCase().includes("unit already exists")
+      ) {
+        CommonToaster(
+          isVI
+            ? "Tên đơn vị này đã tồn tại. Vui lòng nhập tên khác."
+            : "This unit name already exists. Please enter a different name.",
+          "error"
+        );
+        return;
+      }
+
+      // ✅ Generic fallback
       CommonToaster(
-        isVI ? "Không thể lưu dữ liệu." : "Failed to save data.",
+        isVI
+          ? "Không thể lưu đơn vị. Vui lòng thử lại."
+          : "Unable to save the unit. Please try again.",
         "error"
       );
     }
@@ -479,65 +485,76 @@ export default function UnitPage() {
                       </button>
 
                       {openMenuIndex === i && (
-                        <div ref={menuRef} className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2">
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
-                            onClick={() => {
-                              handleEdit(row);
-                              setOpenMenuIndex(null);
-                            }}
+                        <React.Fragment>
+                          <div
+                            className="fixed inset-0 z-40"
+                            onClick={() => setOpenMenuIndex(null)}
+                          ></div>
+
+                          <div
+                            ref={menuRef}
+                            className="absolute right-8 top-10 bg-white border border-[#E5E5E5] rounded-xl shadow-md z-50 w-44 py-2"
                           >
-                            <Pencil size={14} className="mr-2" />{" "}
-                            {isVI ? "Chỉnh sửa" : "Edit"}
-                          </button>
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
-                            onClick={() => {
-                              handleToggleStatus(row);
-                              setOpenMenuIndex(null);
-                            }}
-                          >
-                            <Eye size={14} className="mr-2" />{" "}
-                            {row.status === "Active"
-                              ? isVI
-                                ? "Đánh dấu là không hoạt động"
-                                : "Mark as Inactive"
-                              : isVI
-                                ? "Đánh dấu là hoạt động"
-                                : "Mark as Active"}
-                          </button>
-                          <button
-                            className={`flex items-center w-full px-4 py-2 text-sm hover:bg-gray-50 ${row.isDefault ? "text-red-600" : "text-gray-800"
-                              }`}
-                            onClick={() => {
-                              handleMarkDefault(row);
-                              setOpenMenuIndex(null);
-                            }}
-                          >
-                            <Star
-                              size={14}
-                              className={`mr-2 ${row.isDefault ? "text-red-500" : "text-gray-600"
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                              onClick={() => {
+                                handleEdit(row);
+                                setOpenMenuIndex(null);
+                              }}
+                            >
+                              <Pencil size={14} className="mr-2" />
+                              {isVI ? "Chỉnh sửa" : "Edit"}
+                            </button>
+
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                              onClick={() => {
+                                handleToggleStatus(row);
+                                setOpenMenuIndex(null);
+                              }}
+                            >
+                              <Eye size={14} className="mr-2" />{" "}
+                              {row.status === "Active"
+                                ? isVI
+                                  ? "Đánh dấu là không hoạt động"
+                                  : "Mark as Inactive"
+                                : isVI
+                                  ? "Đánh dấu là hoạt động"
+                                  : "Mark as Active"}
+                            </button>
+                            <button
+                              className={`flex items-center w-full px-4 py-2 text-sm hover:bg-gray-50 ${row.isDefault ? "text-red-600" : "text-gray-800"
                                 }`}
-                            />
-                            {row.isDefault
-                              ? isVI
-                                ? "Bỏ đánh dấu là mặc định"
-                                : "Unmark as Default"
-                              : isVI
-                                ? "Đặt làm mặc định"
-                                : "Mark as Default"}
-                          </button>
-                          <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
-                            onClick={() => {
-                              confirmDelete(row._id);
-                              setOpenMenuIndex(null);
-                            }}
-                          >
-                            <Trash2 size={14} className="mr-2 text-[#F04438]" />{" "}
-                            {isVI ? "Xóa" : "Delete"}
-                          </button>
-                        </div>
+                              onClick={() => {
+                                handleMarkDefault(row);
+                                setOpenMenuIndex(null);
+                              }}
+                            >
+                              <Star
+                                size={14}
+                                className={`mr-2 ${row.isDefault ? "text-red-500" : "text-gray-600"
+                                  }`}
+                              />
+                              {row.isDefault
+                                ? isVI
+                                  ? "Bỏ đánh dấu là mặc định"
+                                  : "Unmark as Default"
+                                : isVI
+                                  ? "Đặt làm mặc định"
+                                  : "Mark as Default"}
+                            </button>
+                            <button
+                              className="flex items-center w-full px-4 py-2 text-sm text-[#F04438] hover:bg-[#FFF2F2]"
+                              onClick={() => {
+                                confirmDelete(row._id);
+                                setOpenMenuIndex(null);
+                              }}
+                            >
+                              <Trash2 size={14} className="mr-2 text-[#F04438]" />{" "}
+                              {isVI ? "Xóa" : "Delete"}
+                            </button>
+                          </div>
+                        </React.Fragment>
                       )}
                     </td>
                   </tr>
@@ -699,8 +716,8 @@ export default function UnitPage() {
                       value={form.name_en}
                       onChange={handleChange}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-1 focus:outline-none ${duplicateErrors.name_en
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-300"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                         }`}
                     />
                     {duplicateErrors.name_en && (
@@ -720,8 +737,8 @@ export default function UnitPage() {
                       value={form.symbol_en}
                       onChange={handleChange}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-1 focus:outline-none ${duplicateErrors.symbol_en
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-300"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                         }`}
                     />
                     {duplicateErrors.symbol_en && (
@@ -744,8 +761,8 @@ export default function UnitPage() {
                       value={form.name_vi}
                       onChange={handleChange}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-1 focus:outline-none ${duplicateErrors.name_vi
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-300"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                         }`}
                     />
                     {duplicateErrors.name_vi && (
@@ -765,8 +782,8 @@ export default function UnitPage() {
                       value={form.symbol_vi}
                       onChange={handleChange}
                       className={`w-full px-4 py-2 border rounded-lg focus:ring-1 focus:outline-none ${duplicateErrors.symbol_vi
-                          ? "border-red-500 bg-red-50"
-                          : "border-gray-300"
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
                         }`}
                     />
                     {duplicateErrors.symbol_vi && (
@@ -805,11 +822,11 @@ export default function UnitPage() {
                   duplicateErrors.symbol_vi
                 }
                 className={`px-6 py-2 cursor-pointer rounded-lg text-white ${duplicateErrors.name_en ||
-                    duplicateErrors.name_vi ||
-                    duplicateErrors.symbol_en ||
-                    duplicateErrors.symbol_vi
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#41398B] hover:bg-[#41398be3]"
+                  duplicateErrors.name_vi ||
+                  duplicateErrors.symbol_en ||
+                  duplicateErrors.symbol_vi
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#41398B] hover:bg-[#41398be3]"
                   }`}
               >
                 {editingUnit
