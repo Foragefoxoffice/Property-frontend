@@ -55,6 +55,30 @@ export default function BlogMainForm({
         }
     }, [blogData]);
 
+    useEffect(() => {
+        if (blogData) {
+            form.setFieldsValue({
+                ...blogData,
+                slug: {
+                    en: blogData?.slug?.en || '',
+                    vi: blogData?.slug?.vi || '',
+                },
+                title: {
+                    en: blogData?.title?.en || '',
+                    vi: blogData?.title?.vi || '',
+                },
+                content: {
+                    en: blogData?.content?.en || '',
+                    vi: blogData?.content?.vi || '',
+                },
+                tags: {
+                    en: blogData?.tags?.en || [],
+                    vi: blogData?.tags?.vi || [],
+                },
+            });
+        }
+    }, [blogData, form]);
+
     const imageHandler = (quillRef) => {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -77,6 +101,15 @@ export default function BlogMainForm({
                 }
             }
         };
+    };
+
+    const generateSlug = (text) => {
+        return text
+            ?.toLowerCase()
+            ?.trim()
+            ?.replace(/[^\w\s-]/g, '')
+            ?.replace(/\s+/g, '-')
+            ?.replace(/--+/g, '-');
     };
 
     const modules = useMemo(() => ({
@@ -247,7 +280,25 @@ export default function BlogMainForm({
                                                         <Input
                                                             placeholder="Nhập tiêu đề Tin tức..."
                                                             size="large"
+                                                            onChange={(e) => {
+                                                                form.setFieldsValue({
+                                                                    slug: {
+                                                                        ...form.getFieldValue('slug'),
+                                                                        vi: generateSlug(e.target.value),
+                                                                    },
+                                                                });
+                                                            }}
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label="Slug"
+                                                        name={['slug', 'vi']}
+                                                    >
+                                                        <Input
+                                                            placeholder="slug-tu-dong"
+                                                            size="large"
                                                         />
                                                     </Form.Item>
 
@@ -326,7 +377,25 @@ export default function BlogMainForm({
                                                         <Input
                                                             placeholder="Enter news title in English..."
                                                             size="large"
+                                                            onChange={(e) => {
+                                                                form.setFieldsValue({
+                                                                    slug: {
+                                                                        ...form.getFieldValue('slug'),
+                                                                        en: generateSlug(e.target.value),
+                                                                    },
+                                                                });
+                                                            }}
                                                             className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        />
+                                                    </Form.Item>
+
+                                                    <Form.Item
+                                                        label="Slug"
+                                                        name={['slug', 'en']}
+                                                    >
+                                                        <Input
+                                                            placeholder="auto-generated-slug"
+                                                            size="large"
                                                         />
                                                     </Form.Item>
 
@@ -538,6 +607,37 @@ export default function BlogMainForm({
                                     className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                 >
                                     {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
+                                </Button>
+                                <Button
+                                    size="large"
+                                    icon={<EyeOutlined />}
+                                    onClick={() => {
+                                        const values = form.getFieldsValue();
+
+                                        const slug =
+                                            values?.slug?.[language] ||
+                                            values?.slug?.en ||
+                                            values?.slug?.vi ||
+                                            '';
+
+                                        if (!slug) {
+                                            CommonToaster(
+                                                language === 'vi'
+                                                    ? 'Vui lòng nhập slug trước khi xem trước'
+                                                    : 'Please enter slug before preview',
+                                                'warning'
+                                            );
+                                            return;
+                                        }
+
+                                        window.open(
+                                            `https://183housingsolutions.com/blogs/${slug}?preview=true`,
+                                            '_blank'
+                                        );
+                                    }}
+                                    className="rounded-[10px] font-semibold text-[15px] h-12 px-6"
+                                >
+                                    {language === 'vi' ? 'Xem trước' : 'Preview'}
                                 </Button>
                                 {can('blogs.blogCms', 'edit') && (
                                     <Button

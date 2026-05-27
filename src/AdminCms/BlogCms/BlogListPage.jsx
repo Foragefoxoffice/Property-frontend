@@ -20,16 +20,16 @@ export default function BlogListPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
-  const menuRef = useRef(null);
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpenMenuIndex(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    const menuRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setOpenMenuIndex(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
 
     const t = translations[language];
@@ -211,9 +211,9 @@ export default function BlogListPage() {
 
                                             {/* Dropdown Menu */}
                                             {openMenuIndex === i && (
-<div ref={menuRef} className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
+                                                <div ref={menuRef} className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
                                                     <Link
-                                                        to={`/blogs/${blog.slug?.[language] || blog.slug?.en || blog.slug?.vi}`}
+                                                        to={`https://183housingsolutions.com/blogs/${blog.slug?.[language] || blog.slug?.en || blog.slug?.vi}`}
                                                         target="_blank"
                                                         onClick={() => setOpenMenuIndex(null)}
                                                     >
@@ -249,7 +249,7 @@ export default function BlogListPage() {
                                                         {t.yesDeleteNews.replace("Yes, ", "")}
                                                     </button>
                                                 </div>
-)}
+                                            )}
                                         </td>
                                     </tr>
                                 ))
