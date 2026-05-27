@@ -41,12 +41,14 @@ export default function ManageProperty({
   trashMode = false,
 }) {
   // core states
-  const [properties, setProperties] = useState([]); // current page items from backend
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
   // backend pagination states
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    return Number(sessionStorage.getItem("propertyListPage")) || 1;
+  });
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -576,7 +578,10 @@ export default function ManageProperty({
                         {can(permissionKey, 'preview') && (
                           <Tooltip title={t.preview}>
                             <button
-                              onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}?step=5`)}
+                              onClick={() => {
+                                sessionStorage.setItem("propertyListPage", currentPage);
+                                navigate(`/dashboard/${transactionRoute}/edit/${p._id}?step=5`)
+                              }}
                               className="p-2 rounded-full hover:bg-purple-100 bg-purple-50 transition border border-purple-300 h-10 w-10 cursor-pointer flex justify-center items-center"
                             >
                               <Eye className="w-4 h-4 text-purple-600" />
@@ -587,7 +592,10 @@ export default function ManageProperty({
                         {can(permissionKey, 'edit') && (
                           <Tooltip title={t.edit}>
                             <button
-                              onClick={() => navigate(`/dashboard/${transactionRoute}/edit/${p._id}`)}
+                              onClick={() => {
+                                sessionStorage.setItem("propertyListPage", currentPage);
+                                navigate(`/dashboard/${transactionRoute}/edit/${p._id}`);
+                              }}
                               className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
                             >
                               <Pencil color="#1d47ffff" className="w-4 h-4 text-gray-600" />
@@ -665,9 +673,8 @@ export default function ManageProperty({
             <span>
               {totalRows === 0
                 ? `0–0 ${t.of} 0`
-                : `${(currentPage - 1) * rowsPerPage + 1}–${
-                    Math.min(currentPage * rowsPerPage, totalRows)
-                  } ${t.of} ${totalRows}`}
+                : `${(currentPage - 1) * rowsPerPage + 1}–${Math.min(currentPage * rowsPerPage, totalRows)
+                } ${t.of} ${totalRows}`}
             </span>
 
             {/* Pagination Buttons */}

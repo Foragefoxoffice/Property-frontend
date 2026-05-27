@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { usePermissions } from "../../Context/PermissionContext";
 import 'react-quill-new/dist/quill.snow.css';
 import CommonRichText from "../../Common/CommonRichText";
+import { useNavigate } from "react-router-dom";
 
 /* ======================================================
    REUSABLE INPUT COMPONENTS
@@ -37,6 +38,8 @@ const Input = memo(
     </div>
   )
 );
+
+
 const Select = memo(({ label, name, value, onChange, options = [], lang }) => {
   const { Option } = AntdSelect;
 
@@ -268,6 +271,7 @@ export default function CreatePropertyListStep1({
   }, [initialData]);
 
   const { can, isApprover } = usePermissions();
+  const navigate = useNavigate();
 
   const handleComplete = async () => {
     const finalStatus = isApprover ? "Published" : "Pending";
@@ -285,6 +289,15 @@ export default function CreatePropertyListStep1({
 
     onChange && onChange(updatedForm); // sync parent
     await onComplete(finalStatus, updatedForm);
+  };
+
+  const goBackToListing = () => {
+    const savedPage = sessionStorage.getItem("propertyListPage");
+
+    navigate(
+      `/dashboard/${transactionRoute}${savedPage ? `?page=${savedPage}` : ""
+      }`
+    );
   };
 
   const [lang, setLang] = useState("vi");
