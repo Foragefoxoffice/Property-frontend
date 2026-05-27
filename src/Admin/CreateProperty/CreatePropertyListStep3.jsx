@@ -16,6 +16,7 @@ import {
   Ruler,
   Clover,
 } from "lucide-react";
+import { getImageUrl } from "../../utils/imageHelper";
 import { Select as AntdSelect, Spin } from "antd";
 import OwnerModal from "../Property/OwnerModal";
 import { CommonToaster } from "../../Common/CommonToaster";
@@ -663,214 +664,286 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
   }));
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget && typeof onClose === 'function') { onClose(); } }}>
-      <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl p-8 relative animate-fade-in border border-gray-100">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-        >
-          <X size={22} />
-        </button>
+    <div
+      className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="relative bg-white w-full max-w-5xl max-h-[92vh] overflow-hidden rounded-3xl shadow-2xl border border-gray-200 animate-in fade-in zoom-in duration-200">
 
-        <div className="text-center mb-3">
-          <div className="w-25 h-25 mx-auto rounded-full bg-[#E5E7EB] flex items-center justify-center shadow-md">
-            <span className="text-4xl font-semibold text-gray-700">
+        {/* Header */}
+        <div className="relative bg-gradient-to-r from-[#41398B] to-[#5B52B5] px-8 py-8 text-white">
+          <button
+            onClick={onClose}
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center"
+          >
+            <X size={20} />
+          </button>
+
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            {/* Avatar */}
+            <div className="w-28 h-28 rounded-full bg-white/20 border-4 border-white/30 flex items-center justify-center text-4xl font-bold shadow-lg">
               {safeText(data.ownerName)?.charAt(0)?.toUpperCase()}
-            </span>
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-3xl font-bold mb-2">
+                {safeText(data.ownerName)}
+              </h2>
+
+              <div className="flex flex-wrap gap-3 justify-center sm:justify-start mt-4">
+                {data.phoneNumbers?.map((num, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-sm backdrop-blur-sm"
+                  >
+                    <Phone size={15} />
+                    {num}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <h2 className="text-2xl font-semibold mt-4">
-            {safeText(data.ownerName)}
-          </h2>
         </div>
 
-        <div className="space-y-6 text-center">
-          <div>
-            <h4 className="text-md font-semibold text-gray-700 mb-1">
-              {lang === "vi" ? "Số điện thoại" : "Phone Numbers"}
-            </h4>
+        {/* Body */}
+        <div className="overflow-y-auto max-h-[calc(92vh-180px)] px-6 sm:px-8 py-6">
 
-            {data.phoneNumbers?.length ? (
-              data.phoneNumbers.map((num, i) => (
-                <div key={i} className="flex items-center gap-2 justify-center">
-                  <Phone size={16} />
-                  <span className="text-md">{num}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400 text-sm">—</p>
-            )}
-          </div>
+          {/* Social + Notes */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
+            {/* Social */}
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                {lang === "vi" ? "Mạng xã hội" : "Social Media"}
+              </h3>
 
-
-          <div>
-            <h4 className="text-md font-semibold text-gray-700 mb-1">
-              {lang === "vi" ? "Mạng xã hội" : "Social Media"}
-            </h4>
-
-            {social?.length ? (
-              social.map((s, i) => (
-                <div key={i} className="flex items-center gap-3 justify-center">
-                  <span className="px-2 py-1 bg-gray-200 rounded-full text-xs">
-                    {s.icon}
-                  </span>
-                  {s.link ? (
-                    <a
-                      href={
-                        s.link.startsWith("http") ? s.link : `https://${s.link}`
-                      }
-                      target="_blank"
-                      className="text-[#41398B] font-medium hover:underline"
+              <div className="space-y-3">
+                {social?.length ? (
+                  social.map((s, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between bg-white rounded-xl border border-gray-100 px-4 py-3"
                     >
-                      {s.link}
-                    </a>
-                  ) : (
-                    <span className="text-gray-400">—</span>
-                  )}
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400 text-sm">—</p>
-            )}
+                      <div className="flex items-center gap-3">
+                        <div className="px-3 py-1 rounded-full bg-[#41398B]/10 text-[#41398B] text-xs font-semibold">
+                          {s.icon}
+                        </div>
+
+                        <span className="text-sm text-gray-700 truncate max-w-[180px]">
+                          {s.link}
+                        </span>
+                      </div>
+
+                      {s.link && (
+                        <a
+                          href={
+                            s.link.startsWith("http")
+                              ? s.link
+                              : `https://${s.link}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#41398B] hover:text-[#352e7a]"
+                        >
+                          <ExternalLink size={16} />
+                        </a>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-400">
+                    {lang === "vi"
+                      ? "Không có mạng xã hội"
+                      : "No social links"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                {lang === "vi" ? "Ghi chú" : "Notes"}
+              </h3>
+
+              <div className="bg-white rounded-xl border border-gray-100 p-4 min-h-[140px]">
+                <p className="text-sm leading-7 text-gray-700 whitespace-pre-wrap">
+                  {safeText(data.ownerNotes) ||
+                    (lang === "vi"
+                      ? "Không có ghi chú"
+                      : "No notes available")}
+                </p>
+              </div>
+            </div>
           </div>
 
+          {/* Properties */}
           <div>
-            <h4 className="text-md font-semibold text-gray-700 mb-1">
-              {lang === "vi" ? "Ghi chú" : "Notes"}
-            </h4>
-            <p className="text-gray-700 text-md whitespace-pre-wrap">
-              {safeText(data.ownerNotes) ||
-                (lang === "vi" ? "Không có ghi chú" : "No notes")}
-            </p>
-          </div>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-xl font-bold text-gray-900">
+                {lang === "vi"
+                  ? "Danh sách bất động sản"
+                  : "Properties"}
+              </h3>
 
-          <div className="border-t pt-4">
-            <h4 className="text-md font-semibold text-gray-700 mb-3">
-              {lang === "vi" ? "Các bất động sản đang sở hữu" : "Properties List"}
-            </h4>
+              <div className="text-sm text-gray-500">
+                {properties.length}{" "}
+                {lang === "vi" ? "bất động sản" : "properties"}
+              </div>
+            </div>
+
             {loadingProps ? (
-              <div className="flex justify-center py-4">
-                <Spin size="small" />
+              <div className="flex justify-center py-12">
+                <Spin size="large" />
               </div>
             ) : properties.length > 0 ? (
-              <div className="max-h-96 overflow-y-auto space-y-4 text-left p-1">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
                 {properties.map((prop) => {
-                  const type = prop.listingInformation?.listingInformationTransactionType?.en || "";
-                  const title = lang === 'vi'
-                    ? prop.listingInformation?.listingInformationPropertyTitle?.vi || prop.listingInformation?.listingInformationPropertyTitle?.en
-                    : prop.listingInformation?.listingInformationPropertyTitle?.en || prop.listingInformation?.listingInformationPropertyTitle?.vi;
+                  const type =
+                    prop.listingInformation
+                      ?.listingInformationTransactionType?.en || "";
 
-                  const location = lang === 'vi'
-                    ? prop.listingInformation?.listingInformationProjectCommunity?.vi || prop.listingInformation?.listingInformationProjectCommunity?.en
-                    : prop.listingInformation?.listingInformationProjectCommunity?.en || prop.listingInformation?.listingInformationProjectCommunity?.vi;
+                  const title =
+                    lang === "vi"
+                      ? prop.listingInformation
+                        ?.listingInformationPropertyTitle?.vi ||
+                      prop.listingInformation
+                        ?.listingInformationPropertyTitle?.en
+                      : prop.listingInformation
+                        ?.listingInformationPropertyTitle?.en ||
+                      prop.listingInformation
+                        ?.listingInformationPropertyTitle?.vi;
 
-                  const view = lang === 'vi'
-                    ? prop.propertyInformation?.informationView?.vi || prop.propertyInformation?.informationView?.en
-                    : prop.propertyInformation?.informationView?.en || prop.propertyInformation?.informationView?.vi;
+                  const location =
+                    lang === "vi"
+                      ? prop.listingInformation
+                        ?.listingInformationProjectCommunity?.vi ||
+                      prop.listingInformation
+                        ?.listingInformationProjectCommunity?.en
+                      : prop.listingInformation
+                        ?.listingInformationProjectCommunity?.en ||
+                      prop.listingInformation
+                        ?.listingInformationProjectCommunity?.vi;
 
-                  const unit = lang === 'vi'
-                    ? prop.propertyInformation?.informationUnit?.vi || prop.propertyInformation?.informationUnit?.en
-                    : prop.propertyInformation?.informationUnit?.en || prop.propertyInformation?.informationUnit?.vi;
+                  const unit =
+                    lang === "vi"
+                      ? prop.propertyInformation?.informationUnit?.vi ||
+                      prop.propertyInformation?.informationUnit?.en
+                      : prop.propertyInformation?.informationUnit?.en ||
+                      prop.propertyInformation?.informationUnit?.vi;
 
-                  const priceSale = prop.financialDetails?.financialDetailsPrice;
-                  const priceLease = prop.financialDetails?.financialDetailsLeasePrice;
-                  const priceNight = prop.financialDetails?.financialDetailsPricePerNight;
-                  const currency = prop.financialDetails?.financialDetailsCurrency?.code || "₫";
+                  const priceSale =
+                    prop.financialDetails?.financialDetailsPrice;
 
-                  let displayPrice = "";
-                  let suffix = "";
-                  if (type === "Sale") displayPrice = priceSale;
-                  else if (type === "Lease") { displayPrice = priceLease; suffix = lang === 'vi' ? "/ tháng" : "/ month"; }
-                  else if (type === "Home Stay") { displayPrice = priceNight; suffix = lang === 'vi' ? "/ đêm" : "/ night"; }
+                  const priceLease =
+                    prop.financialDetails?.financialDetailsLeasePrice;
 
-                  const formattedPrice = displayPrice ? `${Number(displayPrice).toLocaleString()} ${currency}` : (lang === 'vi' ? "Liên hệ" : "Contact");
+                  const currency =
+                    prop.financialDetails?.financialDetailsCurrency?.code ||
+                    "₫";
 
-                  const postedDate = prop.createdAt ? new Date(prop.createdAt).toLocaleDateString(lang === 'vi' ? 'vi-VN' : 'en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                  }) : "-";
+                  const displayPrice =
+                    type === "Sale"
+                      ? priceSale
+                      : type === "Lease"
+                        ? priceLease
+                        : 0;
 
                   return (
                     <div
                       key={prop._id}
-                      className="flex flex-col sm:flex-row bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-all group"
+                      className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300"
                     >
-                      {/* Image Area */}
-                      <div className="relative w-full sm:w-1/3 h-40 sm:h-auto overflow-hidden">
+                      {/* Image */}
+                      <div className="relative h-56 overflow-hidden">
                         <img
-                          src={prop.imagesVideos?.propertyImages?.[0] || "/dummy-img.jpg"}
+                          src={getImageUrl(prop.imagesVideos?.propertyImages?.[0])}
                           alt={title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                          onError={(e) => {
+                            e.target.src = "/dummy-img.jpg";
+                          }}
                         />
-                        <div className="absolute top-2 left-2 flex flex-col gap-1">
-                          <span className="bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider text-gray-800 shadow-sm border border-gray-100 w-fit">
-                            {lang === 'vi' ? prop.listingInformation?.listingInformationTransactionType?.vi : prop.listingInformation?.listingInformationTransactionType?.en}
+
+                        <div className="absolute top-4 left-4 flex gap-2">
+                          <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
+                            {type}
                           </span>
-                          <span className={`px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider text-white shadow-sm w-fit ${prop.status === 'Published' ? 'bg-green-500' :
-                            prop.status === 'Draft' ? 'bg-gray-500' :
-                              prop.status === 'Pending' ? 'bg-orange-500' :
-                                'bg-red-500'
-                            }`}>
+
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${prop.status === "Published"
+                              ? "bg-green-500"
+                              : prop.status === "Pending"
+                                ? "bg-orange-500"
+                                : "bg-gray-500"
+                              }`}
+                          >
                             {prop.status}
                           </span>
                         </div>
                       </div>
 
-                      {/* Content Area */}
-                      <div className="flex-1 p-4 flex flex-col justify-between">
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1.5">
-                            <span className="text-sm">🏡</span>
-                            <h4 className="text-sm font-bold text-gray-900 line-clamp-1">
-                              {title}
-                            </h4>
+                      {/* Content */}
+                      <div className="p-5">
+                        <h4 className="font-bold text-lg text-gray-900 line-clamp-1 mb-2">
+                          {title}
+                        </h4>
+
+                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+                          <MapPin size={15} />
+                          <span className="line-clamp-1">{location}</span>
+                        </div>
+
+                        <div className="flex gap-3 mb-5">
+                          <div className="flex items-center gap-1 text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                            <Bed size={15} />
+                            {prop.propertyInformation
+                              ?.informationBedrooms || 0}
                           </div>
 
-                          <div className="space-y-1 mb-3">
-                            {view && (
-                              <div className="flex items-center gap-1.5 text-gray-500 text-[11px]">
-                                <Clover size={12} className="text-green-500" />
-                                <span>{view}</span>
-                              </div>
-                            )}
-                            <div className="flex items-center gap-1.5 text-gray-500 text-[11px]">
-                              <MapPin size={12} className="text-red-500" />
-                              <span>{lang === 'vi' ? "Vị trí: " : "Location: "}{location}</span>
-                            </div>
+                          <div className="flex items-center gap-1 text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                            <Bath size={15} />
+                            {prop.propertyInformation
+                              ?.informationBathrooms || 0}
                           </div>
 
-                          <div className="flex flex-wrap gap-1.5 mb-4">
-                            <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-md border border-gray-100 text-[10px] text-gray-600">
-                              <Bed size={12} />
-                              <span>{prop.propertyInformation?.informationBedrooms || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-md border border-gray-100 text-[10px] text-gray-600">
-                              <Bath size={12} />
-                              <span>{prop.propertyInformation?.informationBathrooms || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-1 px-2 py-1 bg-gray-50 rounded-md border border-gray-100 text-[10px] text-gray-600">
-                              <Ruler size={12} />
-                              <span>{prop.propertyInformation?.informationUnitSize || 0} {unit || "m²"}</span>
-                            </div>
+                          <div className="flex items-center gap-1 text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                            <Ruler size={15} />
+                            {prop.propertyInformation
+                              ?.informationUnitSize || 0}{" "}
+                            {unit || "m²"}
                           </div>
                         </div>
 
-                        <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                           <div>
-                            <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{lang === 'vi' ? "GIÁ" : "PRICE"}</p>
-                            <p className="text-sm font-bold text-[#41398B]">
-                              {formattedPrice} <span className="text-[10px] font-medium text-gray-500">{suffix}</span>
+                            <p className="text-xs text-gray-400 uppercase">
+                              {lang === "vi" ? "Giá" : "Price"}
+                            </p>
+
+                            <p className="text-xl font-bold text-[#41398B]">
+                              {displayPrice
+                                ? `${Number(
+                                  displayPrice
+                                ).toLocaleString()} ${currency}`
+                                : "Contact"}
                             </p>
                           </div>
 
                           <a
-                            href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${prop.listingInformation?.listingInformationPropertyId || prop._id}${prop.seoInformation?.slugUrl ? `/${safeText(prop.seoInformation.slugUrl)}` : ''}`}
+                            href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${prop.listingInformation
+                              ?.listingInformationPropertyId || prop._id
+                              }`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-[#41398B] hover:bg-[#352e7a] text-white p-2 rounded-lg transition-all shadow-sm"
+                            className="w-11 h-11 rounded-xl bg-[#41398B] hover:bg-[#352e7a] text-white flex items-center justify-center transition"
                           >
-                            <ExternalLink size={14} />
+                            <ExternalLink size={18} />
                           </a>
                         </div>
                       </div>
@@ -879,9 +952,13 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
                 })}
               </div>
             ) : (
-              <p className="text-gray-400 text-sm">
-                {lang === "vi" ? "Chưa có bất động sản nào." : "No properties found."}
-              </p>
+              <div className="bg-gray-50 border border-dashed border-gray-300 rounded-2xl p-12 text-center">
+                <p className="text-gray-400">
+                  {lang === "vi"
+                    ? "Chưa có bất động sản nào."
+                    : "No properties found."}
+                </p>
+              </div>
             )}
           </div>
         </div>
