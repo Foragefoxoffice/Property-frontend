@@ -1698,16 +1698,16 @@ export default function CreatePropertyListStep1({
                 {lang === "en" ? "Hide" : "Ẩn"}
               </span>
               <Switch
-                checked={form.whatNearbyVisibility}
+                checked={form.descriptionVisibility}
                 style={{
-                  backgroundColor: form.whatNearbyVisibility
+                  backgroundColor: form.descriptionVisibility
                     ? "#41398B"
                     : "#d9d9d9",
                 }}
                 onChange={(val) =>
                   setForm((p) => ({
                     ...p,
-                    whatNearbyVisibility: val,
+                    descriptionVisibility: val,
                   }))
                 }
               />

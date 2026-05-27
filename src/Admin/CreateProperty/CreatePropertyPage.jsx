@@ -181,6 +181,7 @@ function mapApiToForm(api) {
       availableFrom: false,
       availabilityStatus: false,
       googleMap: false, // ✅ Added
+      propertyType: false, // ✅ Added for propertyType
     },
 
     propertyInformationVisibility: api.propertyInformationVisibility || {
@@ -558,6 +559,7 @@ export default function CreatePropertyPage({
         dateListed: n.listingInformationVisibility?.dateListed || false,
         availableFrom: n.listingInformationVisibility?.availableFrom || false,
         availabilityStatus: n.listingInformationVisibility?.availabilityStatus || false,
+        propertyType: n.listingInformationVisibility?.propertyType || false,
         googleMap: n.googleMapVisibility !== undefined ? n.googleMapVisibility : (n.listingInformationVisibility?.googleMap || false), // ✅ Merged
       },
 
