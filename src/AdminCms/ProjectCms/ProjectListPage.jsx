@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ConfigProvider, Spin } from "antd";
-import { Search, Plus, Trash2, AlertTriangle, MoreVertical, Pencil, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react";
+import { Search, Plus, Trash2, AlertTriangle, MoreVertical, Pencil, Eye, ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react";
 import { getAllProjectsAdmin, deleteProject } from "../../Api/action";
 import { useLanguage } from "../../Language/LanguageContext";
 import { CommonToaster } from "@/Common/CommonToaster";
@@ -20,16 +20,16 @@ export default function ProjectListPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
-  const menuRef = useRef(null);
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpenMenuIndex(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    const menuRef = useRef(null);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setOpenMenuIndex(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
 
     const t = translations[language];
@@ -169,19 +169,51 @@ export default function ProjectListPage() {
                                                 <MoreVertical size={18} />
                                             </button>
                                             {openMenuIndex === i && (
-<div ref={menuRef} className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden text-left">
+                                                <div
+                                                    ref={menuRef}
+                                                    className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden text-left"
+                                                >
+
+                                                    {/* VIEW PROJECT */}
+                                                    <Link
+                                                        to={`https://183housingsolutions.com/projects/${project.slug?.[language] || project.slug?.en || project.slug?.vi}`}
+                                                        target="_blank"
+                                                        onClick={() => setOpenMenuIndex(null)}
+                                                    >
+                                                        <button className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group">
+                                                            <span className="w-8 flex justify-center">
+                                                                <Eye size={15} className="text-[#41398B]" />
+                                                            </span>
+                                                            View Project
+                                                        </button>
+                                                    </Link>
+
+                                                    {/* EDIT */}
                                                     <Link to={`/dashboard/cms/projects/edit/${project._id}`}>
                                                         <button className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition group">
-                                                            <span className="w-8 flex justify-center"><Pencil size={15} className="text-blue-600" /></span>
+                                                            <span className="w-8 flex justify-center">
+                                                                <Pencil size={15} className="text-blue-600" />
+                                                            </span>
                                                             {t.edit}
                                                         </button>
                                                     </Link>
-                                                    <button onClick={() => handleDelete(project._id)} className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition group">
-                                                        <span className="w-8 flex justify-center"><Trash2 size={15} /></span>
+
+                                                    {/* DELETE */}
+                                                    <button
+                                                        onClick={() => {
+                                                            handleDelete(project._id);
+                                                            setOpenMenuIndex(null);
+                                                        }}
+                                                        className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition group"
+                                                    >
+                                                        <span className="w-8 flex justify-center">
+                                                            <Trash2 size={15} />
+                                                        </span>
                                                         {t.delete}
                                                     </button>
+
                                                 </div>
-)}
+                                            )}
                                         </td>
                                     </tr>
                                 ))
