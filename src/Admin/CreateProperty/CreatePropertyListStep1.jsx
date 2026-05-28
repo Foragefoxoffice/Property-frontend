@@ -794,6 +794,7 @@ export default function CreatePropertyListStep1({
                         transactionType: val,
                       },
                     };
+
                     setForm(updated);
                     onChange && onChange(updated);
                   }}
@@ -866,15 +867,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       listingInformationVisibility: {
-                        ...p.listingInformationVisibility,
+                        ...form.listingInformationVisibility,
                         propertyId: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -905,15 +909,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       listingInformationVisibility: {
-                        ...p.listingInformationVisibility,
+                        ...form.listingInformationVisibility,
                         projectCommunity: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1000,15 +1007,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       listingInformationVisibility: {
-                        ...p.listingInformationVisibility,
+                        ...form.listingInformationVisibility,
                         areaZone: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1086,15 +1096,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       listingInformationVisibility: {
-                        ...p.listingInformationVisibility,
+                        ...form.listingInformationVisibility,
                         blockName: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1167,15 +1180,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       listingInformationVisibility: {
-                        ...p.listingInformationVisibility,
+                        ...form.listingInformationVisibility,
                         propertyNo: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1206,15 +1222,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       listingInformationVisibility: {
-                        ...p.listingInformationVisibility,
+                        ...form.listingInformationVisibility,
                         propertyType: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1242,15 +1261,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       listingInformationVisibility: {
-                        ...p.listingInformationVisibility,
+                        ...form.listingInformationVisibility,
                         dateListed: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1283,15 +1305,18 @@ export default function CreatePropertyListStep1({
                           ? "#41398B"
                           : "#d9d9d9",
                       }}
-                      onChange={(val) =>
-                        setForm((p) => ({
-                          ...p,
+                      onChange={(val) => {
+                        const updated = {
+                          ...form,
                           listingInformationVisibility: {
-                            ...p.listingInformationVisibility,
+                            ...form.listingInformationVisibility,
                             availableFrom: val,
                           },
-                        }))
-                      }
+                        };
+
+                        setForm(updated);
+                        onChange && onChange(updated);
+                      }}
                     />
                   </div>
                 </div>
@@ -1321,15 +1346,18 @@ export default function CreatePropertyListStep1({
                           ? "#41398B"
                           : "#d9d9d9",
                       }}
-                      onChange={(val) =>
-                        setForm((p) => ({
-                          ...p,
+                      onChange={(val) => {
+                        const updated = {
+                          ...form,
                           listingInformationVisibility: {
-                            ...p.listingInformationVisibility,
+                            ...form.listingInformationVisibility,
                             availabilityStatus: val,
                           },
-                        }))
-                      }
+                        };
+
+                        setForm(updated);
+                        onChange && onChange(updated);
+                      }}
                     />
                   </div>
                 </div>
@@ -1365,15 +1393,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       propertyInformationVisibility: {
-                        ...p.propertyInformationVisibility,
+                        ...form.propertyInformationVisibility,
                         unit: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1403,15 +1434,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       propertyInformationVisibility: {
-                        ...p.propertyInformationVisibility,
+                        ...form.propertyInformationVisibility,
                         unitSize: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1440,15 +1474,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       propertyInformationVisibility: {
-                        ...p.propertyInformationVisibility,
+                        ...form.propertyInformationVisibility,
                         bedrooms: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1477,15 +1514,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       propertyInformationVisibility: {
-                        ...p.propertyInformationVisibility,
+                        ...form.propertyInformationVisibility,
                         bathrooms: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1515,15 +1555,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       propertyInformationVisibility: {
-                        ...p.propertyInformationVisibility,
+                        ...form.propertyInformationVisibility,
                         floorRange: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1645,15 +1688,18 @@ export default function CreatePropertyListStep1({
                       ? "#41398B"
                       : "#d9d9d9",
                   }}
-                  onChange={(val) =>
-                    setForm((p) => ({
-                      ...p,
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
                       propertyInformationVisibility: {
-                        ...p.propertyInformationVisibility,
+                        ...form.propertyInformationVisibility,
                         view: val,
                       },
-                    }))
-                  }
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
                 />
               </div>
             </div>
@@ -1682,12 +1728,15 @@ export default function CreatePropertyListStep1({
                     ? "#41398B"
                     : "#d9d9d9",
                 }}
-                onChange={(val) =>
-                  setForm((p) => ({
-                    ...p,
+                onChange={(val) => {
+                  const updated = {
+                    ...form,
                     titleVisibility: val,
-                  }))
-                }
+                  };
+
+                  setForm(updated);
+                  onChange && onChange(updated);
+                }}
               />
             </div>
           </div>
@@ -1717,12 +1766,15 @@ export default function CreatePropertyListStep1({
                     ? "#41398B"
                     : "#d9d9d9",
                 }}
-                onChange={(val) =>
-                  setForm((p) => ({
-                    ...p,
+                onChange={(val) => {
+                  const updated = {
+                    ...form,
                     descriptionVisibility: val,
-                  }))
-                }
+                  };
+
+                  setForm(updated);
+                  onChange && onChange(updated);
+                }}
               />
             </div>
           </div>
@@ -1760,12 +1812,15 @@ export default function CreatePropertyListStep1({
                   ? "#41398B"
                   : "#d9d9d9",
               }}
-              onChange={(val) =>
-                setForm((p) => ({
-                  ...p,
+              onChange={(val) => {
+                const updated = {
+                  ...form,
                   propertyUtilityVisibility: val,
-                }))
-              }
+                };
+
+                setForm(updated);
+                onChange && onChange(updated);
+              }}
             />
           </div>
         </div>
