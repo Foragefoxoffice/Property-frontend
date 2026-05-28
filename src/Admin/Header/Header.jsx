@@ -171,7 +171,7 @@ export default function Header({ showNavigation = true }) {
             <img
               className="h-10 object-contain"
               src={getLogoUrl(headerLogo)}
-              alt="Logo"
+              alt="183 Housing Solutions"
             />
           </div>
 
