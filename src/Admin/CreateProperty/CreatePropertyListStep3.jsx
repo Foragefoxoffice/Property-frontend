@@ -936,7 +936,7 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
                           </div>
 
                           <a
-                            href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${prop.listingInformation
+                            href={`${import.meta.env.VITE_SITE_URL}/listing/${prop.listingInformation
                               ?.listingInformationPropertyId || prop._id
                               }`}
                             target="_blank"

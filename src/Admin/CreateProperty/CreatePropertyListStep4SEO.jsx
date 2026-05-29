@@ -759,7 +759,7 @@ export default function CreatePropertyListStep4SEO({
         <input
           placeholder="https://183housingsolutions.com/..."
           className={`${inputClass} bg-gray-100 cursor-not-allowed`}
-          value={`https://183housingsolutions.com/property-showcase/${initialData?._id || 'new-property'}/${seo.slugUrl?.[activeLang] || ''}`}
+          value={`https://183housingsolutions.com/listing/${seo.slugUrl?.[activeLang] ? seo.slugUrl[activeLang] + '-' : ''}${initialData?._id || 'new-property'}`}
           readOnly
         />
       </div>

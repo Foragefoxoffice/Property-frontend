@@ -565,7 +565,7 @@ export default function ManageProperty({
                         {can(permissionKey, 'view') && (
                           <Tooltip title={t.viewOnWebsite}>
                             <a
-                              href={`${import.meta.env.VITE_SITE_URL}/property-showcase/${p?.listingInformation?.listingInformationPropertyId || p._id}${getLocalizedValue(p?.seoInformation?.slugUrl) ? `/${getLocalizedValue(p?.seoInformation?.slugUrl)}` : ''}`}
+                              href={`${import.meta.env.VITE_SITE_URL}/listing/${getLocalizedValue(p?.seoInformation?.slugUrl) ? getLocalizedValue(p?.seoInformation?.slugUrl) + '-' : ''}${p?.listingInformation?.listingInformationPropertyId || p._id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
