@@ -99,6 +99,20 @@ export default function HomePageSeoForm({
     const activeTabDesc = Form.useWatch(`homeSeoMetaDescription_${activeTab}`, form);
     const activeTabKeywords = Form.useWatch(`homeSeoMetaKeywords_${activeTab}`, form);
     const activeTabSlug = Form.useWatch(`homeSeoSlugUrl_${activeTab}`, form);
+
+    // Dynamic Canonical URL
+    const slugEn = Form.useWatch('homeSeoSlugUrl_en', form);
+    const slugVn = Form.useWatch('homeSeoSlugUrl_vn', form);
+
+    useEffect(() => {
+        const siteUrl = 'https://183housingsolutions.com';
+        const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
+        form.setFieldsValue({
+            homeSeoCanonicalUrl_en: `${siteUrl}${formatSlug(slugEn)}`,
+            homeSeoCanonicalUrl_vn: `${siteUrl}${formatSlug(slugVn)}`
+        });
+    }, [slugEn, slugVn, form]);
+
     const activeTabCanonical = Form.useWatch(`homeSeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`homeSeoAllowIndexing`, form);
     const activeTabSchemaType = Form.useWatch(`homeSeoSchemaType_${activeTab}`, form);
@@ -125,10 +139,17 @@ export default function HomePageSeoForm({
 
     // Initialize OG image from pageData
     useEffect(() => {
+        const getAbsoluteUrl = (url) => {
+            if (!url) return '';
+            if (url.startsWith('http')) return url;
+            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+        };
+        
         if (pageData?.homeSeoOgImage) {
-            setOgImage(pageData.homeSeoOgImage);
+            setOgImage(getAbsoluteUrl(pageData.homeSeoOgImage));
         } else if (pageData?.homeSeoOgImages && pageData.homeSeoOgImages.length > 0) {
-            setOgImage(pageData.homeSeoOgImages[0]);
+            setOgImage(getAbsoluteUrl(pageData.homeSeoOgImages[0]));
         }
     }, [pageData]);
 
@@ -362,8 +383,8 @@ export default function HomePageSeoForm({
                                                     <Input
                                                         placeholder="https://example.com/vn"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.homePage', 'edit')}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 
@@ -517,8 +538,8 @@ export default function HomePageSeoForm({
                                                     <Input
                                                         placeholder="https://example.com"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.homePage', 'edit')}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 

@@ -105,6 +105,20 @@ export default function PrivacyPolicySeoForm({
     const activeTabDesc = Form.useWatch(`privacyPolicySeoMetaDescription_${activeTab}`, form);
     const activeTabKeywords = Form.useWatch(`privacyPolicySeoMetaKeywords_${activeTab}`, form);
     const activeTabSlug = Form.useWatch(`privacyPolicySeoSlugUrl_${activeTab}`, form);
+
+    // Dynamic Canonical URL
+    const slugEn = Form.useWatch('privacyPolicySeoSlugUrl_en', form);
+    const slugVn = Form.useWatch('privacyPolicySeoSlugUrl_vn', form);
+
+    useEffect(() => {
+        const siteUrl = 'https://183housingsolutions.com';
+        const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
+        form.setFieldsValue({
+            privacyPolicySeoCanonicalUrl_en: `${siteUrl}${formatSlug(slugEn)}`,
+            privacyPolicySeoCanonicalUrl_vn: `${siteUrl}${formatSlug(slugVn)}`
+        });
+    }, [slugEn, slugVn, form]);
+
     const activeTabCanonical = Form.useWatch(`privacyPolicySeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`privacyPolicySeoAllowIndexing`, form);
     const activeTabSchemaType = Form.useWatch(`privacyPolicySeoSchemaType_${activeTab}`, form);
@@ -124,10 +138,17 @@ export default function PrivacyPolicySeoForm({
 
     // Initialize OG image from pageData
     useEffect(() => {
+        const getAbsoluteUrl = (url) => {
+            if (!url) return '';
+            if (url.startsWith('http')) return url;
+            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+        };
+        
         if (pageData?.privacyPolicySeoOgImage) {
-            setOgImage(pageData.privacyPolicySeoOgImage);
+            setOgImage(getAbsoluteUrl(pageData.privacyPolicySeoOgImage));
         } else if (pageData?.privacyPolicySeoOgImages && pageData.privacyPolicySeoOgImages.length > 0) {
-            setOgImage(pageData.privacyPolicySeoOgImages[0]);
+            setOgImage(getAbsoluteUrl(pageData.privacyPolicySeoOgImages[0]));
         }
     }, [pageData]);
 
@@ -368,8 +389,8 @@ export default function PrivacyPolicySeoForm({
                                                     <Input
                                                         placeholder="https://example.com/vn/chinh-sach-bao-mat"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 
@@ -527,8 +548,8 @@ export default function PrivacyPolicySeoForm({
                                                     <Input
                                                         placeholder="https://example.com/privacy-policy"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.privacyPolicy', 'edit')}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 

@@ -227,7 +227,7 @@ export const translations = {
     uploadSuccessful: "Successfully uploaded properties",
     // Permission Labels
     accessTab: "Access Tab",
-    preview: "Preview",
+    previewTab: "Preview",
     add: "Add",
     deletePermission: "Delete",
     copy: "Copy",
@@ -846,7 +846,7 @@ export const translations = {
     // Permission Labels
     accessTab: "Quyền truy cập Tab",
     viewDetails: "View chi tiết",
-    preview: "View trước",
+    previewTab: "View trước",
     add: "Thêm",
     deletePermission: "Xóa",
     copy: "Sao Chép",

@@ -102,6 +102,20 @@ export default function BlogPageSeoForm({
     const activeTabDesc = Form.useWatch(`blogSeoMetaDescription_${activeTab}`, form);
     const activeTabKeywords = Form.useWatch(`blogSeoMetaKeywords_${activeTab}`, form);
     const activeTabSlug = Form.useWatch(`blogSeoSlugUrl_${activeTab}`, form);
+
+    // Dynamic Canonical URL
+    const slugEn = Form.useWatch('blogSeoSlugUrl_en', form);
+    const slugVn = Form.useWatch('blogSeoSlugUrl_vn', form);
+
+    useEffect(() => {
+        const siteUrl = 'https://183housingsolutions.com';
+        const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
+        form.setFieldsValue({
+            blogSeoCanonicalUrl_en: `${siteUrl}${formatSlug(slugEn)}`,
+            blogSeoCanonicalUrl_vn: `${siteUrl}${formatSlug(slugVn)}`
+        });
+    }, [slugEn, slugVn, form]);
+
     const activeTabCanonical = Form.useWatch(`blogSeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`blogSeoAllowIndexing`, form);
     const activeTabSchemaType = Form.useWatch(`blogSeoSchemaType_${activeTab}`, form);
@@ -121,10 +135,17 @@ export default function BlogPageSeoForm({
 
     // Initialize OG image from pageData
     useEffect(() => {
+        const getAbsoluteUrl = (url) => {
+            if (!url) return '';
+            if (url.startsWith('http')) return url;
+            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+        };
+        
         if (pageData?.blogSeoOgImage) {
-            setOgImage(pageData.blogSeoOgImage);
+            setOgImage(getAbsoluteUrl(pageData.blogSeoOgImage));
         } else if (pageData?.blogSeoOgImages && pageData.blogSeoOgImages.length > 0) {
-            setOgImage(pageData.blogSeoOgImages[0]);
+            setOgImage(getAbsoluteUrl(pageData.blogSeoOgImages[0]));
         }
     }, [pageData]);
 
@@ -342,8 +363,8 @@ export default function BlogPageSeoForm({
                                                     <Input
                                                         placeholder="https://example.com/vn/tin-tuc"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.blogBanner', 'edit')}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 
@@ -485,8 +506,8 @@ export default function BlogPageSeoForm({
                                                     <Input
                                                         placeholder="https://example.com/blog"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.blogBanner', 'edit')}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 

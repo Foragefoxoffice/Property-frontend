@@ -99,6 +99,20 @@ export default function ProjectSeoForm({
     const activeTabDesc = Form.useWatch(`projectSeoMetaDescription_${activeTab}`, form);
     const activeTabKeywords = Form.useWatch(`projectSeoMetaKeywords_${activeTab}`, form);
     const activeTabSlug = Form.useWatch(`projectSeoSlugUrl_${activeTab}`, form);
+
+    // Dynamic Canonical URL
+    const slugEn = Form.useWatch('projectSeoSlugUrl_en', form);
+    const slugVn = Form.useWatch('projectSeoSlugUrl_vn', form);
+
+    useEffect(() => {
+        const siteUrl = 'https://183housingsolutions.com';
+        const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
+        form.setFieldsValue({
+            projectSeoCanonicalUrl_en: `${siteUrl}${formatSlug(slugEn)}`,
+            projectSeoCanonicalUrl_vn: `${siteUrl}${formatSlug(slugVn)}`
+        });
+    }, [slugEn, slugVn, form]);
+
     const activeTabCanonical = Form.useWatch(`projectSeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`projectSeoAllowIndexing`, form);
     const activeTabSchemaType = Form.useWatch(`projectSeoSchemaType_${activeTab}`, form);
@@ -125,8 +139,15 @@ export default function ProjectSeoForm({
 
     // Initialize OG image from pageData
     useEffect(() => {
+        const getAbsoluteUrl = (url) => {
+            if (!url) return '';
+            if (url.startsWith('http')) return url;
+            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+        };
+        
         if (pageData?.projectSeoOgImage) {
-            setOgImage(pageData.projectSeoOgImage);
+            setOgImage(getAbsoluteUrl(pageData.projectSeoOgImage));
         }
     }, [pageData]);
 

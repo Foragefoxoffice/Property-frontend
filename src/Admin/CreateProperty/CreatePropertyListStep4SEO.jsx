@@ -754,15 +754,13 @@ export default function CreatePropertyListStep4SEO({
       {/* ✅ CANONICAL */}
       <div>
         <label className="text-sm font-semibold mb-2 block">
-          {labels.canonicalUrl[activeLang]}
+          {labels.canonicalUrl[activeLang]} <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>
         </label>
         <input
-          placeholder="Type Here and Edit"
-          className={inputClass}
-          value={seo.canonicalUrl[activeLang]}
-          onChange={(e) =>
-            handleChange("canonicalUrl", activeLang, e.target.value)
-          }
+          placeholder="https://183housingsolutions.com/..."
+          className={`${inputClass} bg-gray-100 cursor-not-allowed`}
+          value={`https://183housingsolutions.com/property-showcase/${initialData?._id || 'new-property'}/${seo.slugUrl?.[activeLang] || ''}`}
+          readOnly
         />
       </div>
 

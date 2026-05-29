@@ -105,6 +105,20 @@ export default function ContactPageSeoForm({
     const activeTabDesc = Form.useWatch(`contactSeoMetaDescription_${activeTab}`, form);
     const activeTabKeywords = Form.useWatch(`contactSeoMetaKeywords_${activeTab}`, form);
     const activeTabSlug = Form.useWatch(`contactSeoSlugUrl_${activeTab}`, form);
+
+    // Dynamic Canonical URL
+    const slugEn = Form.useWatch('contactSeoSlugUrl_en', form);
+    const slugVn = Form.useWatch('contactSeoSlugUrl_vn', form);
+
+    useEffect(() => {
+        const siteUrl = 'https://183housingsolutions.com';
+        const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
+        form.setFieldsValue({
+            contactSeoCanonicalUrl_en: `${siteUrl}${formatSlug(slugEn)}`,
+            contactSeoCanonicalUrl_vn: `${siteUrl}${formatSlug(slugVn)}`
+        });
+    }, [slugEn, slugVn, form]);
+
     const activeTabCanonical = Form.useWatch(`contactSeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`contactSeoAllowIndexing`, form);
     const activeTabSchemaType = Form.useWatch(`contactSeoSchemaType_${activeTab}`, form);
@@ -124,10 +138,17 @@ export default function ContactPageSeoForm({
 
     // Initialize OG image from pageData
     useEffect(() => {
+        const getAbsoluteUrl = (url) => {
+            if (!url) return '';
+            if (url.startsWith('http')) return url;
+            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+        };
+        
         if (pageData?.contactSeoOgImage) {
-            setOgImage(pageData.contactSeoOgImage);
+            setOgImage(getAbsoluteUrl(pageData.contactSeoOgImage));
         } else if (pageData?.contactSeoOgImages && pageData.contactSeoOgImages.length > 0) {
-            setOgImage(pageData.contactSeoOgImages[0]);
+            setOgImage(getAbsoluteUrl(pageData.contactSeoOgImages[0]));
         }
     }, [pageData]);
 
@@ -362,8 +383,8 @@ export default function ContactPageSeoForm({
                                                     <Input
                                                         placeholder="https://example.com/vn/lien-he"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.contactUs', 'edit')}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 
@@ -514,8 +535,8 @@ export default function ContactPageSeoForm({
                                                     <Input
                                                         placeholder="https://example.com/contact"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        disabled={!can('cms.contactUs', 'edit')}
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
+                                                        disabled={true}
                                                     />
                                                 </Form.Item>
 

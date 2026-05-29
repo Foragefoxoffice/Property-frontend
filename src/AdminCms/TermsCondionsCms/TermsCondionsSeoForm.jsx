@@ -104,6 +104,20 @@ export default function TermsCondionsSeoForm({
     const activeTabDesc = Form.useWatch(`termsconditionsSeoMetaDescription_${activeTab}`, form);
     const activeTabKeywords = Form.useWatch(`termsconditionsSeoMetaKeywords_${activeTab}`, form);
     const activeTabSlug = Form.useWatch(`termsconditionsSeoSlugUrl_${activeTab}`, form);
+
+    // Dynamic Canonical URL
+    const slugEn = Form.useWatch('termsconditionsSeoSlugUrl_en', form);
+    const slugVn = Form.useWatch('termsconditionsSeoSlugUrl_vn', form);
+
+    useEffect(() => {
+        const siteUrl = 'https://183housingsolutions.com';
+        const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
+        form.setFieldsValue({
+            termsconditionsSeoCanonicalUrl_en: `${siteUrl}${formatSlug(slugEn)}`,
+            termsconditionsSeoCanonicalUrl_vn: `${siteUrl}${formatSlug(slugVn)}`
+        });
+    }, [slugEn, slugVn, form]);
+
     const activeTabCanonical = Form.useWatch(`termsConditionSeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`termsConditionSeoAllowIndexing`, form);
     const activeTabSchemaType = Form.useWatch(`termsConditionSeoSchemaType_${activeTab}`, form);
@@ -123,10 +137,17 @@ export default function TermsCondionsSeoForm({
 
     // Initialize OG image from pageData
     useEffect(() => {
+        const getAbsoluteUrl = (url) => {
+            if (!url) return '';
+            if (url.startsWith('http')) return url;
+            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+        };
+        
         if (pageData?.termsConditionSeoOgImage) {
-            setOgImage(pageData.termsConditionSeoOgImage);
+            setOgImage(getAbsoluteUrl(pageData.termsConditionSeoOgImage));
         } else if (pageData?.termsConditionSeoOgImages && pageData.termsConditionSeoOgImages.length > 0) {
-            setOgImage(pageData.termsConditionSeoOgImages[0]);
+            setOgImage(getAbsoluteUrl(pageData.termsConditionSeoOgImages[0]));
         }
     }, [pageData]);
 

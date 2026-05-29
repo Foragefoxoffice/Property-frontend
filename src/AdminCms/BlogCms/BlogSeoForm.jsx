@@ -102,6 +102,28 @@ export default function BlogSeoForm({
     const activeTabDesc = Form.useWatch(['seoInformation', 'metaDescription', activeTab], form);
     const activeTabKeywords = Form.useWatch(['seoInformation', 'metaKeywords', activeTab], form);
     const activeTabSlug = Form.useWatch(['seoInformation', 'slugUrl', activeTab], form);
+
+    // Dynamic Canonical URL
+    const slugEn = Form.useWatch(['seoInformation', 'slugUrl', 'en'], form);
+    const slugVi = Form.useWatch(['seoInformation', 'slugUrl', 'vi'], form);
+
+    useEffect(() => {
+        const siteUrl = 'https://183housingsolutions.com';
+        const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
+        const isBlog = true;
+        const prefix = isBlog ? '/blogs' : '/projects'; // fallback
+        
+        form.setFieldsValue({
+            seoInformation: {
+                ...form.getFieldValue('seoInformation'),
+                canonicalUrl: {
+                    en: `${siteUrl}${prefix}${formatSlug(slugEn)}`,
+                    vi: `${siteUrl}${prefix}${formatSlug(slugVi)}`
+                }
+            }
+        });
+    }, [slugEn, slugVi, form]);
+
     const activeTabCanonical = Form.useWatch(['seoInformation', 'canonicalUrl', activeTab], form);
     const allowIndexing = Form.useWatch(['seoInformation', 'allowIndexing'], form);
     const activeTabSchemaType = Form.useWatch(['seoInformation', 'schemaType', activeTab], form);
@@ -130,10 +152,17 @@ export default function BlogSeoForm({
 
     // Initialize OG image from blogData
     useEffect(() => {
+        const getAbsoluteUrl = (url) => {
+            if (!url) return '';
+            if (url.startsWith('http')) return url;
+            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+        };
+        
         if (blogData?.seoInformation?.ogImage) {
-            setOgImage(blogData.seoInformation.ogImage);
+            setOgImage(getAbsoluteUrl(blogData.seoInformation.ogImage));
         } else if (blogData?.seoInformation?.ogImages && blogData.seoInformation.ogImages.length > 0) {
-            setOgImage(blogData.seoInformation.ogImages[0]);
+            setOgImage(getAbsoluteUrl(blogData.seoInformation.ogImages[0]));
         }
     }, [blogData]);
 
@@ -405,10 +434,10 @@ export default function BlogSeoForm({
                                                     }
                                                     name={['seoInformation', 'canonicalUrl', 'vi']}
                                                 >
-                                                    <Input
+                                                    <Input disabled={true}
                                                         placeholder="https://example.com/vn/blog/bai-viet"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
                                                     />
                                                 </Form.Item>
 
@@ -535,10 +564,10 @@ export default function BlogSeoForm({
                                                     }
                                                     name={['seoInformation', 'canonicalUrl', 'en']}
                                                 >
-                                                    <Input
+                                                    <Input disabled={true}
                                                         placeholder="https://example.com/blog/my-post"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 bg-gray-50"
                                                     />
                                                 </Form.Item>
 
