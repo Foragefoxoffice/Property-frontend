@@ -1,4 +1,30 @@
 import axios from "axios";
+import imageCompression from "browser-image-compression";
+
+const compressImage = async (file) => {
+  if (!file || !file.type || !file.type.startsWith("image/")) return file;
+  if (file.type === "image/svg+xml" || file.type === "image/gif") return file;
+
+  const options = {
+    maxSizeMB: 0.25, // Target max 250kb
+    maxWidthOrHeight: 1200, // Reduced resolution slightly to help with size
+    useWebWorker: true,
+    fileType: "image/jpeg", // Force conversion to JPEG to guarantee compression ratio
+    initialQuality: 0.8, // Start with lower quality
+  };
+
+  try {
+    const compressedFile = await imageCompression(file, options);
+    // ensure it's still a File object, browser-image-compression returns a File but sometimes a Blob
+    // We append .jpg because we forced image/jpeg conversion
+    const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+    return new File([compressedFile], newFileName, { type: "image/jpeg" });
+  } catch (error) {
+    console.error("Image compression error:", error);
+    return file;
+  }
+};
+
 
 // ✅ Create axios instance
 const API = axios.create({
@@ -298,7 +324,8 @@ export const bulkUploadProperties = (csvData, transactionType, validateOnly = fa
    📤 PROPERTY MEDIA UPLOAD API
    Upload images, videos, and floor plans to server
 ========================================================= */
-export const uploadPropertyMedia = (file, type) => {
+export const uploadPropertyMedia = async (file, type) => {
+  if (type === "image" || type === "floor") { file = await compressImage(file); }
   const formData = new FormData();
   formData.append("file", file);
   formData.append("type", type); // 'image', 'video', or 'floor'
@@ -331,7 +358,8 @@ export const createHomeBanner = (data) => API.post("/home-banner", data);
 export const updateHomeBanner = (id, data) => API.put(`/home-banner/${id}`, data);
 export const deleteHomeBanner = (id) => API.delete(`/home-banner/${id}`);
 export const getActiveHomeBanner = () => API.get("/home-banner/active");
-export const uploadBannerImage = (file) => {
+export const uploadBannerImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("backgroundImage", file);
 
@@ -353,7 +381,8 @@ export const uploadBannerImage = (file) => {
 export const getHomePage = () => API.get("/home-page");
 export const createHomePage = (data) => API.post("/home-page", data);
 export const updateHomePage = (id, data) => API.put(`/home-page/${id}`, data);
-export const uploadHomePageImage = (file) => {
+export const uploadHomePageImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("image", file);
 
@@ -376,7 +405,8 @@ export const uploadHomePageImage = (file) => {
 export const getAboutPage = () => API.get("/about-page");
 export const createAboutPage = (data) => API.post("/about-page", data);
 export const updateAboutPage = (id, data) => API.put(`/about-page/${id}`, data);
-export const uploadAboutPageImage = (file) => {
+export const uploadAboutPageImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("image", file);
 
@@ -397,7 +427,8 @@ export const uploadAboutPageImage = (file) => {
 export const getContactPage = () => API.get("/contact-page");
 export const createContactPage = (data) => API.post("/contact-page", data);
 export const updateContactPage = (id, data) => API.put(`/contact-page/${id}`, data);
-export const uploadContactPageImage = (file) => {
+export const uploadContactPageImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("image", file);
 
@@ -435,7 +466,8 @@ export const createCategory = (data) => API.post("/categories", data);
 export const updateCategory = (id, data) => API.put(`/categories/${id}`, data);
 export const deleteCategory = (id) => API.delete(`/categories/${id}`);
 
-export const uploadBlogImage = (file) => {
+export const uploadBlogImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("file", file);
 
@@ -450,7 +482,8 @@ export const uploadBlogImage = (file) => {
   });
 };
 
-export const uploadGeneralImage = (file) => {
+export const uploadGeneralImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("file", file);
 
@@ -470,7 +503,8 @@ export const uploadGeneralImage = (file) => {
 ========================================================= */
 export const getHeader = () => API.get("/header/get-header");
 export const updateHeader = (data) => API.put("/header/update-header", data);
-export const uploadHeaderImage = (file) => {
+export const uploadHeaderImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("image", file);
 
@@ -490,7 +524,8 @@ export const uploadHeaderImage = (file) => {
 ========================================================= */
 export const getFooter = () => API.get("/footer/get-footer");
 export const updateFooter = (data) => API.put("/footer/update-footer", data);
-export const uploadFooterImage = (file) => {
+export const uploadFooterImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("image", file);
 
@@ -510,7 +545,8 @@ export const uploadFooterImage = (file) => {
 ========================================================= */
 export const getAgent = () => API.get("/agent/get-agent");
 export const updateAgent = (data) => API.put("/agent/update-agent", data);
-export const uploadAgentImage = (file) => {
+export const uploadAgentImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("image", file);
 
@@ -570,7 +606,8 @@ export const bulkDeleteEnquiries = (ids) => API.delete("/favorites/admin/bulk-de
    ========================================================= */
 export const getTermsConditionsPage = () => API.get("/terms-conditions-page");
 export const updateTermsConditionsPage = (data) => API.post("/terms-conditions-page", data);
-export const uploadTermsConditionsPageImage = (file) => {
+export const uploadTermsConditionsPageImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("image", file);
 
@@ -590,7 +627,8 @@ export const uploadTermsConditionsPageImage = (file) => {
    ========================================================= */
 export const getPrivacyPolicyPage = () => API.get("/privacy-policy-page");
 export const updatePrivacyPolicyPage = (data) => API.post("/privacy-policy-page", data);
-export const uploadPrivacyPolicyPageImage = (file) => {
+export const uploadPrivacyPolicyPageImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("image", file);
 
@@ -614,7 +652,8 @@ export const createTestimonial = (data) => API.post("/testimonials", data);
 export const submitTestimonial = (data) => API.post("/testimonials/submit", data);
 export const toggleTestimonialVisibility = (id) => API.put(`/testimonials/${id}/visibility`);
 export const deleteTestimonial = (id) => API.delete(`/testimonials/${id}`);
-export const uploadTestimonialImage = (file) => {
+export const uploadTestimonialImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("file", file);
 
@@ -636,7 +675,8 @@ export const uploadTestimonialImage = (file) => {
 export const getProjectBanner = () => API.get("/project-banner");
 export const createProjectBanner = (data) => API.post("/project-banner", data);
 export const updateProjectBanner = (id, data) => API.put(`/project-banner/${id}`, data);
-export const uploadProjectBannerImage = (file) => {
+export const uploadProjectBannerImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("file", file);
 
@@ -657,7 +697,8 @@ export const uploadProjectBannerImage = (file) => {
 export const getProjectIntro = () => API.get("/project-intro");
 export const createProjectIntro = (data) => API.post("/project-intro", data);
 export const updateProjectIntro = (id, data) => API.put(`/project-intro/${id}`, data);
-export const uploadProjectIntroImage = (file) => {
+export const uploadProjectIntroImage = async (file) => {
+  file = await compressImage(file);
   const formData = new FormData();
   formData.append("file", file);
 

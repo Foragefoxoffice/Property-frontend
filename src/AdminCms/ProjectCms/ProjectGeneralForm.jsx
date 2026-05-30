@@ -144,11 +144,11 @@ export default function ProjectGeneralForm({
                                 </Form.Item>
                             </div>
 
-                            {/* Main Description */}
+                            {/* Table of Content */}
                             <div className="mt-8">
                                 <label className="flex items-center gap-2 font-bold text-gray-700 mb-4 font-['Manrope']">
                                     <FileText size={18} className="text-[#41398B]" />
-                                    {language === 'vi' ? 'Mô tả chính dự án' : 'Project Main Description'}
+                                    {language === 'vi' ? 'Mục lục' : 'Table of Content'}
                                 </label>
                                 <Tabs
                                     activeKey={activeTab}
