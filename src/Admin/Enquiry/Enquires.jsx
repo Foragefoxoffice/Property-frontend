@@ -15,7 +15,11 @@ import {
     ExternalLink,
     Eye,
     Trash2,
-    AlertTriangle
+    AlertTriangle,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight
 } from "lucide-react";
 import { getAllEnquiries, markEnquiryAsRead, deleteEnquiry, bulkDeleteEnquiries } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
@@ -48,8 +52,20 @@ export default function Enquires() {
     const { socket, isConnected } = useSocket();
 
     // Pagination states
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [currentPage, setCurrentPage] = useState(() => {
+        return Number(sessionStorage.getItem("enquiriesCurrentPage")) || 1;
+    });
+    const [rowsPerPage, setRowsPerPage] = useState(() => {
+        return Number(sessionStorage.getItem("enquiriesRowsPerPage")) || 10;
+    });
+
+    useEffect(() => {
+        sessionStorage.setItem("enquiriesCurrentPage", currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        sessionStorage.setItem("enquiriesRowsPerPage", rowsPerPage);
+    }, [rowsPerPage]);
 
     useEffect(() => {
         fetchEnquiries();
@@ -180,19 +196,6 @@ export default function Enquires() {
         } finally {
             setDeleteLoading(false);
         }
-    };
-
-    const handlePrevPage = () => {
-        setCurrentPage((prev) => Math.max(prev - 1, 1));
-    };
-
-    const handleNextPage = () => {
-        setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-    };
-
-    const handleRowsPerPageChange = (e) => {
-        setRowsPerPage(Number(e.target.value));
-        setCurrentPage(1);
     };
 
     const getLocalizedValue = (value) => {
@@ -410,37 +413,50 @@ export default function Enquires() {
 
             {/* Pagination */}
             {!loading && totalRows > 0 && (
-                <div className="flex justify-between items-center px-6 py-4 text-sm text-gray-600 border-t bg-gray-50 mt-4 rounded-b-2xl">
-                    <div className="flex items-center gap-2">
-                        <span>{t.rowsPerPage}:</span>
-                        <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="border rounded-md text-gray-700 focus:outline-none px-2 py-1">
-                            {[5, 10, 20, 25, 50].map((num) => (
-                                <option key={num} value={num}>
-                                    {num}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <p>
-                            {`${startIndex + 1}–${Math.min(startIndex + rowsPerPage, totalRows)} ${t.of} ${totalRows}`}
-                        </p>
-
-                        <button
-                            onClick={handlePrevPage}
-                            disabled={currentPage === 1}
-                            className={`p-1 px-2 rounded ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}
-                        >
-                            &lt;
-                        </button>
-                        <button
-                            onClick={handleNextPage}
-                            disabled={currentPage === totalPages}
-                            className={`p-1 px-2 rounded ${currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "hover:bg-gray-100 text-gray-600"}`}
-                        >
-                            &gt;
-                        </button>
+                <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4 border-t">
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2">
+                            <span>{language === "vi" ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
+                            <select
+                                value={rowsPerPage}
+                                onChange={(e) => {
+                                    setRowsPerPage(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                                className="border rounded-md px-2 py-1 text-gray-700"
+                            >
+                                {[5, 10, 20, 50].map((n) => (
+                                    <option key={n} value={n}>
+                                        {n}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <span>
+                            {totalRows === 0
+                                ? "0–0"
+                                : `${startIndex + 1}–${Math.min(startIndex + rowsPerPage, totalRows)} ${language === "vi" ? "trên" : "of"} ${totalRows}`}
+                        </span>
+                        <div className="flex items-center gap-1">
+                            <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+                                <ChevronsLeft size={16} />
+                            </button>
+                            <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                                <ChevronLeft size={16} />
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages || totalRows === 0}
+                            >
+                                <ChevronRight size={16} />
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage(totalPages)}
+                                disabled={currentPage === totalPages || totalRows === 0}
+                            >
+                                <ChevronsRight size={16} />
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

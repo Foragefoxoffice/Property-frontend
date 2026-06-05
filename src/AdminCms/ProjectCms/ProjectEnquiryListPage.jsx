@@ -37,8 +37,20 @@ export default function ProjectEnquiryListPage() {
     const [sortBy, setSortBy] = useState("newest");
 
     // Pagination
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(() => {
+        return Number(sessionStorage.getItem("projectEnquiryCurrentPage")) || 1;
+    });
+    const [rowsPerPage, setRowsPerPage] = useState(() => {
+        return Number(sessionStorage.getItem("projectEnquiryRowsPerPage")) || 10;
+    });
+
+    useEffect(() => {
+        sessionStorage.setItem("projectEnquiryCurrentPage", currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        sessionStorage.setItem("projectEnquiryRowsPerPage", rowsPerPage);
+    }, [rowsPerPage]);
 
     const fetchEnquiries = async () => {
         try {
@@ -102,11 +114,6 @@ export default function ProjectEnquiryListPage() {
         if (currentPage > totalPages) setCurrentPage(totalPages);
         if (totalRows === 0) setCurrentPage(1);
     }, [totalRows, totalPages]);
-
-    const goToFirst = () => setCurrentPage(1);
-    const goToLast = () => setCurrentPage(totalPages);
-    const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
-    const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
     // Checkbox handlers
     const handleSelectAll = (e) => {
@@ -312,56 +319,58 @@ export default function ProjectEnquiryListPage() {
             </div>
 
             {/* Pagination */}
-            <div className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 mt-3 bg-white border border-t-0 border-gray-100 rounded-b-xl text-sm text-gray-700 shadow-sm gap-4">
-                <div className="flex items-center gap-2">
-                    <span>{isVI ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
-                    <select
-                        className="border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:ring-2 focus:ring-[#41398B] focus:border-transparent outline-none bg-white transition-all shadow-sm"
-                        value={rowsPerPage}
-                        onChange={(e) => {
-                            setRowsPerPage(Number(e.target.value));
-                            setCurrentPage(1);
-                        }}
-                    >
-                        {[10, 20, 50].map((n) => (
-                            <option key={n} value={n}>{n}</option>
-                        ))}
-                    </select>
-                </div>
+            <div className="flex flex-col sm:flex-row justify-end items-center px-6 py-4 mt-3 bg-white border border-t-0 border-gray-100 rounded-b-xl text-sm text-gray-700 shadow-sm gap-4">
+                <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                        <span>{isVI ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
+                        <select
+                            className="border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 focus:ring-2 focus:ring-[#41398B] focus:border-transparent outline-none bg-white transition-all shadow-sm"
+                            value={rowsPerPage}
+                            onChange={(e) => {
+                                setRowsPerPage(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}
+                        >
+                            {[10, 20, 50].map((n) => (
+                                <option key={n} value={n}>{n}</option>
+                            ))}
+                        </select>
+                    </div>
 
-                <div className="flex items-center gap-4">
-                    <span className="text-gray-500 font-medium">
-                        {totalRows === 0 ? "0–0" : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
-                    </span>
-                    <div className="flex items-center gap-1">
-                        <button
-                            onClick={goToFirst}
-                            disabled={currentPage === 1}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                        >
-                            <ChevronsLeft size={20} />
-                        </button>
-                        <button
-                            onClick={goToPrev}
-                            disabled={currentPage === 1}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                        <button
-                            onClick={goToNext}
-                            disabled={currentPage === totalPages || totalRows === 0}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                        <button
-                            onClick={goToLast}
-                            disabled={currentPage === totalPages || totalRows === 0}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
-                        >
-                            <ChevronsRight size={20} />
-                        </button>
+                    <div className="flex items-center gap-4">
+                        <span className="text-gray-500 font-medium">
+                            {totalRows === 0 ? "0–0" : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
+                        </span>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() => setCurrentPage(1)}
+                                disabled={currentPage === 1}
+                                className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                            >
+                                <ChevronsLeft size={20} />
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                            >
+                                <ChevronLeft size={20} />
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages || totalRows === 0}
+                                className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                            >
+                                <ChevronRight size={20} />
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage(totalPages)}
+                                disabled={currentPage === totalPages || totalRows === 0}
+                                className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                            >
+                                <ChevronsRight size={20} />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -17,8 +17,20 @@ export default function BlogListPage() {
     const [submitLoading, setSubmitLoading] = useState(false);
 
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [currentPage, setCurrentPage] = useState(() => {
+        return Number(sessionStorage.getItem("blogsCurrentPage")) || 1;
+    });
+    const [rowsPerPage, setRowsPerPage] = useState(() => {
+        return Number(sessionStorage.getItem("blogsRowsPerPage")) || 10;
+    });
+
+    useEffect(() => {
+        sessionStorage.setItem("blogsCurrentPage", currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        sessionStorage.setItem("blogsRowsPerPage", rowsPerPage);
+    }, [rowsPerPage]);
     const [openMenuIndex, setOpenMenuIndex] = useState(null);
     const menuRef = useRef(null);
     useEffect(() => {
@@ -96,11 +108,6 @@ export default function BlogListPage() {
         if (currentPage > totalPages) setCurrentPage(totalPages);
         if (totalRows > 0 && currentPage === 0) setCurrentPage(1);
     }, [totalRows, totalPages, currentPage]);
-
-    const goToFirst = () => setCurrentPage(1);
-    const goToLast = () => setCurrentPage(totalPages);
-    const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
-    const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
     return (
         <div className="min-h-screen px-6 py-6 font-primary relative">
@@ -260,59 +267,48 @@ export default function BlogListPage() {
             </div>
 
             {/* Pagination Bar */}
-            <div className="flex justify-end items-center px-6 py-2 bg-white rounded-xl text-sm text-gray-700 mt-4 border border-gray-100 shadow-sm">
+            <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4 border-t">
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
-                        <span>{t.rowsPerPage}</span>
-                        <Select
+                        <span>{language === "vi" ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
+                        <select
                             value={rowsPerPage}
-                            onChange={(val) => {
-                                setRowsPerPage(val);
+                            onChange={(e) => {
+                                setRowsPerPage(Number(e.target.value));
                                 setCurrentPage(1);
                             }}
-                            className="w-16 h-8"
-                            suffixIcon={null}
+                            className="border rounded-md px-2 py-1 text-gray-700"
                         >
                             {[5, 10, 20, 50].map((n) => (
-                                <Select.Option key={n} value={n}>
+                                <option key={n} value={n}>
                                     {n}
-                                </Select.Option>
+                                </option>
                             ))}
-                        </Select>
+                        </select>
                     </div>
-                    <span className="font-medium text-gray-600">
+                    <span>
                         {totalRows === 0
                             ? "0–0"
-                            : `${startIndex + 1}–${endIndex} ${t.of} ${totalRows}`}
+                            : `${startIndex + 1}–${endIndex} ${language === "vi" ? "trên" : "of"} ${totalRows}`}
                     </span>
                     <div className="flex items-center gap-1">
-                        <button
-                            onClick={goToFirst}
-                            disabled={currentPage === 1}
-                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
-                        >
-                            <ChevronsLeft size={18} />
+                        <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+                            <ChevronsLeft size={16} />
+                        </button>
+                        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>
+                            <ChevronLeft size={16} />
                         </button>
                         <button
-                            onClick={goToPrev}
-                            disabled={currentPage === 1}
-                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
-                        >
-                            <ChevronLeft size={18} />
-                        </button>
-                        <button
-                            onClick={goToNext}
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                             disabled={currentPage === totalPages || totalRows === 0}
-                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
                         >
-                            <ChevronRight size={18} />
+                            <ChevronRight size={16} />
                         </button>
                         <button
-                            onClick={goToLast}
+                            onClick={() => setCurrentPage(totalPages)}
                             disabled={currentPage === totalPages || totalRows === 0}
-                            className="p-1.5 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition"
                         >
-                            <ChevronsRight size={18} />
+                            <ChevronsRight size={16} />
                         </button>
                     </div>
                 </div>

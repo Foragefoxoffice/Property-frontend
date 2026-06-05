@@ -223,7 +223,6 @@ export default function UnitPage() {
       });
 
       fetchUnits();
-      setCurrentPage(1);
 
     } catch (error) {
       const msg =

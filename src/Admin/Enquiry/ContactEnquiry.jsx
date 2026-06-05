@@ -36,8 +36,20 @@ export default function ContactEnquiry() {
     const [sortBy, setSortBy] = useState("newest");
 
     // Pagination
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(() => {
+        return Number(sessionStorage.getItem("contactEnquiriesCurrentPage")) || 1;
+    });
+    const [rowsPerPage, setRowsPerPage] = useState(() => {
+        return Number(sessionStorage.getItem("contactEnquiriesRowsPerPage")) || 10;
+    });
+
+    useEffect(() => {
+        sessionStorage.setItem("contactEnquiriesCurrentPage", currentPage);
+    }, [currentPage]);
+
+    useEffect(() => {
+        sessionStorage.setItem("contactEnquiriesRowsPerPage", rowsPerPage);
+    }, [rowsPerPage]);
 
     const fetchEnquiries = async () => {
         try {
@@ -108,11 +120,6 @@ export default function ContactEnquiry() {
         if (currentPage > totalPages) setCurrentPage(totalPages);
         if (totalRows === 0) setCurrentPage(1);
     }, [totalRows, totalPages]);
-
-    const goToFirst = () => setCurrentPage(1);
-    const goToLast = () => setCurrentPage(totalPages);
-    const goToNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1));
-    const goToPrev = () => setCurrentPage((p) => Math.max(1, p - 1));
 
     // Checkbox handlers
     const handleSelectAll = (e) => {
@@ -301,7 +308,7 @@ export default function ContactEnquiry() {
                 )}
             </div>
 
-            <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4">
+            <div className="flex justify-end items-center px-6 py-3 bg-white rounded-b-2xl text-sm text-gray-700 mt-4 border-t">
                 <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
                         <span>{isVI ? "Số hàng mỗi trang:" : "Rows per page:"}</span>
@@ -313,7 +320,7 @@ export default function ContactEnquiry() {
                                 setCurrentPage(1);
                             }}
                         >
-                            {[5, 10, 20].map((n) => (
+                            {[5, 10, 20, 50].map((n) => (
                                 <option key={n} value={n}>{n}</option>
                             ))}
                         </select>
@@ -322,10 +329,10 @@ export default function ContactEnquiry() {
                         {totalRows === 0 ? "0–0" : `${startIndex + 1}–${endIndex} ${isVI ? "trên" : "of"} ${totalRows}`}
                     </span>
                     <div className="flex items-center gap-1">
-                        <button onClick={goToFirst} disabled={currentPage === 1}><ChevronsLeft size={16} /></button>
-                        <button onClick={goToPrev} disabled={currentPage === 1}><ChevronLeft size={16} /></button>
-                        <button onClick={goToNext} disabled={currentPage === totalPages || totalRows === 0}><ChevronRight size={16} /></button>
-                        <button onClick={goToLast} disabled={currentPage === totalPages || totalRows === 0}><ChevronsRight size={16} /></button>
+                        <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}><ChevronsLeft size={16} /></button>
+                        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}><ChevronLeft size={16} /></button>
+                        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages || totalRows === 0}><ChevronRight size={16} /></button>
+                        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages || totalRows === 0}><ChevronsRight size={16} /></button>
                     </div>
                 </div>
             </div>

@@ -175,7 +175,6 @@ export default function BlockPage() {
       });
       setZones([]);
       fetchBlocks();
-      setCurrentPage(1);
     } catch (error) {
       const msg =
         error.response?.data?.message ||

@@ -132,7 +132,6 @@ export default function DepositPage() {
       });
 
       fetchDeposits();
-      setCurrentPage(1);
 
     } catch (error) {
       const msg =

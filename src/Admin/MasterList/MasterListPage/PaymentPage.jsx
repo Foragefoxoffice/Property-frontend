@@ -122,7 +122,6 @@ export default function PaymentPage() {
         name_vi: "",
         status: "Active",
       });
-      setCurrentPage(1);
     } catch (error) {
       const msg =
         error?.response?.data?.message ||

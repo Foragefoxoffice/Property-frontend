@@ -136,7 +136,6 @@ export default function FeeTaxPage() {
       });
 
       fetchRecords();
-      setCurrentPage(1);
 
     } catch (error) {
       const msg =

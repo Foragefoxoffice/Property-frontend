@@ -138,7 +138,6 @@ export default function FloorRange() {
         status: "Active",
       });
       fetchFloorRanges();
-      setCurrentPage(1);
     } catch (err) {
       let msg = err?.response?.data?.error || (isVI ? "Không thể lưu dữ liệu." : "Failed to save data.");
       if (msg?.toLowerCase().includes("floor range with this name already exists") && isVI) {

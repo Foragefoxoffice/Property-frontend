@@ -85,7 +85,9 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const [editMode, setEditMode] = useState(false);
   const [editingOwner, setEditingOwner] = useState(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    return Number(sessionStorage.getItem("ownersListPage")) || 1;
+  });
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -390,7 +392,10 @@ const OwnersLandlords = ({ openOwnerView }) => {
                       {can("landlords", "view") && (
                         <Tooltip title={language === "vi" ? "Xem" : "View"}>
                           <button
-                            onClick={() => navigate(`/dashboard/landlords/${item._id}`)}
+                            onClick={() => {
+                              sessionStorage.setItem("ownersListPage", currentPage);
+                              navigate(`/dashboard/landlords/${item._id}`);
+                            }}
                             className="p-2 border rounded-full hover:bg-gray-200"
                           >
                             <Eye size={18} />
