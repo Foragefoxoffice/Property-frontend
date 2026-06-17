@@ -6,6 +6,7 @@ import { uploadPropertyMedia } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { usePermissions } from "../../Context/PermissionContext";
+import { generateSlug } from "../../utils/generateSlug";
 
 const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
   const [inputValue, setInputValue] = useState('');
@@ -217,21 +218,7 @@ export default function CreatePropertyListStep4SEO({
     const titleToSlug = titleObj.en || titleObj.vi;
     if (!titleToSlug) return;
 
-    // Robust slug generator with Vietnamese support
-    const generateSlug = (text) => {
-      if (!text) return "";
-      return text
-        .toLowerCase()
-        .normalize('NFD') // decompose combined characters (accents)
-        .replace(/[\u0300-\u036f]/g, '') // remove accent marks
-        .replace(/đ/g, 'd')
-        .replace(/ơ/g, 'o')
-        .replace(/ư/g, 'u')
-        .replace(/[^a-z0-9\s-]/g, '') // remove special chars
-        .trim()
-        .replace(/\s+/g, '-') // spaces to dashes
-        .replace(/-+/g, '-'); // collapse multiple dashes
-    };
+    // Use imported generateSlug
 
     const slug = generateSlug(titleToSlug);
 

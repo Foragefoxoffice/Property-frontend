@@ -1,14 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Form, Input, Select, Switch, Upload, Button, ConfigProvider, Tabs } from 'antd';
-import { ChevronDown, ChevronUp, Layout, Upload as UploadIcon, X, Languages, FileText } from 'lucide-react';
+import { ChevronDown, ChevronUp, Layout, Upload as UploadIcon, X, Languages } from 'lucide-react';
 import { getImageUrl } from '../../utils/imageHelper';
 import { uploadGeneralImage } from '../../Api/action';
 import { useLanguage } from '../../Language/LanguageContext';
 import { translations } from '../../Language/translations';
 import { CommonToaster } from '@/Common/CommonToaster';
-import { sanitizeBeforeSave, quillModules, quillFormats } from '@/utils/htmlSanitizer';
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
 
 const { Option } = Select;
 
@@ -26,7 +23,6 @@ export default function ProjectGeneralForm({
     const { language } = useLanguage();
     const t = translations[language];
     const [uploading, setUploading] = useState(false);
-    const [activeTab, setActiveTab] = useState('vi');
 
     const handleUpload = async (info) => {
         try {
@@ -43,8 +39,6 @@ export default function ProjectGeneralForm({
         }
     };
 
-    const modules = useMemo(() => quillModules, []);
-    const formats = quillFormats;
 
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
@@ -84,13 +78,6 @@ export default function ProjectGeneralForm({
                             form={form}
                             layout="vertical"
                             onFinish={(values) => {
-                                // Sanitize content before saving
-                                if (values.projectMainDescription) {
-                                    values.projectMainDescription = {
-                                        vi: sanitizeBeforeSave(values.projectMainDescription?.vi || ''),
-                                        en: sanitizeBeforeSave(values.projectMainDescription?.en || '')
-                                    };
-                                }
                                 onSubmit(values, mainImage);
                             }}
                             onValuesChange={(changedValues) => {
@@ -144,49 +131,7 @@ export default function ProjectGeneralForm({
                                 </Form.Item>
                             </div>
 
-                            {/* Table of Content */}
-                            <div className="mt-8">
-                                <label className="flex items-center gap-2 font-bold text-gray-700 mb-4 font-['Manrope']">
-                                    <FileText size={18} className="text-[#41398B]" />
-                                    {language === 'vi' ? 'Mục lục' : 'Table of Content'}
-                                </label>
-                                <Tabs
-                                    activeKey={activeTab}
-                                    onChange={setActiveTab}
-                                    type="card"
-                                    className="custom-tabs"
-                                    items={[
-                                        {
-                                            key: 'vi',
-                                            label: 'Tiếng Việt (VI)',
-                                            children: (
-                                                <Form.Item name={['projectMainDescription', 'vi']}>
-                                                    <ReactQuill
-                                                        theme="snow"
-                                                        modules={modules}
-                                                        formats={formats}
-                                                        className="h-64 mb-12"
-                                                    />
-                                                </Form.Item>
-                                            )
-                                        },
-                                        {
-                                            key: 'en',
-                                            label: 'English (EN)',
-                                            children: (
-                                                <Form.Item name={['projectMainDescription', 'en']}>
-                                                    <ReactQuill
-                                                        theme="snow"
-                                                        modules={modules}
-                                                        formats={formats}
-                                                        className="h-64 mb-12"
-                                                    />
-                                                </Form.Item>
-                                            )
-                                        }
-                                    ]}
-                                />
-                            </div>
+
 
                             {/* Main Image */}
                             <div>

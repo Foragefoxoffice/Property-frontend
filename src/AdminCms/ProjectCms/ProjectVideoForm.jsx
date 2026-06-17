@@ -37,7 +37,28 @@ export default function ProjectVideoForm({
         }
     }, [headerLang]);
 
+    const getEmbedUrl = (url) => {
+        if (!url) return '';
+        if (url.includes('/embed/')) return url;
+        let videoId = '';
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            videoId = match[2];
+        }
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+    };
+
     const handleSubmit = (values) => {
+        if (values.projectVideoTabs) {
+            values.projectVideoTabs = values.projectVideoTabs.map(tab => ({
+                ...tab,
+                videos: tab.videos?.map(video => ({
+                    ...video,
+                    projectVideoEmbeded: getEmbedUrl(video.projectVideoEmbeded)
+                }))
+            }));
+        }
         onSubmit(values);
     };
 
@@ -231,7 +252,7 @@ export default function ProjectVideoForm({
                                                                                             <iframe
                                                                                                 width="100%"
                                                                                                 height="100%"
-                                                                                                src={form.getFieldValue(['projectVideoTabs', name, 'videos', videoName, 'projectVideoEmbeded'])}
+                                                                                                src={getEmbedUrl(form.getFieldValue(['projectVideoTabs', name, 'videos', videoName, 'projectVideoEmbeded']))}
                                                                                                 title="YouTube video player"
                                                                                                 frameBorder="0"
                                                                                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

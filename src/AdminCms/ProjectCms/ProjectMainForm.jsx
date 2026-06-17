@@ -334,7 +334,7 @@ export default function ProjectMainForm() {
 
                 <ProjectProduct
                     form={productForm}
-                    onSubmit={(values) => handleSectionSubmit(values, t.toastProductsUpdated, setProductLoading)}
+                    onSubmit={(values) => handleSectionSubmit(values, t.toastProductSectionUpdated, setProductLoading)}
                     loading={productLoading}
                     pageData={projectData}
                     isOpen={openAccordions.product}
@@ -344,7 +344,7 @@ export default function ProjectMainForm() {
 
                 <ProjectVideoForm
                     form={videoForm}
-                    onSubmit={(values) => handleSectionSubmit(values, t.toastVideosUpdated, setVideoLoading)}
+                    onSubmit={(values) => handleSectionSubmit(values, t.toastVideoSectionUpdated, setVideoLoading)}
                     loading={videoLoading}
                     pageData={projectData}
                     isOpen={openAccordions.video}

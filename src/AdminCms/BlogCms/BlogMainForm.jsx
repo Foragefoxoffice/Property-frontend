@@ -26,6 +26,7 @@ import { usePermissions } from '../../Context/PermissionContext';
 import { useLanguage } from '../../Language/LanguageContext';
 import { translations } from '../../Language/translations';
 import { X } from 'lucide-react';
+import { generateSlug } from '../../utils/generateSlug';
 
 export default function BlogMainForm({
     form,
@@ -103,14 +104,7 @@ export default function BlogMainForm({
         };
     };
 
-    const generateSlug = (text) => {
-        return text
-            ?.toLowerCase()
-            ?.trim()
-            ?.replace(/[^\w\s-]/g, '')
-            ?.replace(/\s+/g, '-')
-            ?.replace(/--+/g, '-');
-    };
+
 
     const modules = useMemo(() => ({
         toolbar: {
