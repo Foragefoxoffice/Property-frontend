@@ -23,6 +23,7 @@ import { usePermissions } from '../../Context/PermissionContext';
 import SeoPanel from '../../components/Admin/SeoPanel';
 import { LabelRow, GenerateAllBanner, buildCmsContent, InputWithCount, TextAreaWithCount } from '../../components/Admin/CmsSeoUtils';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { generateSlug } from '../../utils/generateSlug';
 
 const { TextArea } = Input;
 
@@ -108,10 +109,27 @@ export default function ProjectSeoForm({
         const siteUrl = 'https://183housingsolutions.com';
         const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
         form.setFieldsValue({
-            projectSeoCanonicalUrl_en: `${siteUrl}${formatSlug(slugEn)}`,
-            projectSeoCanonicalUrl_vn: `${siteUrl}${formatSlug(slugVn)}`
+            projectSeoCanonicalUrl_en: `${siteUrl}/project${formatSlug(slugEn)}`,
+            projectSeoCanonicalUrl_vn: `${siteUrl}/project${formatSlug(slugVn)}`
         });
     }, [slugEn, slugVn, form]);
+
+    /* ✅ Sync Slug with Title (Auto-fill) for individual projects */
+    useEffect(() => {
+        if (!isProjectPage && pageData?.title) {
+            const titleToSlug = pageData.title.en || pageData.title.vi;
+            if (titleToSlug) {
+                const slug = generateSlug(titleToSlug);
+                const currentSlugEn = form.getFieldValue('projectSeoSlugUrl_en');
+                if (currentSlugEn !== slug) {
+                    form.setFieldsValue({
+                        projectSeoSlugUrl_en: slug,
+                        projectSeoSlugUrl_vn: slug
+                    });
+                }
+            }
+        }
+    }, [pageData?.title, form, isProjectPage]);
 
     const activeTabCanonical = Form.useWatch(`projectSeoCanonicalUrl_${activeTab}`, form);
     const allowIndexing = Form.useWatch(`projectSeoAllowIndexing`, form);
@@ -151,9 +169,87 @@ export default function ProjectSeoForm({
         }
     }, [pageData]);
 
+    const buildProjectSeoContent = (lang) => {
+        if (isProjectPage) {
+            return buildCmsContent(lang, 'projectPage');
+        }
+
+        const g = (obj) => (obj?.[lang] || obj?.en || obj?.vi || "").trim();
+
+        const cleanText = (html = "") => {
+            if (!html) return "";
+            let t = html;
+            t = t.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, '"').replace(/&#[0-9]+;/gi, " ").replace(/&[a-z]+;/gi, " ");
+            t = t.replace(/<[^>]*>/gm, " ");
+            t = t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, "");
+            t = t.replace(/\s+/g, " ").trim();
+            return t;
+        };
+
+        const clamp = (str, max) => str.length <= max ? str : str.slice(0, max).replace(/\s\S*$/, "").trim();
+        const hasKw = (str, kw) => kw ? str.toLowerCase().includes(kw.toLowerCase()) : true;
+
+        const title = g(pageData?.title);
+        const categoryName = pageData?.category?.name ? g(pageData.category.name) : "Project";
+        const locationTitle = g(pageData?.projectLocationTitle);
+
+        const keywords = [categoryName, title, "183 Housing Solutions", "Vietnam Real Estate"]
+            .map(k => cleanText(k)).filter(Boolean)
+            .filter((v, i, a) => a.findIndex(x => x.toLowerCase() === v.toLowerCase()) === i).slice(0, 5);
+
+        const focusKw = keywords[0] || categoryName || title || "";
+
+        let metaTitle = "";
+        if (lang === "vn" || lang === "vi") {
+            metaTitle = `${title} - ${categoryName} tại 183 Housing Solutions`;
+        } else {
+            metaTitle = `${title} - ${categoryName} | 183 Housing Solutions`;
+        }
+
+        if (focusKw && !hasKw(metaTitle, focusKw)) {
+             metaTitle = `${focusKw} ${metaTitle}`;
+        }
+        metaTitle = clamp(cleanText(metaTitle), 60);
+
+        let metaDesc = "";
+        const introTitle = g(pageData?.projectIntroTitle);
+        
+        if (lang === "vn" || lang === "vi") {
+            const parts = [
+                `Khám phá dự án ${title}`,
+                categoryName ? `thuộc loại hình ${categoryName}` : "",
+                locationTitle ? `vị trí ${locationTitle}` : "",
+            ].filter(Boolean);
+            metaDesc = parts.join(", ") + ". " + (introTitle || "Liên hệ ngay để nhận thông tin chi tiết và tư vấn miễn phí.");
+        } else {
+            const parts = [
+                `Discover ${title}`,
+                categoryName ? `a premium ${categoryName}` : "",
+                locationTitle ? `located in ${locationTitle}` : "",
+            ].filter(Boolean);
+            metaDesc = parts.join(", ") + ". " + (introTitle || "Contact us today for detailed information and free consultation.");
+        }
+
+        if (focusKw && !hasKw(metaDesc, focusKw)) {
+             metaDesc = `${focusKw} — ${metaDesc}`;
+        }
+        metaDesc = clamp(cleanText(metaDesc), 160);
+
+        if (metaDesc.length < 120) {
+            const filler = (lang === "vn" || lang === "vi")
+                ? " Không gian sống lý tưởng, tiện ích đẳng cấp, vị trí đắc địa và cơ hội đầu tư sinh lời cao."
+                : " Premium living space, world-class amenities, prime location, and excellent investment opportunity.";
+            metaDesc = clamp(`${metaDesc}${filler}`, 160);
+        }
+
+        let ogTitle = metaTitle;
+        let ogDesc = metaDesc;
+
+        return { metaTitle, metaDesc, keywords, ogTitle, ogDesc };
+    };
+
     const handleGenerate = (field) => {
-        const type = isProjectPage ? 'projectPage' : 'project';
-        const content = buildCmsContent(activeTab, type);
+        const content = buildProjectSeoContent(activeTab);
         const map = {
             metaTitle: `projectSeoMetaTitle_${activeTab}`,
             metaDescription: `projectSeoMetaDescription_${activeTab}`,
@@ -172,8 +268,7 @@ export default function ProjectSeoForm({
     };
 
     const handleGenerateAll = () => {
-        const type = isProjectPage ? 'projectPage' : 'project';
-        const content = buildCmsContent(activeTab, type);
+        const content = buildProjectSeoContent(activeTab);
         form.setFieldsValue({
             [`projectSeoMetaTitle_${activeTab}`]: content.metaTitle,
             [`projectSeoMetaDescription_${activeTab}`]: content.metaDesc,
@@ -181,7 +276,7 @@ export default function ProjectSeoForm({
             [`projectSeoOgTitle_${activeTab}`]: content.ogTitle,
             [`projectSeoOgDescription_${activeTab}`]: content.ogDesc,
         });
-        CommonToaster(activeTab === 'en' ? t.toastAllFieldsAutoGenerated : t.toastAllFieldsAutoGeneratedVn, 'success');
+        CommonToaster(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!', 'success');
     };
 
     // Handle OG Image upload
@@ -348,7 +443,7 @@ export default function ProjectSeoForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Đường Dẫn Slug
+                                                            Đường Dẫn Slug {(!isProjectPage) && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
                                                         </span>
                                                     }
                                                     name="projectSeoSlugUrl_vn"
@@ -357,14 +452,15 @@ export default function ProjectSeoForm({
                                                     <Input
                                                         placeholder="ten-du-an"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        className={`bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                                        readOnly={!isProjectPage}
                                                     />
                                                 </Form.Item>
 
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Đường Dẫn Canonical
+                                                            Đường Dẫn Canonical {(!isProjectPage) && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
                                                         </span>
                                                     }
                                                     name="projectSeoCanonicalUrl_vn"
@@ -372,7 +468,8 @@ export default function ProjectSeoForm({
                                                     <Input
                                                         placeholder="https://example.com/project/ten-du-an"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        className={`bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                                        readOnly={!isProjectPage}
                                                     />
                                                 </Form.Item>
 
@@ -491,7 +588,7 @@ export default function ProjectSeoForm({
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Slug URL
+                                                            Slug URL {(!isProjectPage) && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
                                                         </span>
                                                     }
                                                     name="projectSeoSlugUrl_en"
@@ -500,14 +597,15 @@ export default function ProjectSeoForm({
                                                     <Input
                                                         placeholder="project-name"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        className={`bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                                        readOnly={!isProjectPage}
                                                     />
                                                 </Form.Item>
 
                                                 <Form.Item
                                                     label={
                                                         <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Canonical URL
+                                                            Canonical URL {(!isProjectPage) && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
                                                         </span>
                                                     }
                                                     name="projectSeoCanonicalUrl_en"
@@ -515,7 +613,8 @@ export default function ProjectSeoForm({
                                                     <Input
                                                         placeholder="https://example.com/project/name"
                                                         size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
+                                                        className={`bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                                        readOnly={!isProjectPage}
                                                     />
                                                 </Form.Item>
 
