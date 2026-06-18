@@ -12,19 +12,31 @@ const CommonRichText = ({
     onChange,
     placeholder,
     className = "",
-    minHeight = "200px"
+    minHeight = "200px",
+    toolbarType = "default"
 }) => {
+    let container = [
+        [{ list: "ordered" }, { list: "bullet" }],
+    ];
+    let formatList = [
+        "list",
+    ];
+
+    if (toolbarType === "property") {
+        container = [
+            ["bold", "italic", "link"],
+            [{ list: "ordered" }, { list: "bullet" }],
+        ];
+        formatList = ["list", "bold", "italic", "link"];
+    }
+
     const modules = {
         toolbar: {
-            container: [
-                [{ list: "ordered" }, { list: "bullet" }],
-            ],
+            container: container,
         },
     };
 
-    const formats = [
-        "list",
-    ];
+    const formats = formatList;
 
     return (
         <div className={`flex flex-col ${className}`}>

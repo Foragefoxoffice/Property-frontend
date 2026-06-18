@@ -452,7 +452,7 @@ export default function FooterCmsForm() {
                                                     <Form.Item label={<span className="font-semibold text-gray-700 font-['Manrope']">Upload Logo</span>}>
                                                         <div className="space-y-3">
                                                             {logoUrl ? (
-                                                                <div className="relative w-64 h-24 rounded-xl overflow-hidden border-2 border-gray-200 bg-white group">
+                                                                <div className="relative w-64 h-24 rounded-xl overflow-hidden border-2 border-gray-200 group">
                                                                     <img
                                                                         src={logoUrl.startsWith('/') ? `${import.meta.env.VITE_API_URL?.replace('/api/v1', '')}${logoUrl}` : logoUrl}
                                                                         alt="Footer Logo"

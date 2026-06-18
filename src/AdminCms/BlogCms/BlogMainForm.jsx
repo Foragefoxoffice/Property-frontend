@@ -110,13 +110,10 @@ export default function BlogMainForm({
         toolbar: {
             container: [
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                [{ 'font': [] }],
                 ['bold', 'italic', 'underline', 'strike', 'blockquote'],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' },
                 { 'indent': '-1' }, { 'indent': '+1' }],
-                [{ 'color': [] }, { 'background': [] }],
-                ['link', 'image', 'video'],
-                ['clean']
+                ['link', 'image', 'video']
             ],
         },
         clipboard: {
@@ -146,10 +143,10 @@ export default function BlogMainForm({
     }), [modules]);
 
     const formats = [
-        'header', 'font', 'size',
+        'header', 'size',
         'bold', 'italic', 'underline', 'strike', 'blockquote',
         'list', 'bullet', 'indent',
-        'link', 'image', 'video', 'color', 'background'
+        'link', 'image', 'video'
     ];
 
     // Handle featured image upload

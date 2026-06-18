@@ -167,7 +167,7 @@ const LocalizedTextarea = memo(
 );
 
 const LocalizedRichText = memo(
-  ({ label, name, lang, value, onChange, placeholder }) => {
+  ({ label, name, lang, value, onChange, placeholder, toolbarType = "default" }) => {
     return (
       <CommonRichText
         label={label}
@@ -175,6 +175,7 @@ const LocalizedRichText = memo(
         onChange={(content) => onChange(lang, name, content)}
         placeholder={placeholder || (lang === "en" ? "Type here" : "Nhập tại đây")}
         minHeight="250px"
+        toolbarType={toolbarType}
       />
     );
   }
@@ -1785,6 +1786,7 @@ export default function CreatePropertyListStep1({
             value={form.description?.[lang]}
             onChange={handleLocalizedChange}
             placeholder={lang === "en" ? "Type here" : "Nhập tại đây"}
+            toolbarType="property"
           />
         </div>
 

@@ -5,20 +5,31 @@ const compressImage = async (file) => {
   if (!file || !file.type || !file.type.startsWith("image/")) return file;
   if (file.type === "image/svg+xml" || file.type === "image/gif") return file;
 
+  // Use original file type and keep the original extension
+  const targetFileType = file.type;
+  
+  // Extract the original extension from the file name, or map it from the mimetype as a fallback
+  const extensionMatch = file.name.match(/\.[0-9a-z]+$/i);
+  let targetExtension = extensionMatch ? extensionMatch[0] : "";
+  if (!targetExtension) {
+    if (file.type === "image/png") targetExtension = ".png";
+    else if (file.type === "image/webp") targetExtension = ".webp";
+    else targetExtension = ".jpg";
+  }
+
   const options = {
     maxSizeMB: 0.25, // Target max 250kb
     maxWidthOrHeight: 1200, // Reduced resolution slightly to help with size
     useWebWorker: true,
-    fileType: "image/jpeg", // Force conversion to JPEG to guarantee compression ratio
+    fileType: targetFileType,
     initialQuality: 0.8, // Start with lower quality
   };
 
   try {
     const compressedFile = await imageCompression(file, options);
     // ensure it's still a File object, browser-image-compression returns a File but sometimes a Blob
-    // We append .jpg because we forced image/jpeg conversion
-    const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
-    return new File([compressedFile], newFileName, { type: "image/jpeg" });
+    const newFileName = file.name.replace(/\.[^/.]+$/, "") + targetExtension;
+    return new File([compressedFile], newFileName, { type: targetFileType });
   } catch (error) {
     console.error("Image compression error:", error);
     return file;
