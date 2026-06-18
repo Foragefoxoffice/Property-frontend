@@ -272,10 +272,11 @@ export default function BlogMainForm({
                                                             placeholder="Nhập tiêu đề Tin tức..."
                                                             size="large"
                                                             onChange={(e) => {
+                                                                const slug = generateSlug(e.target.value);
                                                                 form.setFieldsValue({
-                                                                    slug: {
-                                                                        ...form.getFieldValue('slug'),
-                                                                        vi: generateSlug(e.target.value),
+                                                                    seoInformation: {
+                                                                        ...form.getFieldValue('seoInformation'),
+                                                                        slugUrl: { en: slug, vi: slug },
                                                                     },
                                                                 });
                                                             }}
@@ -283,15 +284,7 @@ export default function BlogMainForm({
                                                         />
                                                     </Form.Item>
 
-                                                    <Form.Item
-                                                        label="Slug"
-                                                        name={['slug', 'vi']}
-                                                    >
-                                                        <Input
-                                                            placeholder="slug-tu-dong"
-                                                            size="large"
-                                                        />
-                                                    </Form.Item>
+
 
                                                     <Form.Item
                                                         label={
@@ -369,10 +362,11 @@ export default function BlogMainForm({
                                                             placeholder="Enter news title in English..."
                                                             size="large"
                                                             onChange={(e) => {
+                                                                const slug = generateSlug(e.target.value);
                                                                 form.setFieldsValue({
-                                                                    slug: {
-                                                                        ...form.getFieldValue('slug'),
-                                                                        en: generateSlug(e.target.value),
+                                                                    seoInformation: {
+                                                                        ...form.getFieldValue('seoInformation'),
+                                                                        slugUrl: { en: slug, vi: slug },
                                                                     },
                                                                 });
                                                             }}
@@ -380,15 +374,7 @@ export default function BlogMainForm({
                                                         />
                                                     </Form.Item>
 
-                                                    <Form.Item
-                                                        label="Slug"
-                                                        name={['slug', 'en']}
-                                                    >
-                                                        <Input
-                                                            placeholder="auto-generated-slug"
-                                                            size="large"
-                                                        />
-                                                    </Form.Item>
+
 
                                                     <Form.Item
                                                         label={
@@ -605,17 +591,14 @@ export default function BlogMainForm({
                                     onClick={() => {
                                         const values = form.getFieldsValue();
 
-                                        const slug =
-                                            values?.slug?.[language] ||
-                                            values?.slug?.en ||
-                                            values?.slug?.vi ||
-                                            '';
+                                        const seoInfo = values?.seoInformation || form.getFieldValue('seoInformation');
+                                        const slug = seoInfo?.slugUrl?.en || seoInfo?.slugUrl?.vi || '';
 
                                         if (!slug) {
                                             CommonToaster(
                                                 language === 'vi'
-                                                    ? 'Vui lòng nhập slug trước khi xem trước'
-                                                    : 'Please enter slug before preview',
+                                                    ? 'Vui lòng nhập tiêu đề để tạo slug trước khi xem trước'
+                                                    : 'Please enter title to generate slug before preview',
                                                 'warning'
                                             );
                                             return;

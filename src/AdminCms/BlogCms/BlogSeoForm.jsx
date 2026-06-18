@@ -315,7 +315,6 @@ export default function BlogSeoForm({
                     </svg>
                 </div>
             </div>
-
             {/* Accordion Content */}
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[8000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="p-6 pt-2 bg-white border-t border-gray-100">
@@ -340,23 +339,17 @@ export default function BlogSeoForm({
                             <Form.Item
                                 label={
                                     <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        Slug URL (Shared / Dùng chung)
+                                        Slug URL (Shared / Dùng chung) <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated from Title - Non-editable)</span>
                                     </span>
                                 }
                                 name={['seoInformation', 'slugUrl', 'en']}
-                                normalize={(value) => value?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || ''}
-                                help="The slug will be the same for both languages / Slash URL sẽ giống nhau cho cả hai ngôn ngữ"
                                 extra={renderSuggestion('keywordInSlug')}
                             >
                                 <Input
                                     placeholder="my-blog-post"
                                     size="large"
-                                    className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                    onChange={(e) => {
-                                        // Sync to VI
-                                        const val = e.target.value?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || '';
-                                        form.setFieldValue(['seoInformation', 'slugUrl', 'vi'], val);
-                                    }}
+                                    className="bg-gray-100 border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 cursor-not-allowed"
+                                    readOnly
                                 />
                             </Form.Item>
 
@@ -375,7 +368,6 @@ export default function BlogSeoForm({
                                         ),
                                         children: (
                                             <>
-                                                {/* Meta Title */}
                                                 <Form.Item
                                                     label={<LabelRow label="Tiêu Đề Meta" onGenerate={() => handleGenerate('metaTitle')} lang="vi" />}
                                                     name={['seoInformation', 'metaTitle', 'vi']}

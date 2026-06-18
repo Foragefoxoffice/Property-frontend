@@ -162,7 +162,15 @@ export default function BlogCmsForm() {
                 },
                 category: values.category || preserved.category,
                 mainImage: values.mainImage || preserved.mainImage,
-                published: values.published !== undefined ? !!values.published : !!preserved.published
+                published: values.published !== undefined ? !!values.published : !!preserved.published,
+                seoInformation: {
+                    ...preserved.seoInformation,
+                    ...(values.seoInformation || {}),
+                    slugUrl: {
+                        ...preserved.seoInformation?.slugUrl,
+                        ...(values.seoInformation?.slugUrl || {})
+                    }
+                }
             };
 
             if (blogData) {
