@@ -1461,7 +1461,7 @@ export default function CreatePropertyListStep1({
           <div className="flex flex-col w-full">
             <div className="flex items-center justify-between">
               <label className="text-sm text-[#131517] font-semibold">
-                {lang === "en" ? "Bedrooms" : "Phòng ngủ"}
+                {lang === "en" ? "Bedrooms" : "Ngủ"}
               </label>
 
               <div className="flex items-center gap-2">
@@ -1501,7 +1501,7 @@ export default function CreatePropertyListStep1({
           <div className="flex flex-col w-full">
             <div className="flex items-center justify-between">
               <label className="text-sm text-[#131517] font-semibold">
-                {lang === "en" ? "Bathrooms" : "Phòng tắm"}
+                {lang === "en" ? "Bathrooms" : "Vệ sinh"}
               </label>
 
               <div className="flex items-center gap-2">

@@ -263,9 +263,9 @@ export default function CreatePropertyListStep4SEO({
       let t = html;
       // Decode common HTML entities
       t = t.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&")
-           .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
-           .replace(/&quot;/gi, '"').replace(/&#[0-9]+;/gi, " ")
-           .replace(/&[a-z]+;/gi, " ");
+        .replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
+        .replace(/&quot;/gi, '"').replace(/&#[0-9]+;/gi, " ")
+        .replace(/&[a-z]+;/gi, " ");
       // Strip HTML tags
       t = t.replace(/<[^>]*>/gm, " ");
       // Strip emojis (Unicode emoji ranges)
@@ -284,18 +284,18 @@ export default function CreatePropertyListStep4SEO({
 
     // ── Pull structured property fields ──────────────────────
     const propertyType = g(initialData?.propertyType);
-    const project      = g(initialData?.projectName);
-    const zone         = g(initialData?.zoneName);
-    const block        = g(initialData?.blockName);
-    const furnishing   = g(initialData?.furnishing);
-    const view         = g(initialData?.view);
-    const txType       = g(initialData?.transactionType);
-    const beds         = initialData?.bedrooms   ? Number(initialData.bedrooms)   : null;
-    const baths        = initialData?.bathrooms  ? Number(initialData.bathrooms)  : null;
-    const size         = initialData?.unitSize   ? Number(initialData.unitSize)   : null;
-    const currencyCode = initialData?.currency?.code   || "";
-    const currencySym  = initialData?.currency?.symbol || "";
-    const price        = initialData?.price      ? Number(initialData.price)      : null;
+    const project = g(initialData?.projectName);
+    const zone = g(initialData?.zoneName);
+    const block = g(initialData?.blockName);
+    const furnishing = g(initialData?.furnishing);
+    const view = g(initialData?.view);
+    const txType = g(initialData?.transactionType);
+    const beds = initialData?.bedrooms ? Number(initialData.bedrooms) : null;
+    const baths = initialData?.bathrooms ? Number(initialData.bathrooms) : null;
+    const size = initialData?.unitSize ? Number(initialData.unitSize) : null;
+    const currencyCode = initialData?.currency?.code || "";
+    const currencySym = initialData?.currency?.symbol || "";
+    const price = initialData?.price ? Number(initialData.price) : null;
 
     // ── KEYWORDS ─────────────────────────────────────────────
     // Only use clean, predictable values — no raw description text
@@ -303,16 +303,16 @@ export default function CreatePropertyListStep4SEO({
       propertyType,
       project,
       zone,
-      beds  ? (lang === "vi" ? `${beds} phòng ngủ`  : `${beds} bedroom`)  : "",
-      baths ? (lang === "vi" ? `${baths} phòng tắm` : `${baths} bathroom`) : "",
+      beds ? (lang === "vi" ? `${beds} Ngủ` : `${beds} bedroom`) : "",
+      baths ? (lang === "vi" ? `${baths} Vệ sinh` : `${baths} bathroom`) : "",
       furnishing,
       txType,
       view,
     ].filter(Boolean)
-     .map(k => cleanText(k))
-     .filter(Boolean)
-     .filter((v, i, a) => a.findIndex(x => x.toLowerCase() === v.toLowerCase()) === i)
-     .slice(0, 8);
+      .map(k => cleanText(k))
+      .filter(Boolean)
+      .filter((v, i, a) => a.findIndex(x => x.toLowerCase() === v.toLowerCase()) === i)
+      .slice(0, 8);
 
     // Focus keyword = first keyword in the list
     const focusKw = keywords[0] || propertyType || "";
@@ -320,18 +320,18 @@ export default function CreatePropertyListStep4SEO({
     // ── META TITLE (30–60 chars) ──────────────────────────────
     let metaTitle = "";
     if (lang === "vi") {
-      // Pattern: "{X} phòng ngủ {propertyType} tại {project}, {zone}"
+      // Pattern: "{X} Ngủ {propertyType} tại {project}, {zone}"
       const parts = [
-        beds ? `${beds} phòng ngủ` : "",
+        beds ? `${beds} Ngủ` : "",
         propertyType,
         project ? `tại ${project}` : zone ? `tại ${zone}` : "",
-        block   ? `toà ${block}`   : "",
+        block ? `toà ${block}` : "",
       ].filter(Boolean);
       metaTitle = parts.join(" ");
     } else {
       // Pattern: "{beds}BR {baths}BA {propertyType} for {txType} in {project}"
       const parts = [
-        beds  ? `${beds}BR`  : "",
+        beds ? `${beds}BR` : "",
         baths ? `${baths}BA` : "",
         propertyType || "Property",
         txType ? `for ${txType}` : "",
@@ -361,14 +361,14 @@ export default function CreatePropertyListStep4SEO({
     if (lang === "vi") {
       const parts = [
         beds && baths
-          ? `Căn hộ ${beds} phòng ngủ, ${baths} phòng tắm`
-          : beds ? `Căn hộ ${beds} phòng ngủ` : "",
-        size         ? `diện tích ${size} m²`              : "",
-        furnishing   ? `nội thất ${furnishing}`             : "",
-        project      ? `tại ${project}`                     : zone ? `tại ${zone}` : "",
-        block        ? `toà ${block}`                       : "",
-        view         ? `view ${view}`                       : "",
-        txType       ? `hình thức ${txType}`                : "",
+          ? `Căn hộ ${beds} Ngủ, ${baths} Vệ sinh`
+          : beds ? `Căn hộ ${beds} Ngủ` : "",
+        size ? `diện tích ${size} m²` : "",
+        furnishing ? `nội thất ${furnishing}` : "",
+        project ? `tại ${project}` : zone ? `tại ${zone}` : "",
+        block ? `toà ${block}` : "",
+        view ? `view ${view}` : "",
+        txType ? `hình thức ${txType}` : "",
         price && currencySym ? `giá ${currencySym}${price.toLocaleString()}` : "",
       ].filter(Boolean);
       metaDesc = parts.join(", ") + ". Liên hệ ngay để xem nhà và nhận tư vấn miễn phí.";
@@ -377,12 +377,12 @@ export default function CreatePropertyListStep4SEO({
         beds && baths
           ? `${beds}-bedroom, ${baths}-bathroom ${propertyType || "property"}`
           : beds ? `${beds}-bedroom ${propertyType || "property"}` : propertyType || "property",
-        furnishing   ? `(${furnishing})`                    : "",
-        size         ? `${size} sqm`                        : "",
-        project      ? `in ${project}`                      : zone ? `in ${zone}` : "",
-        block        ? `Block ${block}`                     : "",
-        view         ? `with ${view} view`                  : "",
-        txType       ? `available for ${txType}`            : "",
+        furnishing ? `(${furnishing})` : "",
+        size ? `${size} sqm` : "",
+        project ? `in ${project}` : zone ? `in ${zone}` : "",
+        block ? `Block ${block}` : "",
+        view ? `with ${view} view` : "",
+        txType ? `available for ${txType}` : "",
         price && currencySym ? `priced at ${currencySym}${price.toLocaleString()} ${currencyCode}`.trim() : "",
       ].filter(Boolean);
       metaDesc = parts.join(", ") + ". Contact us today to schedule a viewing.";
@@ -429,11 +429,11 @@ export default function CreatePropertyListStep4SEO({
   const handleAutoGenerate = (field) => {
     const content = buildSeoContent(activeLang);
     const fieldMap = {
-      metaTitle:       { key: "metaTitle",       val: content.metaTitle  },
-      metaDescription: { key: "metaDescription", val: content.metaDesc   },
-      metaKeywords:    { key: "metaKeywords",     val: content.keywords   },
-      ogTitle:         { key: "ogTitle",          val: content.ogTitle    },
-      ogDescription:   { key: "ogDescription",    val: content.ogDesc     },
+      metaTitle: { key: "metaTitle", val: content.metaTitle },
+      metaDescription: { key: "metaDescription", val: content.metaDesc },
+      metaKeywords: { key: "metaKeywords", val: content.keywords },
+      ogTitle: { key: "ogTitle", val: content.ogTitle },
+      ogDescription: { key: "ogDescription", val: content.ogDesc },
     };
     if (!fieldMap[field]) return;
     const { key, val } = fieldMap[field];
@@ -447,11 +447,11 @@ export default function CreatePropertyListStep4SEO({
     const content = buildSeoContent(activeLang);
     const updated = {
       ...seo,
-      metaTitle:       { ...seo.metaTitle,       [activeLang]: content.metaTitle  },
-      metaDescription: { ...seo.metaDescription, [activeLang]: content.metaDesc   },
-      metaKeywords:    { ...seo.metaKeywords,     [activeLang]: content.keywords   },
-      ogTitle:         { ...seo.ogTitle,          [activeLang]: content.ogTitle    },
-      ogDescription:   { ...seo.ogDescription,    [activeLang]: content.ogDesc     },
+      metaTitle: { ...seo.metaTitle, [activeLang]: content.metaTitle },
+      metaDescription: { ...seo.metaDescription, [activeLang]: content.metaDesc },
+      metaKeywords: { ...seo.metaKeywords, [activeLang]: content.keywords },
+      ogTitle: { ...seo.ogTitle, [activeLang]: content.ogTitle },
+      ogDescription: { ...seo.ogDescription, [activeLang]: content.ogDesc },
     };
     setSeo(updated);
     onChange({ seoInformation: updated });
@@ -525,10 +525,10 @@ export default function CreatePropertyListStep4SEO({
     const statusText = isOptimal
       ? `✓ Good length`
       : isAbove
-      ? `Too long — shorten by ${len - max} chars`
-      : len > 0
-      ? `${min - len} more chars to reach minimum`
-      : `Add ${label}`;
+        ? `Too long — shorten by ${len - max} chars`
+        : len > 0
+          ? `${min - len} more chars to reach minimum`
+          : `Add ${label}`;
 
     return (
       <div style={{ marginTop: "6px" }}>

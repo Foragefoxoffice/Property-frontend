@@ -200,8 +200,8 @@ export default function CreatePropertyPreview({
     // Property Info
     unit: { en: "Unit", vi: "Đơn vị" },
     unitSize: { en: "Unit Size", vi: "Diện tích" },
-    bedrooms: { en: "Bedrooms", vi: "Phòng ngủ" },
-    bathrooms: { en: "Bathrooms", vi: "Phòng tắm" },
+    bedrooms: { en: "Bedrooms", vi: "Ngủ" },
+    bathrooms: { en: "Bathrooms", vi: "Vệ sinh" },
     floors: { en: "Floors", vi: "Số tầng" },
     furnishing: { en: "Furnishing", vi: "Trang bị nội thất" },
     view: { en: "View", vi: "View" },
