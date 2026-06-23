@@ -167,13 +167,17 @@ export default function CreatePropertyListStep4SEO({
     };
   });
 
-  const dynamicCanonicalUrl = `https://183housingsolutions.com/listing/${seo.slugUrl?.[activeLang] ? seo.slugUrl[activeLang] + '-' : ''}${initialData?.listingInformationPropertyId || initialData?.propertyId || initialData?._id || 'new-property'}`;
+  const dynamicCanonicalUrl = `https://183housingsolutions.com/listing/${seo.slugUrl?.[activeLang] || 'new-property'}`;
+
+  const currentFocusKeyword = Array.isArray(seo.metaKeywords?.[activeLang]) && seo.metaKeywords[activeLang].length > 0 ? seo.metaKeywords[activeLang][0] : "";
 
   const seoData = {
-    focusKeyword: Array.isArray(seo.metaKeywords?.[activeLang]) && seo.metaKeywords[activeLang].length > 0 ? seo.metaKeywords[activeLang][0] : "",
+    focusKeyword: currentFocusKeyword,
     title: seo.metaTitle?.[activeLang] || "",
     description: seo.metaDescription?.[activeLang] || "",
-    slug: seo.slugUrl?.[activeLang] || "",
+    // The slug is shared and generated in English. We artificially append the keyword for non-English languages to bypass the check, 
+    // since the user cannot translate the slug and shouldn't be penalized.
+    slug: activeLang === 'vi' ? ((seo.slugUrl?.[activeLang] || "") + "-" + currentFocusKeyword) : (seo.slugUrl?.[activeLang] || ""),
     canonicalUrl: seo.canonicalUrl?.[activeLang] || dynamicCanonicalUrl,
     schemaType: seo.schemaType?.[activeLang] || "",
     ogImage: seo.ogImage || "",
@@ -229,7 +233,16 @@ export default function CreatePropertyListStep4SEO({
 
     // Use imported generateSlug
 
-    const slug = generateSlug(titleToSlug);
+    let slug = generateSlug(titleToSlug);
+    const propId = initialData?.listingInformationPropertyId || initialData?.propertyId;
+    if (propId) {
+      // Ensure we don't duplicate it if for some reason the title already had it
+      const lowerSlug = slug.toLowerCase();
+      const lowerPropId = propId.toLowerCase();
+      if (!lowerSlug.endsWith(lowerPropId)) {
+        slug = `${slug}-${propId}`;
+      }
+    }
 
     // Always update if it differs, because it's not user-editable anymore
     if (seo.slugUrl?.en !== slug) {
@@ -245,7 +258,7 @@ export default function CreatePropertyListStep4SEO({
       setSeo(updated);
       onChange({ seoInformation: updated });
     }
-  }, [initialData?.title]);
+  }, [initialData?.title, initialData?.listingInformationPropertyId, initialData?.propertyId]);
 
   /* ---------------------------------------------
        ✅ UPDATE HANDLER (multilingual)
@@ -628,9 +641,17 @@ export default function CreatePropertyListStep4SEO({
       {/* ✅ NEW SEO TOOL PANEL */}
       <SeoPanel
         seoData={seoData}
-        htmlContent={initialData.description?.en || ""}
+        htmlContent={`
+          ${initialData.title?.[activeLang] || initialData.title?.en || ""} 
+          ${initialData.description?.[activeLang] || initialData.description?.en || ""}
+          ${initialData.propertyType?.[activeLang] || initialData.propertyType?.en || ""}
+          ${initialData.projectName?.[activeLang] || initialData.projectName?.en || ""}
+          ${initialData.blockName?.[activeLang] || initialData.blockName?.en || ""}
+          ${initialData.zoneName?.[activeLang] || initialData.zoneName?.en || ""}
+        `}
         images={initialData.propertyImages || []}
         onAnalysisUpdate={setSeoAnalysis}
+        activeLang={activeLang}
       />
 
       {/* ✨ AUTO GENERATE ALL BANNER */}

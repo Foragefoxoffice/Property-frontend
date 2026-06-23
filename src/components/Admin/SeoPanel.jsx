@@ -53,8 +53,7 @@ const CheckItem = ({ label, checkData }) => {
 
 const EMPTY_ARRAY = [];
 
-/* ── Main component ──────────────────────────────────────────── */
-const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisUpdate }) => {
+const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisUpdate, activeLang = 'en' }) => {
     const [isOpen, setIsOpen] = useState(true);
     const [analysis, setAnalysis] = useState({ checks: {}, score: 0 });
 
@@ -87,19 +86,34 @@ const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisU
         return "#ef4444";
     }, [score]);
 
-    const scoreLabel = score >= 80 ? "Great" : score >= 50 ? "Needs Work" : "Poor";
+    const t = {
+        title: activeLang === 'vi' ? 'Cài đặt & Phân tích SEO' : 'SEO Settings & Analysis',
+        allPassed: activeLang === 'vi' ? 'Tất cả các mục đều đạt!' : 'All checks passed!',
+        issuesToFix: (count) => activeLang === 'vi' ? `${count} lỗi cần sửa` : `${count} issue${count > 1 ? "s" : ""} to fix`,
+        score: activeLang === 'vi' ? 'Điểm' : 'Score',
+        great: activeLang === 'vi' ? 'Tuyệt vời' : 'Great',
+        needsWork: activeLang === 'vi' ? 'Cần cải thiện' : 'Needs Work',
+        poor: activeLang === 'vi' ? 'Chưa tốt' : 'Poor',
+        checksPassed: (passed, total) => activeLang === 'vi' ? `${passed}/${total} mục đạt` : `${passed}/${total} checks passed`,
+        previewTitle: activeLang === 'vi' ? 'Xem trước tìm kiếm Google' : 'Google Search Preview',
+        enterTitle: activeLang === 'vi' ? 'Nhập tiêu đề SEO...' : 'Enter an SEO Title…',
+        enterDesc: activeLang === 'vi' ? 'Thêm mô tả meta để kiểm soát nội dung hiển thị ở đây trên kết quả tìm kiếm.' : 'Add a meta description to control what shows here in search results.',
+        checklistTitle: activeLang === 'vi' ? 'Danh sách phân tích' : 'Analysis Checklist',
+    };
+
+    const scoreLabel = score >= 80 ? t.great : score >= 50 ? t.needsWork : t.poor;
 
     // Order matches the form field sequence top → bottom
     const checkList = [
-        { key: "keywordInSlug",        label: "Focus Keyword in URL Slug" },
-        { key: "keywordInTitle",       label: "Focus Keyword in Title" },
-        { key: "titleLengthOK",        label: "Title length (30–60 chars)" },
-        { key: "keywordInDescription", label: "Focus Keyword in Meta Description" },
-        { key: "descriptionLengthOK",  label: "Description length (120–160 chars)" },
-        { key: "keywordInContent",     label: "Focus Keyword in Content" },
-        { key: "canonicalUrlSet",      label: "Canonical URL is set" },
-        { key: "schemaTypeSet",        label: "Schema Type is selected" },
-        { key: "ogImageSet",           label: "OG Image is uploaded" },
+        { key: "keywordInSlug",        label: activeLang === 'vi' ? "Từ khóa chính trong Đường dẫn URL" : "Focus Keyword in URL Slug" },
+        { key: "keywordInTitle",       label: activeLang === 'vi' ? "Từ khóa chính trong Tiêu đề" : "Focus Keyword in Title" },
+        { key: "titleLengthOK",        label: activeLang === 'vi' ? "Độ dài tiêu đề (30–60 ký tự)" : "Title length (30–60 chars)" },
+        { key: "keywordInDescription", label: activeLang === 'vi' ? "Từ khóa chính trong Mô tả Meta" : "Focus Keyword in Meta Description" },
+        { key: "descriptionLengthOK",  label: activeLang === 'vi' ? "Độ dài mô tả (120–160 ký tự)" : "Description length (120–160 chars)" },
+        { key: "keywordInContent",     label: activeLang === 'vi' ? "Từ khóa chính trong Nội dung" : "Focus Keyword in Content" },
+        { key: "canonicalUrlSet",      label: activeLang === 'vi' ? "Đã thiết lập Đường dẫn Canonical" : "Canonical URL is set" },
+        { key: "schemaTypeSet",        label: activeLang === 'vi' ? "Đã chọn Loại Schema" : "Schema Type is selected" },
+        { key: "ogImageSet",           label: activeLang === 'vi' ? "Đã tải lên Hình ảnh OG" : "OG Image is uploaded" },
     ];
 
     const passed = checkList.filter(c => checks[c.key]?.passed);
@@ -133,10 +147,10 @@ const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisU
                     </div>
                     <div>
                         <p style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#fff" }}>
-                            SEO Settings & Analysis
+                            {t.title}
                         </p>
                         <p style={{ margin: 0, fontSize: "12px", color: "rgba(255,255,255,0.7)" }}>
-                            {failed.length > 0 ? `${failed.length} issue${failed.length > 1 ? "s" : ""} to fix` : "All checks passed!"}
+                            {failed.length > 0 ? t.issuesToFix(failed.length) : t.allPassed}
                         </p>
                     </div>
                 </div>
@@ -147,7 +161,7 @@ const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisU
                         background: "rgba(255,255,255,0.15)", borderRadius: "8px",
                         padding: "6px 14px", display: "flex", alignItems: "center", gap: "8px",
                     }}>
-                        <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>Score</span>
+                        <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>{t.score}</span>
                         <span style={{ fontSize: "18px", fontWeight: "800", color: "#fff" }}>{score}</span>
                         <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)" }}>/100</span>
                         <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: scoreColor, boxShadow: `0 0 6px ${scoreColor}` }} />
@@ -194,7 +208,7 @@ const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisU
                                 <div>
                                     <p style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: scoreColor }}>{scoreLabel}</p>
                                     <p style={{ margin: "2px 0 0 0", fontSize: "12px", color: "#6b7280" }}>
-                                        {passed.length}/{checkList.length} checks passed
+                                        {t.checksPassed(passed.length, checkList.length)}
                                     </p>
                                     {/* Mini progress bar */}
                                     <div style={{ height: "5px", width: "140px", background: "#e5e7eb", borderRadius: "3px", marginTop: "8px", overflow: "hidden" }}>
@@ -215,7 +229,7 @@ const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisU
                                         flexShrink: 0,
                                     }} />
                                     <span style={{ fontSize: "12px", fontWeight: "600", color: "#5f6368", letterSpacing: "0.5px", textTransform: "uppercase" }}>
-                                        Google Search Preview
+                                        {t.previewTitle}
                                     </span>
                                 </div>
 
@@ -229,14 +243,14 @@ const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisU
                                         marginBottom: "4px", whiteSpace: "nowrap",
                                         overflow: "hidden", textOverflow: "ellipsis",
                                     }}>
-                                        {currentData.title || <span style={{ color: "#9ca3af", fontStyle: "italic" }}>Enter an SEO Title…</span>}
+                                        {currentData.title || <span style={{ color: "#9ca3af", fontStyle: "italic" }}>{t.enterTitle}</span>}
                                     </div>
                                     <div style={{
                                         fontSize: "13px", color: "#4d5156", lineHeight: "1.5",
                                         display: "-webkit-box", WebkitLineClamp: 2,
                                         WebkitBoxOrient: "vertical", overflow: "hidden",
                                     }}>
-                                        {currentData.description || <span style={{ fontStyle: "italic" }}>Add a meta description to control what shows here in search results.</span>}
+                                        {currentData.description || <span style={{ fontStyle: "italic" }}>{t.enterDesc}</span>}
                                     </div>
                                 </div>
                             </div>
@@ -245,7 +259,7 @@ const SeoPanel = ({ seoData, htmlContent = "", images = EMPTY_ARRAY, onAnalysisU
                         {/* RIGHT COLUMN — checklist */}
                         <div style={{ flex: "1 1 280px" }}>
                             <p style={{ margin: "0 0 12px 0", fontSize: "13px", fontWeight: "700", color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                Analysis Checklist
+                                {t.checklistTitle}
                             </p>
 
                             {checkList.map(({ key, label }) => (
