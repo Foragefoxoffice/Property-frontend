@@ -60,6 +60,13 @@ const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
   );
 };
 
+const getAbsoluteUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) return url;
+  const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+  return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 export default function CreatePropertyListStep4SEO({
   onNext,
   onPrev,
@@ -160,12 +167,14 @@ export default function CreatePropertyListStep4SEO({
     };
   });
 
+  const dynamicCanonicalUrl = `https://183housingsolutions.com/listing/${seo.slugUrl?.[activeLang] ? seo.slugUrl[activeLang] + '-' : ''}${initialData?.listingInformationPropertyId || initialData?.propertyId || initialData?._id || 'new-property'}`;
+
   const seoData = {
     focusKeyword: Array.isArray(seo.metaKeywords?.[activeLang]) && seo.metaKeywords[activeLang].length > 0 ? seo.metaKeywords[activeLang][0] : "",
     title: seo.metaTitle?.[activeLang] || "",
     description: seo.metaDescription?.[activeLang] || "",
     slug: seo.slugUrl?.[activeLang] || "",
-    canonicalUrl: seo.canonicalUrl?.[activeLang] || "",
+    canonicalUrl: seo.canonicalUrl?.[activeLang] || dynamicCanonicalUrl,
     schemaType: seo.schemaType?.[activeLang] || "",
     ogImage: seo.ogImage || "",
     noIndex: seo.allowIndexing === false,
@@ -856,14 +865,14 @@ export default function CreatePropertyListStep4SEO({
             <div
               className="relative w-70 h-60 rounded-xl overflow-hidden border bg-gray-50 group"
             >
-              <img src={seo.ogImage} className="w-full h-full object-cover" />
+              <img src={getAbsoluteUrl(seo.ogImage)} className="w-full h-full object-cover" />
 
               <div
                 className="absolute inset-0 bg-black/0 group-hover:bg-black/30 
               transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100"
               >
                 <button
-                  onClick={() => setPreview(seo.ogImage)}
+                  onClick={() => setPreview(getAbsoluteUrl(seo.ogImage))}
                   className="bg-white cursor-pointer rounded-full p-2 shadow"
                 >
                   <Eye className="w-4 h-4" />
