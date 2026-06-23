@@ -99,16 +99,16 @@ export const GenerateAllBanner = ({ onGenerateAll, lang }) => (
 const CMS_CONTENT = {
     home: {
         en: {
-            metaTitle: "183 Housing Solutions | Vietnam Real Estate",
-            metaDesc: "Find your perfect property in Vietnam with 183 Housing Solutions. Browse premium apartments, houses, and villas available for rent and sale across prime locations.",
-            keywords: ["real estate Vietnam", "apartments for rent", "houses for sale", "183 Housing Solutions", "Vietnam property", "rental apartments"],
+            metaTitle: "Vietnam Real Estate | 183 Housing Solutions",
+            metaDesc: "Find the best vietnam real estate properties with 183 Housing Solutions. Browse premium apartments, houses, and villas available for rent and sale across prime locations.",
+            keywords: ["vietnam real estate", "apartments for rent", "houses for sale", "183 Housing Solutions", "vietnam property", "rental apartments"],
             ogTitle: "183 Housing Solutions | Premium Vietnam Properties",
             ogDesc: "Explore the best real estate listings in Vietnam. Find apartments, villas, and houses for rent or purchase in prime locations with 183 Housing Solutions today.",
         },
         vn: {
-            metaTitle: "183 Housing Solutions | Bất Động Sản Việt Nam",
-            metaDesc: "Tìm bất động sản lý tưởng tại Việt Nam cùng 183 Housing Solutions. Duyệt căn hộ, nhà phố và biệt thự cao cấp để cho thuê và mua bán tại các khu vực đắc địa.",
-            keywords: ["bất động sản", "căn hộ cho thuê", "nhà đất Việt Nam", "183 Housing Solutions", "thuê căn hộ", "mua bán nhà"],
+            metaTitle: "Bất Động Sản Việt Nam | 183 Housing Solutions",
+            metaDesc: "Tìm kiếm bất động sản việt nam lý tưởng cùng 183 Housing Solutions. Duyệt căn hộ, nhà phố và biệt thự cao cấp để cho thuê và mua bán tại các khu vực đắc địa.",
+            keywords: ["bất động sản việt nam", "căn hộ cho thuê", "nhà đất", "183 Housing Solutions", "thuê căn hộ", "mua bán nhà"],
             ogTitle: "183 Housing Solutions | Bất Động Sản Cao Cấp",
             ogDesc: "Khám phá danh sách bất động sản tốt nhất tại Việt Nam. Căn hộ, nhà phố và biệt thự cao cấp cho thuê và mua bán tại các vị trí đắc địa cùng 183 Housing Solutions.",
         },
@@ -116,14 +116,14 @@ const CMS_CONTENT = {
     about: {
         en: {
             metaTitle: "About Us | 183 Housing Solutions",
-            metaDesc: "Learn about 183 Housing Solutions, your trusted real estate partner in Vietnam. We specialize in property rentals, sales, and professional consulting services.",
+            metaDesc: "Learn about us at 183 Housing Solutions, your trusted real estate partner in Vietnam. We specialize in property rentals, sales, and professional consulting.",
             keywords: ["about us", "real estate agency", "property consultant Vietnam", "183 Housing Solutions", "trusted real estate"],
             ogTitle: "About 183 Housing Solutions | Real Estate Experts",
             ogDesc: "Discover who we are at 183 Housing Solutions. Trusted real estate experts in Vietnam offering rentals, sales, and property consulting tailored to your needs.",
         },
         vn: {
             metaTitle: "Về chúng tôi | 183 Housing Solutions",
-            metaDesc: "Tìm hiểu về 183 Housing Solutions, đối tác bất động sản đáng tin cậy tại Việt Nam. Chuyên tư vấn cho thuê, mua bán và đầu tư bất động sản chuyên nghiệp.",
+            metaDesc: "Tìm hiểu về chúng tôi tại 183 Housing Solutions, đối tác bất động sản đáng tin cậy tại Việt Nam. Chuyên tư vấn cho thuê, mua bán và đầu tư bất động sản.",
             keywords: ["về chúng tôi", "công ty bất động sản", "tư vấn bất động sản", "183 Housing Solutions", "bất động sản Việt Nam"],
             ogTitle: "Về 183 Housing Solutions | Chuyên Gia Bất Động Sản",
             ogDesc: "Khám phá 183 Housing Solutions – đối tác bất động sản chuyên nghiệp tại Việt Nam, cung cấp dịch vụ cho thuê, mua bán và tư vấn đầu tư bất động sản uy tín.",
@@ -132,7 +132,7 @@ const CMS_CONTENT = {
     contact: {
         en: {
             metaTitle: "Contact Us | 183 Housing Solutions",
-            metaDesc: "Get in touch with 183 Housing Solutions for property inquiries, viewings, and expert real estate advice. Our team is ready to help you find your perfect home.",
+            metaDesc: "Contact us at 183 Housing Solutions for property inquiries, viewings, and expert real estate advice. Our team is ready to help you find your perfect home.",
             keywords: ["contact us", "real estate inquiry", "property viewing", "183 Housing Solutions", "get in touch"],
             ogTitle: "Contact 183 Housing Solutions | We're Here to Help",
             ogDesc: "Reach out to 183 Housing Solutions for all your real estate needs. Our expert team is available to assist with property search, viewings, and investment advice.",
@@ -147,18 +147,18 @@ const CMS_CONTENT = {
     },
     terms: {
         en: {
-            metaTitle: "Terms & Conditions | 183 Housing Solutions",
+            metaTitle: "Terms and Conditions | 183 Housing Solutions",
             metaDesc: "Read the terms and conditions for using 183 Housing Solutions services. Understand your rights, responsibilities, and our service policies in detail.",
             keywords: ["terms and conditions", "service policy", "user agreement", "183 Housing Solutions", "legal terms"],
-            ogTitle: "Terms & Conditions | 183 Housing Solutions",
+            ogTitle: "Terms and Conditions | 183 Housing Solutions",
             ogDesc: "Review the terms and conditions governing use of 183 Housing Solutions services. Stay informed about your rights and responsibilities as a user of our platform.",
         },
         vn: {
-            metaTitle: "Điều Khoản & Điều Kiện | 183 Housing Solutions",
-            metaDesc: "Đọc các điều khoản và điều kiện sử dụng dịch vụ của 183 Housing Solutions. Tìm hiểu quyền lợi, trách nhiệm và chính sách dịch vụ áp dụng cho người dùng.",
+            metaTitle: "Điều Khoản Sử Dụng | 183 Housing Solutions",
+            metaDesc: "Đọc các điều khoản sử dụng dịch vụ của 183 Housing Solutions. Tìm hiểu quyền lợi, trách nhiệm và chính sách dịch vụ áp dụng cho người dùng.",
             keywords: ["điều khoản sử dụng", "chính sách dịch vụ", "điều kiện", "183 Housing Solutions", "thỏa thuận người dùng"],
-            ogTitle: "Điều Khoản & Điều Kiện | 183 Housing Solutions",
-            ogDesc: "View xét các điều khoản và điều kiện điều chỉnh việc sử dụng dịch vụ của 183 Housing Solutions. Nắm rõ quyền và trách nhiệm của bạn khi sử dụng nền tảng.",
+            ogTitle: "Điều Khoản Sử Dụng | 183 Housing Solutions",
+            ogDesc: "Xem xét các điều khoản sử dụng dịch vụ của 183 Housing Solutions. Nắm rõ quyền và trách nhiệm của bạn khi sử dụng nền tảng.",
         },
     },
     privacy: {

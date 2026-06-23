@@ -1,31 +1,13 @@
-import { useState, useEffect } from 'react';
-import {
-    Form,
-    Input,
-    Button,
-    Tabs,
-    ConfigProvider,
-    Select,
-    Switch,
-    Upload,
-    message
-} from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Eye, X, Plus } from 'lucide-react';
+import { Select as AntdSelect, Switch, Button } from 'antd';
+import { SaveOutlined } from '@ant-design/icons';
 import { uploadGeneralImage } from '../../Api/action';
-import {
-    SaveOutlined,
-    PlusOutlined,
-    EyeOutlined,
-    DeleteOutlined
-} from '@ant-design/icons';
-import { onFormFinishFailed } from '@/utils/formValidation';
-import { X } from 'lucide-react';
 import { usePermissions } from '../../Context/PermissionContext';
 import SeoPanel from '../../components/Admin/SeoPanel';
-import { LabelRow, GenerateAllBanner, buildCmsContent, InputWithCount, TextAreaWithCount } from '../../components/Admin/CmsSeoUtils';
 import { CommonToaster } from '@/Common/CommonToaster';
+import { buildCmsContent } from '../../components/Admin/CmsSeoUtils';
 import { generateSlug } from '../../utils/generateSlug';
-
-const { TextArea } = Input;
 
 const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
     const [inputValue, setInputValue] = useState('');
@@ -47,7 +29,7 @@ const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
     };
 
     return (
-        <div className="border border-[#d1d5db] rounded-[10px] px-3 py-2 min-h-[120px]">
+        <div className="border border-[#B2B2B3] rounded-lg px-3 py-2 min-h-[100px] bg-white">
             <div className="flex flex-wrap gap-2 mb-2">
                 {(Array.isArray(value) ? value : []).map((kw, i) => (
                     <div
@@ -57,7 +39,7 @@ const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
                         <span className="text-sm">{kw}</span>
                         <button
                             type="button"
-                            className="text-red-300 hover:text-red-100"
+                            className="text-red-300 hover:text-red-100 font-bold"
                             onClick={() => removeKeyword(i)}
                             disabled={disabled}
                         >
@@ -72,15 +54,22 @@ const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={placeholder}
-                className="outline-none w-full text-[15px] font-['Manrope']"
+                className="outline-none w-full text-[15px] font-['Manrope'] bg-transparent"
                 disabled={disabled}
             />
         </div>
     );
 };
 
+const getAbsoluteUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) return url;
+    const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://api.183housingsolutions.com';
+    return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 export default function ProjectSeoForm({
-    form,
+    form, // Used for compatibility, ignored structurally
     onSubmit,
     loading,
     pageData,
@@ -88,31 +77,52 @@ export default function ProjectSeoForm({
     isOpen,
     onToggle,
     headerLang,
-    isProjectPage = false // True if editing the main Project Page content, false if editing a specific project
+    isProjectPage = false
 }) {
     const { can } = usePermissions();
-    const [activeTab, setActiveTab] = useState('vn');
-    const [previewImage, setPreviewImage] = useState(null);
-    const [ogImage, setOgImage] = useState('');
+    const [activeLang, setActiveLang] = useState('vn');
     const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
+    const [isOgUploading, setIsOgUploading] = useState(false);
+    const [preview, setPreview] = useState(null);
 
-    const activeTabTitle = Form.useWatch(`projectSeoMetaTitle_${activeTab}`, form);
-    const activeTabDesc = Form.useWatch(`projectSeoMetaDescription_${activeTab}`, form);
-    const activeTabKeywords = Form.useWatch(`projectSeoMetaKeywords_${activeTab}`, form);
-    const activeTabSlug = Form.useWatch(`projectSeoSlugUrl_${activeTab}`, form);
+    const defaultSEO = {
+        metaTitle: { en: "", vn: "" },
+        metaDescription: { en: "", vn: "" },
+        metaKeywords: { en: [], vn: [] },
+        slugUrl: { en: "", vn: "" },
+        canonicalUrl: { en: "", vn: "" },
+        schemaType: { en: "", vn: "" },
+        ogTitle: { en: "", vn: "" },
+        ogDescription: { en: "", vn: "" },
+        allowIndexing: true,
+        ogImage: "",
+    };
 
-    // Dynamic Canonical URL
-    const slugEn = Form.useWatch('projectSeoSlugUrl_en', form);
-    const slugVn = Form.useWatch('projectSeoSlugUrl_vn', form);
+    const [seo, setSeo] = useState(defaultSEO);
 
     useEffect(() => {
-        const siteUrl = 'https://183housingsolutions.com';
-        const formatSlug = (s) => s && s !== '/' ? (s.startsWith('/') ? s : `/${s}`) : '';
-        form.setFieldsValue({
-            projectSeoCanonicalUrl_en: `${siteUrl}/project${formatSlug(slugEn)}`,
-            projectSeoCanonicalUrl_vn: `${siteUrl}/project${formatSlug(slugVn)}`
-        });
-    }, [slugEn, slugVn, form]);
+        if (headerLang) {
+            setActiveLang(headerLang === 'en' ? 'en' : 'vn');
+        }
+    }, [headerLang]);
+
+    // Sync from pageData
+    useEffect(() => {
+        if (pageData) {
+            setSeo({
+                metaTitle: { en: pageData.projectSeoMetaTitle_en || "", vn: pageData.projectSeoMetaTitle_vn || "" },
+                metaDescription: { en: pageData.projectSeoMetaDescription_en || "", vn: pageData.projectSeoMetaDescription_vn || "" },
+                metaKeywords: { en: pageData.projectSeoMetaKeywords_en || [], vn: pageData.projectSeoMetaKeywords_vn || [] },
+                slugUrl: { en: pageData.projectSeoSlugUrl_en || "", vn: pageData.projectSeoSlugUrl_vn || "" },
+                canonicalUrl: { en: pageData.projectSeoCanonicalUrl_en || "", vn: pageData.projectSeoCanonicalUrl_vn || "" },
+                schemaType: { en: pageData.projectSeoSchemaType_en || "", vn: pageData.projectSeoSchemaType_vn || "" },
+                ogTitle: { en: pageData.projectSeoOgTitle_en || "", vn: pageData.projectSeoOgTitle_vn || "" },
+                ogDescription: { en: pageData.projectSeoOgDescription_en || "", vn: pageData.projectSeoOgDescription_vn || "" },
+                allowIndexing: pageData.projectSeoAllowIndexing !== false,
+                ogImage: pageData.projectSeoOgImage || "",
+            });
+        }
+    }, [pageData]);
 
     /* ✅ Sync Slug with Title (Auto-fill) for individual projects */
     useEffect(() => {
@@ -120,54 +130,25 @@ export default function ProjectSeoForm({
             const titleToSlug = pageData.title.en || pageData.title.vi;
             if (titleToSlug) {
                 const slug = generateSlug(titleToSlug);
-                const currentSlugEn = form.getFieldValue('projectSeoSlugUrl_en');
-                if (currentSlugEn !== slug) {
-                    form.setFieldsValue({
-                        projectSeoSlugUrl_en: slug,
-                        projectSeoSlugUrl_vn: slug
-                    });
-                }
+                setSeo(prev => {
+                    if (prev.slugUrl.en !== slug || prev.slugUrl.vn !== slug) {
+                        return {
+                            ...prev,
+                            slugUrl: { en: slug, vn: slug }
+                        };
+                    }
+                    return prev;
+                });
             }
         }
-    }, [pageData?.title, form, isProjectPage]);
+    }, [pageData?.title, isProjectPage]);
 
-    const activeTabCanonical = Form.useWatch(`projectSeoCanonicalUrl_${activeTab}`, form);
-    const allowIndexing = Form.useWatch(`projectSeoAllowIndexing`, form);
-    const activeTabSchemaType = Form.useWatch(`projectSeoSchemaType_${activeTab}`, form);
-    const activeTabOgTitle = Form.useWatch(`projectSeoOgTitle_${activeTab}`, form);
-    const activeTabOgDesc = Form.useWatch(`projectSeoOgDescription_${activeTab}`, form);
-
-    const seoData = {
-        focusKeyword: Array.isArray(activeTabKeywords) && activeTabKeywords.length > 0 ? activeTabKeywords[0] : "",
-        title: activeTabTitle || "",
-        description: activeTabDesc || "",
-        slug: activeTabSlug || "",
-        canonicalUrl: activeTabCanonical || "",
-        noIndex: allowIndexing === false,
-        schemaType: activeTabSchemaType || "",
-        ogImage: ogImage || "",
+    const handleChange = (field, lang, value) => {
+        setSeo(prev => ({
+            ...prev,
+            [field]: { ...prev[field], [lang]: value }
+        }));
     };
-
-    // Sync activeTab with headerLang whenever headerLang changes
-    useEffect(() => {
-        if (headerLang) {
-            setActiveTab(headerLang);
-        }
-    }, [headerLang]);
-
-    // Initialize OG image from pageData
-    useEffect(() => {
-        const getAbsoluteUrl = (url) => {
-            if (!url) return '';
-            if (url.startsWith('http')) return url;
-            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
-            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
-        };
-        
-        if (pageData?.projectSeoOgImage) {
-            setOgImage(getAbsoluteUrl(pageData.projectSeoOgImage));
-        }
-    }, [pageData]);
 
     const buildProjectSeoContent = (lang) => {
         if (isProjectPage) {
@@ -248,78 +229,106 @@ export default function ProjectSeoForm({
         return { metaTitle, metaDesc, keywords, ogTitle, ogDesc };
     };
 
-    const handleGenerate = (field) => {
-        const content = buildProjectSeoContent(activeTab);
-        const map = {
-            metaTitle: `projectSeoMetaTitle_${activeTab}`,
-            metaDescription: `projectSeoMetaDescription_${activeTab}`,
-            metaKeywords: `projectSeoMetaKeywords_${activeTab}`,
-            ogTitle: `projectSeoOgTitle_${activeTab}`,
-            ogDescription: `projectSeoOgDescription_${activeTab}`,
+    const handleAutoGenerate = (field) => {
+        const content = buildProjectSeoContent(activeLang);
+        const fieldMap = {
+            metaTitle: { key: "metaTitle", val: content.metaTitle },
+            metaDescription: { key: "metaDescription", val: content.metaDesc },
+            metaKeywords: { key: "metaKeywords", val: content.keywords },
+            ogTitle: { key: "ogTitle", val: content.ogTitle },
+            ogDescription: { key: "ogDescription", val: content.ogDesc },
         };
-        const valMap = {
-            metaTitle: content.metaTitle,
-            metaDescription: content.metaDesc,
-            metaKeywords: content.keywords,
-            ogTitle: content.ogTitle,
-            ogDescription: content.ogDesc,
-        };
-        if (map[field]) form.setFieldsValue({ [map[field]]: valMap[field] });
+
+        if (fieldMap[field]) {
+            handleChange(fieldMap[field].key, activeLang, fieldMap[field].val);
+            CommonToaster(activeLang === "vn" ? "Đã tạo tự động!" : "Auto-generated!", "success");
+        }
     };
 
-    const handleGenerateAll = () => {
-        const content = buildProjectSeoContent(activeTab);
-        form.setFieldsValue({
-            [`projectSeoMetaTitle_${activeTab}`]: content.metaTitle,
-            [`projectSeoMetaDescription_${activeTab}`]: content.metaDesc,
-            [`projectSeoMetaKeywords_${activeTab}`]: content.keywords,
-            [`projectSeoOgTitle_${activeTab}`]: content.ogTitle,
-            [`projectSeoOgDescription_${activeTab}`]: content.ogDesc,
-        });
-        CommonToaster(activeTab === 'en' ? 'All fields auto-generated!' : 'Đã tạo tất cả tự động!', 'success');
+    const handleAutoGenerateAll = () => {
+        const content = buildProjectSeoContent(activeLang);
+        setSeo(prev => ({
+            ...prev,
+            metaTitle: { ...prev.metaTitle, [activeLang]: content.metaTitle },
+            metaDescription: { ...prev.metaDescription, [activeLang]: content.metaDesc },
+            metaKeywords: { ...prev.metaKeywords, [activeLang]: content.keywords },
+            ogTitle: { ...prev.ogTitle, [activeLang]: content.ogTitle },
+            ogDescription: { ...prev.ogDescription, [activeLang]: content.ogDesc },
+        }));
+        CommonToaster(activeLang === "vn" ? "Đã tạo tất cả tự động!" : "All fields auto-generated!", "success");
     };
 
-    // Handle OG Image upload
-    const handleOgImageUpload = async (file) => {
+    const handleOgUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
         try {
-            const res = await uploadGeneralImage(file);
-            console.log("Upload response:", res.data);
-            if (res.data.success || res.data._id) {
-                // The uploadGeneralImage might return direct URL or nested
-                const rawUrl = res.data.fileUrl || res.data.data?.url || res.data.url;
-                if (!rawUrl) {
-                    message.error('Upload succeeded but no URL returned');
-                    return false;
+            setIsOgUploading(true);
+            CommonToaster(activeLang === "vn" ? "Đang tải lên..." : "Uploading...", "info");
+            const response = await uploadGeneralImage(file);
+            if (response.data.success || response.data._id) {
+                const rawUrl = response.data.fileUrl || response.data.data?.url || response.data.url;
+                if (rawUrl) {
+                    const url = getAbsoluteUrl(rawUrl);
+                    setSeo(prev => ({ ...prev, ogImage: url }));
+                    CommonToaster(activeLang === "vn" ? "Hình ảnh đã tải lên!" : "Image uploaded!", "success");
                 }
-                const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
-
-                const absoluteUrl = rawUrl.startsWith('http')
-                    ? rawUrl
-                    : `${apiBase}${rawUrl}`;
-
-                setOgImage(absoluteUrl);
-                form.setFieldsValue({ projectSeoOgImage: absoluteUrl });
-                CommonToaster(t.toastImageUploaded, 'success');
             }
         } catch (error) {
-            console.error('Upload failed:', error);
-            CommonToaster(t.toastImageUploadError, 'error');
+            console.error("OG Image upload error:", error);
+            CommonToaster(activeLang === "vn" ? "Lỗi tải lên" : "Upload error", "error");
+        } finally {
+            setIsOgUploading(false);
         }
-        return false; // Prevent auto upload
+        e.target.value = '';
     };
 
-    // Remove OG Image
     const removeOgImage = () => {
-        setOgImage('');
-        form.setFieldsValue({ projectSeoOgImage: '' });
+        setSeo(prev => ({ ...prev, ogImage: "" }));
     };
 
-    // Handle form submission with OG image
-    const handleFormSubmit = (values) => {
-        onSubmit({ ...values, projectSeoOgImage: ogImage });
+    const handleComplete = () => {
+        const dynamicCanonicalUrlEn = `https://183housingsolutions.com/project${seo.slugUrl?.en !== '/' ? (seo.slugUrl?.en?.startsWith('/') ? seo.slugUrl.en : '/' + seo.slugUrl.en) : ''}`;
+        const dynamicCanonicalUrlVn = `https://183housingsolutions.com/project${seo.slugUrl?.vn !== '/' ? (seo.slugUrl?.vn?.startsWith('/') ? seo.slugUrl.vn : '/' + seo.slugUrl.vn) : ''}`;
+
+        const payload = {
+            projectSeoMetaTitle_en: seo.metaTitle.en,
+            projectSeoMetaTitle_vn: seo.metaTitle.vn,
+            projectSeoMetaDescription_en: seo.metaDescription.en,
+            projectSeoMetaDescription_vn: seo.metaDescription.vn,
+            projectSeoMetaKeywords_en: seo.metaKeywords.en,
+            projectSeoMetaKeywords_vn: seo.metaKeywords.vn,
+            projectSeoSlugUrl_en: seo.slugUrl.en,
+            projectSeoSlugUrl_vn: seo.slugUrl.vn,
+            // Compute Canonical dynamically if empty
+            projectSeoCanonicalUrl_en: seo.canonicalUrl.en || dynamicCanonicalUrlEn,
+            projectSeoCanonicalUrl_vn: seo.canonicalUrl.vn || dynamicCanonicalUrlVn,
+            projectSeoSchemaType_en: seo.schemaType.en,
+            projectSeoSchemaType_vn: seo.schemaType.vn,
+            projectSeoAllowIndexing: seo.allowIndexing,
+            projectSeoOgTitle_en: seo.ogTitle.en,
+            projectSeoOgTitle_vn: seo.ogTitle.vn,
+            projectSeoOgDescription_en: seo.ogDescription.en,
+            projectSeoOgDescription_vn: seo.ogDescription.vn,
+            projectSeoOgImage: seo.ogImage
+        };
+        onSubmit(payload);
     };
 
-    // Helper to render inline suggestion
+    const currentFocusKeyword = Array.isArray(seo.metaKeywords?.[activeLang]) && seo.metaKeywords[activeLang].length > 0 ? seo.metaKeywords[activeLang][0] : "";
+    const dynamicCanonicalUrl = `https://183housingsolutions.com/project${seo.slugUrl?.[activeLang] !== '/' ? (seo.slugUrl?.[activeLang]?.startsWith('/') ? seo.slugUrl[activeLang] : '/' + seo.slugUrl[activeLang]) : ''}`;
+
+    const seoData = {
+        focusKeyword: currentFocusKeyword,
+        title: seo.metaTitle?.[activeLang] || "",
+        description: seo.metaDescription?.[activeLang] || "",
+        slug: seo.slugUrl?.[activeLang] || "",
+        canonicalUrl: seo.canonicalUrl?.[activeLang] || dynamicCanonicalUrl,
+        schemaType: seo.schemaType?.[activeLang] || "",
+        ogImage: seo.ogImage || "",
+        noIndex: seo.allowIndexing === false,
+    };
+
     const renderSuggestion = (checkKey) => {
         const check = seoAnalysis?.checks?.[checkKey];
         if (check && !check.passed && check.suggestion) {
@@ -333,9 +342,84 @@ export default function ProjectSeoForm({
         return null;
     };
 
+    const CharCountIndicator = ({ value = "", min, max, label }) => {
+        const len = (value || "").trim().length;
+        const isBelow = len < min;
+        const isAbove = len > max;
+        const isOptimal = !isBelow && !isAbove;
+
+        const color = isOptimal ? "#22c55e" : isAbove ? "#ef4444" : len > 0 ? "#f97316" : "#9ca3af";
+        const pct = Math.min((len / max) * 100, 100);
+        const optimalStart = (min / max) * 100;
+
+        const statusText = isOptimal
+            ? `✓ Good length`
+            : isAbove
+                ? `Too long — shorten by ${len - max} chars`
+                : len > 0
+                    ? `${min - len} more chars to reach minimum`
+                    : `Add ${label}`;
+
+        return (
+            <div style={{ marginTop: "6px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                    <span style={{ fontSize: "12px", color }}>{statusText}</span>
+                    <span style={{ fontSize: "12px", fontWeight: "600", color }}>
+                        {len} / {max} <span style={{ color: "#9ca3af", fontWeight: "normal" }}>({min}–{max} recommended)</span>
+                    </span>
+                </div>
+                <div style={{ height: "4px", borderRadius: "2px", background: "#e5e7eb", position: "relative", overflow: "hidden" }}>
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: `${optimalStart}%`,
+                            width: `${100 - optimalStart}%`,
+                            height: "100%",
+                            background: "#d1fae5",
+                            borderRadius: "2px",
+                        }}
+                    />
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: 0,
+                            width: `${pct}%`,
+                            height: "100%",
+                            background: color,
+                            borderRadius: "2px",
+                            transition: "width 0.15s ease, background 0.15s ease",
+                        }}
+                    />
+                </div>
+            </div>
+        );
+    };
+
+    const labels = {
+        metaTitle: { en: "Meta Title", vn: "Tiêu đề Meta" },
+        metaDescription: { en: "Meta Description", vn: "Mô tả Meta" },
+        metaKeywords: { en: "Meta Keywords", vn: "Từ khóa Meta" },
+        slugUrl: { en: "Slug URL", vn: "Đường dẫn Slug" },
+        canonicalUrl: { en: "Canonical URL", vn: "Đường dẫn Canonical" },
+        schemaType: { en: "Schema Type", vn: "Loại Schema" },
+        allowIndexing: {
+            en: "Allow search engines to index this page",
+            vn: "Cho phép công cụ tìm kiếm lập chỉ mục",
+        },
+        social: {
+            en: "Social Sharing (Open Graph)",
+            vn: "Chia sẻ xã hội (Open Graph)",
+        },
+        ogTitle: { en: "OG Title", vn: "Tiêu đề OG" },
+        ogDescription: { en: "OG Description", vn: "Mô tả OG" },
+        ogImage: { en: "OG Image", vn: "Hình ảnh OG" },
+    };
+
+    const inputClass = "border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none";
+    const textareaClass = "border border-[#B2B2B3] rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none";
+
     return (
         <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 border-2 border-transparent hover:border-purple-100 transition-all duration-300 shadow-lg hover:shadow-xl">
-            {/* Accordion Header */}
             <div
                 className="flex items-center justify-between p-6 cursor-pointer bg-gradient-to-r from-purple-50/50 to-indigo-50/50"
                 onClick={onToggle}
@@ -351,7 +435,7 @@ export default function ProjectSeoForm({
                             {headerLang === 'en' ? 'SEO Settings' : 'Cài Đặt SEO'}
                         </h3>
                         <p className="text-sm text-gray-500 font-['Manrope']">
-                            {headerLang === 'en' ? 'Manage project SEO and meta information' : 'Quản lý SEO dự án và thông tin meta'}
+                            {headerLang === 'en' ? 'Manage Project SEO and meta information' : 'Quản lý SEO và thông tin meta cho Dự án'}
                         </p>
                     </div>
                 </div>
@@ -362,431 +446,318 @@ export default function ProjectSeoForm({
                 </div>
             </div>
 
-            {/* Accordion Content */}
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[8000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="p-6 pt-2 bg-white border-t border-gray-100">
-                    <ConfigProvider theme={{ token: { colorPrimary: '#41398B' } }}>
-                        <Form
-                            form={form}
-                            layout="vertical"
-                            onFinish={handleFormSubmit}
-                            onFinishFailed={onFormFinishFailed}
-                        >
-                            <SeoPanel
-                                seoData={seoData}
-                                htmlContent={JSON.stringify(pageData) || ""}
-                                onAnalysisUpdate={setSeoAnalysis}
-                            />
-                            <GenerateAllBanner onGenerateAll={handleGenerateAll} lang={activeTab} />
-
-                            <Tabs
-                                activeKey={activeTab}
-                                onChange={setActiveTab}
-                                className="mb-6"
-                                items={[
-                                    {
-                                        key: 'vn',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                Tiếng Việt (VN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={<LabelRow label="Tiêu Đề Meta" onGenerate={() => handleGenerate('metaTitle')} lang={activeTab} />}
-                                                    name="projectSeoMetaTitle_vn"
-                                                    rules={[
-                                                        { max: 200, message: 'Tối đa 200 ký tự' }
-                                                    ]}
-                                                >
-                                                    <InputWithCount
-                                                        placeholder="Nhập tiêu đề meta cho SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        min={30}
-                                                        max={60}
-                                                        countLabel="Meta Title"
-                                                        suggestions={<>{renderSuggestion('titleLengthOK')}{renderSuggestion('keywordInTitle')}</>}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<LabelRow label="Mô Tả Meta" onGenerate={() => handleGenerate('metaDescription')} lang={activeTab} />}
-                                                    name="projectSeoMetaDescription_vn"
-                                                    rules={[
-                                                        { max: 500, message: 'Tối đa 500 ký tự' }
-                                                    ]}
-                                                >
-                                                    <TextAreaWithCount
-                                                        placeholder="Nhập mô tả meta cho SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        min={120}
-                                                        max={160}
-                                                        countLabel="Meta Description"
-                                                        suggestions={<>{renderSuggestion('descriptionLengthOK')}{renderSuggestion('keywordInDescription')}</>}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<LabelRow label="Từ Khóa Meta" onGenerate={() => handleGenerate('metaKeywords')} lang={activeTab} />}
-                                                    name="projectSeoMetaKeywords_vn"
-                                                    initialValue={[]}
-                                                    extra={renderSuggestion('keywordInContent')}
-                                                >
-                                                    <KeywordTagsInput
-                                                        placeholder="Nhập từ khóa & nhấn Enter"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Đường Dẫn Slug {(!isProjectPage) && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
-                                                        </span>
-                                                    }
-                                                    name="projectSeoSlugUrl_vn"
-                                                    extra={renderSuggestion('keywordInSlug')}
-                                                >
-                                                    <Input
-                                                        placeholder="ten-du-an"
-                                                        size="large"
-                                                        className={`bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                                                        readOnly={!isProjectPage}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Đường Dẫn Canonical {(!isProjectPage) && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
-                                                        </span>
-                                                    }
-                                                    name="projectSeoCanonicalUrl_vn"
-                                                >
-                                                    <Input
-                                                        placeholder="https://example.com/project/ten-du-an"
-                                                        size="large"
-                                                        className={`bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                                                        readOnly={!isProjectPage}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Loại Schema
-                                                        </span>
-                                                    }
-                                                    name="projectSeoSchemaType_vn"
-                                                >
-                                                    <Select
-                                                        placeholder="Chọn loại Schema"
-                                                        size="large"
-                                                        className="w-full"
-                                                        options={[
-                                                            { label: 'Product', value: 'Product' },
-                                                            { label: 'RealEstateAgent', value: 'RealEstateAgent' },
-                                                            { label: 'Residence', value: 'Residence' },
-                                                            { label: 'Apartment', value: 'Apartment' },
-                                                            { label: 'SingleFamilyResidence', value: 'SingleFamilyResidence' },
-                                                            { label: 'House', value: 'House' },
-                                                            { label: 'Hotel', value: 'Hotel' },
-                                                            { label: 'Place', value: 'Place' },
-                                                            { label: 'LocalBusiness', value: 'LocalBusiness' },
-                                                        ]}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<LabelRow label="Tiêu Đề OG (Chia Sẻ Xã Hội)" onGenerate={() => handleGenerate('ogTitle')} lang={activeTab} />}
-                                                    name="projectSeoOgTitle_vn"
-                                                >
-                                                    <InputWithCount
-                                                        placeholder="Nhập tiêu đề Open Graph"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        min={40}
-                                                        max={60}
-                                                        countLabel="OG Title"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<LabelRow label="Mô Tả OG" onGenerate={() => handleGenerate('ogDescription')} lang={activeTab} />}
-                                                    name="projectSeoOgDescription_vn"
-                                                >
-                                                    <TextAreaWithCount
-                                                        placeholder="Nhập mô tả Open Graph"
-                                                        rows={3}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        min={130}
-                                                        max={200}
-                                                        countLabel="OG Description"
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    },
-                                    {
-                                        key: 'en',
-                                        label: (
-                                            <span className="text-sm font-semibold font-['Manrope']">
-                                                English (EN)
-                                            </span>
-                                        ),
-                                        children: (
-                                            <>
-                                                <Form.Item
-                                                    label={<LabelRow label="Meta Title" onGenerate={() => handleGenerate('metaTitle')} lang={activeTab} />}
-                                                    name="projectSeoMetaTitle_en"
-                                                    rules={[
-                                                        { max: 200, message: 'Maximum 200 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <InputWithCount
-                                                        placeholder="Enter meta title for SEO"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        min={30}
-                                                        max={60}
-                                                        countLabel="Meta Title"
-                                                        suggestions={<>{renderSuggestion('titleLengthOK')}{renderSuggestion('keywordInTitle')}</>}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<LabelRow label="Meta Description" onGenerate={() => handleGenerate('metaDescription')} lang={activeTab} />}
-                                                    name="projectSeoMetaDescription_en"
-                                                    rules={[
-                                                        { max: 500, message: 'Maximum 500 characters allowed' }
-                                                    ]}
-                                                >
-                                                    <TextAreaWithCount
-                                                        placeholder="Enter meta description for SEO"
-                                                        rows={4}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        min={120}
-                                                        max={160}
-                                                        countLabel="Meta Description"
-                                                        suggestions={<>{renderSuggestion('descriptionLengthOK')}{renderSuggestion('keywordInDescription')}</>}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<LabelRow label="Meta Keywords" onGenerate={() => handleGenerate('metaKeywords')} lang={activeTab} />}
-                                                    name="projectSeoMetaKeywords_en"
-                                                    initialValue={[]}
-                                                    extra={renderSuggestion('keywordInContent')}
-                                                >
-                                                    <KeywordTagsInput
-                                                        placeholder="Type keyword & press Enter"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Slug URL {(!isProjectPage) && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
-                                                        </span>
-                                                    }
-                                                    name="projectSeoSlugUrl_en"
-                                                    extra={renderSuggestion('keywordInSlug')}
-                                                >
-                                                    <Input
-                                                        placeholder="project-name"
-                                                        size="large"
-                                                        className={`bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                                                        readOnly={!isProjectPage}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Canonical URL {(!isProjectPage) && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
-                                                        </span>
-                                                    }
-                                                    name="projectSeoCanonicalUrl_en"
-                                                >
-                                                    <Input
-                                                        placeholder="https://example.com/project/name"
-                                                        size="large"
-                                                        className={`bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12 ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                                                        readOnly={!isProjectPage}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={
-                                                        <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                                            Schema Type
-                                                        </span>
-                                                    }
-                                                    name="projectSeoSchemaType_en"
-                                                >
-                                                    <Select
-                                                        placeholder="Select Schema Type"
-                                                        size="large"
-                                                        className="w-full"
-                                                        options={[
-                                                            { label: 'Product', value: 'Product' },
-                                                            { label: 'RealEstateAgent', value: 'RealEstateAgent' },
-                                                            { label: 'Residence', value: 'Residence' },
-                                                            { label: 'Apartment', value: 'Apartment' },
-                                                            { label: 'SingleFamilyResidence', value: 'SingleFamilyResidence' },
-                                                            { label: 'House', value: 'House' },
-                                                            { label: 'Hotel', value: 'Hotel' },
-                                                            { label: 'Place', value: 'Place' },
-                                                            { label: 'LocalBusiness', value: 'LocalBusiness' },
-                                                        ]}
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<LabelRow label="OG Title (Social Sharing)" onGenerate={() => handleGenerate('ogTitle')} lang={activeTab} />}
-                                                    name="projectSeoOgTitle_en"
-                                                >
-                                                    <InputWithCount
-                                                        placeholder="Enter Open Graph title"
-                                                        size="large"
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] h-12"
-                                                        min={40}
-                                                        max={60}
-                                                        countLabel="OG Title"
-                                                    />
-                                                </Form.Item>
-
-                                                <Form.Item
-                                                    label={<LabelRow label="OG Description" onGenerate={() => handleGenerate('ogDescription')} lang={activeTab} />}
-                                                    name="projectSeoOgDescription_en"
-                                                >
-                                                    <TextAreaWithCount
-                                                        placeholder="Enter Open Graph description"
-                                                        rows={3}
-                                                        className="bg-white border-[#d1d5db] rounded-[10px] text-[15px] font-['Manrope'] resize-none"
-                                                        min={130}
-                                                        max={200}
-                                                        countLabel="OG Description"
-                                                    />
-                                                </Form.Item>
-                                            </>
-                                        )
-                                    }
-                                ]}
-                            />
-
-                            <Form.Item
-                                label={
-                                    <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        {activeTab === 'en' ? 'Allow Search Engine Indexing' : 'Cho Phép Lập Chỉ Mục'}
-                                    </span>
-                                }
-                                name="projectSeoAllowIndexing"
-                                valuePropName="checked"
-                                initialValue={true}
-                            >
-                                <Switch />
-                            </Form.Item>
-
-                            <Form.Item
-                                label={
-                                    <span className="font-semibold text-[#374151] text-sm font-['Manrope']">
-                                        {activeTab === 'en' ? 'OG Image (Social Sharing)' : 'Hình Ảnh OG (Chia Sẻ Xã Hội)'}
-                                    </span>
-                                }
-                            >
-                                <div className="flex gap-4 flex-wrap">
-                                    {ogImage ? (
-                                        <div
-                                            className="relative w-40 h-40 rounded-xl overflow-hidden border bg-gray-50 group"
-                                        >
-                                            <img src={ogImage} className="w-full h-full object-cover" alt="OG Image" />
-                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex justify-center items-center gap-3 opacity-0 group-hover:opacity-100">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setPreviewImage(ogImage)}
-                                                    className="bg-white rounded-full p-2 shadow hover:bg-gray-100"
-                                                >
-                                                    <EyeOutlined className="text-[#41398B]" />
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={removeOgImage}
-                                                    className="bg-white rounded-full p-2 shadow hover:bg-red-50"
-                                                >
-                                                    <DeleteOutlined className="text-red-500" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <Upload
-                                            accept="image/*"
-                                            showUploadList={false}
-                                            beforeUpload={handleOgImageUpload}
-                                        >
-                                            <div className="w-40 h-40 border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50 transition-colors">
-                                                <PlusOutlined className="text-2xl text-gray-400 mb-2" />
-                                                <span className="text-xs text-gray-500 font-['Manrope']">
-                                                    {activeTab === 'en' ? 'Upload Image' : 'Tải Lên Hình'}
-                                                </span>
-                                            </div>
-                                        </Upload>
-                                    )}
-                                </div>
-                            </Form.Item>
-
-                            <div className="flex gap-3 justify-end mt-6 pt-4 border-t border-gray-200">
-                                {pageData && (
-                                    <Button
-                                        size="large"
-                                        onClick={onCancel}
-                                        className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
-                                    >
-                                        {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
-                                    </Button>
-                                )}
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    size="large"
-                                    icon={<SaveOutlined />}
-                                    loading={loading}
-                                    className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
+                <div className="p-8 space-y-6 bg-white border-t border-gray-100">
+                    
+                    {/* 🌐 LANGUAGE TABS */}
+                    <div className="flex items-center justify-between mb-6 border-b border-gray-200">
+                        <div className="flex">
+                            {["vn", "en"].map((lng) => (
+                                <button
+                                    key={lng}
+                                    type="button"
+                                    onClick={() => setActiveLang(lng)}
+                                    className={`px-6 py-2 text-sm cursor-pointer font-medium ${activeLang === lng
+                                        ? "border-b-2 border-[#41398B] text-black"
+                                        : "text-gray-500 hover:text-black"
+                                        }`}
                                 >
-                                    {activeTab === 'vn'
-                                        ? (pageData ? 'Lưu Cài Đặt SEO' : 'Tạo Trang')
-                                        : (pageData ? 'Save SEO Settings' : 'Create Page')
+                                    {lng === "vn" ? "Tiếng Việt (VN)" : "English (EN)"}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* ✅ SEO TOOL PANEL */}
+                    <SeoPanel
+                        seoData={seoData}
+                        htmlContent={JSON.stringify(pageData) || ""}
+                        onAnalysisUpdate={setSeoAnalysis}
+                        activeLang={activeLang}
+                    />
+
+                    {/* ✨ AUTO GENERATE ALL BANNER */}
+                    <div style={{
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
+                        background: "linear-gradient(135deg, #f0effe 0%, #e8f5e9 100%)",
+                        border: "1px solid #c4b5fd", borderRadius: "10px", padding: "12px 16px",
+                    }}>
+                        <div>
+                            <p style={{ margin: 0, fontWeight: "600", fontSize: "14px", color: "#3730a3" }}>
+                                ✨ {activeLang === "vn" ? "Tự động tạo nội dung SEO" : "Auto Generate SEO Content"}
+                            </p>
+                            <p style={{ margin: "2px 0 0 0", fontSize: "12px", color: "#6b7280" }}>
+                                {activeLang === "vn"
+                                    ? "Tạo tiêu đề, mô tả, từ khóa tự động"
+                                    : "Generate title, description & keywords automatically"}
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleAutoGenerateAll}
+                            style={{
+                                background: "#41398B", color: "#fff", border: "none", borderRadius: "8px",
+                                padding: "8px 18px", fontSize: "13px", fontWeight: "600", cursor: "pointer",
+                                whiteSpace: "nowrap", flexShrink: 0,
+                            }}
+                        >
+                            ✨ {activeLang === "vn" ? "Tạo tất cả" : "Generate All"}
+                        </button>
+                    </div>
+
+                    {/* ✅ SLUG URL */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-semibold">
+                                {labels.slugUrl[activeLang]} {!isProjectPage && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
+                            </label>
+                        </div>
+                        <div>
+                            <input
+                                key={`${activeLang}-slugUrl`}
+                                placeholder="project-name"
+                                className={`${inputClass} ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                value={seo.slugUrl[activeLang] || ""}
+                                onChange={(e) => {
+                                    if (isProjectPage) {
+                                        let val = e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-').replace(/-+/g, '-');
+                                        handleChange("slugUrl", activeLang, val);
                                     }
-                                </Button>
+                                }}
+                                readOnly={!isProjectPage}
+                            />
+                            {renderSuggestion('keywordInSlug')}
+                        </div>
+                    </div>
+
+                    {/* ✅ CANONICAL */}
+                    <div>
+                        <label className="text-sm font-semibold mb-2 block">
+                            {labels.canonicalUrl[activeLang]} {!isProjectPage && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
+                        </label>
+                        <input
+                            placeholder="https://183housingsolutions.com/project/..."
+                            className={`${inputClass} ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                            value={!isProjectPage ? dynamicCanonicalUrl : (seo.canonicalUrl[activeLang] || dynamicCanonicalUrl)}
+                            onChange={(e) => {
+                                if (isProjectPage) {
+                                    handleChange("canonicalUrl", activeLang, e.target.value);
+                                }
+                            }}
+                            readOnly={!isProjectPage}
+                        />
+                    </div>
+
+                    {/* ✅ META TITLE */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-semibold">{labels.metaTitle[activeLang]}</label>
+                            <button type="button" onClick={() => handleAutoGenerate("metaTitle")}
+                                style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+                                ✨ {activeLang === "vn" ? "Tự động tạo" : "Generate"}
+                            </button>
+                        </div>
+                        <div>
+                            <input
+                                key={`${activeLang}-metaTitle`}
+                                placeholder="Type Here"
+                                className={inputClass}
+                                value={seo.metaTitle[activeLang]}
+                                onChange={(e) => handleChange("metaTitle", activeLang, e.target.value)}
+                            />
+                            <CharCountIndicator value={seo.metaTitle[activeLang]} min={30} max={60} label="Meta Title" />
+                            {renderSuggestion('keywordInTitle')}
+                        </div>
+                    </div>
+
+                    {/* ✅ META DESCRIPTION */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-semibold">{labels.metaDescription[activeLang]}</label>
+                            <button type="button" onClick={() => handleAutoGenerate("metaDescription")}
+                                style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+                                ✨ {activeLang === "vn" ? "Tự động tạo" : "Generate"}
+                            </button>
+                        </div>
+                        <div>
+                            <textarea
+                                key={`${activeLang}-metaDescription`}
+                                placeholder="Type here"
+                                rows={4}
+                                className={textareaClass}
+                                value={seo.metaDescription[activeLang]}
+                                onChange={(e) => handleChange("metaDescription", activeLang, e.target.value)}
+                            />
+                            <CharCountIndicator value={seo.metaDescription[activeLang]} min={120} max={160} label="Meta Description" />
+                            {renderSuggestion('keywordInDescription')}
+                        </div>
+                    </div>
+
+                    {/* ✅ META KEYWORDS */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-semibold">{labels.metaKeywords[activeLang]}</label>
+                            <button type="button" onClick={() => handleAutoGenerate("metaKeywords")}
+                                style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+                                ✨ {activeLang === "vn" ? "Tự động tạo" : "Generate"}
+                            </button>
+                        </div>
+                        <div>
+                            <KeywordTagsInput
+                                key={`${activeLang}-keywords`}
+                                value={seo.metaKeywords[activeLang]}
+                                onChange={(newKeywords) => handleChange("metaKeywords", activeLang, newKeywords)}
+                                placeholder="Type keyword & press Enter"
+                            />
+                            {renderSuggestion('keywordInContent')}
+                        </div>
+                    </div>
+
+                    {/* ✅ SCHEMA TYPE */}
+                    <div>
+                        <label className="text-sm font-semibold mb-2 block">
+                            {labels.schemaType[activeLang]}
+                        </label>
+                        <AntdSelect
+                            showSearch
+                            allowClear
+                            placeholder="Select Schema Type"
+                            value={seo.schemaType[activeLang] || undefined}
+                            onChange={(value) => handleChange("schemaType", activeLang, value)}
+                            className="w-full custom-select"
+                            size="large"
+                            popupClassName="custom-dropdown"
+                            options={[
+                                { label: 'Product', value: 'Product' },
+                                { label: 'RealEstateAgent', value: 'RealEstateAgent' },
+                                { label: 'Residence', value: 'Residence' },
+                                { label: 'Apartment', value: 'Apartment' },
+                                { label: 'SingleFamilyResidence', value: 'SingleFamilyResidence' },
+                                { label: 'House', value: 'House' },
+                                { label: 'Hotel', value: 'Hotel' },
+                                { label: 'Place', value: 'Place' },
+                                { label: 'LocalBusiness', value: 'LocalBusiness' },
+                            ]}
+                        />
+                    </div>
+
+                    {/* ✅ ALLOW INDEXING */}
+                    <div className="flex items-center gap-3 mt-2">
+                        <label className="text-md font-md mb-2 block">
+                            {labels.allowIndexing[activeLang]}
+                        </label>
+                        <Switch
+                            checked={seo.allowIndexing}
+                            onChange={(checked) => setSeo(prev => ({ ...prev, allowIndexing: checked }))}
+                            style={{ backgroundColor: seo.allowIndexing ? "#41398B" : "#d9d9d9" }}
+                        />
+                    </div>
+
+                    <div>
+                        <h2 className="text-black text-lg font-semibold mt-4">
+                            {labels.social[activeLang]}
+                        </h2>
+                    </div>
+
+                    {/* ✅ OG TITLE */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-semibold">{labels.ogTitle[activeLang]}</label>
+                            <button type="button" onClick={() => handleAutoGenerate("ogTitle")}
+                                style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+                                ✨ {activeLang === "vn" ? "Tự động tạo" : "Generate"}
+                            </button>
+                        </div>
+                        <input
+                            placeholder="Type Here"
+                            className={inputClass}
+                            value={seo.ogTitle[activeLang]}
+                            onChange={(e) => handleChange("ogTitle", activeLang, e.target.value)}
+                        />
+                        <CharCountIndicator value={seo.ogTitle[activeLang]} min={40} max={60} label="OG Title" />
+                    </div>
+
+                    {/* ✅ OG DESCRIPTION */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-semibold">{labels.ogDescription[activeLang]}</label>
+                            <button type="button" onClick={() => handleAutoGenerate("ogDescription")}
+                                style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+                                ✨ {activeLang === "vn" ? "Tự động tạo" : "Generate"}
+                            </button>
+                        </div>
+                        <textarea
+                            placeholder="Type here"
+                            rows={4}
+                            className={textareaClass}
+                            value={seo.ogDescription[activeLang]}
+                            onChange={(e) => handleChange("ogDescription", activeLang, e.target.value)}
+                        />
+                        <CharCountIndicator value={seo.ogDescription[activeLang]} min={130} max={200} label="OG Description" />
+                    </div>
+
+                    {/* ✅ OG IMAGE */}
+                    <div>
+                        <label className="text-sm font-semibold mb-2 block">
+                            {labels.ogImage[activeLang]}
+                        </label>
+                        {seo.ogImage ? (
+                            <div className="relative w-48 h-32 rounded-xl overflow-hidden border border-gray-200 group">
+                                <img src={getAbsoluteUrl(seo.ogImage)} alt="OG Preview" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                                    <button type="button" onClick={() => setPreview(getAbsoluteUrl(seo.ogImage))} className="bg-white p-2 rounded-full hover:bg-gray-100">
+                                        <Eye size={16} className="text-gray-700" />
+                                    </button>
+                                    <button type="button" onClick={removeOgImage} className="bg-white p-2 rounded-full hover:bg-red-50">
+                                        <X size={16} className="text-red-500" />
+                                    </button>
+                                </div>
                             </div>
-                        </Form>
-                    </ConfigProvider>
+                        ) : (
+                            <div className="relative w-48 h-32 border-2 border-dashed border-gray-300 rounded-xl hover:bg-gray-50 hover:border-[#41398B] transition-colors cursor-pointer flex flex-col items-center justify-center">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleOgUpload}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                                {isOgUploading ? (
+                                    <span className="text-sm text-gray-500">Uploading...</span>
+                                ) : (
+                                    <>
+                                        <Plus size={24} className="text-gray-400 mb-2" />
+                                        <span className="text-sm text-gray-500">Upload Image</span>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ✅ SAVE BUTTON */}
+                    <div className="flex justify-end mt-8 pt-6 border-t border-gray-100">
+                        <Button
+                            type="primary"
+                            size="large"
+                            icon={<SaveOutlined />}
+                            onClick={handleComplete}
+                            loading={loading}
+                            className="bg-[#41398B] hover:bg-[#322b70] border-none px-8 h-12 rounded-lg font-semibold shadow-md shadow-indigo-100"
+                        >
+                            {activeLang === 'vn' ? 'Lưu Thay Đổi SEO' : 'Save SEO Settings'}
+                        </Button>
+                    </div>
+
                 </div>
             </div>
 
-            {/* Preview Modal */}
-            {previewImage && (
-                <div
-                    onClick={() => setPreviewImage(null)}
-                    className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex justify-center items-center p-4"
-                >
-                    <div
-                        className="relative max-w-2xl w-full rounded-xl overflow-hidden bg-black/20"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            onClick={() => setPreviewImage(null)}
-                            className="absolute top-3 right-3 bg-[#41398B] hover:bg-[#2f2775] text-white rounded-full p-2 z-10"
-                        >
-                            <X className="w-5 h-5" />
+            {/* FULLSCREEN PREVIEW MODAL */}
+            {preview && (
+                <div className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4" onClick={() => setPreview(null)}>
+                    <div className="relative max-w-5xl w-full">
+                        <button type="button" className="absolute -top-12 right-0 text-white hover:text-gray-300" onClick={() => setPreview(null)}>
+                            <X size={32} />
                         </button>
-                        <img
-                            src={previewImage}
-                            className="w-full h-full object-contain rounded-xl"
-                            alt="Preview"
-                        />
+                        <img src={preview} alt="Preview fullscreen" className="w-full h-auto max-h-[85vh] object-contain rounded-lg" />
                     </div>
                 </div>
             )}

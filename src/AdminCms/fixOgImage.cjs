@@ -28,7 +28,7 @@ function processFile(filePath) {
         const getAbsoluteUrl = (url) => {
             if (!url) return '';
             if (url.startsWith('http')) return url;
-            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+            const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://api.183housingsolutions.com';
             return \`\${apiBase}\${url.startsWith('/') ? '' : '/'}\${url}\`;
         };
         `;

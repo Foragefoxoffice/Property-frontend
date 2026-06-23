@@ -63,7 +63,7 @@ const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
 const getAbsoluteUrl = (url) => {
   if (!url) return '';
   if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) return url;
-  const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://dev.183housingsolutions.com';
+  const apiBase = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'https://api.183housingsolutions.com';
   return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`;
 };
 
@@ -157,6 +157,7 @@ export default function CreatePropertyListStep4SEO({
 
   const [activeLang, setActiveLang] = useState("vi");
   const [seoAnalysis, setSeoAnalysis] = useState({ checks: {}, score: 0 });
+  const [isOgUploading, setIsOgUploading] = useState(false);
 
   const [seo, setSeo] = useState(() => {
     const data = initialData.seoInformation || defaultSEO;
@@ -220,7 +221,7 @@ export default function CreatePropertyListStep4SEO({
     }
   }, [initialData]);
 
-  /* ✅ Sync Slug with Title (Auto-fill) */
+  /* ✅ Sync Slug with Title (Auto-fill if empty) */
   useEffect(() => {
     const titleObj = initialData?.title;
     if (!titleObj) return;
@@ -243,19 +244,21 @@ export default function CreatePropertyListStep4SEO({
     if (!enSlug && viSlug) enSlug = viSlug;
     if (!viSlug && enSlug) viSlug = enSlug;
 
-    // Always update if it differs, because it's not user-editable anymore
-    if (seo.slugUrl?.en !== enSlug || seo.slugUrl?.vi !== viSlug) {
-      const updated = {
-        ...seo,
-        slugUrl: { en: enSlug, vi: viSlug },
-        // Also auto-fill meta title if empty
-        metaTitle: {
-          en: seo.metaTitle.en || titleObj.en || (titleObj.en || titleObj.vi),
-          vi: seo.metaTitle.vi || titleObj.vi || (titleObj.vi || titleObj.en)
-        }
-      };
-      setSeo(updated);
-      onChange({ seoInformation: updated });
+    // Only auto-fill if empty
+    if (!seo.slugUrl?.en || !seo.slugUrl?.vi || !seo.metaTitle?.en || !seo.metaTitle?.vi) {
+      const updated = { ...seo };
+      let changed = false;
+
+      if (!seo.slugUrl?.en && enSlug) { updated.slugUrl.en = enSlug; changed = true; }
+      if (!seo.slugUrl?.vi && viSlug) { updated.slugUrl.vi = viSlug; changed = true; }
+      
+      if (!seo.metaTitle?.en && titleObj.en) { updated.metaTitle.en = titleObj.en || titleObj.vi; changed = true; }
+      if (!seo.metaTitle?.vi && titleObj.vi) { updated.metaTitle.vi = titleObj.vi || titleObj.en; changed = true; }
+
+      if (changed) {
+        setSeo(updated);
+        onChange({ seoInformation: updated });
+      }
     }
   }, [initialData?.title, initialData?.listingInformationPropertyId, initialData?.propertyId]);
 
@@ -456,6 +459,20 @@ export default function CreatePropertyListStep4SEO({
       ogTitle: { key: "ogTitle", val: content.ogTitle },
       ogDescription: { key: "ogDescription", val: content.ogDesc },
     };
+
+    if (field === "slugUrl") {
+      const propId = initialData?.listingInformationPropertyId || initialData?.propertyId || "";
+      let newSlug = generateSlug(seo.metaTitle[activeLang] || content.metaTitle);
+      if (propId && newSlug && !newSlug.toLowerCase().endsWith(propId.toLowerCase())) {
+        newSlug = `${newSlug}-${propId}`;
+      }
+      const updated = { ...seo, slugUrl: { ...seo.slugUrl, [activeLang]: newSlug } };
+      setSeo(updated);
+      onChange({ seoInformation: updated });
+      CommonToaster(activeLang === "vi" ? "Đã tạo tự động!" : "Auto-generated!", "success");
+      return;
+    }
+
     if (!fieldMap[field]) return;
     const { key, val } = fieldMap[field];
     const updated = { ...seo, [key]: { ...seo[key], [activeLang]: val } };
@@ -487,6 +504,7 @@ export default function CreatePropertyListStep4SEO({
     if (!file) return;
 
     try {
+      setIsOgUploading(true);
       CommonToaster(labels.uploading[globalLanguage], "info");
       const response = await uploadPropertyMedia(file, "image");
       const url = response.data.url;
@@ -500,7 +518,10 @@ export default function CreatePropertyListStep4SEO({
       CommonToaster(labels.uploadSuccess[globalLanguage], "success");
     } catch (error) {
       console.error("OG Image upload error:", error);
-      CommonToaster(labels.uploadError[globalLanguage], "error");
+      const backendError = error.response?.data?.message || error.response?.data?.error;
+      CommonToaster(backendError || labels.uploadError[globalLanguage], "error");
+    } finally {
+      setIsOgUploading(false);
     }
 
     // Reset input
@@ -682,17 +703,28 @@ export default function CreatePropertyListStep4SEO({
         </button>
       </div>
 
-      {/* ✅ SLUG URL (Non-editable, auto-synced per language) */}
+      {/* ✅ SLUG URL (Editable) */}
       <div>
-        <label className="text-sm font-semibold mb-2 block">
-          {labels.slugUrl?.[activeLang] || "Slug URL"} <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated from Title - Non-editable)</span>
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-semibold">
+            {labels.slugUrl?.[activeLang] || "Slug URL"} <span className="font-normal text-gray-500 text-xs ml-2">(Customizable for SEO)</span>
+          </label>
+          <button type="button" onClick={() => handleAutoGenerate("slugUrl")}
+            style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
+            ✨ {activeLang === "vi" ? "Tạo từ Tiêu đề" : "Generate from Title"}
+          </button>
+        </div>
         <div>
           <input
+            key={`${activeLang}-slugUrl`}
             placeholder="my-property-slug"
-            className={`${inputClass} bg-gray-100 cursor-not-allowed`}
+            className={inputClass}
             value={seo.slugUrl?.[activeLang] || ""}
-            readOnly
+            onChange={(e) => {
+              // Only allow valid slug characters (lowercase, numbers, hyphens)
+              let val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+              handleChange("slugUrl", activeLang, val);
+            }}
           />
           {renderSuggestion('keywordInSlug')}
         </div>
@@ -908,20 +940,35 @@ export default function CreatePropertyListStep4SEO({
           ) : (
             /* ✅ UPLOAD BOX (Only shown if NO image) */
             <label
-              className="w-70 h-60 border border-dashed border-[#646466] rounded-xl 
-              flex flex-col items-center justify-center cursor-pointer bg-white hover:bg-gray-50"
+              className={`w-70 h-60 border border-dashed border-[#646466] rounded-xl 
+              flex flex-col items-center justify-center ${isOgUploading ? 'cursor-not-allowed bg-gray-50' : 'cursor-pointer bg-white hover:bg-gray-50'}`}
             >
-              <div className="w-18 h-18 border border-dashed border-[#646466] rounded-full flex items-center justify-center">
-                <Plus className="w-5 h-5 text-gray-500" />
-              </div>
-              <span className="text-xs mt-2 text-[#646466]">
-                {labels.upload[activeLang]}
-              </span>
+              {isOgUploading ? (
+                <div className="flex flex-col items-center justify-center">
+                  <svg className="animate-spin h-8 w-8 text-[#41398B] mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span className="text-xs mt-2 text-[#646466]">
+                    {activeLang === "vi" ? "Đang tải lên..." : "Uploading..."}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <div className="w-18 h-18 border border-dashed border-[#646466] rounded-full flex items-center justify-center">
+                    <Plus className="w-5 h-5 text-gray-500" />
+                  </div>
+                  <span className="text-xs mt-2 text-[#646466]">
+                    {labels.upload[activeLang]}
+                  </span>
+                </>
+              )}
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleOgUpload}
                 className="hidden"
+                disabled={isOgUploading}
               />
             </label>
           )}
