@@ -175,9 +175,7 @@ export default function CreatePropertyListStep4SEO({
     focusKeyword: currentFocusKeyword,
     title: seo.metaTitle?.[activeLang] || "",
     description: seo.metaDescription?.[activeLang] || "",
-    // The slug is shared and generated in English. We artificially append the keyword for non-English languages to bypass the check, 
-    // since the user cannot translate the slug and shouldn't be penalized.
-    slug: activeLang === 'vi' ? ((seo.slugUrl?.[activeLang] || "") + "-" + currentFocusKeyword) : (seo.slugUrl?.[activeLang] || ""),
+    slug: seo.slugUrl?.[activeLang] || "",
     canonicalUrl: seo.canonicalUrl?.[activeLang] || dynamicCanonicalUrl,
     schemaType: seo.schemaType?.[activeLang] || "",
     ogImage: seo.ogImage || "",
@@ -224,35 +222,36 @@ export default function CreatePropertyListStep4SEO({
 
   /* ✅ Sync Slug with Title (Auto-fill) */
   useEffect(() => {
-    // Check title from propertyData (passed as initialData)
     const titleObj = initialData?.title;
     if (!titleObj) return;
 
-    const titleToSlug = titleObj.en || titleObj.vi;
-    if (!titleToSlug) return;
+    let enSlug = titleObj.en ? generateSlug(titleObj.en) : "";
+    let viSlug = titleObj.vi ? generateSlug(titleObj.vi) : "";
 
-    // Use imported generateSlug
-
-    let slug = generateSlug(titleToSlug);
     const propId = initialData?.listingInformationPropertyId || initialData?.propertyId;
     if (propId) {
-      // Ensure we don't duplicate it if for some reason the title already had it
-      const lowerSlug = slug.toLowerCase();
       const lowerPropId = propId.toLowerCase();
-      if (!lowerSlug.endsWith(lowerPropId)) {
-        slug = `${slug}-${propId}`;
+      if (enSlug && !enSlug.toLowerCase().endsWith(lowerPropId)) {
+        enSlug = `${enSlug}-${propId}`;
+      }
+      if (viSlug && !viSlug.toLowerCase().endsWith(lowerPropId)) {
+        viSlug = `${viSlug}-${propId}`;
       }
     }
 
+    // fallback
+    if (!enSlug && viSlug) enSlug = viSlug;
+    if (!viSlug && enSlug) viSlug = enSlug;
+
     // Always update if it differs, because it's not user-editable anymore
-    if (seo.slugUrl?.en !== slug) {
+    if (seo.slugUrl?.en !== enSlug || seo.slugUrl?.vi !== viSlug) {
       const updated = {
         ...seo,
-        slugUrl: { en: slug, vi: slug },
+        slugUrl: { en: enSlug, vi: viSlug },
         // Also auto-fill meta title if empty
         metaTitle: {
-          en: seo.metaTitle.en || titleObj.en || titleToSlug,
-          vi: seo.metaTitle.vi || titleObj.vi || titleToSlug
+          en: seo.metaTitle.en || titleObj.en || (titleObj.en || titleObj.vi),
+          vi: seo.metaTitle.vi || titleObj.vi || (titleObj.vi || titleObj.en)
         }
       };
       setSeo(updated);
@@ -683,16 +682,16 @@ export default function CreatePropertyListStep4SEO({
         </button>
       </div>
 
-      {/* ✅ SHARED SLUG URL (Non-editable, auto-synced) */}
+      {/* ✅ SLUG URL (Non-editable, auto-synced per language) */}
       <div>
         <label className="text-sm font-semibold mb-2 block">
-          Slug URL (Shared / Dùng chung) <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated from Title - Non-editable)</span>
+          {labels.slugUrl?.[activeLang] || "Slug URL"} <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated from Title - Non-editable)</span>
         </label>
         <div>
           <input
             placeholder="my-property-slug"
             className={`${inputClass} bg-gray-100 cursor-not-allowed`}
-            value={seo.slugUrl?.en || ""}
+            value={seo.slugUrl?.[activeLang] || ""}
             readOnly
           />
           {renderSuggestion('keywordInSlug')}

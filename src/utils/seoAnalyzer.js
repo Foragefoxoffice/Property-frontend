@@ -1,3 +1,5 @@
+import { generateSlug } from "./generateSlug";
+
 /**
  * Utility to analyze SEO fields and content.
  * Returns an object containing boolean checks and an aggregate score (0-100).
@@ -11,6 +13,10 @@ export const analyzeSeo = ({ seoSettings, htmlContent, images = [] }) => {
     const lowerTitle = title.toLowerCase();
     const lowerDesc = description.toLowerCase();
     const lowerSlug = slug.toLowerCase();
+    
+    // We also need the slugified version of the keyword to check against the slug
+    // because the slug doesn't contain diacritics or spaces.
+    const keywordSlugified = generateSlug(focusKeyword);
 
     // Strip HTML from content to get raw text
     const stripHtml = (html) => {
@@ -40,7 +46,7 @@ export const analyzeSeo = ({ seoSettings, htmlContent, images = [] }) => {
     if (keyword) {
         checks.keywordInTitle.passed = lowerTitle.includes(keyword);
         checks.keywordInDescription.passed = lowerDesc.includes(keyword);
-        checks.keywordInSlug.passed = lowerSlug.includes(keyword);
+        checks.keywordInSlug.passed = lowerSlug.includes(keywordSlugified);
         checks.keywordInContent.passed = plainContent.includes(keyword);
     } else {
         // If no keyword is set, these checks inherently fail.
