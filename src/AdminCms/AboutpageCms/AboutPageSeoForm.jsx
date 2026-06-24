@@ -420,19 +420,16 @@ export default function AboutPageSeoForm({
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <label className="text-sm font-semibold">
-                                {labels.slugUrl[activeLang]} <span className="font-normal text-gray-500 text-xs ml-2">(Customizable for SEO)</span>
+                                {labels.slugUrl[activeLang]} <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>
                             </label>
                         </div>
                         <div>
                             <input
                                 key={`${activeLang}-slugUrl`}
                                 placeholder="about-us"
-                                className={inputClass}
+                                className={`${inputClass} bg-gray-100 cursor-not-allowed`}
                                 value={seo.slugUrl[activeLang] || ""}
-                                onChange={(e) => {
-                                    let val = e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-').replace(/-+/g, '-');
-                                    handleChange("slugUrl", activeLang, val);
-                                }}
+                                readOnly
                             />
                             {renderSuggestion('keywordInSlug')}
                         </div>

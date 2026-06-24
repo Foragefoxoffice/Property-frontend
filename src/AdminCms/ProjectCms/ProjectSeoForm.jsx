@@ -73,7 +73,6 @@ export default function ProjectSeoForm({
     onSubmit,
     loading,
     pageData,
-    onCancel,
     isOpen,
     onToggle,
     headerLang,
@@ -188,13 +187,13 @@ export default function ProjectSeoForm({
         }
 
         if (focusKw && !hasKw(metaTitle, focusKw)) {
-             metaTitle = `${focusKw} ${metaTitle}`;
+            metaTitle = `${focusKw} ${metaTitle}`;
         }
         metaTitle = clamp(cleanText(metaTitle), 60);
 
         let metaDesc = "";
         const introTitle = g(pageData?.projectIntroTitle);
-        
+
         if (lang === "vn" || lang === "vi") {
             const parts = [
                 `Khám phá dự án ${title}`,
@@ -212,7 +211,7 @@ export default function ProjectSeoForm({
         }
 
         if (focusKw && !hasKw(metaDesc, focusKw)) {
-             metaDesc = `${focusKw} — ${metaDesc}`;
+            metaDesc = `${focusKw} — ${metaDesc}`;
         }
         metaDesc = clamp(cleanText(metaDesc), 160);
 
@@ -448,7 +447,7 @@ export default function ProjectSeoForm({
 
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[8000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="p-8 space-y-6 bg-white border-t border-gray-100">
-                    
+
                     {/* 🌐 LANGUAGE TABS */}
                     <div className="flex items-center justify-between mb-6 border-b border-gray-200">
                         <div className="flex">
@@ -509,22 +508,16 @@ export default function ProjectSeoForm({
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <label className="text-sm font-semibold">
-                                {labels.slugUrl[activeLang]} {!isProjectPage && <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>}
+                                {labels.slugUrl[activeLang]} <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>
                             </label>
                         </div>
                         <div>
                             <input
                                 key={`${activeLang}-slugUrl`}
                                 placeholder="project-name"
-                                className={`${inputClass} ${!isProjectPage ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                className={`${inputClass} bg-gray-100 cursor-not-allowed`}
                                 value={seo.slugUrl[activeLang] || ""}
-                                onChange={(e) => {
-                                    if (isProjectPage) {
-                                        let val = e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-').replace(/-+/g, '-');
-                                        handleChange("slugUrl", activeLang, val);
-                                    }
-                                }}
-                                readOnly={!isProjectPage}
+                                readOnly
                             />
                             {renderSuggestion('keywordInSlug')}
                         </div>

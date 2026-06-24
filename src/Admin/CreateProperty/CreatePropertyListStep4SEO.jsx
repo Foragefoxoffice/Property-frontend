@@ -244,21 +244,25 @@ export default function CreatePropertyListStep4SEO({
     if (!enSlug && viSlug) enSlug = viSlug;
     if (!viSlug && enSlug) viSlug = enSlug;
 
-    // Only auto-fill if empty
-    if (!seo.slugUrl?.en || !seo.slugUrl?.vi || !seo.metaTitle?.en || !seo.metaTitle?.vi) {
-      const updated = { ...seo };
-      let changed = false;
+    // Always sync slug
+    let changed = false;
+    const updated = { ...seo };
 
-      if (!seo.slugUrl?.en && enSlug) { updated.slugUrl.en = enSlug; changed = true; }
-      if (!seo.slugUrl?.vi && viSlug) { updated.slugUrl.vi = viSlug; changed = true; }
-      
-      if (!seo.metaTitle?.en && titleObj.en) { updated.metaTitle.en = titleObj.en || titleObj.vi; changed = true; }
-      if (!seo.metaTitle?.vi && titleObj.vi) { updated.metaTitle.vi = titleObj.vi || titleObj.en; changed = true; }
+    if (enSlug && seo.slugUrl?.en !== enSlug) {
+      updated.slugUrl.en = enSlug;
+      changed = true;
+    }
+    if (viSlug && seo.slugUrl?.vi !== viSlug) {
+      updated.slugUrl.vi = viSlug;
+      changed = true;
+    }
 
-      if (changed) {
-        setSeo(updated);
-        onChange({ seoInformation: updated });
-      }
+    if (!seo.metaTitle?.en && titleObj.en) { updated.metaTitle.en = titleObj.en || titleObj.vi; changed = true; }
+    if (!seo.metaTitle?.vi && titleObj.vi) { updated.metaTitle.vi = titleObj.vi || titleObj.en; changed = true; }
+
+    if (changed) {
+      setSeo(updated);
+      onChange({ seoInformation: updated });
     }
   }, [initialData?.title, initialData?.listingInformationPropertyId, initialData?.propertyId]);
 
@@ -703,28 +707,20 @@ export default function CreatePropertyListStep4SEO({
         </button>
       </div>
 
-      {/* ✅ SLUG URL (Editable) */}
+      {/* ✅ SLUG URL (Non-Editable) */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="text-sm font-semibold">
-            {labels.slugUrl?.[activeLang] || "Slug URL"} <span className="font-normal text-gray-500 text-xs ml-2">(Customizable for SEO)</span>
+            {labels.slugUrl?.[activeLang] || "Slug URL"} <span className="font-normal text-gray-500 text-xs ml-2">(Auto-generated - Non-editable)</span>
           </label>
-          <button type="button" onClick={() => handleAutoGenerate("slugUrl")}
-            style={{ fontSize: "12px", color: "#41398B", background: "#f0effe", border: "1px solid #c4b5fd", borderRadius: "6px", padding: "3px 10px", cursor: "pointer", fontWeight: "600" }}>
-            ✨ {activeLang === "vi" ? "Tạo từ Tiêu đề" : "Generate from Title"}
-          </button>
         </div>
         <div>
           <input
             key={`${activeLang}-slugUrl`}
             placeholder="my-property-slug"
-            className={inputClass}
+            className={`${inputClass} bg-gray-100 cursor-not-allowed`}
             value={seo.slugUrl?.[activeLang] || ""}
-            onChange={(e) => {
-              // Only allow valid slug characters (lowercase, numbers, hyphens)
-              let val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
-              handleChange("slugUrl", activeLang, val);
-            }}
+            readOnly
           />
           {renderSuggestion('keywordInSlug')}
         </div>
