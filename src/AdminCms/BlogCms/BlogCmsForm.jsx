@@ -215,6 +215,7 @@ export default function BlogCmsForm() {
                 // Top-level replacements from form
                 allowIndexing: allowIndexingObj,
                 ogImages: seoValues.ogImages || preserved.seoInformation?.ogImages || [],
+                ogImage: seoValues.ogImage || preserved.seoInformation?.ogImage || "",
 
                 // Explicit localized merges
                 metaTitle: { ...preserved.seoInformation?.metaTitle, ...seoValues.metaTitle },
@@ -311,6 +312,7 @@ export default function BlogCmsForm() {
                 {/* SEO Section */}
                 <BlogSeoForm
                     form={seoForm}
+                    mainForm={mainForm}
                     onSubmit={handleSeoSubmit}
                     loading={seoLoading}
                     blogData={blogData}

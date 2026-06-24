@@ -6,7 +6,9 @@ import { usePermissions } from '../../Context/PermissionContext';
 import SeoPanel from '../../components/Admin/SeoPanel';
 import { CommonToaster } from '@/Common/CommonToaster';
 import { buildCmsContent } from '../../components/Admin/CmsSeoUtils';
+import { generateSlug } from '../../utils/generateSlug';
 import { SaveOutlined } from '@ant-design/icons';
+import { Form } from 'antd';
 
 const KeywordTagsInput = ({ value = [], onChange, placeholder, disabled }) => {
     const [inputValue, setInputValue] = useState('');
@@ -75,7 +77,8 @@ export default function BlogSeoForm({
     onCancel,
     isOpen,
     onToggle,
-    isEditMode
+    isEditMode,
+    mainForm
 }) {
     const { can } = usePermissions();
     const [activeLang, setActiveLang] = useState('vi'); // NOTE: using 'vi' for payload mapping, will display as 'VN'
@@ -117,29 +120,29 @@ export default function BlogSeoForm({
         }
     }, [blogData]);
 
+    const watchedTitle = Form.useWatch('title', mainForm);
+    const currentTitle = mainForm ? watchedTitle : blogData?.title;
+
     // Auto-generate slug from title
     useEffect(() => {
-        if (blogData?.title) {
-            const titleToSlug = blogData.title.en || blogData.title.vi;
-            if (titleToSlug) {
-                const slug = titleToSlug
-                    .toLowerCase()
-                    .replace(/[^a-z0-9\s-]/g, '') // Remove non-alphanumeric chars
-                    .replace(/\s+/g, '-')         // Replace spaces with dashes
-                    .replace(/-+/g, '-');         // Remove duplicate dashes
+        if (currentTitle) {
+            let slugEn = currentTitle.en ? generateSlug(currentTitle.en) : "";
+            let slugVi = currentTitle.vi ? generateSlug(currentTitle.vi) : "";
 
-                setSeo(prev => {
-                    if (!prev.slugUrl.en && !prev.slugUrl.vi) {
-                        return {
-                            ...prev,
-                            slugUrl: { en: slug, vi: slug }
-                        };
-                    }
-                    return prev;
-                });
-            }
+            if (!slugEn && slugVi) slugEn = slugVi;
+            if (!slugVi && slugEn) slugVi = slugEn;
+
+            setSeo(prev => {
+                if (prev.slugUrl.en !== slugEn || prev.slugUrl.vi !== slugVi) {
+                    return {
+                        ...prev,
+                        slugUrl: { en: slugEn || prev.slugUrl.en, vi: slugVi || prev.slugUrl.vi }
+                    };
+                }
+                return prev;
+            });
         }
-    }, [blogData?.title]);
+    }, [currentTitle]);
 
     const handleChange = (field, lang, value) => {
         setSeo(prev => ({

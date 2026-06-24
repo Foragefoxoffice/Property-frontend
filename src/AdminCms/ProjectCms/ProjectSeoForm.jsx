@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, X, Plus } from 'lucide-react';
-import { Select as AntdSelect, Switch, Button } from 'antd';
+import { Select as AntdSelect, Switch, Button, Form } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import { uploadGeneralImage } from '../../Api/action';
 import { usePermissions } from '../../Context/PermissionContext';
@@ -76,7 +76,8 @@ export default function ProjectSeoForm({
     isOpen,
     onToggle,
     headerLang,
-    isProjectPage = false
+    isProjectPage = false,
+    generalForm
 }) {
     const { can } = usePermissions();
     const [activeLang, setActiveLang] = useState('vn');
@@ -123,11 +124,14 @@ export default function ProjectSeoForm({
         }
     }, [pageData]);
 
+    const watchedTitle = Form.useWatch('title', generalForm);
+    const currentTitle = generalForm ? watchedTitle : pageData?.title;
+
     /* ✅ Sync Slug with Title (Auto-fill) for individual projects */
     useEffect(() => {
-        if (!isProjectPage && pageData?.title) {
-            let slugEn = pageData.title.en ? generateSlug(pageData.title.en) : "";
-            let slugVn = pageData.title.vi ? generateSlug(pageData.title.vi) : "";
+        if (!isProjectPage && currentTitle) {
+            let slugEn = currentTitle.en ? generateSlug(currentTitle.en) : "";
+            let slugVn = currentTitle.vi ? generateSlug(currentTitle.vi) : "";
 
             if (!slugEn && slugVn) slugEn = slugVn;
             if (!slugVn && slugEn) slugVn = slugEn;
@@ -142,7 +146,7 @@ export default function ProjectSeoForm({
                 return prev;
             });
         }
-    }, [pageData?.title, isProjectPage]);
+    }, [currentTitle, isProjectPage]);
 
     const handleChange = (field, lang, value) => {
         setSeo(prev => ({

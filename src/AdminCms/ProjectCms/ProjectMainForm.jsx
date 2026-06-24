@@ -362,6 +362,7 @@ export default function ProjectMainForm() {
                 />
                 <ProjectSeoForm
                     form={seoForm}
+                    generalForm={generalForm}
                     onSubmit={(values) => handleSectionSubmit(values, t.toastSeoSectionUpdated, setSeoLoading)}
                     loading={seoLoading}
                     pageData={projectData}
