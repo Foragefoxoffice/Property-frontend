@@ -575,7 +575,7 @@ export default function Enquires() {
                                                     )}
 
                                                     <a
-                                                        href={`${import.meta.env.VITE_SITE_URL}/listing/${getLocalizedValue(prop.seoInformation?.slugUrl) ? getLocalizedValue(prop.seoInformation?.slugUrl) + '-' : ''}${prop.listingInformation?.listingInformationPropertyId}`}
+                                                        href={`${import.meta.env.VITE_SITE_URL}/listing/${getLocalizedValue(prop.seoInformation?.slugUrl) || prop.listingInformation?.listingInformationPropertyId || prop._id}`}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#41398B] text-white text-xs font-semibold rounded-lg hover:bg-[#352e7a] transition-all shadow-sm hover:shadow-md"

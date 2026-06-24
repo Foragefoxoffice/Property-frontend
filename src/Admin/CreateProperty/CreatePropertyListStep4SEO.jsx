@@ -803,7 +803,7 @@ export default function CreatePropertyListStep4SEO({
         <input
           placeholder="https://183housingsolutions.com/..."
           className={`${inputClass} bg-gray-100 cursor-not-allowed`}
-          value={`https://183housingsolutions.com/listing/${seo.slugUrl?.[activeLang] ? seo.slugUrl[activeLang] + '-' : ''}${initialData?.listingInformationPropertyId || initialData?.propertyId || initialData?._id || 'new-property'}`}
+          value={`https://183housingsolutions.com/listing/${seo.slugUrl?.[activeLang] || initialData?.listingInformationPropertyId || initialData?.propertyId || initialData?._id || 'new-property'}`}
           readOnly
         />
       </div>

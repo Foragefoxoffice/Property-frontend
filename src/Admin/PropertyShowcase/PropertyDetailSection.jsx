@@ -802,7 +802,7 @@ export default function PropertyDetailsSection({ property }) {
                   onClick={() => {
                     const id = prop.listingInformation?.listingInformationPropertyId || prop._id;
                     const slug = getLocalizedValue(prop.seoInformation?.slugUrl);
-                    const url = `${import.meta.env.VITE_SITE_URL}/listing/${slug ? slug + '-' : ''}${id}`;
+                    const url = `${import.meta.env.VITE_SITE_URL}/listing/${slug || id}`;
                     window.open(url, '_blank');
                   }}
                 >
