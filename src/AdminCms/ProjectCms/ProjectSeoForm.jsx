@@ -124,12 +124,16 @@ export default function ProjectSeoForm({
         }
     }, [pageData]);
 
-    const watchedTitle = Form.useWatch('title', generalForm);
-    const currentTitle = generalForm ? watchedTitle : pageData?.title;
+    const titleEn = Form.useWatch(['title', 'en'], generalForm);
+    const titleVi = Form.useWatch(['title', 'vi'], generalForm);
+    const currentTitle = {
+        en: titleEn !== undefined ? titleEn : pageData?.title?.en,
+        vi: titleVi !== undefined ? titleVi : pageData?.title?.vi,
+    };
 
     /* ✅ Sync Slug with Title (Auto-fill) for individual projects */
     useEffect(() => {
-        if (!isProjectPage && currentTitle) {
+        if (!isProjectPage && (currentTitle.en || currentTitle.vi)) {
             let slugEn = currentTitle.en ? generateSlug(currentTitle.en) : "";
             let slugVn = currentTitle.vi ? generateSlug(currentTitle.vi) : "";
 
@@ -137,6 +141,7 @@ export default function ProjectSeoForm({
             if (!slugVn && slugEn) slugVn = slugEn;
 
             setSeo(prev => {
+                // Only update if it's different and currentTitle actually has value
                 if (prev.slugUrl.en !== slugEn || prev.slugUrl.vn !== slugVn) {
                     return {
                         ...prev,
@@ -146,7 +151,7 @@ export default function ProjectSeoForm({
                 return prev;
             });
         }
-    }, [currentTitle, isProjectPage]);
+    }, [titleEn, titleVi, isProjectPage]);
 
     const handleChange = (field, lang, value) => {
         setSeo(prev => ({
