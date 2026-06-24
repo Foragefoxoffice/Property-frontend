@@ -220,7 +220,7 @@ export default function BlogListPage() {
                                             {openMenuIndex === i && (
                                                 <div ref={menuRef} className="absolute right-10 top-10 bg-white border border-gray-100 rounded-xl shadow-xl z-50 w-48 py-1 overflow-hidden">
                                                     <Link
-                                                        to={`https://183housingsolutions.com/blogs/${blog.slug?.[language] || blog.slug?.en || blog.slug?.vi}`}
+                                                        to={`https://183housingsolutions.com/blogs/${blog.slug?.[language] || blog.slug?.en || blog.slug?.vi}?previewToken=${localStorage.getItem('token') || ''}`}
                                                         target="_blank"
                                                         onClick={() => setOpenMenuIndex(null)}
                                                     >
