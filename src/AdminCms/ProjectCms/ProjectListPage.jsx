@@ -188,7 +188,7 @@ export default function ProjectListPage() {
 
                                                     {/* VIEW PROJECT */}
                                                     <Link
-                                                        to={`https://183housingsolutions.com/projects/${project.slug?.[language] || project.slug?.en || project.slug?.vi}`}
+                                                        to={`https://183housingsolutions.com/projects/${project.slug?.[language] || project.slug?.en || project.slug?.vi}?previewToken=${localStorage.getItem('token') || ''}`}
                                                         target="_blank"
                                                         onClick={() => setOpenMenuIndex(null)}
                                                     >

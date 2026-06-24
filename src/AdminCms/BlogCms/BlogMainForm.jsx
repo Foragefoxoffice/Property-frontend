@@ -605,7 +605,7 @@ export default function BlogMainForm({
                                         }
 
                                         window.open(
-                                            `https://183housingsolutions.com/blogs/${slug}?preview=true`,
+                                            `https://183housingsolutions.com/blogs/${slug}?previewToken=${localStorage.getItem('token') || ''}`,
                                             '_blank'
                                         );
                                     }}
