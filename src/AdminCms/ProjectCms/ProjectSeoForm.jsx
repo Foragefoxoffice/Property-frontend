@@ -126,19 +126,21 @@ export default function ProjectSeoForm({
     /* ✅ Sync Slug with Title (Auto-fill) for individual projects */
     useEffect(() => {
         if (!isProjectPage && pageData?.title) {
-            const titleToSlug = pageData.title.en || pageData.title.vi;
-            if (titleToSlug) {
-                const slug = generateSlug(titleToSlug);
-                setSeo(prev => {
-                    if (prev.slugUrl.en !== slug || prev.slugUrl.vn !== slug) {
-                        return {
-                            ...prev,
-                            slugUrl: { en: slug, vn: slug }
-                        };
-                    }
-                    return prev;
-                });
-            }
+            let slugEn = pageData.title.en ? generateSlug(pageData.title.en) : "";
+            let slugVn = pageData.title.vi ? generateSlug(pageData.title.vi) : "";
+
+            if (!slugEn && slugVn) slugEn = slugVn;
+            if (!slugVn && slugEn) slugVn = slugEn;
+
+            setSeo(prev => {
+                if (prev.slugUrl.en !== slugEn || prev.slugUrl.vn !== slugVn) {
+                    return {
+                        ...prev,
+                        slugUrl: { en: slugEn || prev.slugUrl.en, vn: slugVn || prev.slugUrl.vn }
+                    };
+                }
+                return prev;
+            });
         }
     }, [pageData?.title, isProjectPage]);
 
