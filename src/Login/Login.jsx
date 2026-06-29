@@ -8,6 +8,7 @@ import { useFavorites } from "../Context/FavoritesContext";
 import { useLanguage } from "../Language/LanguageContext";
 import { translations } from "../Language/translations";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import { useSocket } from "../Context/SocketContext";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const { socket } = useSocket();
 
   // Check for error in URL params
   React.useEffect(() => {
@@ -32,6 +34,32 @@ export default function Login() {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  React.useEffect(() => {
+    if (socket) {
+      const handleSessionReleased = (data) => {
+        if (
+          data &&
+          formData.email &&
+          ((data.email && data.email.toLowerCase() === formData.email.toLowerCase()) ||
+            (data.employeeId && data.employeeId.toLowerCase() === formData.email.toLowerCase()))
+        ) {
+          if (
+            error &&
+            (error.includes("currently logged in") ||
+              error.includes("được đăng nhập") ||
+              error.includes("logged in elsewhere"))
+          ) {
+            setError(t.language === "vn" ? "Phiên đã được giải phóng. Bạn có thể đăng nhập ngay." : "Session unlocked. You can now log in.");
+          }
+        }
+      };
+
+      socket.on("sessionReleased", handleSessionReleased);
+      return () => {
+        socket.off("sessionReleased", handleSessionReleased);
+      };
+    }
+  }, [socket, formData.email, error, t.language]);
 
 
   const handleLogin = async (data) => {
