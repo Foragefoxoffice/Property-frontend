@@ -747,4 +747,11 @@ export const createProjectCategory = (data) => API.post("/project-categories", d
 export const updateProjectCategory = (id, data) => API.put(`/project-categories/${id}`, data);
 export const deleteProjectCategory = (id) => API.delete(`/project-categories/${id}`);
 
+/* =========================================================
+   🔒 RECORD LOCKS
+========================================================= */
+export const acquireLock = (data) => API.post("/locks/acquire", data);
+export const releaseLock = (data) => API.post("/locks/release", data);
+export const heartbeatLock = (data) => API.post("/locks/heartbeat", data);
+
 export default API;

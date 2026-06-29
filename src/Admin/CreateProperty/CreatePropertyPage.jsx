@@ -29,11 +29,16 @@ import {
   getAllStaffs,
   getMe,
   getNextPropertyId,
+  acquireLock,
+  releaseLock,
+  heartbeatLock,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { useNavigate } from "react-router-dom";
+import { Alert, Modal } from "antd";
+import { AlertCircle } from "lucide-react";
 
 /* =====================================================================================
    MAP API → FORM
@@ -303,8 +308,10 @@ export default function CreatePropertyPage({
   const { language } = useLanguage();
   const t = translations[language];
   const [loadingSingle, setLoadingSingle] = useState(true);
-  const [loadingDropdowns, setLoadingDropdowns] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Custom theme modal state for lock
+  const [lockModal, setLockModal] = useState({ show: false, message: "", title: "", okText: "" });
 
   console.log("propertyData", propertyData)
 
@@ -335,6 +342,63 @@ export default function CreatePropertyPage({
 
     loadSingle();
   }, [isEditMode, id]);
+
+  /* =====================================================================================
+     RECORD LOCK LIFECYCLE
+  ===================================================================================== */
+  useEffect(() => {
+    let intervalId;
+
+    async function manageLock() {
+      if (!isEditMode || !id) return;
+
+      try {
+        // Try to acquire the lock
+        await acquireLock({ recordId: id, collectionName: 'CreateProperty' });
+
+        // Start heartbeat every 2 minutes (120000ms)
+        intervalId = setInterval(async () => {
+          try {
+            await heartbeatLock({ recordId: id, collectionName: 'CreateProperty' });
+          } catch (err) {
+            console.error("Lock heartbeat failed:", err);
+          }
+        }, 120000);
+
+      } catch (err) {
+        // HTTP 409: Conflict (already locked)
+        if (err.response && err.response.status === 409) {
+          const lockedByName = err.response?.data?.lockedByName || "Another user";
+          const titleMsg = language === 'vi' ? 'Bản ghi bị khóa' : 'Record Locked';
+
+          let errMsg = err.response?.data?.message;
+          if (language === 'vi') {
+            errMsg = `Bản ghi này đang được chỉnh sửa bởi ${lockedByName}. Bạn không thể sửa lúc này.`;
+          } else {
+            errMsg = `This record is currently being edited by ${lockedByName}. You cannot edit it right now.`;
+          }
+
+          const okTextMsg = language === 'vi' ? 'Đồng ý' : 'Okay';
+
+          setLockModal({ show: true, title: titleMsg, message: errMsg, okText: okTextMsg });
+        } else {
+          console.error("Lock acquisition failed:", err);
+        }
+      }
+    }
+
+    manageLock();
+
+    // Release the lock when component unmounts
+    return () => {
+      if (isEditMode && id) {
+        clearInterval(intervalId);
+        releaseLock({ recordId: id, collectionName: 'CreateProperty' }).catch(err => {
+          console.error("Failed to release lock:", err);
+        });
+      }
+    };
+  }, [isEditMode, id, navigate, defaultTransactionType]);
 
   /* =====================================================================================
      LOAD DROPDOWNS
@@ -833,16 +897,44 @@ export default function CreatePropertyPage({
   }
 
   return (
-    <Steps
-      steps={steps}
-      currentStep={step}
-      onNext={() => step < steps.length && setStep(step + 1)}
-      onPrev={() => setStep(Math.max(1, step - 1))}
-      onCancel={() => navigate(-1)}
-      onSubmit={null}
-    >
-      {renderStepContent()}
-    </Steps>
+    <>
+      <Steps
+        steps={steps}
+        currentStep={step}
+        onNext={() => step < steps.length && setStep(step + 1)}
+        onPrev={() => setStep(Math.max(1, step - 1))}
+        onCancel={() => navigate(-1)}
+        onSubmit={null}
+      >
+        {renderStepContent()}
+      </Steps>
+
+      {lockModal.show && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6">
+            <div className="flex items-center mb-4">
+              <AlertCircle className="text-red-500 mr-2" /> <h3 className="text-lg font-semibold text-gray-900">
+                {lockModal.title}
+              </h3>
+            </div>
+            <p className="text-gray-600 text-sm mb-6">
+              {lockModal.message}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  const defaultPath = defaultTransactionType ? defaultTransactionType.toLowerCase().replace(' ', '') : 'lease';
+                  navigate(`/dashboard/${defaultPath}`);
+                }}
+                className="px-6 py-2 rounded-full text-white font-semibold cursor-pointer flex items-center gap-2 bg-[#41398B] hover:bg-[#322c6d] transition shadow-md"
+              >
+                {lockModal.okText}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
