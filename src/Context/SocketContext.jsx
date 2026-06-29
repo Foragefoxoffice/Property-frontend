@@ -64,7 +64,7 @@ export const SocketProvider = ({ children }) => {
         // 🚨 LISTEN FOR CONCURRENT LOGIN ATTEMPTS
         socketInstance.on('concurrentLoginAttempt', ({ userId, attemptIp, attemptDevice }) => {
             const currentUserId = localStorage.getItem('userId');
-            if (userId === currentUserId) {
+            if (userId === currentUserId && window.location.pathname !== '/login') {
                 const message = `Security Alert: Someone tried to login to your account from ${attemptDevice} (IP: ${attemptIp}).`;
                 CommonToaster(message, "warning");
             }
