@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import { CommonToaster } from '../Common/CommonToaster';
 
 const SocketContext = createContext(null);
 
@@ -57,6 +58,15 @@ export const SocketProvider = ({ children }) => {
 
                 // Redirect to login with a message
                 window.location.href = "/login?error=inactive";
+            }
+        });
+
+        // 🚨 LISTEN FOR CONCURRENT LOGIN ATTEMPTS
+        socketInstance.on('concurrentLoginAttempt', ({ userId, attemptIp, attemptDevice }) => {
+            const currentUserId = localStorage.getItem('userId');
+            if (userId === currentUserId) {
+                const message = `Security Alert: Someone tried to login to your account from ${attemptDevice} (IP: ${attemptIp}).`;
+                CommonToaster(message, "warning");
             }
         });
 
