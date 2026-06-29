@@ -97,6 +97,7 @@ API.interceptors.response.use(
    🔐 AUTH APIs
 ========================================================= */
 export const loginUser = (data) => API.post("/auth/login", data);
+export const logoutUser = () => API.get("/auth/logout");
 export const registerUser = (data) => API.post("/auth/register", data);
 export const userRegisterApi = (data) => API.post("/auth/user-register", data);
 export const forgotPassword = (data) => API.post("/auth/forgot-password", data);

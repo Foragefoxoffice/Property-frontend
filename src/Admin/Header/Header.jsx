@@ -5,7 +5,7 @@ import { LogOut, ChevronDown, Heart, Lock, Menu, X, Phone, Mail } from "lucide-r
 import ChangePasswordModal from "./ChangePasswordModal";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
-import { getHeader, getAllProjects, getProjectCategories, getFooter } from "../../Api/action";
+import { getHeader, getAllProjects, getProjectCategories, getFooter, logoutUser } from "../../Api/action";
 import AnimatedNavLink from "../../components/AnimatedNavLink";
 import { useFavorites } from "../../Context/FavoritesContext";
 import { Tooltip } from "antd";
@@ -133,7 +133,12 @@ export default function Header({ showNavigation = true }) {
     return language === "vi" ? (value.vi || value.en || "") : (value.en || value.vi || "");
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch (err) {
+      console.error("Logout API failed", err);
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("userName");
     localStorage.removeItem("userRole");
