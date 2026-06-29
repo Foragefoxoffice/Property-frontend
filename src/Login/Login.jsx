@@ -181,9 +181,10 @@ export default function Login() {
 
           {/* Error */}
           {error && (
-            <p className="text-center text-red-500 text-xs bg-red-50 py-2 rounded-md border border-red-200">
-              {error}
-            </p>
+            <p 
+              className="text-center text-red-500 text-xs bg-red-50 py-2 px-3 rounded-md border border-red-200"
+              dangerouslySetInnerHTML={{ __html: error }}
+            />
           )}
 
           {/* Submit */}
