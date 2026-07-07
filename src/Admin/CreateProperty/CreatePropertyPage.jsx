@@ -407,24 +407,24 @@ export default function CreatePropertyPage({
     async function loadDropdowns() {
       try {
         const res = await Promise.all([
-          getAllProperties(),
-          getAllZoneSubAreas(),
-          getAllPropertyTypes(),
-          getAllAvailabilityStatuses(),
-          getAllUnits(),
-          getAllFurnishings(),
-          getAllParkings(),
-          getAllPetPolicies(),
-          getAllBlocks(),
-          getAllFloorRanges(),
-          getAllFeeTax(),
-          getAllLegalDocuments(),
-          getAllDeposits(),
-          getAllPayments(),
-          getAllCurrencies(),
+          getAllProperties({ limit: 0 }),
+          getAllZoneSubAreas({ limit: 0 }),
+          getAllPropertyTypes({ limit: 0 }),
+          getAllAvailabilityStatuses({ limit: 0 }),
+          getAllUnits({ limit: 0 }),
+          getAllFurnishings({ limit: 0 }),
+          getAllParkings({ limit: 0 }),
+          getAllPetPolicies({ limit: 0 }),
+          getAllBlocks({ limit: 0 }),
+          getAllFloorRanges({ limit: 0 }),
+          getAllFeeTax({ limit: 0 }),
+          getAllLegalDocuments({ limit: 0 }),
+          getAllDeposits({ limit: 0 }),
+          getAllPayments({ limit: 0 }),
+          getAllCurrencies({ limit: 0 }),
 
           // ✅ Missing before — NOW ADDED
-          getAllOwners(),
+          getAllOwners({ limit: 0 }),
           getAllStaffs(),
           getMe(),
         ]);
@@ -847,7 +847,7 @@ export default function CreatePropertyPage({
             isSubmitting={isSubmitting}
             refreshOwners={async () => {
               try {
-                const res = await getAllOwners();
+                const res = await getAllOwners({ limit: 0 });
                 setDropdowns((prev) => ({
                   ...prev,
                   owners: res.data.data,
