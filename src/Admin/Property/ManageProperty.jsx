@@ -565,7 +565,7 @@ export default function ManageProperty({
                         {can(permissionKey, 'view') && (
                           <Tooltip title={t.viewOnWebsite}>
                             <a
-                              href={`${import.meta.env.VITE_SITE_URL}/listing/${getLocalizedValue(p?.seoInformation?.slugUrl) || p?.listingInformation?.listingInformationPropertyId || p._id}`}
+                              href={`${import.meta.env.VITE_SITE_URL}/listing/${getLocalizedValue(p?.seoInformation?.slugUrl) || p?.listingInformation?.listingInformationPropertyId || p._id}?previewToken=${localStorage.getItem('token')}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 rounded-full hover:bg-gray-200 transition border border-gray-300 h-10 w-10 cursor-pointer flex justify-center items-center"
