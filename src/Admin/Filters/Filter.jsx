@@ -8,6 +8,7 @@ import {
   getAllFloorRanges,
   getAllCurrencies,
   getAllAvailabilityStatuses,
+  getAllFurnishings,
 } from "@/Api/action";
 import { formatNumber, parseNumber } from "@/utils/display";
 import { ArrowRight } from "lucide-react";
@@ -40,7 +41,10 @@ const Select = ({ label, name, value, onChange, options = [], placeholder, lang 
     if (!opt) return "";
     // opt may be full object from API (has name.en/name.vi) or already a { label, value } object
     if (opt.name) {
-      return lang === "vi" ? opt.name.vi || opt.name.en : opt.name.en || opt.name.vi;
+      if (typeof opt.name === "object") {
+        return lang === "vi" ? opt.name.vi || opt.name.en : opt.name.en || opt.name.vi;
+      }
+      return opt.name;
     }
     if (opt.label) return opt.label;
     if (opt.value) return opt.value;
@@ -98,6 +102,9 @@ const t = {
     cancel: "Cancel",
     apply: "Apply",
     clear: "Clear Filters",
+    bedrooms: "Bedrooms",
+    bathrooms: "Bathrooms",
+    furnishing: "Furnishing",
   },
   vi: {
     propertyInfo: "Thông tin bất động sản",
@@ -115,8 +122,24 @@ const t = {
     cancel: "Hủy",
     apply: "Áp dụng",
     clear: "Xóa bộ lọc",
+    bedrooms: "Ngủ",
+    bathrooms: "Vệ sinh",
+    furnishing: "Nội thất",
   },
 };
+
+const bedroomOptions = [
+  { id: "1", name: "1" },
+  { id: "2", name: "2" },
+  { id: "3", name: "3" },
+  { id: "4", name: "4+" },
+];
+
+const bathroomOptions = [
+  { id: "1", name: "1" },
+  { id: "2", name: "2" },
+  { id: "3", name: "3+" },
+];
 
 /* ======================================================
    MAIN FILTERS COMPONENT
@@ -135,6 +158,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   const [floorRanges, setFloorRanges] = useState([]);
   const [currencies, setCurrencies] = useState([]);
   const [availabilityStatuses, setAvailabilityStatuses] = useState([]);
+  const [furnishings, setFurnishings] = useState([]);
 
   // visible options (filtered by parent selection)
   const [projects, setProjects] = useState([]);
@@ -151,6 +175,9 @@ export default function FiltersPage({ onApply, defaultFilters }) {
     floorRange: null,
     availabilityStatus: null,
     currency: null,
+    bedrooms: null,
+    bathrooms: null,
+    furnishing: null,
     priceFrom: "",
     priceTo: "",
   });
@@ -166,7 +193,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   useEffect(() => {
     const load = async () => {
       try {
-        const [pRes, zRes, bRes, tRes, fRes, cRes, aRes] = await Promise.all([
+        const [pRes, zRes, bRes, tRes, fRes, cRes, aRes, fuRes] = await Promise.all([
           getAllProperties(),
           getAllZoneSubAreas(),
           getAllBlocks(),
@@ -174,6 +201,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           getAllFloorRanges(),
           getAllCurrencies(),
           getAllAvailabilityStatuses(),
+          getAllFurnishings({ limit: 0 }),
         ]);
 
         const pList = pRes.data?.data || [];
@@ -183,6 +211,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         const fList = fRes.data?.data || [];
         const cList = cRes.data?.data || [];
         const aList = aRes.data?.data || [];
+        const fuList = fuRes.data?.data || [];
 
         // ✅ Filter to only show Active items in dropdowns
         const filterActive = (items) => items.filter(item => item.status === "Active");
@@ -194,6 +223,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         setPropertyTypes(filterActive(tList));
         setFloorRanges(filterActive(fList));
         setAvailabilityStatuses(filterActive(aList));
+        setFurnishings(filterActive(fuList));
 
         // FIXED: currency now matches Select component format
         setCurrencies(
@@ -256,6 +286,9 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       floorRange: normalizeSelect("floorRange", defaultFilters.floorRange),
       availabilityStatus: normalizeSelect("availabilityStatus", defaultFilters.availabilityStatus),
       currency: normalizeSelect("currency", defaultFilters.currency),
+      bedrooms: normalizeSelect("bedrooms", defaultFilters.bedrooms),
+      bathrooms: normalizeSelect("bathrooms", defaultFilters.bathrooms),
+      furnishing: normalizeSelect("furnishing", defaultFilters.furnishing),
       propertyNumber: defaultFilters.propertyNumber || "",
       priceFrom: formatNumber(defaultFilters.priceFrom || ""),
       priceTo: formatNumber(defaultFilters.priceTo || ""),
@@ -372,6 +405,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       const resolvedFloorRange = resolveName(prev.floorRange, floorRanges, (f) => f.name?.[lang] || "");
       const resolvedAvailabilityStatus = resolveName(prev.availabilityStatus, availabilityStatuses, (a) => a.name?.[lang] || "");
       const resolvedCurrency = resolveName(prev.currency, currencies, (c) => c.name || "", "code");
+      const resolvedFurnishing = resolveName(prev.furnishing, furnishings, (fu) => fu.name?.[lang] || "");
 
       return {
         ...prev,
@@ -381,7 +415,8 @@ export default function FiltersPage({ onApply, defaultFilters }) {
         propertyType: resolvedPropertyType,
         floorRange: resolvedFloorRange,
         availabilityStatus: resolvedAvailabilityStatus,
-        currency: resolvedCurrency
+        currency: resolvedCurrency,
+        furnishing: resolvedFurnishing,
       };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -400,6 +435,9 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       floorRange: null,
       availabilityStatus: null,
       currency: null,
+      bedrooms: null,
+      bathrooms: null,
+      furnishing: null,
       priceFrom: "",
       priceTo: "",
     });
@@ -490,6 +528,33 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           value={filters.availabilityStatus}
           onChange={update}
           options={availabilityStatuses}
+          lang={lang}
+        />
+
+        <Select
+          label={t[lang].bedrooms}
+          name="bedrooms"
+          value={filters.bedrooms}
+          onChange={update}
+          options={bedroomOptions}
+          lang={lang}
+        />
+
+        <Select
+          label={t[lang].bathrooms}
+          name="bathrooms"
+          value={filters.bathrooms}
+          onChange={update}
+          options={bathroomOptions}
+          lang={lang}
+        />
+
+        <Select
+          label={t[lang].furnishing}
+          name="furnishing"
+          value={filters.furnishing}
+          onChange={update}
+          options={furnishings}
           lang={lang}
         />
       </div>

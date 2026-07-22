@@ -86,6 +86,9 @@ export default function ManageTrashProperty() {
         if (appliedFilters.propertyNumber) params.propertyNo = appliedFilters.propertyNumber;
         if (appliedFilters.floorRange?.name) params.floor = appliedFilters.floorRange.name;
         if (appliedFilters.availabilityStatus?.name) params.availabilityStatus = appliedFilters.availabilityStatus.name;
+        if (appliedFilters.bedrooms?.id) params.bedrooms = appliedFilters.bedrooms.id;
+        if (appliedFilters.bathrooms?.id) params.bathrooms = appliedFilters.bathrooms.id;
+        if (appliedFilters.furnishing?.name) params.furnishing = appliedFilters.furnishing.name;
 
         if (appliedFilters.currency?.code) {
           params.currency = appliedFilters.currency.code;
