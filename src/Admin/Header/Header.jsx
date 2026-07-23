@@ -187,7 +187,7 @@ export default function Header({ showNavigation = true }) {
               href={import.meta.env.VITE_SITE_URL || "https://183housingsolutions.com"}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-[#41398B] cursor-pointer text-white rounded-lg text-sm font-semibold transition-colors hover:bg-[#352e7a]"
+              className="px-4 py-2 bg-[#41398B] cursor-pointer text-white rounded-full text-sm font-semibold transition-colors hover:bg-[#352e7a]"
             >
               {labels.visitSite[language]}
             </a>
@@ -367,7 +367,7 @@ export default function Header({ showNavigation = true }) {
         <div className="max-w-[1400px] mx-auto px-2 md:px-6 md:py-3 py-2 flex items-center justify-between relative">
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 text-gray-600 hover:text-[#41398B] transition-colors rounded-lg hover:bg-gray-50"
+            className="lg:hidden p-2 text-gray-600 hover:text-[#41398B] transition-colors rounded-full hover:bg-gray-50"
             onClick={() => setIsMobileMenuOpen(true)}
             aria-label="Toggle menu"
           >

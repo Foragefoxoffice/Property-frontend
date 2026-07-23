@@ -254,7 +254,7 @@ export default function PropertyHome({ property }) {
                     <div className="flex items-center gap-3">
                         <button
                             onClick={handleShare}
-                            className="flex items-center cursor-pointer gap-1 px-3 py-2 rounded-lg transition-all"
+                            className="flex items-center cursor-pointer gap-1 px-3 py-2 rounded-full transition-all"
                             title={t.share}
                         >
                             <Share2 className="w-5 h-5 text-[#41398B]" />
@@ -262,7 +262,7 @@ export default function PropertyHome({ property }) {
                         </button>
                         <button
                             onClick={handleFavoriteToggle}
-                            className={`flex items-center cursor-pointer gap-1 px-3 py-2 rounded-lg transition-all`}
+                            className={`flex items-center cursor-pointer gap-1 px-3 py-2 rounded-full transition-all`}
                             title={t.favorite}
                         >
                             <Heart className={`w-5 h-5 ${favorite ? 'fill-[#eb4d4d] text-[#eb4d4d]' : 'text-[#41398B]'}`} />

@@ -94,7 +94,7 @@ export default function Subscription() {
 
                     <button
                         onClick={exportToCSV}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#41398B] rounded-lg font-medium transition shadow-sm text-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-[#41398B] rounded-full font-medium transition shadow-sm text-sm"
                     >
                         <CloudDownload size={16} /> {t.exportCSV}
                     </button>
@@ -168,7 +168,7 @@ export default function Subscription() {
                         </p>
                         <div className="flex justify-center gap-3">
                             <button onClick={() => setDeleteConfirm({ show: false, id: null })} className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">{t.cancel}</button>
-                            <button onClick={handleDelete} className="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium shadow-sm">{t.delete}</button>
+                            <button onClick={handleDelete} className="px-5 py-2.5 rounded-full bg-red-600 text-white hover:bg-red-700 font-medium shadow-sm">{t.delete}</button>
                         </div>
                     </div>
                 </div>

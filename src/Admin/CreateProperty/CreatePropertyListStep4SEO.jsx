@@ -645,7 +645,7 @@ export default function CreatePropertyListStep4SEO({
         <button
           onClick={handleComplete}
           disabled={isSubmitting}
-          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
             }`}
         >
           {isSubmitting ? (
@@ -999,7 +999,7 @@ export default function CreatePropertyListStep4SEO({
       <div className="flex justify-between mt-10">
         <button
           onClick={onPrev}
-          className="px-6 py-2 bg-white cursor-pointer border border-gray-300 rounded-lg hover:bg-gray-50 flex gap-2 items-center"
+          className="px-6 py-2 bg-white cursor-pointer border border-gray-300 rounded-full hover:bg-gray-50 flex gap-2 items-center"
         >
           <ArrowLeft size={18} /> {labels.back[activeLang]}
         </button>
@@ -1009,7 +1009,7 @@ export default function CreatePropertyListStep4SEO({
             onChange({ seoInformation: seo });  // keep SEO data
             onNext();  // go to preview
           }}
-          className="px-6 py-2 bg-[#41398B] cursor-pointer hover:bg-[#322e7e] text-white rounded-lg flex items-center gap-2"
+          className="px-6 py-2 bg-[#41398B] cursor-pointer hover:bg-[#322e7e] text-white rounded-full flex items-center gap-2"
         >
           {labels.next[activeLang]} <ArrowRight size={18} />
         </button>

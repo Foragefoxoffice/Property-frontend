@@ -609,7 +609,7 @@ export default function BulkUpload() {
             </p>
             <button
               onClick={generateTemplate}
-              className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398B] text-white rounded-lg transition cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398B] text-white rounded-full transition cursor-pointer"
             >
               <Download className="w-4 h-4" />
               {bt.downloadTemplate}
@@ -708,7 +708,7 @@ export default function BulkUpload() {
           <button
             onClick={handleUpload}
             disabled={!selectedFile || uploading}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition ${!selectedFile || uploading
+            className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition ${!selectedFile || uploading
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-[#41398B] hover:bg-[#41398be3] text-white cursor-pointer"
               }`}
@@ -721,7 +721,7 @@ export default function BulkUpload() {
             <button
               onClick={handleReset}
               disabled={uploading}
-              className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+              className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full font-medium text-gray-700 hover:bg-gray-50 transition cursor-pointer"
             >
               <X className="w-4 h-4" />
               {bt.cancel}
@@ -797,7 +797,7 @@ export default function BulkUpload() {
               <button
                 onClick={handleConfirmedUpload}
                 disabled={uploading}
-                className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {uploading ? "Uploading..." : `Upload ${uploadResults.successful} Corrected Values`}
               </button>
@@ -836,7 +836,7 @@ export default function BulkUpload() {
               <button
                 onClick={handleConfirmedUpload}
                 disabled={uploading}
-                className="w-full px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg font-medium transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {uploading ? "Uploading..." : `Upload ${uploadResults.successful} Corrected Values`}
               </button>

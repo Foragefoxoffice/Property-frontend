@@ -551,7 +551,7 @@ export default function HomePageForm() {
                                                 onClick={() => {
                                                     fetchPageData();
                                                 }}
-                                                className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
+                                                className="rounded-full font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                             >
                                                 Cancel
                                             </Button>
@@ -562,7 +562,7 @@ export default function HomePageForm() {
                                             size="large"
                                             icon={<SaveOutlined />}
                                             loading={bannerLoading}
-                                            className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
+                                            className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
                                         >
                                             {pageData ? 'Save Banner' : 'Create Page'}
                                         </Button>
@@ -915,7 +915,7 @@ export default function HomePageForm() {
                                             size="large"
                                             icon={<SaveOutlined />}
                                             loading={aboutLoading}
-                                            className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
+                                            className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
                                         >
                                             {pageData ? 'Save About Section' : 'Create Page'}
                                         </Button>
@@ -1064,7 +1064,7 @@ export default function HomePageForm() {
                                             size="large"
                                             icon={<SaveOutlined />}
                                             loading={featureLoading}
-                                            className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
+                                            className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
                                         >
                                             {pageData ? 'Save Features Section' : 'Create Page'}
                                         </Button>

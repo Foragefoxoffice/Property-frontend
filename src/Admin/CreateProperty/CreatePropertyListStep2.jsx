@@ -391,8 +391,8 @@ export default function CreatePropertyListStep2({
           uploadingMsg = `Uploading ${type === "floor" ? "floor plan" : type}...`;
         } else {
           uploadingMsg = type === "image" ? "Đang tải ảnh lên..." :
-                         type === "video" ? "Đang tải video lên..." :
-                         "Đang tải sơ đồ mặt bằng lên...";
+            type === "video" ? "Đang tải video lên..." :
+              "Đang tải sơ đồ mặt bằng lên...";
         }
         CommonToaster(uploadingMsg, "info");
 
@@ -406,8 +406,8 @@ export default function CreatePropertyListStep2({
           successMsg = `${type === "floor" ? "Floor plan" : type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully!`;
         } else {
           successMsg = type === "image" ? "Tải ảnh lên thành công" :
-                       type === "video" ? "Tải video lên thành công" :
-                       "Tải sơ đồ mặt bằng lên thành công";
+            type === "video" ? "Tải video lên thành công" :
+              "Tải sơ đồ mặt bằng lên thành công";
         }
         CommonToaster(successMsg, "success");
         console.log(`✅ ${type} uploaded: ${response.data.fileName} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
@@ -418,8 +418,8 @@ export default function CreatePropertyListStep2({
           failMsg = `Failed to upload ${type}. Please try again.`;
         } else {
           failMsg = type === "image" ? "Tải ảnh lên thất bại" :
-                    type === "video" ? "Tải video lên thất bại" :
-                    "Tải sơ đồ mặt bằng lên thất bại";
+            type === "video" ? "Tải video lên thất bại" :
+              "Tải sơ đồ mặt bằng lên thất bại";
         }
         CommonToaster(failMsg, "error");
         continue;
@@ -741,7 +741,7 @@ export default function CreatePropertyListStep2({
         <button
           onClick={handleComplete}
           disabled={isSubmitting}
-          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
             }`}
         >
           {isSubmitting ? (
@@ -2283,7 +2283,7 @@ export default function CreatePropertyListStep2({
           }}
 
 
-          className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg cursor-pointer flex gap-1.5 items-center"
+          className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full cursor-pointer flex gap-1.5 items-center"
         >
           {lang === "en" ? "Next" : "Tiếp theo"} <ArrowRight size={18} />
         </button>

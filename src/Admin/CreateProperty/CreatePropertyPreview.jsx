@@ -631,7 +631,7 @@ export default function CreatePropertyPreview({
         <div className="flex justify-between pt-10">
           <button
             onClick={onPrev}
-            className="px-6 py-2 bg-white border border-gray-300 items-center text-gray-700 rounded-lg hover:bg-gray-100 flex gap-1.5 cursor-pointer"
+            className="px-6 py-2 bg-white border border-gray-300 items-center text-gray-700 rounded-full hover:bg-gray-100 flex gap-1.5 cursor-pointer"
           >
             <ArrowLeft size={18} /> {labels.previous[lang]}
           </button>
@@ -642,7 +642,7 @@ export default function CreatePropertyPreview({
               await onPublish(finalStatus);
             }}
             disabled={isSubmitting}
-            className={`px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg font-medium transition flex items-center justify-center gap-2 w-full sm:w-auto ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+            className={`px-6 py-3 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition flex items-center justify-center gap-2 w-full sm:w-auto ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
               }`}
           >
             {isSubmitting ? (

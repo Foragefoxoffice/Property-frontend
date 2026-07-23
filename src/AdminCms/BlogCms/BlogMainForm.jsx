@@ -620,7 +620,7 @@ export default function BlogMainForm({
                                         size="large"
                                         icon={<SaveOutlined />}
                                         loading={loading}
-                                        className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
+                                        className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
                                     >
                                         {activeTab === 'vn'
                                             ? (blogData ? 'Lưu Tin tức' : 'Tạo Tin tức')

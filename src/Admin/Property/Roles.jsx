@@ -529,7 +529,7 @@ export default function Roles() {
                                 type="submit"
                                 form="roleForm"
                                 disabled={isSubmitting}
-                                className={`px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium shadow-md flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+                                className={`px-6 py-2.5 rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium shadow-md flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
                                 {isSubmitting && (
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -554,7 +554,7 @@ export default function Roles() {
                         </p>
                         <div className="flex justify-center gap-3">
                             <button onClick={() => setDeleteConfirm({ show: false, id: null })} className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium">{t.cancel}</button>
-                            <button onClick={handleDelete} className="px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium shadow-sm">{t.delete}</button>
+                            <button onClick={handleDelete} className="px-5 py-2.5 rounded-full bg-red-600 text-white hover:bg-red-700 font-medium shadow-sm">{t.delete}</button>
                         </div>
                     </div>
                 </div>

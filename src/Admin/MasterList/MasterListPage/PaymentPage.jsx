@@ -216,7 +216,7 @@ export default function PaymentPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-xl bg-[#41398B] text-white"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -545,7 +545,7 @@ export default function PaymentPage() {
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition"
+                className="px-6 py-2 cursor-pointer rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white transition"
               >
                 {editingPayment
                   ? activeLang === "EN"

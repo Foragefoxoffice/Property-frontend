@@ -299,7 +299,7 @@ export default function TestimonialsCms() {
                             <button
                                 type="submit"
                                 disabled={updatingHeader}
-                                className="px-8 py-3 bg-[#41398B] text-white rounded-lg font-semibold hover:bg-[#41398be3] transition-all disabled:opacity-50 flex items-center gap-2 text-sm shadow-lg shadow-[#41398B]/20"
+                                className="px-8 py-3 bg-[#41398B] text-white rounded-full font-semibold hover:bg-[#41398be3] transition-all disabled:opacity-50 flex items-center gap-2 text-sm shadow-lg shadow-[#41398B]/20"
                             >
                                 {updatingHeader ? <RefreshCw className="w-5 h-5 animate-spin" /> : (t.saveChanges || "Save Changes")}
                             </button>
@@ -525,7 +525,7 @@ export default function TestimonialsCms() {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="flex-1 px-6 py-3 bg-[#41398B] text-white font-semibold rounded-xl hover:bg-[#41398be3] transition-all flex items-center justify-center gap-2"
+                                        className="flex-1 px-6 py-3 bg-[#41398B] text-white font-semibold rounded-full hover:bg-[#41398be3] transition-all flex items-center justify-center gap-2"
                                     >
                                         {saving ? <RefreshCw className="w-5 h-5 animate-spin" /> : (t.saveTestimonial || "Save Testimonial")}
                                     </button>
@@ -557,7 +557,7 @@ export default function TestimonialsCms() {
                                 </button>
                                 <button
                                     onClick={handleConfirmDelete}
-                                    className="flex-1 cursor-pointer px-6 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-200 font-['Manrope']"
+                                    className="flex-1 cursor-pointer px-6 py-3 bg-red-500 text-white font-bold rounded-full hover:bg-red-600 transition-all shadow-lg shadow-red-200 font-['Manrope']"
                                 >
                                     {t.delete || "Delete"}
                                 </button>

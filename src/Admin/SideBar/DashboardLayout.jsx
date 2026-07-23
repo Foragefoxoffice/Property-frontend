@@ -137,7 +137,7 @@ const DashboardLayout = () => {
                         {/* MY PROFILE */}
                         <Link
                             to="/dashboard/profile"
-                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                  ${isActive("/dashboard/profile") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
                         >
@@ -168,7 +168,7 @@ const DashboardLayout = () => {
                                         {!isHidden("properties.lease") && (
                                             <Link
                                                 to="/dashboard/lease"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/lease") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -181,7 +181,7 @@ const DashboardLayout = () => {
                                         {!isHidden("properties.sale") && (
                                             <Link
                                                 to="/dashboard/sale"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/sale") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -194,7 +194,7 @@ const DashboardLayout = () => {
                                         {!isHidden("properties.homestay") && (
                                             <Link
                                                 to="/dashboard/homestay"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/homestay") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -231,7 +231,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.homePage") && (
                                             <Link
                                                 to="/dashboard/cms/home"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/home") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -244,7 +244,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.aboutUs") && (
                                             <Link
                                                 to="/dashboard/cms/about"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/about") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -257,7 +257,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.contactUs") && (
                                             <Link
                                                 to="/dashboard/cms/contact"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/contact") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -270,7 +270,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.header") && (
                                             <Link
                                                 to="/dashboard/cms/header"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/header") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -283,7 +283,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.footer") && (
                                             <Link
                                                 to="/dashboard/cms/footer"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/footer") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -296,7 +296,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.agent") && (
                                             <Link
                                                 to="/dashboard/cms/agent"
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/agent") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -308,7 +308,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.termsConditions") && (
                                             <Link
                                                 to="/dashboard/cms/terms-conditions"
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/terms-conditions") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -320,7 +320,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.privacyPolicy") && (
                                             <Link
                                                 to="/dashboard/cms/privacy-policy"
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/privacy-policy") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -333,7 +333,7 @@ const DashboardLayout = () => {
                                         {!isHidden("cms.blogBanner") && (
                                             <Link
                                                 to="/dashboard/cms/blog-banner"
-                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-2 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/blog-banner") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -368,7 +368,7 @@ const DashboardLayout = () => {
                                         {!isHidden("projects.category") && (
                                             <Link
                                                 to="/dashboard/cms/project-categories"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                                                 ${isActive("/dashboard/cms/project-categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                                                 `}
                                             >
@@ -380,7 +380,7 @@ const DashboardLayout = () => {
                                         {!isHidden("projects.projectCms") && (
                                             <Link
                                                 to="/dashboard/cms/projects"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                                                 ${isActive("/dashboard/cms/projects") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                                                 `}
                                             >
@@ -392,7 +392,7 @@ const DashboardLayout = () => {
                                         {!isHidden("projects.projectEnquiries") && (
                                             <Link
                                                 to="/dashboard/cms/project-enquiry"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                                                 ${isActive("/dashboard/cms/project-enquiry") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                                                 `}
                                             >
@@ -428,7 +428,7 @@ const DashboardLayout = () => {
                                         {!isHidden("blogs.category") && (
                                             <Link
                                                 to="/dashboard/cms/categories"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/categories") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -441,7 +441,7 @@ const DashboardLayout = () => {
                                         {!isHidden("blogs.blogCms") && (
                                             <Link
                                                 to="/dashboard/cms/blogs"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/cms/blogs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -454,7 +454,7 @@ const DashboardLayout = () => {
                                         {!isHidden("blogs.subscription") && (
                                             <Link
                                                 to="/dashboard/subscription"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/subscription") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -490,7 +490,7 @@ const DashboardLayout = () => {
                                         {!isHidden("userManagement.userDetails") && (
                                             <Link
                                                 to="/dashboard/user-details"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/user-details") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -503,7 +503,7 @@ const DashboardLayout = () => {
                                         {!isHidden("userManagement.enquires") && (
                                             <Link
                                                 to="/dashboard/enquiry"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/enquiry") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -539,7 +539,7 @@ const DashboardLayout = () => {
                                         {!isHidden("menuStaffs.roles") && (
                                             <Link
                                                 to="/dashboard/roles"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/roles") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -552,7 +552,7 @@ const DashboardLayout = () => {
                                         {!isHidden("menuStaffs.staffs") && (
                                             <Link
                                                 to="/dashboard/staffs"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/staffs") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -588,7 +588,7 @@ const DashboardLayout = () => {
                                         {!isHidden("otherEnquiry.contactEnquiry") && (
                                             <Link
                                                 to="/dashboard/contact-enquiry"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                       ${isActive("/dashboard/contact-enquiry") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                     `}
                                             >
@@ -623,7 +623,7 @@ const DashboardLayout = () => {
                                         {/* NOTIFICATION */}
                                         <Link
                                             to="/dashboard/settings/notification"
-                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                        ${isActive("/dashboard/settings/notification") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                      `}
                                         >
@@ -635,7 +635,7 @@ const DashboardLayout = () => {
                                         {!isHidden("settings.testimonials") && (
                                             <Link
                                                 to="/dashboard/settings/testimonials"
-                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                                    ${isActive("/dashboard/settings/testimonials") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                                  `}
                                             >
@@ -654,7 +654,7 @@ const DashboardLayout = () => {
                         {!isHidden("landlords") && (
                             <Link
                                 to="/dashboard/landlords"
-                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                  ${isActive("/dashboard/landlords") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
                             >
@@ -668,7 +668,7 @@ const DashboardLayout = () => {
                         {!isHidden("masters") && (
                             <Link
                                 to="/dashboard/masters"
-                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                                className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                  ${isActive("/dashboard/masters") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
                             >
@@ -680,7 +680,7 @@ const DashboardLayout = () => {
                         {/* TRASH */}
                         <Link
                             to="/dashboard/trash"
-                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-xl transition
+                            className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-full transition
                  ${isActive("/dashboard/trash") ? "bg-[#41398B] text-white" : "hover:bg-[#41398B] hover:text-white"}
                `}
                         >

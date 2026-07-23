@@ -741,7 +741,7 @@ export default function PropertyDetailsSection({ property }) {
             <button
               onClick={handleSendRequest}
               disabled={sending}
-              className={`w-full mt-4 text-white cursor-pointer py-3 rounded-xl font-bold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${sending ? "bg-gray-400 cursor-not-allowed" : "bg-[#41398B] hover:bg-[#352e7a]"
+              className={`w-full mt-4 text-white cursor-pointer py-3 rounded-full font-bold transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 ${sending ? "bg-gray-400 cursor-not-allowed" : "bg-[#41398B] hover:bg-[#352e7a]"
                 }`}
             >
               {sending ? (

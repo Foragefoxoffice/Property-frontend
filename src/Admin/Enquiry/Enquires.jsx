@@ -222,7 +222,7 @@ export default function Enquires() {
                 {selectedIds.length > 0 && (
                     <button
                         onClick={handleBulkDeleteClick}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-sm"
                     >
                         <Trash2 className="w-4 h-4" />
                         {t.delete || "Delete"} ({selectedIds.length})
@@ -618,7 +618,7 @@ export default function Enquires() {
                             <button
                                 onClick={handleBulkDelete}
                                 disabled={deleteLoading}
-                                className={`px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition flex items-center justify-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+                                className={`px-5 py-2.5 bg-red-600 text-white rounded-full hover:bg-red-700 font-medium text-sm shadow-sm transition flex items-center justify-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
                                 {deleteLoading && (
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -770,7 +770,7 @@ export default function Enquires() {
                             <button
                                 onClick={handleDelete}
                                 disabled={deleteLoading}
-                                className={`px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition flex items-center justify-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+                                className={`px-5 py-2.5 bg-red-600 text-white rounded-full hover:bg-red-700 font-medium text-sm shadow-sm transition flex items-center justify-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                             >
                                 {deleteLoading && (
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

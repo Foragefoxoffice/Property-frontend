@@ -310,7 +310,7 @@ const OwnersLandlords = ({ openOwnerView }) => {
         {can("landlords", "add") && (
           <button
             onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2 text-white bg-[#41398B] rounded-lg shadow"
+            className="flex items-center gap-2 px-4 py-2 text-white bg-[#41398B] rounded-full shadow"
           >
             <Plus size={18} />
             {language === "vi" ? "Chủ sở hữu mới" : "New Owner"}
@@ -944,7 +944,7 @@ const AddEditOwnerModal = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`px-4 py-2 bg-[#41398B] text-white rounded-lg cursor-pointer flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+              className={`px-4 py-2 bg-[#41398B] text-white rounded-full cursor-pointer flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
             >
               {isSubmitting && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

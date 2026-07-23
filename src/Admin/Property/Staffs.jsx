@@ -709,7 +709,7 @@ export default function Staffs({ openStaffView }) {
               <button
                 onClick={handleDelete}
                 disabled={deleteLoading}
-                className={`px-5 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm font-medium shadow-sm flex items-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
+                className={`px-5 py-2.5 rounded-full bg-red-600 text-white hover:bg-red-700 text-sm font-medium shadow-sm flex items-center gap-2 ${deleteLoading ? "opacity-70 cursor-not-allowed" : ""}`}
               >
                 {deleteLoading && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1075,7 +1075,7 @@ export default function Staffs({ openStaffView }) {
                 type="submit"
                 form="staffForm"
                 disabled={isSubmitting}
-                className={`px-6 py-2.5 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
+                className={`px-6 py-2.5 cursor-pointer rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white transition font-medium text-sm shadow-md flex items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
               >
                 {isSubmitting && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

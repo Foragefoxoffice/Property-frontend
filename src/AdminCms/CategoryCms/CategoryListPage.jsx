@@ -410,14 +410,14 @@ export default function CategoryListPage() {
                                     <button
                                         type="button"
                                         onClick={handleCloseModal}
-                                        className="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium transition bg-white"
+                                        className="px-5 py-2.5 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-medium transition bg-white"
                                     >
                                         {t.cancel}
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={submitLoading}
-                                        className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white text-sm font-medium shadow-md transition disabled:opacity-70"
+                                        className="px-6 py-2.5 rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white text-sm font-medium shadow-md transition disabled:opacity-70"
                                     >
                                         {submitLoading ? t.saving : (editingCategory ? t.update : t.create)}
                                     </button>
@@ -454,7 +454,7 @@ export default function CategoryListPage() {
                                 <button
                                     onClick={handleDelete}
                                     disabled={submitLoading}
-                                    className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 text-sm font-medium shadow-sm"
+                                    className="px-5 py-2.5 bg-red-600 text-white rounded-full hover:bg-red-700 disabled:opacity-50 text-sm font-medium shadow-sm"
                                 >
                                     {submitLoading ? t.deleting : t.yesDelete}
                                 </button>

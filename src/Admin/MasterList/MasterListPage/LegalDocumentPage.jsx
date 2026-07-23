@@ -437,7 +437,7 @@ export default function LegalDocumentPage() {
 
               <button
                 onClick={handleDelete}
-                className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
               >
                 {isVI ? "Xóa" : "Delete"}
               </button>

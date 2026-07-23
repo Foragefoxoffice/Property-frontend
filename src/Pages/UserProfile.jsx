@@ -511,7 +511,7 @@ export default function UserProfile() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-xl font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
+                                className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-full font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
                             >
                                 {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                                 {t?.saveChanges || "Save Changes"}
@@ -675,7 +675,7 @@ export default function UserProfile() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-xl font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
+                                className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-full font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
                             >
                                 {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                                 {language === "vi" ? "Cập Nhật Hồ Sơ" : "Update Staff Profile"}
@@ -764,7 +764,7 @@ export default function UserProfile() {
                         <button
                             type="submit"
                             disabled={passwordSaving}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-xl font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
+                            className="flex items-center gap-2 px-6 py-2.5 bg-[#41398B] hover:bg-[#352e7a] text-white rounded-full font-medium transition-colors disabled:opacity-70 shadow-lg shadow-[#41398B]/20"
                         >
                             {passwordSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                             {t?.updatePassword || "Update Password"}

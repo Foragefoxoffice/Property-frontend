@@ -109,7 +109,7 @@ export default function ProjectListPage() {
                     <p className="text-sm text-gray-500 mt-1">{t.pageDescription}</p>
                 </div>
                 <Link to="/dashboard/cms/projects/create">
-                    <button className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg font-medium transition shadow-md cursor-pointer">
+                    <button className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition shadow-md cursor-pointer">
                         <Plus size={18} />
                         {t.createProject}
                     </button>
@@ -294,7 +294,7 @@ export default function ProjectListPage() {
                         <p className="text-sm text-gray-500 mb-6">{t.deleteConfirmation}</p>
                         <div className="flex justify-end gap-3">
                             <button onClick={() => setDeleteModalVisible(false)} className="px-5 py-2.5 border rounded-lg text-sm">{t.cancel}</button>
-                            <button onClick={handleConfirmDelete} disabled={submitLoading} className="px-5 py-2.5 bg-red-600 text-white rounded-lg text-sm shadow-sm transition disabled:opacity-50">
+                            <button onClick={handleConfirmDelete} disabled={submitLoading} className="px-5 py-2.5 bg-red-600 text-white rounded-full text-sm shadow-sm transition disabled:opacity-50">
                                 {submitLoading ? t.deleting : t.yesDelete}
                             </button>
                         </div>

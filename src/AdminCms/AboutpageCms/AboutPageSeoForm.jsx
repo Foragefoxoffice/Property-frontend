@@ -359,7 +359,7 @@ export default function AboutPageSeoForm({
 
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[8000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="p-8 space-y-6 bg-white border-t border-gray-100">
-                    
+
                     {/* 🌐 LANGUAGE TABS */}
                     <div className="flex items-center justify-between mb-6 border-b border-gray-200">
                         <div className="flex">
@@ -670,7 +670,7 @@ export default function AboutPageSeoForm({
                                 size="large"
                                 icon={<SaveOutlined />}
                                 loading={loading}
-                                className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
+                                className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
                             >
                                 {activeLang === 'vn' ? (pageData ? 'Lưu Cài Đặt SEO' : 'Tạo Trang') : (pageData ? 'Save SEO Settings' : 'Create Page')}
                             </Button>

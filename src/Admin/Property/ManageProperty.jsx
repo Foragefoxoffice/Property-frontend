@@ -339,7 +339,7 @@ export default function ManageProperty({
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowFilterPopup(true)}
-            className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 cursor-pointer"
+            className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
           >
             <SlidersHorizontal className="w-4 h-4" />
             {t.filter}
@@ -350,7 +350,7 @@ export default function ManageProperty({
             can(permissionKey, 'bulkUpload') && (
               <button
                 onClick={() => navigate(`/dashboard/${transactionRoute}/bulk-upload`)}
-                className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 cursor-pointer"
+                className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
               >
                 <Upload className="w-4 h-4" />
                 {t.bulkUpload}
@@ -364,7 +364,7 @@ export default function ManageProperty({
             can(permissionKey, 'add') && (
               <button
                 onClick={() => navigate(`/dashboard/${transactionRoute}/create`)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-lg shadow-md"
+                className="flex items-center gap-2 px-4 py-2 bg-[#41398B] hover:bg-[#41398be3] cursor-pointer text-white rounded-full shadow-md"
               >
                 <Plus className="w-4 h-4" />
                 {t.addProperty}

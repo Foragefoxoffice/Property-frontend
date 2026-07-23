@@ -360,8 +360,8 @@ export default function ProjectCategoryListPage() {
                                     />
                                 </div>
                                 <div className="flex justify-end gap-3 pt-2">
-                                    <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-lg border text-sm font-medium transition bg-white">{t.cancel}</button>
-                                    <button type="submit" disabled={submitLoading} className="px-6 py-2.5 rounded-lg bg-[#41398B] hover:bg-[#2f2775] text-white text-sm font-medium shadow-md transition disabled:opacity-70">
+                                    <button type="button" onClick={handleCloseModal} className="px-5 py-2.5 rounded-full border text-sm font-medium transition bg-white">{t.cancel}</button>
+                                    <button type="submit" disabled={submitLoading} className="px-6 py-2.5 rounded-full bg-[#41398B] hover:bg-[#2f2775] text-white text-sm font-medium shadow-md transition disabled:opacity-70">
                                         {submitLoading ? t.saving : (editingCategory ? t.update : t.create)}
                                     </button>
                                 </div>
@@ -384,7 +384,7 @@ export default function ProjectCategoryListPage() {
                         <p className="text-sm text-gray-600 mb-5">{t.cannotBeUndone}</p>
                         <div className="flex justify-end gap-3">
                             <button onClick={() => setIsDeleteModalOpen(false)} className="px-5 py-2.5 border rounded-lg text-sm font-medium">{t.cancel}</button>
-                            <button onClick={handleDelete} disabled={submitLoading} className="px-5 py-2.5 bg-red-600 text-white rounded-lg text-sm font-medium shadow-sm">
+                            <button onClick={handleDelete} disabled={submitLoading} className="px-5 py-2.5 bg-red-600 text-white rounded-full text-sm font-medium shadow-sm">
                                 {submitLoading ? t.deleting : t.yesDelete}
                             </button>
                         </div>

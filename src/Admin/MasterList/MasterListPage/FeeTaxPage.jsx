@@ -234,7 +234,7 @@ export default function FeeTaxPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-xl bg-[#41398B] text-white"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -453,7 +453,7 @@ export default function FeeTaxPage() {
 
               <button
                 onClick={handleDelete}
-                className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
               >
                 {isVI ? "Xóa" : "Delete"}
               </button>

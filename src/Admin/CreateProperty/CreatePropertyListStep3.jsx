@@ -278,7 +278,7 @@ export default function CreatePropertyListStep3({
         <button
           onClick={handleComplete}
           disabled={isSubmitting}
-          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+          className={`bg-[#41398B] mt-[-20px] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#322c6d] transition shadow-md ${isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
             }`}
         >
           {isSubmitting ? (
@@ -486,7 +486,7 @@ export default function CreatePropertyListStep3({
       <div className="flex justify-between mt-10">
         <button
           onClick={onPrev}
-          className="px-6 py-2 bg-white border border-gray-300 text-gray-700 gap-1.5 rounded-lg hover:bg-gray-100 flex items-center cursor-pointer"
+          className="px-6 py-2 bg-white border border-gray-300 text-gray-700 gap-1.5 rounded-full hover:bg-gray-100 flex items-center cursor-pointer"
         >
           <ArrowLeft size={18} /> {t.prev}
         </button>
@@ -524,7 +524,7 @@ export default function CreatePropertyListStep3({
             onNext && onNext();   // <-- THIS WILL MOVE THE USER TO STEP 4
 
           }}
-          className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg items-center flex gap-1 cursor-pointer"
+          className="px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full items-center flex gap-1 cursor-pointer"
         >
           {t.next} <ArrowRight size={18} />
         </button>

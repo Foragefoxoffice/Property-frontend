@@ -17,7 +17,7 @@ export default function Steps({
         <div className="flex items-center gap-3 mb-6">
           <button
             onClick={onCancel}
-            className="p-2 rounded-lg bg-[#41398B] hover:bg-[#41398be3] cursor-pointer transition"
+            className="p-2 rounded-full bg-[#41398B] hover:bg-[#41398be3] cursor-pointer transition"
           >
             <ArrowLeft className="w-4 h-4 text-white" />
           </button>

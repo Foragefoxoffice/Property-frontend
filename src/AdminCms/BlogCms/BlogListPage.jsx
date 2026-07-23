@@ -122,7 +122,7 @@ export default function BlogListPage() {
                 </div>
                 <Link to="/dashboard/cms/blogs/create">
                     <button
-                        className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-lg font-medium transition shadow-md cursor-pointer"
+                        className="flex items-center gap-2 px-6 py-2 bg-[#41398B] hover:bg-[#41398be3] text-white rounded-full font-medium transition shadow-md cursor-pointer"
                     >
                         <Plus size={18} />
                         {t.createNews}
@@ -332,14 +332,14 @@ export default function BlogListPage() {
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={handleCancelDelete}
-                                className="px-5 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
+                                className="px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50 text-gray-700 font-medium text-sm transition"
                             >
                                 {t.cancel}
                             </button>
                             <button
                                 onClick={handleConfirmDelete}
                                 disabled={submitLoading}
-                                className="px-5 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium text-sm shadow-sm transition disabled:opacity-50"
+                                className="px-5 py-2.5 bg-red-600 text-white rounded-full hover:bg-red-700 font-medium text-sm shadow-sm transition disabled:opacity-50"
                             >
                                 {submitLoading ? t.deletingNews : t.yesDeleteNews}
                             </button>

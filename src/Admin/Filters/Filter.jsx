@@ -594,7 +594,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
       <div className="flex justify-end gap-4 mt-10">
         <button
           onClick={handleClear}
-          className="px-6 py-2 rounded-lg cursor-pointer border border-gray-400 text-gray-700"
+          className="px-6 py-2 rounded-full cursor-pointer border border-gray-400 text-gray-700"
         >
           {t[lang].clear}
         </button>

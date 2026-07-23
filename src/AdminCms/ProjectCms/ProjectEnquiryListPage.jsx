@@ -172,7 +172,7 @@ export default function ProjectEnquiryListPage() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={goBack}
-                        className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-xl bg-[#41398B] text-white hover:bg-[#352e7a] transition-colors"
+                        className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white hover:bg-[#352e7a] transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4" />
                     </button>
@@ -401,7 +401,7 @@ export default function ProjectEnquiryListPage() {
                             </button>
                             <button
                                 onClick={handleBulkDelete}
-                                className="px-6 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 font-semibold text-sm shadow-lg shadow-red-200 transition-all cursor-pointer active:scale-95"
+                                className="px-6 py-2.5 bg-red-600 text-white rounded-full hover:bg-red-700 font-semibold text-sm shadow-lg shadow-red-200 transition-all cursor-pointer active:scale-95"
                             >
                                 {isVI ? "Xóa" : "Delete"}
                             </button>

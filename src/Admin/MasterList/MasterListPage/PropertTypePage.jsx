@@ -202,7 +202,7 @@ export default function PropertyTypePage() {
         <div className="flex items-center gap-3">
           <button
             onClick={goBack}
-            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-xl bg-[#41398B] text-white"
+            className="w-8 h-8 cursor-pointer flex items-center justify-center rounded-full bg-[#41398B] text-white"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -213,7 +213,7 @@ export default function PropertyTypePage() {
 
         <button
           onClick={openAddModal}
-          className="flex items-center cursor-pointer gap-2 bg-[#41398B] hover:bg-[#41398be3] text-white px-4 py-2 rounded-lg text-sm"
+          className="flex items-center cursor-pointer gap-2 bg-[#41398B] hover:bg-[#41398be3] text-white px-4 py-2 rounded-full text-sm"
         >
           <Plus size={16} />
           {isVI ? "Thêm loại tài sản" : "Add Property Type"}
@@ -413,7 +413,7 @@ export default function PropertyTypePage() {
               </button>
               <button
                 onClick={handleDelete}
-                className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className="px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700"
               >
                 {isVI ? "Xóa" : "Delete"}
               </button>
@@ -519,7 +519,7 @@ export default function PropertyTypePage() {
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-2 cursor-pointer rounded-lg bg-[#41398B] hover:bg-[#41398be3] text-white"
+                className="px-6 py-2 cursor-pointer rounded-full bg-[#41398B] hover:bg-[#41398be3] text-white"
               >
                 {editingType
                   ? activeLang === "EN"
