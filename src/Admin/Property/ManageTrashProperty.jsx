@@ -39,20 +39,34 @@ export default function ManageTrashProperty() {
       : value.en || value.vi || "";
   };
 
+  const storageKey = "propertyListState_trash";
+
+  const getSavedState = () => {
+    try {
+      const saved = sessionStorage.getItem(storageKey);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error("Error reading from sessionStorage", e);
+    }
+    return {};
+  };
+
+  const savedState = getSavedState();
+
   // Core state
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(savedState.searchTerm || "");
 
   // Backend pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(savedState.currentPage || 1);
+  const [rowsPerPage, setRowsPerPage] = useState(savedState.rowsPerPage || 10);
   const [totalRows, setTotalRows] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
   // Filters
   const [showFilterPopup, setShowFilterPopup] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState(null);
+  const [appliedFilters, setAppliedFilters] = useState(savedState.appliedFilters || null);
 
   // Delete confirm
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
@@ -61,7 +75,18 @@ export default function ManageTrashProperty() {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // Dropdown for type filter
-  const [selectedType, setSelectedType] = useState("All");
+  const [selectedType, setSelectedType] = useState(savedState.selectedType || "All");
+
+  useEffect(() => {
+    const stateToSave = {
+      currentPage,
+      rowsPerPage,
+      searchTerm,
+      appliedFilters,
+      selectedType,
+    };
+    sessionStorage.setItem(storageKey, JSON.stringify(stateToSave));
+  }, [currentPage, rowsPerPage, searchTerm, appliedFilters, selectedType, storageKey]);
 
   /* ======================================================
      FETCH TRASHED PROPERTIES

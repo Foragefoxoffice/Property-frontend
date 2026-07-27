@@ -40,22 +40,34 @@ export default function ManageProperty({
   filterByTransactionType,
   trashMode = false,
 }) {
+  const storageKey = `propertyListState_${filterByTransactionType || "all"}${trashMode ? "_trash" : ""}`;
+
+  const getSavedState = () => {
+    try {
+      const saved = sessionStorage.getItem(storageKey);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error("Error reading from sessionStorage", e);
+    }
+    return {};
+  };
+
+  const savedState = getSavedState();
+
   // core states
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(savedState.searchTerm || "");
 
   // backend pagination states
-  const [currentPage, setCurrentPage] = useState(() => {
-    return Number(sessionStorage.getItem("propertyListPage")) || 1;
-  });
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(savedState.currentPage || 1);
+  const [rowsPerPage, setRowsPerPage] = useState(savedState.rowsPerPage || 10);
   const [totalRows, setTotalRows] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, id: null });
   const [showFilterPopup, setShowFilterPopup] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState(null);
+  const [appliedFilters, setAppliedFilters] = useState(savedState.appliedFilters || null);
   const [copyFullLoading, setCopyFullLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -63,7 +75,7 @@ export default function ManageProperty({
   const { language } = useLanguage();
   const t = translations[language];
   const { can, isApprover } = usePermissions();
-  const [activeTab, setActiveTab] = useState("all"); // all, pending
+  const [activeTab, setActiveTab] = useState(savedState.activeTab || "all"); // all, pending
 
   const getLocalizedValue = (value) => {
     if (!value) return "";
@@ -81,6 +93,17 @@ export default function ManageProperty({
   };
   const permissionKey = getPermissionKey();
 
+
+  useEffect(() => {
+    const stateToSave = {
+      currentPage,
+      rowsPerPage,
+      searchTerm,
+      appliedFilters,
+      activeTab,
+    };
+    sessionStorage.setItem(storageKey, JSON.stringify(stateToSave));
+  }, [currentPage, rowsPerPage, searchTerm, appliedFilters, activeTab, storageKey]);
 
   // Helper: fetch page from backend
   const fetchProperties = async () => {
@@ -157,11 +180,18 @@ export default function ManageProperty({
     }
   };
 
+  // Load state when transaction type changes
+  useEffect(() => {
+    const saved = getSavedState();
+    setSearchTerm(saved.searchTerm || "");
+    setCurrentPage(saved.currentPage || 1);
+    setRowsPerPage(saved.rowsPerPage || 10);
+    setAppliedFilters(saved.appliedFilters || null);
+    setActiveTab(saved.activeTab || "all");
+  }, [filterByTransactionType, trashMode]);
+
   // main effect: re-fetch when transaction type, page, or page size changes
   useEffect(() => {
-    // reset to first page when transaction type changes
-    setCurrentPage((prev) => (prev === 1 ? 1 : prev)); // keep page unless changed elsewhere
-
     // Simple debounce for search
     const timer = setTimeout(() => {
       fetchProperties();
