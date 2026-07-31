@@ -53,7 +53,7 @@ export default function BlogCmsForm() {
             title: data.title,
             content: data.content,
             author: data.author,
-            category: data.category,
+            category: data.category?._id || data.category,
             mainImage: data.mainImage,
             tags: data.tags,
             published: data.published,

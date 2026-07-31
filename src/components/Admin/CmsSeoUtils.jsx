@@ -179,17 +179,17 @@ const CMS_CONTENT = {
     },
     blog: {
         en: {
-            metaTitle: "Real Estate Insights | 183 Housing Solutions News",
-            metaDesc: "Stay updated with the latest real estate news, property tips, and market insights from 183 Housing Solutions. Expert advice for buyers, renters, and investors.",
-            keywords: ["real estate blog", "property tips", "market insights", "183 Housing Solutions", "real estate news"],
+            metaTitle: "Real estate blog | 183 Housing Solutions",
+            metaDesc: "Stay updated with our real estate blog. Read the latest property tips, market insights, and expert advice for buyers, renters, and investors in Vietnam.",
+            keywords: ["blog", "real estate", "property tips", "market insights", "183 Housing Solutions", "real estate news"],
             ogTitle: "183 Housing Solutions News | Real Estate Insights",
             ogDesc: "Read expert real estate articles, property guides, and market analysis from 183 Housing Solutions. Your go-to source for Vietnam property insights.",
         },
-        vi: {
-            metaTitle: "Tin Tức Bất Động Sản | News 183 Housing Solutions",
-            metaDesc: "Cập nhật tin tức bất động sản, mẹo mua nhà và thông tin thị trường từ 183 Housing Solutions. Tư vấn chuyên sâu cho người mua, thuê và đầu tư bất động sản.",
-            keywords: ["blog bất động sản", "mẹo mua nhà", "thị trường bất động sản", "183 Housing Solutions", "tin tức nhà đất"],
-            ogTitle: "News 183 Housing Solutions | Tin Tức Bất Động Sản",
+        vn: {
+            metaTitle: "Tin tức bất động sản | 183 Housing Solutions",
+            metaDesc: "Theo dõi tin tức bất động sản mới nhất. Đọc các mẹo mua nhà, thông tin thị trường và tư vấn chuyên sâu từ 183 Housing Solutions cho người mua và thuê.",
+            keywords: ["tin tức", "blog bất động sản", "mẹo mua nhà", "thị trường bất động sản", "183 Housing Solutions", "nhà đất"],
+            ogTitle: "Tin Tức 183 Housing Solutions | Bất Động Sản",
             ogDesc: "Đọc các bài viết, hướng dẫn và phân tích thị trường bất động sản từ chuyên gia 183 Housing Solutions. Nguồn thông tin tin cậy về bất động sản Việt Nam.",
         },
     },
@@ -241,14 +241,15 @@ export const buildCmsContent = (lang, pageType, blogTitle = "") => {
     // For blog, override title/desc with the actual blog post title if available
     if (pageType === "blog" && blogTitle) {
         const cleanTitle = blogTitle.replace(/[<>]/g, "").trim();
-        const titleEn = `${cleanTitle} | 183 Housing Solutions`.slice(0, 60);
-        const titleVi = `${cleanTitle} | 183 Housing Solutions`.slice(0, 60);
-        const descEn = `Read our latest article: ${cleanTitle}. Stay informed with expert real estate insights, tips, and market news from 183 Housing Solutions.`.slice(0, 160);
-        const descVi = `Đọc bài viết mới nhất: ${cleanTitle}. Cập nhật tin tức, mẹo và phân tích thị trường bất động sản từ 183 Housing Solutions.`.slice(0, 160);
+        const focusKw = cleanTitle.split(' ').slice(0, 2).join(' ').replace(/[.,;:!?]/g, "");
+        const titleEn = `${cleanTitle} | 183 Housing`.slice(0, 60);
+        const titleVi = `${cleanTitle} | 183 Housing`.slice(0, 60);
+        const descEn = `Read our latest article: ${cleanTitle}. Stay informed with expert real estate insights and market news.`.slice(0, 160);
+        const descVi = `Đọc bài viết mới nhất: ${cleanTitle}. Cập nhật tin tức và phân tích thị trường bất động sản.`.slice(0, 160);
         return {
             metaTitle: l === "vi" ? titleVi : titleEn,
             metaDesc: l === "vi" ? descVi : descEn,
-            keywords: content.keywords,
+            keywords: [focusKw, ...content.keywords],
             ogTitle: (l === "vi" ? titleVi : titleEn).slice(0, 60),
             ogDesc: (l === "vi" ? descVi : descEn).slice(0, 200),
         };

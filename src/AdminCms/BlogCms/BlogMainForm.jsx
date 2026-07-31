@@ -60,6 +60,7 @@ export default function BlogMainForm({
         if (blogData) {
             form.setFieldsValue({
                 ...blogData,
+                category: blogData?.category?._id || blogData?.category,
                 slug: {
                     en: blogData?.slug?.en || '',
                     vi: blogData?.slug?.vi || '',
@@ -584,34 +585,6 @@ export default function BlogMainForm({
                                     className="rounded-[10px] font-semibold text-[15px] h-12 px-6 font-['Manrope'] border-[#d1d5db] text-[#374151] hover:!text-[#41398B] hover:!border-[#41398B]"
                                 >
                                     {activeTab === 'vn' ? 'Hủy' : 'Cancel'}
-                                </Button>
-                                <Button
-                                    size="large"
-                                    icon={<EyeOutlined />}
-                                    onClick={() => {
-                                        const values = form.getFieldsValue();
-
-                                        const seoInfo = values?.seoInformation || form.getFieldValue('seoInformation');
-                                        const slug = seoInfo?.slugUrl?.en || seoInfo?.slugUrl?.vi || '';
-
-                                        if (!slug) {
-                                            CommonToaster(
-                                                language === 'vi'
-                                                    ? 'Vui lòng nhập tiêu đề để tạo slug trước khi xem trước'
-                                                    : 'Please enter title to generate slug before preview',
-                                                'warning'
-                                            );
-                                            return;
-                                        }
-
-                                        window.open(
-                                            `https://183housingsolutions.com/blogs/${slug}?previewToken=${localStorage.getItem('token') || ''}`,
-                                            '_blank'
-                                        );
-                                    }}
-                                    className="rounded-[10px] font-semibold text-[15px] h-12 px-6"
-                                >
-                                    {language === 'vi' ? 'Xem trước' : 'Preview'}
                                 </Button>
                                 {can('blogs.blogCms', 'edit') && (
                                     <Button

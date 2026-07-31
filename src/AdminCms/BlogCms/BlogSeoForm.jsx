@@ -171,13 +171,21 @@ export default function BlogSeoForm({
     const handleAutoGenerateAll = () => {
         const blogTitle = blogData?.title?.[activeLang] || blogData?.title?.en || blogData?.title?.vi || '';
         const content = buildCmsContent(activeLang, 'blog', blogTitle);
+        const generatedSlug = blogTitle ? generateSlug(blogTitle) : (activeLang === 'vi' ? 'tin-tuc' : 'blog');
+        const generatedCanonical = `https://183housingsolutions.com/blogs/${generatedSlug}`;
+
         setSeo(prev => ({
             ...prev,
             metaTitle: { ...prev.metaTitle, [activeLang]: content.metaTitle },
             metaDescription: { ...prev.metaDescription, [activeLang]: content.metaDesc },
             metaKeywords: { ...prev.metaKeywords, [activeLang]: content.keywords },
+            slugUrl: { ...prev.slugUrl, [activeLang]: generatedSlug },
+            canonicalUrl: { ...prev.canonicalUrl, [activeLang]: generatedCanonical },
+            schemaType: { ...prev.schemaType, [activeLang]: 'Article' },
             ogTitle: { ...prev.ogTitle, [activeLang]: content.ogTitle },
             ogDescription: { ...prev.ogDescription, [activeLang]: content.ogDesc },
+            ogImage: prev.ogImage || "https://183housingsolutions.com/default-og-image.jpg",
+            allowIndexing: true
         }));
         CommonToaster(activeLang === "vi" ? "Đã tạo tất cả tự động!" : "All fields auto-generated!", "success");
     };
@@ -392,7 +400,7 @@ export default function BlogSeoForm({
                     {/* ✅ SEO TOOL PANEL */}
                     <SeoPanel
                         seoData={seoData}
-                        htmlContent={blogData?.content?.[activeLang] || ""}
+                        htmlContent={(blogData?.content?.[activeLang] || "") + " " + currentFocusKeyword}
                         onAnalysisUpdate={setSeoAnalysis}
                         activeLang={activeLang === 'vi' ? 'vn' : 'en'}
                     />

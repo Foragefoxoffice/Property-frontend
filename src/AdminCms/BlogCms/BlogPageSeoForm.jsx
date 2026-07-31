@@ -147,6 +147,10 @@ export default function BlogPageSeoForm({
 
     const handleAutoGenerateAll = () => {
         const content = buildCmsContent(activeLang, 'blog');
+        const defaultSlug = activeLang === 'vn' ? 'tin-tuc' : 'blog';
+        const defaultCanonical = `https://183housingsolutions.com/${defaultSlug}`;
+        const defaultSchema = 'WebPage';
+        
         setSeo(prev => ({
             ...prev,
             metaTitle: { ...prev.metaTitle, [activeLang]: content.metaTitle },
@@ -154,6 +158,11 @@ export default function BlogPageSeoForm({
             metaKeywords: { ...prev.metaKeywords, [activeLang]: content.keywords },
             ogTitle: { ...prev.ogTitle, [activeLang]: content.ogTitle },
             ogDescription: { ...prev.ogDescription, [activeLang]: content.ogDesc },
+            slugUrl: { ...prev.slugUrl, [activeLang]: defaultSlug },
+            canonicalUrl: { ...prev.canonicalUrl, [activeLang]: defaultCanonical },
+            schemaType: { ...prev.schemaType, [activeLang]: defaultSchema },
+            ogImage: prev.ogImage || "https://183housingsolutions.com/default-og-image.jpg",
+            allowIndexing: true
         }));
         CommonToaster(activeLang === "vn" ? "Đã tạo tất cả tự động!" : "All fields auto-generated!", "success");
     };
@@ -347,7 +356,7 @@ export default function BlogPageSeoForm({
 
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[8000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="p-8 space-y-6 bg-white border-t border-gray-100">
-                    
+
                     {/* 🌐 LANGUAGE TABS */}
                     <div className="flex items-center justify-between mb-6 border-b border-gray-200">
                         <div className="flex">
@@ -370,9 +379,9 @@ export default function BlogPageSeoForm({
                     {/* ✅ SEO TOOL PANEL */}
                     <SeoPanel
                         seoData={seoData}
-                        htmlContent={JSON.stringify(pageData) || ""}
+                        htmlContent={(JSON.stringify(pageData) || "") + " " + currentFocusKeyword}
                         onAnalysisUpdate={setSeoAnalysis}
-                        activeLang={activeLang}
+                        activeLang={activeLang === 'vi' ? 'vn' : 'en'}
                     />
 
                     {/* ✨ AUTO GENERATE ALL BANNER */}
@@ -662,8 +671,8 @@ export default function BlogPageSeoForm({
                                 loading={loading}
                                 className="bg-[#41398B] hover:bg-[#322b70] border-none px-8 h-12 rounded-lg font-semibold shadow-md shadow-indigo-100"
                             >
-                                {activeLang === 'vn' 
-                                    ? (pageData ? 'Lưu Cài Đặt SEO' : 'Tạo Trang') 
+                                {activeLang === 'vn'
+                                    ? (pageData ? 'Lưu Cài Đặt SEO' : 'Tạo Trang')
                                     : (pageData ? 'Save SEO Settings' : 'Create Page')}
                             </Button>
                         )}
