@@ -65,13 +65,13 @@ export default function OwnerView() {
 
   useEffect(() => {
     const fetchOwnerProperties = async () => {
-      if (!owner || (!owner.ownerName?.en && !owner.ownerName?.vi)) return;
+      if (!owner) return;
       try {
         setLoadingProps(true);
-        const res = await getListingProperties({
-          owner: owner.ownerName.en || owner.ownerName.vi,
-          status: "all"
-        });
+        const params = owner._id
+          ? { ownerId: owner._id, status: "all" }
+          : { owner: owner.ownerName.en || owner.ownerName.vi, status: "all" };
+        const res = await getListingProperties(params);
         setProperties(res.data.data || []);
       } catch (error) {
         console.error("Error fetching owner properties:", error);

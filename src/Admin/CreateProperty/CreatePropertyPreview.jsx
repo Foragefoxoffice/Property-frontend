@@ -261,6 +261,10 @@ export default function CreatePropertyPreview({
 
   /* helper to find owner/staff object by localized name */
   const findOwnerByForm = (ownerForm) => {
+    if (cm.contactManagementOwnerId) {
+      const match = owners.find((o) => o._id === cm.contactManagementOwnerId);
+      if (match) return match;
+    }
     if (!ownerForm) return null;
     return owners.find(
       (o) =>
@@ -791,11 +795,13 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
 
   useEffect(() => {
     const fetchOwnerProperties = async () => {
+      const ownerId = data._id;
       const ownerNameEn = data.ownerName?.en || (typeof data.ownerName === "string" ? data.ownerName : "");
-      if (!ownerNameEn) return;
+      if (!ownerId && !ownerNameEn) return;
       try {
         setLoadingProps(true);
-        const res = await getListingProperties({ owner: ownerNameEn });
+        const params = ownerId ? { ownerId } : { owner: ownerNameEn };
+        const res = await getListingProperties(params);
         setProperties(res.data.data || []);
       } catch (error) {
         console.error("Error fetching owner properties:", error);

@@ -223,6 +223,7 @@ function mapApiToForm(api) {
       contactManagementOwner: safe(
         api.contactManagement?.contactManagementOwner
       ),
+      contactManagementOwnerId: api.contactManagement?.contactManagementOwnerId || "",
       contactManagementOwnerPhone: api.contactManagement?.contactManagementOwnerPhone || [],
       contactManagementOwnerNotes: safe(
         api.contactManagement?.contactManagementOwnerNotes
@@ -662,6 +663,7 @@ export default function CreatePropertyPage({
         contactManagementOwner: wrap(
           n.contactManagement?.contactManagementOwner
         ),
+        contactManagementOwnerId: n.contactManagement?.contactManagementOwnerId || "",
         contactManagementOwnerPhone: n.contactManagement?.contactManagementOwnerPhone || [],
         contactManagementOwnerNotes: wrap(
           n.contactManagement?.contactManagementOwnerNotes

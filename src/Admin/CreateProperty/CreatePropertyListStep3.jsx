@@ -74,6 +74,7 @@ export default function CreatePropertyListStep3({
     const payload = {
       contactManagement: {
         contactManagementOwner: form.owner || { en: "", vi: "" },
+        contactManagementOwnerId: form.ownerId || "",
         contactManagementOwnerNotes: form.ownerNotes || { en: "", vi: "" },
         contactManagementConsultant: {
           en: me?.name || "",
@@ -118,6 +119,7 @@ export default function CreatePropertyListStep3({
 
   const [form, setForm] = useState({
     owner: initialData.owner || initialData.contactManagement?.contactManagementOwner || { en: "", vi: "" },
+    ownerId: initialData.contactManagement?.contactManagementOwnerId || "",
     ownerNotes: initialData.ownerNotes || initialData.contactManagement?.contactManagementOwnerNotes || { en: "", vi: "" },
     consultant: initialData.consultant ||
       initialData.contactManagement?.contactManagementConsultant || {
@@ -143,6 +145,7 @@ export default function CreatePropertyListStep3({
 
     const updatedForm = {
       owner: cm.contactManagementOwner || { en: "", vi: "" },
+      ownerId: cm.contactManagementOwnerId || "",
       ownerNotes: cm.contactManagementOwnerNotes || { en: "", vi: "" },
       consultant: cm.contactManagementConsultant || { en: "", vi: "" },
       connectingPoint: cm.contactManagementConnectingPoint || { en: "", vi: "" },
@@ -157,7 +160,13 @@ export default function CreatePropertyListStep3({
     };
 
     // Pre-select owner & sync phone if missing
-    if (updatedForm.owner?.en) {
+    if (updatedForm.ownerId) {
+      const matchOwner = owners.find((o) => o._id === updatedForm.ownerId);
+      setSelectedOwner(matchOwner || null);
+      if (matchOwner && (!updatedForm.ownerPhone || updatedForm.ownerPhone.length === 0)) {
+        updatedForm.ownerPhone = matchOwner.phoneNumbers || [];
+      }
+    } else if (updatedForm.owner?.en) {
       const matchOwner = owners.find(
         (o) =>
           o.ownerName?.en === updatedForm.owner.en ||
@@ -194,6 +203,7 @@ export default function CreatePropertyListStep3({
       onChange({
         contactManagement: {
           contactManagementOwner: updated.owner || { en: "", vi: "" },
+          contactManagementOwnerId: updated.ownerId || "",
           contactManagementOwnerNotes: updated.ownerNotes || {
             en: "",
             vi: "",
@@ -324,7 +334,7 @@ export default function CreatePropertyListStep3({
                     showSearch
                     allowClear
                     placeholder={t.selectOwner}
-                    value={findIdByName(owners, form.owner) || undefined}
+                    value={form.ownerId || findIdByName(owners, form.owner) || undefined}
                     onChange={(ownerId) => {
                       const selected = owners.find((o) => o._id === ownerId);
                       setSelectedOwner(selected);
@@ -340,6 +350,7 @@ export default function CreatePropertyListStep3({
                       const updated = {
                         ...form,
                         owner: updatedOwner,
+                        ownerId: ownerId || "",
                       };
                       setForm(updated);
 
@@ -347,6 +358,7 @@ export default function CreatePropertyListStep3({
                         onChange({
                           contactManagement: {
                             contactManagementOwner: updated.owner,
+                            contactManagementOwnerId: updated.ownerId,
                             contactManagementOwnerPhone: updatedOwnerPhone,
                             contactManagementOwnerNotes: form.ownerNotes,
                             contactManagementConsultant: form.consultant,
@@ -496,6 +508,7 @@ export default function CreatePropertyListStep3({
             const payload = {
               contactManagement: {
                 contactManagementOwner: form.owner || { en: "", vi: "" },
+                contactManagementOwnerId: form.ownerId || "",
                 contactManagementOwnerNotes: form.ownerNotes || {
                   en: "",
                   vi: "",
@@ -637,11 +650,13 @@ const OwnerPopupCard = ({ onClose, data, lang }) => {
 
   useEffect(() => {
     const fetchOwnerProperties = async () => {
+      const ownerId = data._id;
       const ownerNameEn = data.ownerName?.en || (typeof data.ownerName === "string" ? data.ownerName : "");
-      if (!ownerNameEn) return;
+      if (!ownerId && !ownerNameEn) return;
       try {
         setLoadingProps(true);
-        const res = await getListingProperties({ owner: ownerNameEn, status: "all" });
+        const params = ownerId ? { ownerId, status: "all" } : { owner: ownerNameEn, status: "all" };
+        const res = await getListingProperties(params);
         setProperties(res.data.data || []);
       } catch (error) {
         console.error("Error fetching owner properties:", error);
