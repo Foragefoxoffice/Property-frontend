@@ -174,8 +174,11 @@ export default function CreatePropertyListStep3({
       );
       setSelectedOwner(matchOwner || null);
 
-      if (matchOwner && (!updatedForm.ownerPhone || updatedForm.ownerPhone.length === 0)) {
-        updatedForm.ownerPhone = matchOwner.phoneNumbers || [];
+      if (matchOwner) {
+        updatedForm.ownerId = matchOwner._id;
+        if (!updatedForm.ownerPhone || updatedForm.ownerPhone.length === 0) {
+          updatedForm.ownerPhone = matchOwner.phoneNumbers || [];
+        }
       }
     }
 
@@ -351,6 +354,7 @@ export default function CreatePropertyListStep3({
                         ...form,
                         owner: updatedOwner,
                         ownerId: ownerId || "",
+                        ownerPhone: updatedOwnerPhone,
                       };
                       setForm(updated);
 
