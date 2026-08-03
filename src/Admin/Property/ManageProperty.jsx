@@ -385,8 +385,8 @@ export default function ManageProperty({
         </h1>
 
 
-        {/* <div className="flex items-center gap-4">
-          {trashMode ? null : (
+        <div className="flex items-center gap-4">
+          {/* {trashMode ? null : (
             isAdmin && (
               <button
                 onClick={handleSyncLegacyOwners}
@@ -401,7 +401,7 @@ export default function ManageProperty({
                 {language === "en" ? "Sync Landlords" : "Đồng bộ chủ nhà"}
               </button>
             )
-          )}
+          )} */}
 
           <button
             onClick={() => setShowFilterPopup(true)}
@@ -437,7 +437,7 @@ export default function ManageProperty({
               </button>
             )
           )}
-        </div> */}
+        </div>
       </div>
 
       {/* Search */}
