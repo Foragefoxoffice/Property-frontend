@@ -385,7 +385,7 @@ export default function ManageProperty({
         </h1>
 
 
-        <div className="flex items-center gap-4">
+        {/* <div className="flex items-center gap-4">
           {trashMode ? null : (
             isAdmin && (
               <button
@@ -437,7 +437,7 @@ export default function ManageProperty({
               </button>
             )
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Search */}
