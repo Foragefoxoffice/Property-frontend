@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsRight,
+  RefreshCw,
 } from "lucide-react";
 import {
   updatePropertyListing,
@@ -25,6 +26,7 @@ import {
   copyPropertyToHomeStay,
   getPropertiesByTransactionType,
   restoreProperty,
+  syncLegacyOwners,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
@@ -32,7 +34,7 @@ import { translations } from "../../Language/translations";
 import { translateError } from "../../utils/translateError";
 import { formatNumber } from "../../utils/display";
 import { Link, useNavigate } from "react-router-dom";
-import { Dropdown, Tooltip } from "antd";
+import { Dropdown, Tooltip, Spin } from "antd";
 import FiltersPage from "../Filters/Filter";
 import { usePermissions } from "../../Context/PermissionContext";
 
@@ -74,8 +76,25 @@ export default function ManageProperty({
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = translations[language];
-  const { can, isApprover } = usePermissions();
+  const { can, isApprover, userRole } = usePermissions();
   const [activeTab, setActiveTab] = useState(savedState.activeTab || "all"); // all, pending
+  const [syncingOwners, setSyncingOwners] = useState(false);
+  const isAdmin = userRole?.toLowerCase() === 'admin' || userRole?.toLowerCase() === 'super admin';
+
+  const handleSyncLegacyOwners = async () => {
+    try {
+      setSyncingOwners(true);
+      const res = await syncLegacyOwners();
+      CommonToaster(res.data.message || "Sync completed successfully!", "success");
+      setCurrentPage(1);
+      fetchProperties();
+    } catch (err) {
+      console.error(err);
+      CommonToaster(err.response?.data?.message || "Sync failed", "error");
+    } finally {
+      setSyncingOwners(false);
+    }
+  };
 
   const getLocalizedValue = (value) => {
     if (!value) return "";
@@ -367,6 +386,23 @@ export default function ManageProperty({
 
 
         <div className="flex items-center gap-4">
+          {trashMode ? null : (
+            isAdmin && (
+              <button
+                onClick={handleSyncLegacyOwners}
+                disabled={syncingOwners}
+                className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer disabled:opacity-50"
+              >
+                {syncingOwners ? (
+                  <Spin size="small" />
+                ) : (
+                  <RefreshCw className="w-4 h-4 text-gray-600" />
+                )}
+                {language === "en" ? "Sync Landlords" : "Đồng bộ chủ nhà"}
+              </button>
+            )
+          )}
+
           <button
             onClick={() => setShowFilterPopup(true)}
             className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"

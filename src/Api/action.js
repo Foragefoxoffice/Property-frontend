@@ -319,6 +319,9 @@ export const getTrashProperties = (params) =>
 export const getListingProperties = (params) =>
   API.get("/create-property/listing", { params });
 
+export const syncLegacyOwners = () =>
+  API.post("/create-property/sync-legacy-owners");
+
 /* =========================================================
    📤 BULK UPLOAD APIs
 ========================================================= */
