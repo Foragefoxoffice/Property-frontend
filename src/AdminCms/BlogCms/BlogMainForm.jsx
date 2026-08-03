@@ -471,7 +471,9 @@ export default function BlogMainForm({
                                         >
                                             {categories.map((cat) => (
                                                 <Select.Option key={cat._id} value={cat._id}>
-                                                    {cat.name?.en || cat.name?.vi || 'Unnamed'}
+                                                    {activeTab === 'vn' 
+                                                        ? (cat.name?.vi || cat.name?.en || 'Unnamed') 
+                                                        : (cat.name?.en || cat.name?.vi || 'Unnamed')}
                                                 </Select.Option>
                                             ))}
                                         </Select>
