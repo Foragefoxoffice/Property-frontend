@@ -71,8 +71,12 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const t = translations[language];
   const { can } = usePermissions();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
+  const [searchTerm, setSearchTerm] = useState(() => {
+    return sessionStorage.getItem("ownersListSearchTerm") || "";
+  });
+  const [sortBy, setSortBy] = useState(() => {
+    return sessionStorage.getItem("ownersListSortBy") || "newest";
+  });
   const [activeLang, setActiveLang] = useState("EN");
 
   const [owners, setOwners] = useState([]);
@@ -88,7 +92,9 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const [currentPage, setCurrentPage] = useState(() => {
     return Number(sessionStorage.getItem("ownersListPage")) || 1;
   });
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(() => {
+    return Number(sessionStorage.getItem("ownersListRowsPerPage")) || 10;
+  });
   const [totalRows, setTotalRows] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -394,6 +400,9 @@ const OwnersLandlords = ({ openOwnerView }) => {
                           <button
                             onClick={() => {
                               sessionStorage.setItem("ownersListPage", currentPage);
+                              sessionStorage.setItem("ownersListSearchTerm", searchTerm);
+                              sessionStorage.setItem("ownersListSortBy", sortBy);
+                              sessionStorage.setItem("ownersListRowsPerPage", rowsPerPage);
                               navigate(`/dashboard/landlords/${item._id}`);
                             }}
                             className="p-2 border rounded-full hover:bg-gray-200"
