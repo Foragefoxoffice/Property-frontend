@@ -208,7 +208,7 @@ const DashboardLayout = () => {
                         )}
 
                         {/* CMS SETTINGS DROPDOWN */}
-                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.termsConditions") || !isHidden("cms.privacyPolicy") || !isHidden("cms.blogBanner") || !isHidden("cms.projectBanner")) && (
+                        {(!isHidden("cms.homePage") || !isHidden("cms.aboutUs") || !isHidden("cms.contactUs") || !isHidden("cms.header") || !isHidden("cms.footer") || !isHidden("cms.agent") || !isHidden("cms.termsConditions") || !isHidden("cms.privacyPolicy") || !isHidden("cms.blogBanner")) && (
 
                             <div className="w-full">
                                 <button
@@ -347,7 +347,7 @@ const DashboardLayout = () => {
                         )}
 
                         {/* PROJECTS DROPDOWN */}
-                        {(!isHidden("projects.category") || !isHidden("projects.projectCms")) && (
+                        {(!isHidden("projects.category") || !isHidden("projects.projectCms") || !isHidden("projects.projectEnquiries")) && (
                             <div className="w-full">
                                 <button
                                     onClick={() => setOpenProjects(!openProjects)}
