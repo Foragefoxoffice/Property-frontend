@@ -21,6 +21,7 @@ import {
   getAllBlocks,
   getAllFloorRanges,
   getAllFeeTax,
+  getAllSalesAgentFees,
   getAllLegalDocuments,
   getAllDeposits,
   getAllPayments,
@@ -47,7 +48,7 @@ function mapApiToForm(api) {
   if (!api) return {};
 
   const safe = (v, fallback = { en: "", vi: "" }) =>
-    v && typeof v === "object" ? v : fallback;
+    v && typeof v === "object" ? v : v ? { en: String(v), vi: String(v) } : fallback;
 
   const safeStr = (v) => (v ? v : "");
 
@@ -79,6 +80,9 @@ function mapApiToForm(api) {
 
     dateListed:
       api.listingInformation?.listingInformationDateListed?.split("T")[0] || "",
+
+    lastUpdated:
+      api.listingInformation?.listingInformationLastUpdated?.split("T")[0] || "",
 
     availabilityStatus: safe(
       api.listingInformation?.listingInformationAvailabilityStatus
@@ -154,7 +158,14 @@ function mapApiToForm(api) {
     maintenanceFeeMonthly: safe(api.financialDetails?.financialDetailsMainFee),
 
     financialDetailsAgentFee:
-      api.financialDetails?.financialDetailsAgentFee || "",
+      typeof api.financialDetails?.financialDetailsAgentFee === "object"
+        ? api.financialDetails.financialDetailsAgentFee
+        : api.financialDetails?.financialDetailsAgentFee
+        ? {
+            en: String(api.financialDetails.financialDetailsAgentFee),
+            vi: String(api.financialDetails.financialDetailsAgentFee),
+          }
+        : { en: "", vi: "" },
 
     financialDetailsAgentPaymentAgenda: safe(
       api.financialDetails?.financialDetailsAgentPaymentAgenda
@@ -185,6 +196,7 @@ function mapApiToForm(api) {
       dateListed: false,
       availableFrom: false,
       availabilityStatus: false,
+      lastUpdated: false,
       googleMap: false, // ✅ Added
       propertyType: false, // ✅ Added for propertyType
     },
@@ -428,6 +440,7 @@ export default function CreatePropertyPage({
           getAllOwners({ limit: 0 }),
           getAllStaffs(),
           getMe(),
+          getAllSalesAgentFees({ limit: 0 }),
         ]);
 
         // ✅ Filter to only show Active items in dropdowns
@@ -454,6 +467,7 @@ export default function CreatePropertyPage({
           owners: res[15].data.data,
           staffs: res[16].data.data,
           me: res[17].data.data,
+          salesAgentFees: filterActive(res[18].data.data),
         });
       } catch (err) {
         console.log("Dropdown load error:", err);
@@ -520,6 +534,8 @@ export default function CreatePropertyPage({
         listingInformationPropertyTitle: wrap(n.title),
 
         listingInformationAvailableFrom: n.availableFrom || "",
+
+        listingInformationLastUpdated: n.lastUpdated || "",
         listingInformationGoogleMapsIframe: wrap(n.googleMapsIframe), // ✅ Added
       },
 
@@ -592,7 +608,7 @@ export default function CreatePropertyPage({
 
         financialDetailsMainFee: wrap(n.maintenanceFeeMonthly),
 
-        financialDetailsAgentFee: num(n.financialDetailsAgentFee),
+        financialDetailsAgentFee: wrap(n.financialDetailsAgentFee),
 
         financialDetailsAgentPaymentAgenda: wrap(
           n.financialDetailsAgentPaymentAgenda
@@ -624,6 +640,7 @@ export default function CreatePropertyPage({
         dateListed: n.listingInformationVisibility?.dateListed || false,
         availableFrom: n.listingInformationVisibility?.availableFrom || false,
         availabilityStatus: n.listingInformationVisibility?.availabilityStatus || false,
+        lastUpdated: n.listingInformationVisibility?.lastUpdated || false,
         propertyType: n.listingInformationVisibility?.propertyType || false,
         googleMap: n.googleMapVisibility !== undefined ? n.googleMapVisibility : (n.listingInformationVisibility?.googleMap || false), // ✅ Merged
       },

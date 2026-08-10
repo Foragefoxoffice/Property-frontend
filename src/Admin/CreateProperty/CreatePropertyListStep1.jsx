@@ -335,6 +335,7 @@ export default function CreatePropertyListStep1({
     amenities: initialData.amenities || [{ name: "", km: "" }],
     utilities: initialData.utilities || [{ name: "", icon: "" }],
     dateListed: initialData.dateListed || getToday(),
+    lastUpdated: initialData.lastUpdated || "",
     projectId: initialData.projectId || "",
     zoneId: initialData.zoneId || "",
     blockId: initialData.blockId || "",
@@ -350,6 +351,7 @@ export default function CreatePropertyListStep1({
       dateListed: false,
       availableFrom: false,
       availabilityStatus: false,
+      lastUpdated: false,
     },
 
     propertyInformationVisibility:
@@ -461,7 +463,7 @@ export default function CreatePropertyListStep1({
         }
 
         // Other fields
-        const otherFields = ["unitSize", "bedrooms", "bathrooms", "transactionType", "propertyNo", "dateListed", "availableFrom", "availabilityStatus"];
+        const otherFields = ["unitSize", "bedrooms", "bathrooms", "transactionType", "propertyNo", "dateListed", "availableFrom", "availabilityStatus", "lastUpdated"];
         otherFields.forEach(f => {
           if (initialData[f] !== undefined && initialData[f] !== prev[f]) {
             newUpdates[f] = initialData[f];
@@ -1372,6 +1374,48 @@ export default function CreatePropertyListStep1({
               </div>
             </>
           )}
+
+          {/* Last Updated Date */}
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {lang === "en" ? "Last Updated Date" : "Ngày cập nhật cuối"}
+              </label>
+
+              {/* <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.listingInformationVisibility?.lastUpdated}
+                  style={{
+                    backgroundColor: form.listingInformationVisibility?.lastUpdated
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      listingInformationVisibility: {
+                        ...form.listingInformationVisibility,
+                        lastUpdated: val,
+                      },
+                    };
+
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div> */}
+            </div>
+            <DatePicker
+              name="lastUpdated"
+              placeholder={lang === "en" ? "Last Updated Date" : "Ngày cập nhật cuối"}
+              value={form.lastUpdated}
+              onChange={handleInputChange}
+              className="w-full"
+            />
+          </div>
         </div>
 
         {/* === Property Info === */}

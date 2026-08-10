@@ -92,6 +92,7 @@ export default function CreatePropertyListStep2({
     payments = [],
     feeTaxes = [],
     legalDocs = [],
+    salesAgentFees = [],
   } = dropdowns || {};
   // alias the loading flag used by AntdSelect to your prop
   const loadingCurrencies = !!dropdownLoading;
@@ -168,7 +169,7 @@ export default function CreatePropertyListStep2({
       en: "",
       vi: "",
     },
-    financialDetailsAgentFee: initialData.financialDetailsAgentFee || "",
+    financialDetailsAgentFee: initialData.financialDetailsAgentFee || { en: "", vi: "" },
     financialDetailsAgentPaymentAgenda:
       initialData.financialDetailsAgentPaymentAgenda || { en: "", vi: "" },
     financialDetailsFeeTax: initialData.financialDetailsFeeTax || {
@@ -1026,265 +1027,6 @@ export default function CreatePropertyListStep2({
             />
           </div>
 
-          {/* Deposit */}
-          <div className="flex flex-col w-full gap-1">
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-sm text-[#131517] font-semibold">
-                {t.depositPaymentTerms}
-              </label>
-
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Ẩn"}
-                </span>
-
-                <Switch
-                  checked={form.financialVisibility?.deposit}
-                  style={{
-                    backgroundColor: form.financialVisibility?.deposit
-                      ? "#41398B"
-                      : "#d9d9d9",
-                  }}
-                  onChange={(val) => {
-                    const updated = {
-                      ...form,
-                      financialVisibility: {
-                        ...form.financialVisibility,
-                        deposit: val,
-                      },
-                    };
-                    setForm(updated);
-                    onChange && onChange(updated);
-                  }}
-                />
-              </div>
-            </div>
-            <AntdSelect
-              showSearch
-              allowClear
-              placeholder={
-                lang === "en"
-                  ? "Type or Select Deposit"
-                  : "Nhập hoặc chọn khoản đặt cọc"
-              }
-              value={form.depositPaymentTerms?.[lang] || undefined}
-              onChange={(value) => {
-                const selected = deposits.find((d) => d.name?.[lang] === value);
-                if (selected) {
-                  setForm((prev) => ({
-                    ...prev,
-                    depositPaymentTerms: {
-                      en: selected.name?.en || "",
-                      vi: selected.name?.vi || "",
-                    },
-                  }));
-                  onChange &&
-                    onChange({
-                      ...form,
-                      depositPaymentTerms: {
-                        en: selected.name?.en || "",
-                        vi: selected.name?.vi || "",
-                      },
-                    });
-                } else {
-                  handleLocalizedChange(lang, "depositPaymentTerms", value);
-                }
-              }}
-              onSearch={(val) => {
-                if (val && val.trim() !== "") {
-                  handleLocalizedChange(
-                    lang,
-                    "depositPaymentTerms",
-                    val.trim()
-                  );
-                }
-              }}
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              notFoundContent={null}
-              className="w-full custom-select"
-              popupClassName="custom-dropdown"
-              options={deposits.map((opt) => ({
-                label: opt.name?.[lang] || "",
-                value: opt.name?.[lang] || "",
-              }))}
-            />
-          </div>
-
-          {/* Payment Terms */}
-          <div className="flex flex-col w-full gap-1">
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-sm text-[#131517] font-semibold">
-                {t.maintenanceFeeMonthly}
-              </label>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Ẩn"}
-                </span>
-                <Switch
-                  checked={form.financialVisibility?.paymentTerm}
-                  style={{
-                    backgroundColor: form.financialVisibility?.paymentTerm
-                      ? "#41398B"
-                      : "#d9d9d9",
-                  }}
-                  onChange={(val) => {
-                    const updated = {
-                      ...form,
-                      financialVisibility: {
-                        ...form.financialVisibility,
-                        paymentTerm: val,
-                      },
-                    };
-                    setForm(updated);
-                    onChange && onChange(updated);
-                  }}
-                />
-              </div>
-            </div>
-            <AntdSelect
-              showSearch
-              allowClear
-              placeholder={
-                lang === "en"
-                  ? "Type or Select Payment Term"
-                  : "Nhập hoặc chọn điều khoản thanh toán"
-              }
-              value={form.maintenanceFeeMonthly?.[lang] || undefined}
-              onChange={(value) => {
-                const selected = payments.find((p) => p.name?.[lang] === value);
-                if (selected) {
-                  setForm((prev) => ({
-                    ...prev,
-                    maintenanceFeeMonthly: {
-                      en: selected.name?.en || "",
-                      vi: selected.name?.vi || "",
-                    },
-                  }));
-                  onChange &&
-                    onChange({
-                      ...form,
-                      maintenanceFeeMonthly: {
-                        en: selected.name?.en || "",
-                        vi: selected.name?.vi || "",
-                      },
-                    });
-                } else {
-                  handleLocalizedChange(lang, "maintenanceFeeMonthly", value);
-                }
-              }}
-              onSearch={(val) => {
-                if (val && val.trim() !== "") {
-                  handleLocalizedChange(
-                    lang,
-                    "maintenanceFeeMonthly",
-                    val.trim()
-                  );
-                }
-              }}
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              notFoundContent={null}
-              className="w-full custom-select"
-              popupClassName="custom-dropdown"
-              options={payments.map((opt) => ({
-                label: opt.name?.[lang] || "",
-                value: opt.name?.[lang] || "",
-              }))}
-            />
-          </div>
-
-          {/* Fees & Taxes */}
-          <div className="flex flex-col w-full gap-1">
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-sm text-[#131517] font-semibold">
-                {t.feeTax}
-              </label>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {lang === "en" ? "Hide" : "Ẩn"}
-                </span>
-                <Switch
-                  checked={form.financialVisibility?.feeTaxes}
-                  style={{
-                    backgroundColor: form.financialVisibility?.feeTaxes
-                      ? "#41398B"
-                      : "#d9d9d9",
-                  }}
-                  onChange={(val) => {
-                    const updated = {
-                      ...form,
-                      financialVisibility: {
-                        ...form.financialVisibility,
-                        feeTaxes: val,
-                      },
-                    };
-                    setForm(updated);
-                    onChange && onChange(updated);
-                  }}
-                />
-              </div>
-            </div>
-            <AntdSelect
-              showSearch
-              allowClear
-              placeholder={
-                lang === "en"
-                  ? "Type or Select Fee / Tax"
-                  : "Nhập hoặc chọn phí / thuế"
-              }
-              value={form.financialDetailsFeeTax?.[lang] || undefined}
-              onChange={(value) => {
-                const selected = feeTaxes.find((f) => f.name?.[lang] === value);
-                if (selected) {
-                  setForm((prev) => ({
-                    ...prev,
-                    financialDetailsFeeTax: {
-                      en: selected.name?.en || "",
-                      vi: selected.name?.vi || "",
-                    },
-                  }));
-                  onChange &&
-                    onChange({
-                      ...form,
-                      financialDetailsFeeTax: {
-                        en: selected.name?.en || "",
-                        vi: selected.name?.vi || "",
-                      },
-                    });
-                } else {
-                  handleLocalizedChange(lang, "financialDetailsFeeTax", value);
-                }
-              }}
-              onSearch={(val) => {
-                if (val.trim() !== "") {
-                  handleLocalizedChange(
-                    lang,
-                    "financialDetailsFeeTax",
-                    val.trim()
-                  );
-                }
-              }}
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              notFoundContent={null}
-              className="w-full custom-select"
-              popupClassName="custom-dropdown"
-              options={feeTaxes.map((opt) => ({
-                label: opt.name?.[lang] || "",
-                value: opt.name?.[lang] || "",
-              }))}
-            />
-          </div>
 
           {/* Legal Documents */}
           <div className="flex flex-col w-full gap-1">
@@ -1405,17 +1147,58 @@ export default function CreatePropertyListStep2({
                 />
               </div>
             </div>
-            <input
-              type="text"
-              placeholder={t.typehere}
-              value={formatNumber(form.financialDetailsAgentFee)}
-              onChange={(e) => {
-                const raw = e.target.value.replace(/,/g, "");
-                if (!isNaN(raw)) {
-                  handleChange("financialDetailsAgentFee", raw);
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Agent Fee"
+                  : "Nhập hoặc chọn phí đại lý"
+              }
+              value={form.financialDetailsAgentFee?.[lang] || undefined}
+              onChange={(value) => {
+                const selected = salesAgentFees.find((s) => s.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    financialDetailsAgentFee: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      financialDetailsAgentFee: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "financialDetailsAgentFee", value);
                 }
               }}
-              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
+              onSearch={(val) => {
+                if (val && val.trim() !== "") {
+                  handleLocalizedChange(
+                    lang,
+                    "financialDetailsAgentFee",
+                    val.trim()
+                  );
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={salesAgentFees.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "",
+              }))}
             />
           </div>
         </div>
@@ -1804,17 +1587,58 @@ export default function CreatePropertyListStep2({
                 />
               </div>
             </div>
-            <input
-              type="text"
-              placeholder={t.typehere}
-              value={formatNumber(form.financialDetailsAgentFee)}
-              onChange={(e) => {
-                const raw = e.target.value.replace(/,/g, "");
-                if (!isNaN(raw)) {
-                  handleChange("financialDetailsAgentFee", raw);
+            <AntdSelect
+              showSearch
+              allowClear
+              placeholder={
+                lang === "en"
+                  ? "Type or Select Agent Fee"
+                  : "Nhập hoặc chọn phí đại lý"
+              }
+              value={form.financialDetailsAgentFee?.[lang] || undefined}
+              onChange={(value) => {
+                const selected = salesAgentFees.find((s) => s.name?.[lang] === value);
+                if (selected) {
+                  setForm((prev) => ({
+                    ...prev,
+                    financialDetailsAgentFee: {
+                      en: selected.name?.en || "",
+                      vi: selected.name?.vi || "",
+                    },
+                  }));
+                  onChange &&
+                    onChange({
+                      ...form,
+                      financialDetailsAgentFee: {
+                        en: selected.name?.en || "",
+                        vi: selected.name?.vi || "",
+                      },
+                    });
+                } else {
+                  handleLocalizedChange(lang, "financialDetailsAgentFee", value);
                 }
               }}
-              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
+              onSearch={(val) => {
+                if (val && val.trim() !== "") {
+                  handleLocalizedChange(
+                    lang,
+                    "financialDetailsAgentFee",
+                    val.trim()
+                  );
+                }
+              }}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              notFoundContent={null}
+              className="w-full custom-select"
+              popupClassName="custom-dropdown"
+              options={salesAgentFees.map((opt) => ({
+                label: opt.name?.[lang] || "",
+                value: opt.name?.[lang] || "",
+              }))}
             />
           </div>
 

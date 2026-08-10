@@ -16,7 +16,6 @@ body {
 
 button {
   cursor: pointer !important;
-  border-radius: 100px !important;
 }
 
 .scrollbar-hide {

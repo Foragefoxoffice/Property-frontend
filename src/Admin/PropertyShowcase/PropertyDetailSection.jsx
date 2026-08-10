@@ -171,6 +171,7 @@ export default function PropertyDetailsSection({ property }) {
     Overview: useRef(null),
     "Property Utility": useRef(null),
     "Payment Overview": useRef(null),
+    "Financial Details": useRef(null),
     Video: useRef(null),
     "Map": useRef(null),
   };
@@ -309,10 +310,11 @@ export default function PropertyDetailsSection({ property }) {
   const TABS = [
     { key: "Overview", label: t.overview },
     { key: "Property Utility", label: t.propertyUtility },
-    { key: "Payment Overview", label: t.paymentOverview },
+    (type === "Lease" || type === "Home Stay") && { key: "Payment Overview", label: t.paymentOverview },
+    type === "Sale" && { key: "Financial Details", label: t.financialDetails },
     { key: "Video", label: t.video },
     { key: "Map", label: t.map || "Map" }, // ✅ Updated
-  ];
+  ].filter(Boolean);
 
   return (
     <div className="bg-[#F8F7FC] pb-3 md:px-4 px-2">
@@ -513,33 +515,68 @@ export default function PropertyDetailsSection({ property }) {
           {/* -------------------------------------------------------
              PAYMENT OVERVIEW (UI preserved)
           ------------------------------------------------------- */}
-          <section
-            ref={sectionRefs["Payment Overview"]}
-            className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12"
-          >
-            <h2 className="text-xl font-semibold mb-4">{t.paymentOverview}</h2>
+          {(type === "Lease" || type === "Home Stay") && (
+            <section
+              ref={sectionRefs["Payment Overview"]}
+              className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12"
+            >
+              <h2 className="text-xl font-semibold mb-4">{t.paymentOverview}</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {show(visFin.deposit) && (
-                <InfoItem
-                  label={`${t.deposit}:`}
-                  value={safeVal(fin?.financialDetailsDeposit)}
-                />
-              )}
-              {show(visFin.paymentTerm) && (
-                <InfoItem
-                  label={`${t.paymentTerms}:`}
-                  value={getLocalizedValue(fin?.financialDetailsMainFee)}
-                />
-              )}
-              {type === "Lease" && show(visFin.contractLength) && (
-                <InfoItem
-                  label={`${t.contractLength}:`}
-                  value={getLocalizedValue(fin?.financialDetailsContractLength)}
-                />
-              )}
-            </div>
-          </section>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {show(visFin.deposit) && (
+                  <InfoItem
+                    label={`${t.deposit}:`}
+                    value={safeVal(fin?.financialDetailsDeposit)}
+                  />
+                )}
+                {show(visFin.paymentTerm) && (
+                  <InfoItem
+                    label={`${t.paymentTerms}:`}
+                    value={getLocalizedValue(fin?.financialDetailsMainFee)}
+                  />
+                )}
+                {type === "Lease" && show(visFin.contractLength) && (
+                  <InfoItem
+                    label={`${t.contractLength}:`}
+                    value={getLocalizedValue(fin?.financialDetailsContractLength)}
+                  />
+                )}
+              </div>
+            </section>
+          )}
+
+          {/* -------------------------------------------------------
+             FINANCIAL DETAILS (For Sale)
+          ------------------------------------------------------- */}
+          {type === "Sale" && (
+            <section
+              ref={sectionRefs["Financial Details"]}
+              className="bg-white md:p-6 p-3 rounded-2xl mb-6 md:mb-12"
+            >
+              <h2 className="text-xl font-semibold mb-4">{t.financialDetails}</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {show(visFin.price) && (
+                  <InfoItem
+                    label={`${t.price}:`}
+                    value={`${formatNumber(fin?.financialDetailsPrice)} ${getLocalizedValue(fin?.financialDetailsCurrency) || "USD"}`}
+                  />
+                )}
+                {show(visFin.legalDocs) && (
+                  <InfoItem
+                    label={`${t.legalDoc}:`}
+                    value={getLocalizedValue(fin?.financialDetailsLegalDoc)}
+                  />
+                )}
+                {show(visFin.agentFee) && (
+                  <InfoItem
+                    label={`${t.agentFee}:`}
+                    value={getLocalizedValue(fin?.financialDetailsAgentFee)}
+                  />
+                )}
+              </div>
+            </section>
+          )}
 
           {/* -------------------------------------------------------
              VIDEO (Thumbnails + Popup)

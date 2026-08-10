@@ -312,6 +312,9 @@ export const translations = {
     overview: "Overview",
     propertyUtility: "Property Utility",
     paymentOverview: "Payment Overview",
+    legalDoc: "Legal Documents",
+    agentFee: "Agent Fee",
+    financialDetails: "Financial Details",
     video: "Video",
     floorPlans: "Floor Plans",
     deposit: "Deposit",
@@ -357,6 +360,7 @@ export const translations = {
     map: "Map", // ✅ Added
     noMap: "No map available", // ✅ Added
     sentBy: "Sent By",
+    lastUpdatedDate: "Last Updated Date",
     requestedBy: "Requested by",
     approvedBy: "Approved by",
     ownerName: "Owner Name",
@@ -927,6 +931,9 @@ export const translations = {
     overview: "Tổng quan",
     propertyUtility: "Tiện ích",
     paymentOverview: "Tổng quan thanh toán",
+    legalDoc: "Tài liệu pháp lý",
+    agentFee: "Phí môi giới",
+    financialDetails: "Chi tiết tài chính",
     video: "Video",
     floorPlans: "Mặt bằng",
     deposit: "Đặt cọc",
@@ -973,6 +980,7 @@ export const translations = {
     map: "Bản đồ", // ✅ Added
     noMap: "Không có bản đồ", // ✅ Added
     sentBy: "Gửi bởi",
+    lastUpdatedDate: "Ngày cập nhật cuối",
     requestedBy: "Yêu cầu bởi",
     approvedBy: "Được duyệt bởi",
     ownerName: "Tên chủ nhà",

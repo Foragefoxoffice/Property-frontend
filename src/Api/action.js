@@ -252,6 +252,14 @@ export const updateFeeTax = (id, data) => API.put(`/feetax/${id}`, data);
 export const deleteFeeTax = (id) => API.delete(`/feetax/${id}`);
 
 /* =========================================================
+   💰 SALES AGENT FEE APIs
+========================================================= */
+export const getAllSalesAgentFees = (params) => API.get("/sales-agent-fee", { params });
+export const createSalesAgentFee = (data) => API.post("/sales-agent-fee", data);
+export const updateSalesAgentFee = (id, data) => API.put(`/sales-agent-fee/${id}`, data);
+export const deleteSalesAgentFee = (id) => API.delete(`/sales-agent-fee/${id}`);
+
+/* =========================================================
    📄 LEGAL DOCUMENT APIs
 ========================================================= */
 export const getAllLegalDocuments = (params) =>

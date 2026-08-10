@@ -196,6 +196,7 @@ export default function CreatePropertyPreview({
     dateListed: { en: "Date Listed", vi: "Ngày niêm yết" },
     availableFrom: { en: "Available From", vi: "Có sẵn từ" },
     availabilityStatus: { en: "Availability Status", vi: "Trạng thái sẵn có" },
+    lastUpdated: { en: "Last Updated Date", vi: "Ngày cập nhật cuối" },
 
     // Property Info
     unit: { en: "Unit", vi: "Đơn vị" },
@@ -365,6 +366,10 @@ export default function CreatePropertyPreview({
                 />
               </>
             )}
+            <Field
+              label={labels.lastUpdated[lang]}
+              value={formatDMY(li.listingInformationLastUpdated)}
+            />
           </Grid3>
         </Section>
 
@@ -480,22 +485,10 @@ export default function CreatePropertyPreview({
                   value={formatNumber(fd.financialDetailsPrice)}
                 />
                 <Field
-                  label={labels.deposit[lang]}
-                  value={safe(fd.financialDetailsDeposit)}
-                />
-                <Field
-                  label={labels.paymentTerms[lang]}
-                  value={safe(fd.financialDetailsMainFee)}
-                />
-                <Field
                   label={labels.contractTerms[lang]}
                   value={safe(fd.financialDetailsContractTerms)}
                 />
-                <Field label="Agent Fee" value={formatNumber(fd.financialDetailsAgentFee)} />
-                <Field
-                  label="Fee / Tax"
-                  value={safe(fd.financialDetailsFeeTax)}
-                />
+                <Field label="Agent Fee" value={formatNumber(safe(fd.financialDetailsAgentFee))} />
                 <Field
                   label="Legal Documents"
                   value={safe(fd.financialDetailsLegalDoc)}
@@ -522,7 +515,7 @@ export default function CreatePropertyPreview({
                   label={labels.paymentTerms[lang]}
                   value={safe(fd.financialDetailsMainFee)}
                 />
-                <Field label="Agent Fee" value={formatNumber(fd.financialDetailsAgentFee)} />
+                <Field label="Agent Fee" value={formatNumber(safe(fd.financialDetailsAgentFee))} />
                 <Field
                   label="Agent Payment Agenda"
                   value={safe(fd.financialDetailsAgentPaymentAgenda)}

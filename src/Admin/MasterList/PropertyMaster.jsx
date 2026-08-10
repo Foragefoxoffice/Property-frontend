@@ -109,6 +109,14 @@ export default function PropertyMaster() {
           : "Official paperwork or legal documents.",
       path: "/dashboard/masters/legal-document",
     },
+    {
+      name: language === "vi" ? "Phí đại lý bán hàng" : "Sales Agent Fee",
+      description:
+        language === "vi"
+          ? "Phí hoa hồng cho đại lý bán hàng."
+          : "Commission fee options for sales agents.",
+      path: "/dashboard/masters/sales-agent-fee",
+    },
   ];
 
   return (

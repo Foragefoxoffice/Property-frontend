@@ -40,6 +40,7 @@ import PaymentPage from "./Admin/MasterList/MasterListPage/PaymentPage";
 import FeeTaxPage from "./Admin/MasterList/MasterListPage/FeeTaxPage";
 import LegalDocumentPage from "./Admin/MasterList/MasterListPage/LegalDocumentPage";
 import FloorRange from "./Admin/MasterList/MasterListPage/FloorRangePage";
+import SalesAgentFeePage from "./Admin/MasterList/MasterListPage/SalesAgentFeePage";
 import Currency from "./Admin/Currency/Currency";
 
 import OwnersLandlords from "./Admin/Property/OwnersLandlords";
@@ -167,6 +168,7 @@ const router = createBrowserRouter(
         <Route path="masters/fee-tax" element={<FeeTaxPage />} />
         <Route path="masters/legal-document" element={<LegalDocumentPage />} />
         <Route path="masters/floor-range" element={<FloorRange />} />
+        <Route path="masters/sales-agent-fee" element={<SalesAgentFeePage />} />
         <Route path="masters/currency" element={<Currency />} />
 
         {/* ---------- LANDLORD ROUTES ---------- */}

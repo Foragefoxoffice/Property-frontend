@@ -38,6 +38,16 @@ import { Dropdown, Tooltip, Spin } from "antd";
 import FiltersPage from "../Filters/Filter";
 import { usePermissions } from "../../Context/PermissionContext";
 
+const formatDMY = (dateStr) => {
+  if (!dateStr) return "—";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "—";
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
 export default function ManageProperty({
   filterByTransactionType,
   trashMode = false,
@@ -524,6 +534,7 @@ export default function ManageProperty({
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyType}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.ownerName}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.ownerPhone}</th>
+                {/* <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.lastUpdatedDate}</th> */}
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.actionBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.sentBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.publishTheWebsite}</th>
@@ -578,6 +589,8 @@ export default function ManageProperty({
                     <td className="px-6 py-4 whitespace-nowrap">{ownerName}</td>
 
                     <td className="px-6 py-4 whitespace-nowrap">{ownerPhone}</td>
+
+                    {/* <td className="px-6 py-4 whitespace-nowrap">{formatDMY(info.listingInformationLastUpdated)}</td> */}
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       {p.status === "Published" && (p.approvedByName || p.approvedBy) ? (
