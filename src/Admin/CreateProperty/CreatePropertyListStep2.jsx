@@ -1061,6 +1061,7 @@ export default function CreatePropertyListStep2({
               </div>
             </div>
             <AntdSelect
+              mode="tags"
               showSearch
               allowClear
               placeholder={
@@ -1068,37 +1069,37 @@ export default function CreatePropertyListStep2({
                   ? "Type or Select Legal Document"
                   : "Nhập hoặc chọn tài liệu pháp lý"
               }
-              value={form.financialDetailsLegalDoc?.[lang] || undefined}
-              onChange={(value) => {
-                const selected = legalDocs.find((l) => l.name?.[lang] === value);
-                if (selected) {
-                  setForm((prev) => ({
-                    ...prev,
-                    financialDetailsLegalDoc: {
-                      en: selected.name?.en || "",
-                      vi: selected.name?.vi || "",
-                    },
-                  }));
-                  onChange &&
-                    onChange({
-                      ...form,
-                      financialDetailsLegalDoc: {
-                        en: selected.name?.en || "",
-                        vi: selected.name?.vi || "",
-                      },
-                    });
-                } else {
-                  handleLocalizedChange(lang, "financialDetailsLegalDoc", value);
-                }
-              }}
-              onSearch={(val) => {
-                if (val.trim() !== "") {
-                  handleLocalizedChange(
-                    lang,
-                    "financialDetailsLegalDoc",
-                    val.trim()
-                  );
-                }
+              value={
+                form.financialDetailsLegalDoc?.[lang]
+                  ? form.financialDetailsLegalDoc[lang].split(",").map(v => v.trim()).filter(Boolean)
+                  : []
+              }
+              onChange={(values) => {
+                if (!values) values = [];
+                const enValues = [];
+                const viValues = [];
+                
+                values.forEach(val => {
+                  const selected = legalDocs.find((l) => l.name?.[lang] === val);
+                  if (selected) {
+                    enValues.push(selected.name?.en || val);
+                    viValues.push(selected.name?.vi || val);
+                  } else {
+                    enValues.push(val);
+                    viValues.push(val);
+                  }
+                });
+
+                const newVal = {
+                  en: enValues.join(", "),
+                  vi: viValues.join(", "),
+                };
+
+                setForm((prev) => ({
+                  ...prev,
+                  financialDetailsLegalDoc: newVal,
+                }));
+                onChange && onChange({ ...form, financialDetailsLegalDoc: newVal });
               }}
               filterOption={(input, option) =>
                 (option?.label ?? "")
@@ -1587,58 +1588,12 @@ export default function CreatePropertyListStep2({
                 />
               </div>
             </div>
-            <AntdSelect
-              showSearch
-              allowClear
-              placeholder={
-                lang === "en"
-                  ? "Type or Select Agent Fee"
-                  : "Nhập hoặc chọn phí đại lý"
-              }
-              value={form.financialDetailsAgentFee?.[lang] || undefined}
-              onChange={(value) => {
-                const selected = salesAgentFees.find((s) => s.name?.[lang] === value);
-                if (selected) {
-                  setForm((prev) => ({
-                    ...prev,
-                    financialDetailsAgentFee: {
-                      en: selected.name?.en || "",
-                      vi: selected.name?.vi || "",
-                    },
-                  }));
-                  onChange &&
-                    onChange({
-                      ...form,
-                      financialDetailsAgentFee: {
-                        en: selected.name?.en || "",
-                        vi: selected.name?.vi || "",
-                      },
-                    });
-                } else {
-                  handleLocalizedChange(lang, "financialDetailsAgentFee", value);
-                }
-              }}
-              onSearch={(val) => {
-                if (val && val.trim() !== "") {
-                  handleLocalizedChange(
-                    lang,
-                    "financialDetailsAgentFee",
-                    val.trim()
-                  );
-                }
-              }}
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              notFoundContent={null}
-              className="w-full custom-select"
-              popupClassName="custom-dropdown"
-              options={salesAgentFees.map((opt) => ({
-                label: opt.name?.[lang] || "",
-                value: opt.name?.[lang] || "",
-              }))}
+            <input
+              type="text"
+              placeholder={t.typehere}
+              value={form.financialDetailsAgentFee?.[lang] || ""}
+              onChange={(e) => handleLocalizedChange(lang, "financialDetailsAgentFee", e.target.value)}
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
 
@@ -2076,6 +2031,47 @@ export default function CreatePropertyListStep2({
                 label: opt.name?.[lang] || "",
                 value: opt.name?.[lang] || "",
               }))}
+            />
+          </div>
+
+          {/* Agent Fee */}
+          <div className="flex flex-col w-full gap-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm text-[#131517] font-semibold">
+                {t.agentFee}
+              </label>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">
+                  {lang === "en" ? "Hide" : "Ẩn"}
+                </span>
+                <Switch
+                  checked={form.financialVisibility?.agentFee}
+                  style={{
+                    backgroundColor: form.financialVisibility?.agentFee
+                      ? "#41398B"
+                      : "#d9d9d9",
+                  }}
+                  onChange={(val) => {
+                    const updated = {
+                      ...form,
+                      financialVisibility: {
+                        ...form.financialVisibility,
+                        agentFee: val,
+                      },
+                    };
+                    setForm(updated);
+                    onChange && onChange(updated);
+                  }}
+                />
+              </div>
+            </div>
+            <input
+              type="text"
+              placeholder={t.typehere}
+              value={form.financialDetailsAgentFee?.[lang] || ""}
+              onChange={(e) => handleLocalizedChange(lang, "financialDetailsAgentFee", e.target.value)}
+              className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
         </div>
