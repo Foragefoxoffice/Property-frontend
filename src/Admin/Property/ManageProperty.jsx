@@ -82,6 +82,7 @@ export default function ManageProperty({
   const [showFilterPopup, setShowFilterPopup] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState(savedState.appliedFilters || null);
   const [copyFullLoading, setCopyFullLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -309,7 +310,7 @@ export default function ManageProperty({
     if (!p) return [];
 
     const handleDownload = async () => {
-      setCopyFullLoading(true);
+      setDownloadLoading(true);
       try {
         await downloadPropertyDetails(p, language);
         CommonToaster(t.downloadComplete || "Download Complete", "success");
@@ -317,7 +318,7 @@ export default function ManageProperty({
         console.error(err);
         CommonToaster(t.downloadFailed || "Download Failed", "error");
       } finally {
-        setCopyFullLoading(false);
+        setDownloadLoading(false);
       }
     };
 
@@ -863,6 +864,16 @@ export default function ManageProperty({
           <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center gap-4">
             <div className="animate-spin w-12 h-12 border-4 border-[#41398B] border-t-transparent rounded-full"></div>
             <p className="text-gray-700 text-lg font-medium">{t.copyingProperty}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Download loading overlay */}
+      {downloadLoading && (
+        <div className="fixed inset-0 bg-black/40 z-[9999] flex justify-center items-center">
+          <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center gap-4">
+            <div className="animate-spin w-12 h-12 border-4 border-[#41398B] border-t-transparent rounded-full"></div>
+            <p className="text-gray-700 text-lg font-medium">{t.downloadingProperty || "Downloading Property..."}</p>
           </div>
         </div>
       )}
