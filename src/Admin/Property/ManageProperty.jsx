@@ -33,6 +33,7 @@ import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { translateError } from "../../utils/translateError";
 import { formatNumber } from "../../utils/display";
+import { downloadPropertyDetails } from "../../utils/downloadProperty";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, Tooltip, Spin } from "antd";
 import FiltersPage from "../Filters/Filter";
@@ -307,8 +308,29 @@ export default function ManageProperty({
   const getCopyMenuItems = (p) => {
     if (!p) return [];
 
+    const handleDownload = async () => {
+      setCopyFullLoading(true);
+      try {
+        await downloadPropertyDetails(p, language);
+        CommonToaster(t.downloadComplete || "Download Complete", "success");
+      } catch (err) {
+        console.error(err);
+        CommonToaster(t.downloadFailed || "Download Failed", "error");
+      } finally {
+        setCopyFullLoading(false);
+      }
+    };
+
+    const downloadOption = {
+      key: "download",
+      label: t.download || "Download Property",
+      onClick: handleDownload,
+    };
+
+    const items = [];
+
     if (filterByTransactionType === "Sale") {
-      return [
+      items.push(
         {
           key: "copy_lease",
           label: "Copy to Lease",
@@ -318,12 +340,10 @@ export default function ManageProperty({
           key: "copy_home",
           label: "Copy to Homestay",
           onClick: () => handleCopy(p._id, "Home Stay"),
-        },
-      ];
-    }
-
-    if (filterByTransactionType === "Lease") {
-      return [
+        }
+      );
+    } else if (filterByTransactionType === "Lease") {
+      items.push(
         {
           key: "copy_sale",
           label: "Copy to Sale",
@@ -333,12 +353,10 @@ export default function ManageProperty({
           key: "copy_home",
           label: "Copy to Homestay",
           onClick: () => handleCopy(p._id, "Home Stay"),
-        },
-      ];
-    }
-
-    if (filterByTransactionType === "Home Stay" || filterByTransactionType === "HomeStay") {
-      return [
+        }
+      );
+    } else if (filterByTransactionType === "Home Stay" || filterByTransactionType === "HomeStay") {
+      items.push(
         {
           key: "copy_sale",
           label: "Copy to Sale",
@@ -348,11 +366,12 @@ export default function ManageProperty({
           key: "copy_lease",
           label: "Copy to Lease",
           onClick: () => handleCopy(p._id, "Lease"),
-        },
-      ];
+        }
+      );
     }
 
-    return [];
+    items.push(downloadOption);
+    return items;
   };
 
   const handleCopy = async (id, target) => {

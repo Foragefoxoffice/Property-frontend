@@ -1591,8 +1591,13 @@ export default function CreatePropertyListStep2({
             <input
               type="text"
               placeholder={t.typehere}
-              value={form.financialDetailsAgentFee?.[lang] || ""}
-              onChange={(e) => handleLocalizedChange(lang, "financialDetailsAgentFee", e.target.value)}
+              value={formatNumber(form.financialDetailsAgentFee?.[lang] || "")}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                if (!isNaN(raw)) {
+                  handleLocalizedChange(lang, "financialDetailsAgentFee", raw);
+                }
+              }}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
@@ -2069,8 +2074,13 @@ export default function CreatePropertyListStep2({
             <input
               type="text"
               placeholder={t.typehere}
-              value={form.financialDetailsAgentFee?.[lang] || ""}
-              onChange={(e) => handleLocalizedChange(lang, "financialDetailsAgentFee", e.target.value)}
+              value={formatNumber(form.financialDetailsAgentFee?.[lang] || "")}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                if (!isNaN(raw)) {
+                  handleLocalizedChange(lang, "financialDetailsAgentFee", raw);
+                }
+              }}
               className="border border-[#B2B2B3] h-12 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-gray-300 outline-none"
             />
           </div>
