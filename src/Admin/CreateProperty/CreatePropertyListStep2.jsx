@@ -259,7 +259,7 @@ export default function CreatePropertyListStep2({
         });
 
         // Localized fields
-        const localized = ["contractTerms", "depositPaymentTerms", "maintenanceFeeMonthly", "financialDetailsAgentPaymentAgenda", "financialDetailsFeeTax", "financialDetailsLegalDoc", "googleMapsIframe", "contractLength"];
+        const localized = ["contractTerms", "depositPaymentTerms", "maintenanceFeeMonthly", "financialDetailsAgentFee", "financialDetailsAgentPaymentAgenda", "financialDetailsFeeTax", "financialDetailsLegalDoc", "googleMapsIframe", "contractLength"];
         localized.forEach(f => {
           if (initialData[f]) {
             const propVal = initialData[f];

@@ -158,12 +158,18 @@ function mapApiToForm(api) {
     maintenanceFeeMonthly: safe(api.financialDetails?.financialDetailsMainFee),
 
     financialDetailsAgentFee:
-      typeof api.financialDetails?.financialDetailsAgentFee === "object"
+      typeof api.financialDetails?.financialDetailsAgentFee === "object" &&
+      (api.financialDetails.financialDetailsAgentFee.en || api.financialDetails.financialDetailsAgentFee.vi)
         ? api.financialDetails.financialDetailsAgentFee
         : api.financialDetails?.financialDetailsAgentFee
         ? {
             en: String(api.financialDetails.financialDetailsAgentFee),
             vi: String(api.financialDetails.financialDetailsAgentFee),
+          }
+        : api.contactManagement?.contactManagementAgentFee
+        ? {
+            en: String(api.contactManagement.contactManagementAgentFee),
+            vi: String(api.contactManagement.contactManagementAgentFee),
           }
         : { en: "", vi: "" },
 

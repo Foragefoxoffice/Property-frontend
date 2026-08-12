@@ -546,6 +546,7 @@ export default function CreatePropertyPreview({
                   label={labels.paymentTerms[lang]}
                   value={safe(fd.financialDetailsMainFee)}
                 />
+                <Field label="Agent Fee" value={formatNumber(safe(fd.financialDetailsAgentFee))} />
               </>
             )}
           </Grid3>
