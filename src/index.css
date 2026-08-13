@@ -33,8 +33,8 @@ button {
 /* === Custom Select Styling === */
 /* --- Select Input Box --- */
 .custom-select .ant-select-selector {
-  height: 48px !important;
-  /* makes it bigger */
+  min-height: 48px !important;
+  height: auto !important;
   font-size: 16px !important;
   background-color: #fff !important;
   /* light background */
@@ -42,6 +42,18 @@ button {
   border: 1px solid #b2b2b3 !important;
   /* light gray border */
   transition: all 0.3s ease;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
+
+.ant-select-outlined.ant-select-multiple .ant-select-selection-item {
+  background-color: #352e7a !important;
+  color: #fff !important;
+  margin: 4px;
+}
+
+.ant-select-multiple .ant-select-selection-overflow .ant-select-selection-item-remove {
+  color: #fff !important;
 }
 
 .custom-select .ant-select-selection-item {

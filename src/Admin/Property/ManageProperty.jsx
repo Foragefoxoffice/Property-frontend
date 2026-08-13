@@ -27,13 +27,14 @@ import {
   getPropertiesByTransactionType,
   restoreProperty,
   syncLegacyOwners,
+  getSingleProperty,
 } from "../../Api/action";
 import { CommonToaster } from "../../Common/CommonToaster";
 import { useLanguage } from "../../Language/LanguageContext";
 import { translations } from "../../Language/translations";
 import { translateError } from "../../utils/translateError";
 import { formatNumber } from "../../utils/display";
-import { downloadPropertyDetails } from "../../utils/downloadProperty";
+import { downloadPropertyDetails } from "../../utils/downloadProperty.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, Tooltip, Spin } from "antd";
 import FiltersPage from "../Filters/Filter";
@@ -312,7 +313,9 @@ export default function ManageProperty({
     const handleDownload = async () => {
       setDownloadLoading(true);
       try {
-        await downloadPropertyDetails(p, language);
+        const fullPropRes = await getSingleProperty(p._id);
+        const fullProperty = fullPropRes?.data?.data || p;
+        await downloadPropertyDetails(fullProperty, language);
         CommonToaster(t.downloadComplete || "Download Complete", "success");
       } catch (err) {
         console.error(err);
