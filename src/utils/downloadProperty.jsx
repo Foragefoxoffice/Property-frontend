@@ -372,41 +372,29 @@ export const downloadPropertyDetails = async (property, language = "en") => {
 
               // Fetch and add videos
               const videos = property?.imagesVideos?.propertyVideo || [];
-              let debugText = `Property ID: ${property?._id}\n`;
-              debugText += `Images count: ${images.length}\n`;
-              debugText += `Videos count: ${videos.length}\n`;
-              debugText += `Videos type: ${typeof videos}\n`;
-              debugText += `Videos value: ${JSON.stringify(videos)}\n\n`;
 
               if (videos.length > 0) {
                 // Ensure it's treated as an array even if it's a string
                 const videoArray = Array.isArray(videos) ? videos : [videos];
                 await Promise.all(videoArray.map(async (vidPath, index) => {
                   if (!vidPath) {
-                    debugText += `Video ${index}: Empty path\n`;
                     return;
                   }
                   const url = getImageUrl(vidPath);
-                  debugText += `Video ${index}: Fetching ${url}\n`;
                   try {
                     const blob = await fetchFile(url);
                     if (blob) {
-                      debugText += `Video ${index}: Success! Blob size: ${blob.size}\n`;
                       const cleanPath = vidPath.split('?')[0];
                       const ext = cleanPath.split('.').pop() || 'mp4';
                       const finalExt = ext.length > 4 ? 'mp4' : ext;
                       vidFolder.file(`Video_${index + 1}.${finalExt}`, blob);
-                    } else {
-                      debugText += `Video ${index}: Failed (blob is null)\n`;
                     }
                   } catch (e) {
-                    debugText += `Video ${index}: Error - ${e.message}\n`;
+                    console.warn(`Video ${index} failed:`, e);
                   }
                 }));
               }
               
-              zip.file("debug_download.txt", debugText);
-
               // Generate zip and download
               const zipBlob = await zip.generateAsync({ type: "blob" });
               saveAs(zipBlob, `${filename}.zip`);
