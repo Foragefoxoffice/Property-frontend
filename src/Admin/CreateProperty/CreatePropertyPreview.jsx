@@ -63,6 +63,21 @@ const cleanHtml = (html) => {
     .trim();
 };
 
+const decodeHtmlEntities = (text) => {
+  if (!text) return "";
+  const textArea = document.createElement("textarea");
+  let currentText = text;
+  let previousText = "";
+  let attempts = 0;
+  while (currentText !== previousText && attempts < 5) {
+    previousText = currentText;
+    textArea.innerHTML = currentText;
+    currentText = textArea.value;
+    attempts++;
+  }
+  return currentText;
+};
+
 const formatNumber = (value) => {
   if (!value && value !== 0) return "—";
   const numeric = value.toString().replace(/,/g, "");
@@ -229,6 +244,8 @@ export default function CreatePropertyPreview({
     publishing: { en: "Publishing", vi: "Đang xuất bản" },
     sendForApproval: { en: "Send for Approval", vi: "Gửi phê duyệt" },
     readyForApproval: { en: "Ready for Approval", vi: "Sẵn sàng phê duyệt" },
+    googleMapsIframe: { en: "Google Maps Iframe Code", vi: "Mã nhúng bản đồ Google" },
+    googleMapsPreview: { en: "Google Maps Preview", vi: "Xem trước Google Maps" },
   };
 
 
@@ -576,6 +593,11 @@ export default function CreatePropertyPreview({
             </div>
 
             <Field
+              label={lang === "en" ? "Landlord Phone" : "Số điện thoại"}
+              value={Array.isArray(cm.contactManagementOwnerPhone) ? cm.contactManagementOwnerPhone.join(", ") : safe(cm.contactManagementOwnerPhone)}
+            />
+
+            <Field
               label={labels.ownerNotes[lang]}
               value={safe(cm.contactManagementOwnerNotes)}
               isTextArea={true}
@@ -593,6 +615,25 @@ export default function CreatePropertyPreview({
             />
           </Grid3>
         </Section>
+
+        {/* === Google Maps Iframe === */}
+        {safe(li.listingInformationGoogleMapsIframe) && (
+          <Section title={labels.googleMapsPreview[lang]}>
+            <div className="mb-4">
+              <Field 
+                label={labels.googleMapsIframe[lang]} 
+                value={decodeHtmlEntities(safe(li.listingInformationGoogleMapsIframe))} 
+                isTextArea={true} 
+              />
+            </div>
+            <div 
+              className="w-full h-[400px] rounded-xl overflow-hidden [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0 border border-gray-200"
+              dangerouslySetInnerHTML={{
+                __html: decodeHtmlEntities(safe(li.listingInformationGoogleMapsIframe))
+              }}
+            />
+          </Section>
+        )}
 
         {/* === Status and Publish Buttons === */}
         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 mt-10">

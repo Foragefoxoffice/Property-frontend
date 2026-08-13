@@ -5,6 +5,55 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { getImageUrl } from "./imageHelper";
 
+const decodeHtmlEntities = (text) => {
+  if (!text) return "";
+  const textArea = document.createElement("textarea");
+  let currentText = text;
+  let previousText = "";
+  let attempts = 0;
+  while (currentText !== previousText && attempts < 5) {
+    previousText = currentText;
+    textArea.innerHTML = currentText;
+    currentText = textArea.value;
+    attempts++;
+  }
+  return currentText;
+};
+
+const getGoogleMapsLink = (iframeString) => {
+  if (!iframeString) return null;
+  const srcMatch = iframeString.match(/src="([^"]+)"/);
+  if (!srcMatch || !srcMatch[1]) return null;
+  
+  const srcUrl = srcMatch[1];
+  
+  // If it's a standard embed URL, try to extract the pb parameter
+  if (srcUrl.includes("/maps/embed?pb=")) {
+    const pbMatch = srcUrl.match(/pb=([^&]+)/);
+    if (pbMatch && pbMatch[1]) {
+      const pb = pbMatch[1];
+      
+      // Try to find a place name (!2s)
+      const placeMatch = pb.match(/!2s([^!]+)/);
+      if (placeMatch && placeMatch[1]) {
+        return `https://www.google.com/maps/search/?api=1&query=${placeMatch[1]}`;
+      }
+      
+      // Fallback: try to find coordinates (!2d = long, !3d = lat)
+      const coordMatch = pb.match(/!2d([^!]+)!3d([^!]+)/);
+      if (coordMatch && coordMatch[1] && coordMatch[2]) {
+        return `https://www.google.com/maps?q=${coordMatch[2]},${coordMatch[1]}`;
+      }
+    }
+  }
+  
+  // If we can't parse it but it's an embed url, direct them to maps home to be safe, 
+  // or return null to hide the link. Returning null is safer.
+  if (srcUrl.includes("/maps/embed")) return null;
+  
+  return srcUrl;
+};
+
 const fetchFile = async (url) => {
   try {
     const res = await fetch(url, { mode: 'cors' });
@@ -209,7 +258,7 @@ const PropertyPDFTemplate = ({ property, language = "en" }) => {
 
       <Section title={labels.financialDetails[language]}>
         <Grid3>
-          <Field label={labels.currency[language]} value={safe(fd.financialDetailsCurrency?.code)} />
+          <Field label={labels.currency[language]} value={typeof fd.financialDetailsCurrency === 'object' ? fd.financialDetailsCurrency?.code || safe(fd.financialDetailsCurrency) : safe(fd.financialDetailsCurrency)} />
           {currentTransType === "sale" && (
             <Field label={labels.price[language]} value={formatNumber(fd.financialDetailsPrice)} />
           )}
@@ -227,12 +276,12 @@ const PropertyPDFTemplate = ({ property, language = "en" }) => {
             </>
           )}
           <Field label={labels.deposit[language]} value={safe(fd.financialDetailsDeposit)} />
-          <Field label={labels.paymentTerms[language]} value={safe(fd.financialDetailsPaymentTerms)} />
+          <Field label={labels.paymentTerms[language]} value={currentTransType === "sale" ? safe(fd.financialDetailsPaymentTerms) : safe(fd.financialDetailsMainFee || fd.financialDetailsPaymentTerms)} />
           {currentTransType === "sale" ? (
             <Field label={labels.contractTerms[language]} value={safe(fd.financialDetailsContractTerms)} />
           ) : (
             <>
-              <Field label="Agent Fee" value={safe(fd.financialDetailsAgentFee)} />
+              <Field label="Agent Fee" value={formatNumber(safe(fd.financialDetailsAgentFee))} />
               <Field label="Agent Payment Agenda" value={safe(fd.financialDetailsAgentPaymentAgenda)} />
             </>
           )}
@@ -241,15 +290,46 @@ const PropertyPDFTemplate = ({ property, language = "en" }) => {
 
       <Section title={labels.contactManagement[language]}>
         <Grid3>
-          <Field label={labels.owner[language]} value={safe(cm.contactManagementOwnerId?.ownerName)} />
-          <Field label={labels.ownerNotes[language]} value={safe(cm.contactManagementLandlordNotes)} />
-          <Field label={labels.consultant[language]} value={safe(cm.contactManagementConsultantId?.firstName)} />
+          <Field label={labels.owner[language]} value={safe(cm.contactManagementOwner || cm.contactManagementOwnerId?.ownerName)} />
+          <Field label={language === "en" ? "Landlord Phone" : "Số điện thoại"} value={Array.isArray(cm.contactManagementOwnerPhone) ? cm.contactManagementOwnerPhone.join(", ") : safe(cm.contactManagementOwnerPhone)} />
+          <Field label={labels.ownerNotes[language]} value={safe(cm.contactManagementOwnerNotes || cm.contactManagementLandlordNotes)} />
+          <Field label={labels.consultant[language]} value={safe(cm.contactManagementConsultant || cm.contactManagementConsultantId?.firstName)} />
           {currentTransType === "home stay" && (
             <Field label={labels.connectingPoint[language]} value={safe(cm.contactManagementConnectingPoint)} />
           )}
           <Field label={labels.internalNotes[language]} value={safe(cm.contactManagementInternalNotes)} isTextArea />
         </Grid3>
       </Section>
+
+      {/* === Google Maps Iframe === */}
+      {safe(li.listingInformationGoogleMapsIframe) && (
+        <Section title={language === "en" ? "Google Maps Preview" : "Xem trước Google Maps"}>
+          <div className="mb-4">
+            <Field 
+              label={language === "en" ? "Google Maps Iframe Code" : "Mã nhúng bản đồ Google"} 
+              value={decodeHtmlEntities(safe(li.listingInformationGoogleMapsIframe))} 
+              isTextArea={true} 
+            />
+          </div>
+          <div className="w-full h-[150px] bg-[#f9fafb] border border-[#e5e7eb] rounded-xl flex flex-col items-center justify-center p-4 text-center">
+            <span className="text-[12px] text-[#374151] mb-2 font-medium">
+              {language === "en" ? "Interactive Map is not available in PDF exports." : "Bản đồ tương tác không khả dụng trong tệp PDF."}
+            </span>
+            {(() => {
+              const decoded = decodeHtmlEntities(safe(li.listingInformationGoogleMapsIframe));
+              const mapUrl = getGoogleMapsLink(decoded);
+              if (mapUrl) {
+                return (
+                  <a href={mapUrl} target="_blank" rel="noopener noreferrer" className="text-[#2563eb] underline text-[11px]">
+                    {language === "en" ? "Click here to open Map in Browser" : "Nhấp vào đây để mở Bản đồ trên trình duyệt"}
+                  </a>
+                );
+              }
+              return null;
+            })()}
+          </div>
+        </Section>
+      )}
     </div>
   );
 };
@@ -329,7 +409,23 @@ export const downloadPropertyDetails = async (property, language = "en") => {
           margin: 10,
           filename: `Property_${property?.listingInformation?.listingInformationPropertyId || "Details"}.pdf`,
           image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 1024, scrollX: 0, scrollY: 0 },
+          html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false, 
+            windowWidth: 1024, 
+            scrollX: 0, 
+            scrollY: 0,
+            onclone: (clonedDoc) => {
+              // Fix html2canvas crash by stripping oklch colors from stylesheets
+              const styles = clonedDoc.querySelectorAll('style');
+              styles.forEach(style => {
+                if (style.innerHTML.includes('oklch')) {
+                  style.innerHTML = style.innerHTML.replace(/oklch\([^)]+\)/g, '#000000');
+                }
+              });
+            }
+          },
           jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
@@ -357,17 +453,22 @@ export const downloadPropertyDetails = async (property, language = "en") => {
               // Fetch and add images
               const images = property?.imagesVideos?.propertyImages || [];
               if (images.length > 0) {
-                await Promise.all(images.map(async (imgPath, index) => {
-                  if (!imgPath) return;
-                  const url = getImageUrl(imgPath);
-                  const blob = await fetchFile(url);
-                  if (blob) {
-                    const cleanPath = imgPath.split('?')[0];
-                    const ext = cleanPath.split('.').pop() || 'jpg';
-                    const finalExt = ext.length > 4 ? 'jpg' : ext;
-                    imgFolder.file(`Image_${index + 1}.${finalExt}`, blob);
-                  }
-                }));
+                // Fetch in batches of 3 to avoid overwhelming the server
+                for (let i = 0; i < images.length; i += 3) {
+                  const batch = images.slice(i, i + 3);
+                  await Promise.all(batch.map(async (imgPath, batchIndex) => {
+                    const index = i + batchIndex;
+                    if (!imgPath) return;
+                    const url = getImageUrl(imgPath);
+                    const blob = await fetchFile(url);
+                    if (blob) {
+                      const cleanPath = imgPath.split('?')[0];
+                      const ext = cleanPath.split('.').pop() || 'jpg';
+                      const finalExt = ext.length > 4 ? 'jpg' : ext;
+                      imgFolder.file(`Image_${index + 1}.${finalExt}`, blob);
+                    }
+                  }));
+                }
               }
 
               // Fetch and add videos
@@ -376,10 +477,10 @@ export const downloadPropertyDetails = async (property, language = "en") => {
               if (videos.length > 0) {
                 // Ensure it's treated as an array even if it's a string
                 const videoArray = Array.isArray(videos) ? videos : [videos];
-                await Promise.all(videoArray.map(async (vidPath, index) => {
-                  if (!vidPath) {
-                    return;
-                  }
+                for (let i = 0; i < videoArray.length; i++) {
+                  const vidPath = videoArray[i];
+                  if (!vidPath) continue;
+                  
                   const url = getImageUrl(vidPath);
                   try {
                     const blob = await fetchFile(url);
@@ -387,16 +488,16 @@ export const downloadPropertyDetails = async (property, language = "en") => {
                       const cleanPath = vidPath.split('?')[0];
                       const ext = cleanPath.split('.').pop() || 'mp4';
                       const finalExt = ext.length > 4 ? 'mp4' : ext;
-                      vidFolder.file(`Video_${index + 1}.${finalExt}`, blob);
+                      vidFolder.file(`Video_${i + 1}.${finalExt}`, blob);
                     }
                   } catch (e) {
-                    console.warn(`Video ${index} failed:`, e);
+                    console.warn(`Video ${i} failed:`, e);
                   }
-                }));
+                }
               }
               
-              // Generate zip and download
-              const zipBlob = await zip.generateAsync({ type: "blob" });
+              // Generate zip and download (with STORE compression to save CPU/time)
+              const zipBlob = await zip.generateAsync({ type: "blob", compression: "STORE" });
               saveAs(zipBlob, `${filename}.zip`);
               resolve({ success: true });
             } catch (zipError) {
