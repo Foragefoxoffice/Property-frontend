@@ -181,7 +181,7 @@ export default function Login() {
 
           {/* Error */}
           {error && (
-            <p 
+            <p
               className="text-center text-red-500 text-xs bg-red-50 py-2 px-3 rounded-md border border-red-200"
               dangerouslySetInnerHTML={{ __html: error }}
             />
@@ -191,7 +191,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full cursor-pointer py-3 bg-[#41398B] hover:bg-[#41398be1] text-white font-semibold rounded-fullxl shadow-md transition-all flex justify-center items-center"
+            className="w-full cursor-pointer py-3 bg-[#41398B] hover:bg-[#41398be1] text-white font-semibold rounded-full shadow-md transition-all flex justify-center items-center"
           >
             {loading ? (
               <>

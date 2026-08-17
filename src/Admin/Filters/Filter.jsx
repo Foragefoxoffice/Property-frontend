@@ -34,7 +34,7 @@ const Input = ({ label, value, onChange, name, placeholder }) => (
    - value expects { id, name } (or null)
    - onChange(name, { id, name })
 ====================================================== */
-const Select = ({ label, name, value, onChange, options = [], placeholder, lang }) => {
+const Select = ({ label, name, value, onChange, options = [], placeholder, lang, mode }) => {
   const { Option } = AntdSelect;
 
   const getOptionLabel = (opt) => {
@@ -56,15 +56,24 @@ const Select = ({ label, name, value, onChange, options = [], placeholder, lang 
       <label className="text-sm text-[#131517] font-semibold mb-2">{label}</label>
 
       <AntdSelect
+        mode={mode}
         showSearch
         allowClear
         placeholder={placeholder || "Select"}
-        value={value?.id || undefined}
-        onChange={(val, option) =>
-          onChange(name, { id: val, name: option?.label || "" })
-        }
+        value={mode === "multiple" ? (value || []).map(v => v.id) : (value?.id || undefined)}
+        onChange={(val, option) => {
+          if (mode === "multiple") {
+            const newValues = (val || []).map((v, i) => {
+              const optLabel = Array.isArray(option) ? option[i]?.label : option?.label;
+              return { id: v, name: optLabel || "" };
+            });
+            onChange(name, newValues);
+          } else {
+            onChange(name, val ? { id: val, name: option?.label || "" } : null)
+          }
+        }}
         optionFilterProp="children"
-        className="w-full h-12 custom-select"
+        className="w-full min-h-[48px] custom-select"
         popupClassName="custom-dropdown"
       >
         {options.map((opt) => {
@@ -167,17 +176,17 @@ export default function FiltersPage({ onApply, defaultFilters }) {
 
   // Filter state (stores { id, name } for selects)
   const [filters, setFilters] = useState({
-    projectId: null,
-    zoneId: null,
-    blockId: null,
-    propertyType: null,
+    projectId: [],
+    zoneId: [],
+    blockId: [],
+    propertyType: [],
     propertyNumber: "",
-    floorRange: null,
-    availabilityStatus: null,
-    currency: null,
-    bedrooms: null,
-    bathrooms: null,
-    furnishing: null,
+    floorRange: [],
+    availabilityStatus: [],
+    currency: [],
+    bedrooms: [],
+    bathrooms: [],
+    furnishing: [],
     priceFrom: "",
     priceTo: "",
   });
@@ -267,28 +276,36 @@ export default function FiltersPage({ onApply, defaultFilters }) {
     if (!defaultFilters) return;
 
     // helper to normalize incoming id or object
-    const normalizeSelect = (key, value) => {
+    const normalizeSelect = (key, value, isMulti) => {
+      if (isMulti) {
+        if (!value) return [];
+        if (Array.isArray(value)) {
+          return value.map(v => {
+            if (typeof v === "object" && (v.id || v._id)) return { id: v.id || v._id, name: v.name || "" };
+            return { id: v, name: "" };
+          });
+        }
+        return [];
+      }
       if (!value) return null;
-      // if already object with id
       if (typeof value === "object" && (value.id || value._id)) {
         return { id: value.id || value._id, name: value.name || "" };
       }
-      // if string id, try to find name from master lists (after masters loaded)
       return { id: value, name: "" };
     };
 
     setFilters((prev) => ({
       ...prev,
-      projectId: normalizeSelect("projectId", defaultFilters.projectId),
-      zoneId: normalizeSelect("zoneId", defaultFilters.zoneId),
-      blockId: normalizeSelect("blockId", defaultFilters.blockId),
-      propertyType: normalizeSelect("propertyType", defaultFilters.propertyType),
-      floorRange: normalizeSelect("floorRange", defaultFilters.floorRange),
-      availabilityStatus: normalizeSelect("availabilityStatus", defaultFilters.availabilityStatus),
-      currency: normalizeSelect("currency", defaultFilters.currency),
-      bedrooms: normalizeSelect("bedrooms", defaultFilters.bedrooms),
-      bathrooms: normalizeSelect("bathrooms", defaultFilters.bathrooms),
-      furnishing: normalizeSelect("furnishing", defaultFilters.furnishing),
+      projectId: normalizeSelect("projectId", defaultFilters.projectId, true),
+      zoneId: normalizeSelect("zoneId", defaultFilters.zoneId, true),
+      blockId: normalizeSelect("blockId", defaultFilters.blockId, true),
+      propertyType: normalizeSelect("propertyType", defaultFilters.propertyType, true),
+      floorRange: normalizeSelect("floorRange", defaultFilters.floorRange, true),
+      availabilityStatus: normalizeSelect("availabilityStatus", defaultFilters.availabilityStatus, true),
+      currency: normalizeSelect("currency", defaultFilters.currency, true),
+      bedrooms: normalizeSelect("bedrooms", defaultFilters.bedrooms, true),
+      bathrooms: normalizeSelect("bathrooms", defaultFilters.bathrooms, true),
+      furnishing: normalizeSelect("furnishing", defaultFilters.furnishing, true),
       propertyNumber: defaultFilters.propertyNumber || "",
       priceFrom: formatNumber(defaultFilters.priceFrom || ""),
       priceTo: formatNumber(defaultFilters.priceTo || ""),
@@ -298,18 +315,20 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   /* ======================================================
      Whenever project changes -> update visible zones
   ======================================================= */
+  const projectIdsStr = JSON.stringify(Array.isArray(filters.projectId) ? filters.projectId.map(p => p.id).sort() : []);
+
   useEffect(() => {
     // We only perform the validation/clearing logic if master data is loaded
     if (!isLoaded) return;
 
-    const projectId = filters.projectId?.id || null;
-    if (!projectId) {
+    const projectIds = Array.isArray(filters.projectId) ? filters.projectId.map(p => p.id) : [];
+    if (projectIds.length === 0) {
       setZones([]);
       setBlocks([]);
       // Use functional update to avoid unnecessary state triggers
       setFilters((prev) => {
-        if (!prev.zoneId && !prev.blockId) return prev;
-        return { ...prev, zoneId: null, blockId: null };
+        if ((!prev.zoneId || prev.zoneId.length === 0) && (!prev.blockId || prev.blockId.length === 0)) return prev;
+        return { ...prev, zoneId: [], blockId: [] };
       });
       return;
     }
@@ -318,7 +337,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
     const filteredZones = zonesAll.filter((z) => {
       if (!z) return false;
       const zProjId = typeof z.property === "string" ? z.property : z.property?._id;
-      return zProjId === projectId;
+      return projectIds.includes(zProjId);
     });
 
     setZones(filteredZones);
@@ -326,32 +345,33 @@ export default function FiltersPage({ onApply, defaultFilters }) {
     // IMPORTANT: Only clear selected zone/block if they are NOT in the new list.
     // This allows reopening the filter and keeping the values.
     setFilters((prev) => {
-      const currentZoneId = prev.zoneId?.id;
-      if (!currentZoneId) return prev;
+      const currentZoneIds = Array.isArray(prev.zoneId) ? prev.zoneId.map(z => z.id) : [];
+      if (currentZoneIds.length === 0) return prev;
 
-      const isStillValid = filteredZones.some(
-        (z) => (z._id || z.id) === currentZoneId
-      );
+      const validZoneIds = currentZoneIds.filter(zid => filteredZones.some(fz => (fz._id || fz.id) === zid));
 
-      if (!isStillValid) {
-        return { ...prev, zoneId: null, blockId: null };
+      if (validZoneIds.length !== currentZoneIds.length) {
+        const newZones = prev.zoneId.filter(z => validZoneIds.includes(z.id));
+        return { ...prev, zoneId: newZones };
       }
       return prev;
     });
-  }, [filters.projectId?.id, zonesAll, isLoaded]);
+  }, [projectIdsStr, zonesAll, isLoaded]);
 
   /* ======================================================
      Whenever zone changes -> update visible blocks
   ======================================================= */
+  const zoneIdsStr = JSON.stringify(Array.isArray(filters.zoneId) ? filters.zoneId.map(z => z.id).sort() : []);
+
   useEffect(() => {
     if (!isLoaded) return;
 
-    const zoneId = filters.zoneId?.id || null;
-    if (!zoneId) {
+    const zoneIds = Array.isArray(filters.zoneId) ? filters.zoneId.map(z => z.id) : [];
+    if (zoneIds.length === 0) {
       setBlocks([]);
       setFilters((prev) => {
-        if (!prev.blockId) return prev;
-        return { ...prev, blockId: null };
+        if (!prev.blockId || prev.blockId.length === 0) return prev;
+        return { ...prev, blockId: [] };
       });
       return;
     }
@@ -359,31 +379,37 @@ export default function FiltersPage({ onApply, defaultFilters }) {
     const filteredBlocks = blocksAll.filter((b) => {
       if (!b || !b.zone) return false;
       const bZoneId = typeof b.zone === "string" ? b.zone : b.zone?._id;
-      return bZoneId === zoneId;
+      return zoneIds.includes(bZoneId);
     });
 
     setBlocks(filteredBlocks);
 
     // Only clear block if not valid for the new zone
     setFilters((prev) => {
-      const currentBlockId = prev.blockId?.id;
-      if (!currentBlockId) return prev;
+      const currentBlockIds = Array.isArray(prev.blockId) ? prev.blockId.map(b => b.id) : [];
+      if (currentBlockIds.length === 0) return prev;
 
-      const isStillValid = filteredBlocks.some(
-        (b) => (b._id || b.id) === currentBlockId
-      );
+      const validBlockIds = currentBlockIds.filter(bid => filteredBlocks.some(fb => (fb._id || fb.id) === bid));
 
-      if (!isStillValid) {
-        return { ...prev, blockId: null };
+      if (validBlockIds.length !== currentBlockIds.length) {
+        const newBlocks = prev.blockId.filter(b => validBlockIds.includes(b.id));
+        return { ...prev, blockId: newBlocks };
       }
       return prev;
     });
-  }, [filters.zoneId?.id, blocksAll, isLoaded]);
+  }, [zoneIdsStr, blocksAll, isLoaded]);
 
   /* ======================================================
      Helper: resolve display names for selects
   ======================================================= */
   const resolveName = (selectValue, allList, getNameFn, extraField = null) => {
+    if (Array.isArray(selectValue)) {
+      return selectValue.map(v => resolveSingleName(v, allList, getNameFn, extraField));
+    }
+    return resolveSingleName(selectValue, allList, getNameFn, extraField);
+  };
+
+  const resolveSingleName = (selectValue, allList, getNameFn, extraField = null) => {
     if (!selectValue || !selectValue.id) return selectValue;
     const found = allList.find((x) => x._id === selectValue.id || x.id === selectValue.id);
     if (!found) return selectValue;
@@ -427,17 +453,17 @@ export default function FiltersPage({ onApply, defaultFilters }) {
   ======================================================= */
   const handleClear = () => {
     setFilters({
-      projectId: null,
-      zoneId: null,
-      blockId: null,
-      propertyType: null,
+      projectId: [],
+      zoneId: [],
+      blockId: [],
+      propertyType: [],
       propertyNumber: "",
-      floorRange: null,
-      availabilityStatus: null,
-      currency: null,
-      bedrooms: null,
-      bathrooms: null,
-      furnishing: null,
+      floorRange: [],
+      availabilityStatus: [],
+      currency: [],
+      bedrooms: [],
+      bathrooms: [],
+      furnishing: [],
       priceFrom: "",
       priceTo: "",
     });
@@ -451,7 +477,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
      Render
   ======================================================= */
   return (
-    <div className="min-h-screen rounded-2xl p-10">
+    <div className="min-h-screen rounded-2xl p-6">
       {/* language toggle */}
       <div className="flex mb-6 border-b border-gray-200">
         {["vi", "en"].map((lng) => (
@@ -476,6 +502,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={projects}
           lang={lang}
+          mode="multiple"
         />
 
         <Select
@@ -485,6 +512,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={zones}
           lang={lang}
+          mode="multiple"
         />
 
         <Select
@@ -494,6 +522,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={blocks}
           lang={lang}
+          mode="multiple"
         />
 
         <Select
@@ -503,6 +532,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={filteredPropertyTypes}
           lang={lang}
+          mode="multiple"
         />
 
         <Input
@@ -520,6 +550,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={floorRanges}
           lang={lang}
+          mode="multiple"
         />
 
         <Select
@@ -529,6 +560,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={availabilityStatuses}
           lang={lang}
+          mode="multiple"
         />
 
         <Select
@@ -538,6 +570,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={bedroomOptions}
           lang={lang}
+          mode="multiple"
         />
 
         <Select
@@ -547,6 +580,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={bathroomOptions}
           lang={lang}
+          mode="multiple"
         />
 
         <Select
@@ -556,6 +590,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           onChange={update}
           options={furnishings}
           lang={lang}
+          mode="multiple"
         />
       </div>
 
@@ -567,12 +602,20 @@ export default function FiltersPage({ onApply, defaultFilters }) {
           name="currency"
           value={filters.currency}
           onChange={(name, valObj) => {
-            // Look up the code from the master list
-            const found = currencies.find(c => c.id === valObj.id);
-            update(name, { ...valObj, code: found?.code });
+            if (Array.isArray(valObj)) {
+               const resolved = valObj.map(v => {
+                  const found = currencies.find(c => c.id === v.id);
+                  return { ...v, code: found?.code };
+               });
+               update(name, resolved);
+            } else {
+               const found = currencies.find(c => c.id === valObj?.id);
+               update(name, valObj ? { ...valObj, code: found?.code } : null);
+            }
           }}
           options={currencies}
           lang={lang}
+          mode="multiple"
         />
 
         <Input
@@ -610,7 +653,7 @@ export default function FiltersPage({ onApply, defaultFilters }) {
               onApply(cleanFilters);
             }
           }}
-          className="px-6 py-2 bg-[#41398B] flex items-center gap-1 hover:bg-[#41398Be3] text-white rounded-lg cursor-pointer"
+          className="px-6 py-2 bg-[#41398B] flex items-center gap-1 hover:bg-[#41398Be3] text-white rounded-full cursor-pointer"
         >
           {t[lang].apply}
           <ArrowRight size={20} />

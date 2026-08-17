@@ -56,6 +56,10 @@ button {
   color: #fff !important;
 }
 
+.ant-select-multiple .ant-select-selection-overflow {
+  margin-top: 5px !important;
+}
+
 .custom-select .ant-select-selection-item {
   color: #111827 !important;
   /* dark text */

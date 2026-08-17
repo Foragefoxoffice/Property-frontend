@@ -36,7 +36,7 @@ import { translateError } from "../../utils/translateError";
 import { formatNumber } from "../../utils/display";
 import { downloadPropertyDetails } from "../../utils/downloadProperty.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { Dropdown, Tooltip, Spin } from "antd";
+import { Dropdown, Tooltip, Spin, Popover, Checkbox, ConfigProvider } from "antd";
 import FiltersPage from "../Filters/Filter";
 import { usePermissions } from "../../Context/PermissionContext";
 
@@ -94,20 +94,93 @@ export default function ManageProperty({
   const [syncingOwners, setSyncingOwners] = useState(false);
   const isAdmin = userRole?.toLowerCase() === 'admin' || userRole?.toLowerCase() === 'super admin';
 
-  const handleSyncLegacyOwners = async () => {
+  const availableColumns = useMemo(() => [
+    { key: "propertyType", label: t.propertyType || "Property Type" },
+    { key: "ownerName", label: t.ownerName || "Owner Name" },
+    { key: "ownerPhone", label: t.ownerPhone || "Phone Number" },
+    { key: "projectCommunity", label: "Project / Community" },
+    { key: "zoneSubArea", label: "Area / Zone" },
+    { key: "blockName", label: t.blockName || "Block Name" },
+    { key: "transactionType", label: t.transactionType || "Transaction Type" },
+    { key: "availabilityStatus", label: t.availabilitystatus || "Availability Status" },
+    { key: "floorRange", label: "Floor Range" },
+    { key: "bedrooms", label: "Bedrooms" },
+    { key: "bathrooms", label: "Bathrooms" },
+    { key: "furnishing", label: "Furnishing" },
+    { key: "currency", label: "Currency" },
+    { key: "basePrice", label: "Base Price" },
+    { key: "leasePrice", label: "Lease Price" },
+  ], [t]);
+
+  const defaultSelectedColumns = ["propertyType", "ownerName", "ownerPhone"];
+  const currentUserId = localStorage.getItem("userId") || "guest";
+  const columnStorageKey = `ManageProperty_Cols_${currentUserId}_${filterByTransactionType || "all"}`;
+  
+  const [selectedColumns, setSelectedColumns] = useState(() => {
     try {
-      setSyncingOwners(true);
-      const res = await syncLegacyOwners();
-      CommonToaster(res.data.message || "Sync completed successfully!", "success");
-      setCurrentPage(1);
-      fetchProperties();
-    } catch (err) {
-      console.error(err);
-      CommonToaster(err.response?.data?.message || "Sync failed", "error");
-    } finally {
-      setSyncingOwners(false);
-    }
+      const saved = localStorage.getItem(columnStorageKey);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return defaultSelectedColumns;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(columnStorageKey, JSON.stringify(selectedColumns));
+  }, [selectedColumns, columnStorageKey]);
+
+  const [columnSearch, setColumnSearch] = useState("");
+  const filteredColumns = availableColumns.filter(c => c.label.toLowerCase().includes(columnSearch.toLowerCase()));
+
+  const handleColumnToggle = (key) => {
+    setSelectedColumns(prev => 
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    );
   };
+
+  const columnConfigContent = (
+    <ConfigProvider theme={{ token: { colorPrimary: '#41398B' } }}>
+      <div className="w-64 p-2">
+        <div className="relative mb-3">
+          <Search className="absolute top-2 left-2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search fields..."
+            value={columnSearch}
+            onChange={(e) => setColumnSearch(e.target.value)}
+            className="w-full pl-8 pr-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-[#41398B] text-[#131517]"
+          />
+        </div>
+        <div className="max-h-60 overflow-y-auto flex flex-col gap-2 thin-scrollbar pr-1">
+          {filteredColumns.map(col => (
+            <Checkbox 
+              key={col.key} 
+              checked={selectedColumns.includes(col.key)}
+              onChange={() => handleColumnToggle(col.key)}
+              className="text-[#131517]"
+            >
+              {col.label}
+            </Checkbox>
+          ))}
+          {filteredColumns.length === 0 && <span className="text-gray-500 text-sm">No fields found</span>}
+        </div>
+      </div>
+    </ConfigProvider>
+  );
+
+  // const handleSyncLegacyOwners = async () => {
+  //   try {
+  //     setSyncingOwners(true);
+  //     const res = await syncLegacyOwners();
+  //     CommonToaster(res.data.message || "Sync completed successfully!", "success");
+  //     setCurrentPage(1);
+  //     fetchProperties();
+  //   } catch (err) {
+  //     console.error(err);
+  //     CommonToaster(err.response?.data?.message || "Sync failed", "error");
+  //   } finally {
+  //     setSyncingOwners(false);
+  //   }
+  // };
 
   const getLocalizedValue = (value) => {
     if (!value) return "";
@@ -124,7 +197,6 @@ export default function ManageProperty({
     return null;
   };
   const permissionKey = getPermissionKey();
-
 
   useEffect(() => {
     const stateToSave = {
@@ -167,18 +239,64 @@ export default function ManageProperty({
 
       // Add applied filters to params
       if (appliedFilters) {
-        if (appliedFilters.projectId?.name) params.project = appliedFilters.projectId.name;
-        if (appliedFilters.zoneId?.name) params.zone = appliedFilters.zoneId.name;
-        if (appliedFilters.blockId?.name) params.block = appliedFilters.blockId.name;
-        if (appliedFilters.propertyType?.name) params.propertyType = appliedFilters.propertyType.name;
+        if (Array.isArray(appliedFilters.projectId) && appliedFilters.projectId.length > 0) {
+          params.project = appliedFilters.projectId.map(p => p.name).join(',');
+        } else if (appliedFilters.projectId?.name) {
+          params.project = appliedFilters.projectId.name;
+        }
+
+        if (Array.isArray(appliedFilters.zoneId) && appliedFilters.zoneId.length > 0) {
+          params.zone = appliedFilters.zoneId.map(z => z.name).join(',');
+        } else if (appliedFilters.zoneId?.name) {
+          params.zone = appliedFilters.zoneId.name;
+        }
+
+        if (Array.isArray(appliedFilters.blockId) && appliedFilters.blockId.length > 0) {
+          params.block = appliedFilters.blockId.map(b => b.name).join(',');
+        } else if (appliedFilters.blockId?.name) {
+          params.block = appliedFilters.blockId.name;
+        }
+        if (Array.isArray(appliedFilters.propertyType) && appliedFilters.propertyType.length > 0) {
+          params.propertyType = appliedFilters.propertyType.map(pt => pt.name).join(',');
+        } else if (appliedFilters.propertyType?.name) {
+          params.propertyType = appliedFilters.propertyType.name;
+        }
+
         if (appliedFilters.propertyNumber) params.propertyNo = appliedFilters.propertyNumber;
-        if (appliedFilters.floorRange?.name) params.floor = appliedFilters.floorRange.name;
-        if (appliedFilters.availabilityStatus?.name) params.availabilityStatus = appliedFilters.availabilityStatus.name;
-        if (appliedFilters.bedrooms?.id) params.bedrooms = appliedFilters.bedrooms.id;
-        if (appliedFilters.bathrooms?.id) params.bathrooms = appliedFilters.bathrooms.id;
-        if (appliedFilters.furnishing?.name) params.furnishing = appliedFilters.furnishing.name;
-        // Check for code first, then name
-        if (appliedFilters.currency?.code) {
+
+        if (Array.isArray(appliedFilters.floorRange) && appliedFilters.floorRange.length > 0) {
+          params.floor = appliedFilters.floorRange.map(f => f.name).join(',');
+        } else if (appliedFilters.floorRange?.name) {
+          params.floor = appliedFilters.floorRange.name;
+        }
+
+        if (Array.isArray(appliedFilters.availabilityStatus) && appliedFilters.availabilityStatus.length > 0) {
+          params.availabilityStatus = appliedFilters.availabilityStatus.map(a => a.name).join(',');
+        } else if (appliedFilters.availabilityStatus?.name) {
+          params.availabilityStatus = appliedFilters.availabilityStatus.name;
+        }
+
+        if (Array.isArray(appliedFilters.bedrooms) && appliedFilters.bedrooms.length > 0) {
+          params.bedrooms = appliedFilters.bedrooms.map(b => b.id).join(',');
+        } else if (appliedFilters.bedrooms?.id) {
+          params.bedrooms = appliedFilters.bedrooms.id;
+        }
+
+        if (Array.isArray(appliedFilters.bathrooms) && appliedFilters.bathrooms.length > 0) {
+          params.bathrooms = appliedFilters.bathrooms.map(b => b.id).join(',');
+        } else if (appliedFilters.bathrooms?.id) {
+          params.bathrooms = appliedFilters.bathrooms.id;
+        }
+
+        if (Array.isArray(appliedFilters.furnishing) && appliedFilters.furnishing.length > 0) {
+          params.furnishing = appliedFilters.furnishing.map(f => f.name).join(',');
+        } else if (appliedFilters.furnishing?.name) {
+          params.furnishing = appliedFilters.furnishing.name;
+        }
+
+        if (Array.isArray(appliedFilters.currency) && appliedFilters.currency.length > 0) {
+          params.currency = appliedFilters.currency.map(c => c.code || c.name).join(',');
+        } else if (appliedFilters.currency?.code) {
           params.currency = appliedFilters.currency.code;
         } else if (appliedFilters.currency?.name) {
           params.currency = appliedFilters.currency.name;
@@ -436,6 +554,18 @@ export default function ManageProperty({
             )
           )} */}
 
+          <Popover 
+            content={columnConfigContent} 
+            title="Configure Columns" 
+            trigger="click" 
+            placement="bottomRight"
+          >
+            <button className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer">
+              <Plus className="w-4 h-4" />
+              Add Column
+            </button>
+          </Popover>
+
           <button
             onClick={() => setShowFilterPopup(true)}
             className="flex bg-[#fff] items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-100 cursor-pointer"
@@ -514,14 +644,14 @@ export default function ManageProperty({
       {appliedFilters && (
         <div className="flex flex-wrap items-center gap-3 mb-4">
           {Object.entries(appliedFilters).map(([key, val]) =>
-            val && (typeof val === "string" ? val : val?.name) ? (
+            val && (typeof val === "string" ? val : Array.isArray(val) ? val.length > 0 : val?.name) ? (
               <span
                 key={key}
                 className="bg-[#41398B] text-white px-3 py-1 rounded-full text-sm flex items-center gap-2"
               >
                 {key}: {typeof val === "string"
                   ? (key.toLowerCase().includes('price') ? formatNumber(val) : val)
-                  : val?.name}
+                  : Array.isArray(val) ? val.map(v => v.name).join(', ') : val?.name}
                 <button
                   onClick={() =>
                     setAppliedFilters((prev) => ({ ...prev, [key]: "" }))
@@ -554,9 +684,9 @@ export default function ManageProperty({
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{language === "vi" ? "STT" : "S.no"}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyId}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyNo}</th>
-                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyType}</th>
-                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.ownerName}</th>
-                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.ownerPhone}</th>
+                {availableColumns.filter(c => selectedColumns.includes(c.key)).map(c => (
+                  <th key={c.key} className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{c.label}</th>
+                ))}
                 {/* <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.lastUpdatedDate}</th> */}
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.actionBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.sentBy}</th>
@@ -607,11 +737,27 @@ export default function ManageProperty({
 
                     <td className="px-6 py-6 capitalize whitespace-nowrap">{propertyNo}</td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">{propertyType}</td>
-
-                    <td className="px-6 py-4 whitespace-nowrap">{ownerName}</td>
-
-                    <td className="px-6 py-4 whitespace-nowrap">{ownerPhone}</td>
+                    {availableColumns.filter(c => selectedColumns.includes(c.key)).map(c => {
+                      let val = "—";
+                      switch(c.key) {
+                        case "propertyType": val = propertyType; break;
+                        case "ownerName": val = ownerName; break;
+                        case "ownerPhone": val = ownerPhone; break;
+                        case "projectCommunity": val = info.listingInformationProjectCommunity?.[language] || info.listingInformationProjectCommunity?.en || "—"; break;
+                        case "zoneSubArea": val = info.listingInformationZoneSubArea?.[language] || info.listingInformationZoneSubArea?.en || "—"; break;
+                        case "blockName": val = blockName; break;
+                        case "transactionType": val = transactionType; break;
+                        case "availabilityStatus": val = info.listingInformationAvailabilityStatus?.[language] || info.listingInformationAvailabilityStatus?.en || "—"; break;
+                        case "floorRange": val = p.propertyInformation?.informationFloors?.[language] || p.propertyInformation?.informationFloors?.en || p.propertyInformation?.informationFloors || "—"; break;
+                        case "bedrooms": val = p.propertyInformation?.informationBedrooms ?? "—"; break;
+                        case "bathrooms": val = p.propertyInformation?.informationBathrooms ?? "—"; break;
+                        case "furnishing": val = p.propertyInformation?.informationFurnishing?.[language] || p.propertyInformation?.informationFurnishing?.en || "—"; break;
+                        case "currency": val = p.financialDetails?.financialDetailsCurrency || "—"; break;
+                        case "basePrice": val = p.financialDetails?.financialDetailsPrice ? formatNumber(p.financialDetails.financialDetailsPrice) : "—"; break;
+                        case "leasePrice": val = p.financialDetails?.financialDetailsLeasePrice ? formatNumber(p.financialDetails.financialDetailsLeasePrice) : "—"; break;
+                      }
+                      return <td key={c.key} className="px-6 py-4 whitespace-nowrap">{val}</td>;
+                    })}
 
                     {/* <td className="px-6 py-4 whitespace-nowrap">{formatDMY(info.listingInformationLastUpdated)}</td> */}
 
