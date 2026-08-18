@@ -71,12 +71,8 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const t = translations[language];
   const { can } = usePermissions();
 
-  const [searchTerm, setSearchTerm] = useState(() => {
-    return sessionStorage.getItem("ownersListSearchTerm") || "";
-  });
-  const [sortBy, setSortBy] = useState(() => {
-    return sessionStorage.getItem("ownersListSortBy") || "newest";
-  });
+  const [searchTerm, setSearchTerm] = useState(() => sessionStorage.getItem("ownersListSearchTerm") || "");
+  const [sortBy, setSortBy] = useState(() => sessionStorage.getItem("ownersListSortBy") || "newest");
   const [activeLang, setActiveLang] = useState("EN");
 
   const [owners, setOwners] = useState([]);
@@ -89,14 +85,19 @@ const OwnersLandlords = ({ openOwnerView }) => {
   const [editMode, setEditMode] = useState(false);
   const [editingOwner, setEditingOwner] = useState(null);
 
-  const [currentPage, setCurrentPage] = useState(() => {
-    return Number(sessionStorage.getItem("ownersListPage")) || 1;
-  });
-  const [rowsPerPage, setRowsPerPage] = useState(() => {
-    return Number(sessionStorage.getItem("ownersListRowsPerPage")) || 10;
-  });
+  const [currentPage, setCurrentPage] = useState(() => Number(sessionStorage.getItem("ownersListPage")) || 1);
+  const [rowsPerPage, setRowsPerPage] = useState(() => Number(sessionStorage.getItem("ownersListRowsPerPage")) || 10);
   const [totalRows, setTotalRows] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Clear session storage on mount so that subsequent visits (from other tabs) don't use stale data.
+  // We only want the data to persist when returning directly from the details page.
+  useEffect(() => {
+    sessionStorage.removeItem("ownersListSearchTerm");
+    sessionStorage.removeItem("ownersListSortBy");
+    sessionStorage.removeItem("ownersListPage");
+    sessionStorage.removeItem("ownersListRowsPerPage");
+  }, []);
 
   const navigate = useNavigate();
 
