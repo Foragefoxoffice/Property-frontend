@@ -94,23 +94,71 @@ export default function ManageProperty({
   const [syncingOwners, setSyncingOwners] = useState(false);
   const isAdmin = userRole?.toLowerCase() === 'admin' || userRole?.toLowerCase() === 'super admin';
 
-  const availableColumns = useMemo(() => [
-    { key: "propertyType", label: t.propertyType || "Property Type" },
-    { key: "ownerName", label: t.ownerName || "Owner Name" },
-    { key: "ownerPhone", label: t.ownerPhone || "Phone Number" },
-    { key: "projectCommunity", label: "Project / Community" },
-    { key: "zoneSubArea", label: "Area / Zone" },
-    { key: "blockName", label: t.blockName || "Block Name" },
-    { key: "transactionType", label: t.transactionType || "Transaction Type" },
-    { key: "availabilityStatus", label: t.availabilitystatus || "Availability Status" },
-    { key: "floorRange", label: "Floor Range" },
-    { key: "bedrooms", label: "Bedrooms" },
-    { key: "bathrooms", label: "Bathrooms" },
-    { key: "furnishing", label: "Furnishing" },
-    { key: "currency", label: "Currency" },
-    { key: "basePrice", label: "Base Price" },
-    { key: "leasePrice", label: "Lease Price" },
-  ], [t]);
+  const availableColumns = useMemo(() => {
+    if (filterByTransactionType === "Lease") {
+      return [
+        { key: "propertyType", label: t.propertyType || "Property Type" },
+        { key: "ownerName", label: t.ownerName || "Owner Name" },
+        { key: "ownerPhone", label: t.ownerPhone || "Phone Number" },
+        { key: "availabilityStatus", label: t.availabilitystatus || "Availability Status" },
+        { key: "lastUpdatedDate", label: t.lastUpdatedDate || "Last Updated Date" },
+        { key: "availableFrom", label: "Available From" },
+        { key: "view", label: "View" },
+        { key: "landlordNotes", label: "Landlord Notes" },
+        { key: "internalNotes", label: "Internal Notes" },
+        { key: "agentPaymentAgenda", label: "Agent Payment Agenda" },
+        { key: "leasePrice", label: "Lease Price" },
+        { key: "furnishing", label: "Furnishing" },
+      ];
+    }
+    
+    if (filterByTransactionType === "Sale") {
+      return [
+        { key: "propertyType", label: t.propertyType || "Property Type" },
+        { key: "ownerName", label: t.ownerName || "Owner Name" },
+        { key: "ownerPhone", label: t.ownerPhone || "Phone Number" },
+        { key: "availabilityStatus", label: t.availabilitystatus || "Availability Status" },
+        { key: "lastUpdatedDate", label: t.lastUpdatedDate || "Last Updated Date" },
+        { key: "view", label: "View" },
+        { key: "landlordNotes", label: "Landlord Notes" },
+        { key: "internalNotes", label: "Internal Notes" },
+        { key: "price", label: "Price" },
+        { key: "agentFee", label: "Agent Fee" },
+        { key: "furnishing", label: "Furnishing" },
+        { key: "legalDocuments", label: "Legal Documents" },
+      ];
+    }
+
+    if (filterByTransactionType === "Home Stay" || filterByTransactionType === "HomeStay") {
+      return [
+        { key: "propertyType", label: t.propertyType || "Property Type" },
+        { key: "ownerName", label: t.ownerName || "Owner Name" },
+        { key: "ownerPhone", label: t.ownerPhone || "Phone Number" },
+        { key: "view", label: "View" },
+        { key: "landlordNotes", label: "Landlord Notes" },
+        { key: "internalNotes", label: "Internal Notes" },
+        { key: "pricePerNight", label: "Price per Night" },
+      ];
+    }
+
+    return [
+      { key: "propertyType", label: t.propertyType || "Property Type" },
+      { key: "ownerName", label: t.ownerName || "Owner Name" },
+      { key: "ownerPhone", label: t.ownerPhone || "Phone Number" },
+      { key: "projectCommunity", label: "Project / Community" },
+      { key: "zoneSubArea", label: "Area / Zone" },
+      { key: "blockName", label: t.blockName || "Block Name" },
+      { key: "transactionType", label: t.transactionType || "Transaction Type" },
+      { key: "availabilityStatus", label: t.availabilitystatus || "Availability Status" },
+      { key: "floorRange", label: "Floor Range" },
+      { key: "bedrooms", label: "Bedrooms" },
+      { key: "bathrooms", label: "Bathrooms" },
+      { key: "furnishing", label: "Furnishing" },
+      { key: "currency", label: "Currency" },
+      { key: "basePrice", label: "Base Price" },
+      { key: "leasePrice", label: "Lease Price" },
+    ];
+  }, [t, filterByTransactionType]);
 
   const defaultSelectedColumns = ["propertyType", "ownerName", "ownerPhone"];
   const currentUserId = localStorage.getItem("userId") || "guest";
@@ -755,6 +803,16 @@ export default function ManageProperty({
                         case "currency": val = p.financialDetails?.financialDetailsCurrency || "—"; break;
                         case "basePrice": val = p.financialDetails?.financialDetailsPrice ? formatNumber(p.financialDetails.financialDetailsPrice) : "—"; break;
                         case "leasePrice": val = p.financialDetails?.financialDetailsLeasePrice ? formatNumber(p.financialDetails.financialDetailsLeasePrice) : "—"; break;
+                        case "lastUpdatedDate": val = info.listingInformationLastUpdated ? formatDMY(info.listingInformationLastUpdated) : "—"; break;
+                        case "availableFrom": val = info.listingInformationAvailableFrom ? formatDMY(info.listingInformationAvailableFrom) : "—"; break;
+                        case "view": val = p.propertyInformation?.informationView?.[language] || p.propertyInformation?.informationView?.en || "—"; break;
+                        case "landlordNotes": val = p.contactManagement?.contactManagementOwnerNotes?.[language] || p.contactManagement?.contactManagementOwnerNotes?.en || "—"; break;
+                        case "internalNotes": val = p.contactManagement?.contactManagementInternalNotes?.[language] || p.contactManagement?.contactManagementInternalNotes?.en || "—"; break;
+                        case "agentPaymentAgenda": val = p.financialDetails?.financialDetailsAgentPaymentAgenda?.[language] || p.financialDetails?.financialDetailsAgentPaymentAgenda?.en || "—"; break;
+                        case "price": val = p.financialDetails?.financialDetailsPrice ? formatNumber(p.financialDetails.financialDetailsPrice) : "—"; break;
+                        case "agentFee": val = p.financialDetails?.financialDetailsAgentFee?.[language] || p.financialDetails?.financialDetailsAgentFee?.en || "—"; break;
+                        case "legalDocuments": val = p.financialDetails?.financialDetailsLegalDoc?.[language] || p.financialDetails?.financialDetailsLegalDoc?.en || "—"; break;
+                        case "pricePerNight": val = p.financialDetails?.financialDetailsPricePerNight ? formatNumber(p.financialDetails.financialDetailsPricePerNight) : "—"; break;
                       }
                       return <td key={c.key} className="px-6 py-4 whitespace-nowrap">{val}</td>;
                     })}
