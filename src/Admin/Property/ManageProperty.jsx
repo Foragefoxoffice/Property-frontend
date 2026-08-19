@@ -730,8 +730,8 @@ export default function ManageProperty({
             <thead className="bg-[#EAE9EE] text-gray-600 text-left h-18">
               <tr>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{language === "vi" ? "STT" : "S.no"}</th>
-                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyId}</th>
-                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.propertyNo}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap sticky left-0 z-10 bg-[#EAE9EE]" style={{ minWidth: "140px", maxWidth: "140px", width: "140px" }}>{t.propertyId}</th>
+                <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap sticky left-[140px] z-10 bg-[#EAE9EE] shadow-[8px_0_15px_-4px_rgba(0,0,0,0.15)]" style={{ minWidth: "140px", maxWidth: "140px", width: "140px" }}>{t.propertyNo}</th>
                 {availableColumns.filter(c => selectedColumns.includes(c.key)).map(c => (
                   <th key={c.key} className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{c.label}</th>
                 ))}
@@ -740,7 +740,7 @@ export default function ManageProperty({
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.sentBy}</th>
                 <th className="px-6 py-3 font-medium text-[#111111] whitespace-nowrap">{t.publishTheWebsite}</th>
                 {(isApprover || can(permissionKey, 'view') || can(permissionKey, 'preview') || can(permissionKey, 'edit') || can(permissionKey, 'delete') || can(permissionKey, 'copy') || trashMode) && (
-                  <th className="px-6 py-3 font-medium text-[#111111] text-right whitespace-nowrap sticky right-0 bg-[#EAE9EE] z-10 shadow-[-4px_0_8px_rgba(0,0,0,0.05)]"></th>
+                  <th className="px-6 py-3 font-medium text-[#111111] text-right whitespace-nowrap sticky right-0 bg-[#EAE9EE] z-10 shadow-[-8px_0_15px_-4px_rgba(0,0,0,0.15)]"></th>
                 )}
               </tr>
             </thead>
@@ -775,15 +775,19 @@ export default function ManageProperty({
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {startIndex + i}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <p className="text-sm text-gray-600 font-medium">
+                    <td className={`px-6 py-4 whitespace-nowrap sticky left-0 z-10 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} group-hover:bg-gray-100`} style={{ minWidth: "140px", maxWidth: "140px", width: "140px" }}>
+                      <div className="truncate">
+                        <p className="text-sm text-gray-600 font-medium truncate">
                           {info.listingInformationPropertyId || "—"}
                         </p>
                       </div>
                     </td>
 
-                    <td className="px-6 py-6 capitalize whitespace-nowrap">{propertyNo}</td>
+                    <td className={`px-6 py-6 capitalize whitespace-nowrap sticky left-[140px] z-10 shadow-[8px_0_15px_-4px_rgba(0,0,0,0.15)] ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} group-hover:bg-gray-100`} style={{ minWidth: "140px", maxWidth: "140px", width: "140px" }}>
+                      <div className="truncate">
+                        {propertyNo}
+                      </div>
+                    </td>
 
                     {availableColumns.filter(c => selectedColumns.includes(c.key)).map(c => {
                       let val = "—";
@@ -858,7 +862,7 @@ export default function ManageProperty({
                     </td>
 
                     {(isApprover || can(permissionKey, 'view') || can(permissionKey, 'preview') || can(permissionKey, 'edit') || can(permissionKey, 'delete') || can(permissionKey, 'copy') || trashMode) && (
-                      <td className={`px-3 py-4 text-right flex justify-end gap-3 sticky right-0 z-10 shadow-[-4px_0_8px_rgba(0,0,0,0.05)] ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} group-hover:bg-gray-100`}>
+                      <td className={`px-3 py-4 text-right flex justify-end gap-3 sticky right-0 z-10 shadow-[-8px_0_15px_-4px_rgba(0,0,0,0.15)] ${i % 2 === 0 ? "bg-white" : "bg-gray-50"} group-hover:bg-gray-100`}>
                         {/* Approve Button */}
                         {isApprover && p.status === "Pending" && (
                           <Tooltip title="Approve">
